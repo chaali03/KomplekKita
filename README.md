@@ -1,10 +1,6 @@
-# Astro Starter Kit: Basics
+# KomplekKita
 
-```sh
-npm create astro@latest -- --template basics
-```
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+An Astro-based web application for managing residential complexes.
 
 ## 🚀 Project Structure
 
@@ -15,14 +11,14 @@ Inside of your Astro project, you'll see the following folders and files:
 ├── public/
 │   └── favicon.svg
 ├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
+│   ├── assets
+│   │   └── astro.svg
+│   ├── components
+│   │   └── Welcome.astro
+│   ├── layouts
+│   │   └── Layout.astro
+│   └── pages
+│       └── index.astro
 └── package.json
 ```
 
