@@ -42,12 +42,12 @@
             <!-- Navigation menu -->
             <nav class="menu">
                 <ul class="menu-list">
-                    <li class="menu-item"><a href="#beranda" class="menu-link">Beranda</a></li>
+                    <li class="menu-item"><a href="/" class="menu-link">Beranda</a></li>
                     <li class="menu-item"><a href="#fitur" class="menu-link">Fitur</a></li>
                     <li class="menu-item"><a href="#harga" class="menu-link">Harga</a></li>
                     <li class="menu-item"><a href="#testimoni" class="menu-link">Testimoni</a></li>
                     <li class="menu-item"><a href="#faq" class="menu-link">FAQ</a></li>
-                    <li class="menu-item"><a href="#kontak" class="menu-link">Kontak</a></li>
+                    <li class="menu-item"><a href="/kontak" class="menu-link">Kontak</a></li>
                 </ul>
             </nav>
 
@@ -86,12 +86,12 @@
                     </div>
                     
                     <ul class="mobile-menu-list">
-                        <li class="mobile-menu-item"><a href="#beranda" class="mobile-menu-link">Beranda</a></li>
+                        <li class="mobile-menu-item"><a href="/" class="mobile-menu-link">Beranda</a></li>
                         <li class="mobile-menu-item"><a href="#fitur" class="mobile-menu-link">Fitur</a></li>
                         <li class="mobile-menu-item"><a href="#harga" class="mobile-menu-link">Harga</a></li>
                         <li class="mobile-menu-item"><a href="#testimoni" class="mobile-menu-link">Testimoni</a></li>
                         <li class="mobile-menu-item"><a href="#faq" class="mobile-menu-link">FAQ</a></li>
-                        <li class="mobile-menu-item"><a href="#kontak" class="mobile-menu-link">Kontak</a></li>
+                        <li class="mobile-menu-item"><a href="/kontak" class="mobile-menu-link">Kontak</a></li>
                     </ul>
                     
                     <div class="mobile-actions">
@@ -999,23 +999,23 @@
         window.addEventListener('scroll', () => {
             // Header scroll class with enhanced animation
             if (window.scrollY > 10) {
-                header.classList.add('scrolled');
+                header?.classList.add('scrolled');
                 if (brand) brand.classList.add('scrolled');
             } else {
-                header.classList.remove('scrolled');
+                header?.classList.remove('scrolled');
                 if (brand) brand.classList.remove('scrolled');
             }
             
             // Update scroll progress bar with smoother animation
             const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-            scrollBar.style.width = `${scrollPercent}%`;
+            if (scrollBar) (scrollBar as HTMLElement).style.width = `${scrollPercent}%`;
             
             // Parallax effect for particles while scrolling
             const particles = document.querySelectorAll('.particle');
             particles.forEach((particle, index) => {
                 const speed = 0.05 + (index % 3) * 0.02;
                 const yPos = window.scrollY * speed;
-                particle.style.transform = `translate3d(0, calc(var(--ty) - ${yPos}px), 0)`;
+                (particle as HTMLElement).style.transform = `translate3d(0, calc(var(--ty) - ${yPos}px), 0)`;
             });
         });
         
@@ -1025,40 +1025,42 @@
         const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
         const mobileClose = document.querySelector('.mobile-close');
         
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
-            
-            // Staggered animation for menu items
-            if (mobileMenu.classList.contains('active')) {
-                mobileMenuLinks.forEach((link, index) => {
-                    link.style.transitionDelay = `${0.1 + index * 0.05}s`;
-                    link.style.opacity = '1';
-                    link.style.transform = 'translateX(0)';
-                });
-            }
-        });
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                hamburger?.classList.toggle('active');
+                mobileMenu?.classList.toggle('active');
+                document.body.style.overflow = mobileMenu?.classList.contains('active') ? 'hidden' : '';
+                
+                // Staggered animation for menu items
+                if (mobileMenu?.classList.contains('active')) {
+                    mobileMenuLinks.forEach((link, index) => {
+                        (link as HTMLElement).style.transitionDelay = `${0.1 + index * 0.05}s`;
+                        (link as HTMLElement).style.opacity = '1';
+                        (link as HTMLElement).style.transform = 'translateX(0)';
+                    });
+                }
+            });
+        }
         
         if (mobileClose) {
             mobileClose.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                mobileMenu.classList.remove('active');
+                hamburger?.classList.remove('active');
+                mobileMenu?.classList.remove('active');
                 document.body.style.overflow = '';
                 
                 // Reset menu items animation
                 mobileMenuLinks.forEach(link => {
-                    link.style.transitionDelay = '';
-                    link.style.opacity = '0';
-                    link.style.transform = 'translateX(-20px)';
+                    (link as HTMLElement).style.transitionDelay = '';
+                    (link as HTMLElement).style.opacity = '0';
+                    (link as HTMLElement).style.transform = 'translateX(-20px)';
                 });
             });
         }
         
         mobileMenuLinks.forEach(link => {
             link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                mobileMenu.classList.remove('active');
+                hamburger?.classList.remove('active');
+                mobileMenu?.classList.remove('active');
                 document.body.style.overflow = '';
             });
         });
@@ -1092,16 +1094,16 @@
                     // Adjust glow based on distance
                     const maxDistance = 200;
                     const intensity = Math.max(0, 1 - distance / maxDistance);
-                    brandGlow.style.opacity = (0.3 + intensity * 0.7).toString();
-                    brandGlow.style.transform = `scale(${1 + intensity * 0.3})`;
+                    (brandGlow as HTMLElement).style.opacity = (0.3 + intensity * 0.7).toString();
+                    (brandGlow as HTMLElement).style.transform = `scale(${1 + intensity * 0.3})`;
                 }
             });
             
             headerInner.addEventListener('mouseleave', () => {
                 spotlight.style.opacity = '0';
                 if (brandGlow) {
-                    brandGlow.style.opacity = '0';
-                    brandGlow.style.transform = 'scale(1)';
+                    (brandGlow as HTMLElement).style.opacity = '0';
+                    (brandGlow as HTMLElement).style.transform = 'scale(1)';
                 }
             });
         }
@@ -1111,6 +1113,12 @@
         
         buttons.forEach(button => {
             button.addEventListener('click', function(e) {
+                // Jangan menambahkan efek ripple jika link mengarah ke halaman lain (bukan anchor)
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('/')) {
+                    return; // Biarkan navigasi normal terjadi
+                }
+                
                 const rect = this.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
@@ -1128,7 +1136,7 @@
                 const isPrimary = this.classList.contains('btn-primary') || this.classList.contains('mobile-btn-primary');
                 ripple.style.backgroundColor = isPrimary ? 'rgba(255, 255, 255, 0.3)' : 'rgba(59, 130, 246, 0.2)';
                 
-                this.appendChild(ripple);
+                (this as HTMLElement).appendChild(ripple);
                 
                 setTimeout(() => {
                     ripple.remove();
@@ -1144,16 +1152,16 @@
             const tx = (Math.random() * 300) - 150;
             const ty = (Math.random() * 300) - 150;
             
-            particle.style.setProperty('--tx', `${tx}px`);
-            particle.style.setProperty('--ty', `${ty}px`);
+            (particle as HTMLElement).style.setProperty('--tx', `${tx}px`);
+            (particle as HTMLElement).style.setProperty('--ty', `${ty}px`);
             
             // Random animation duration and delay
             const baseDuration = 15;
             const randomDuration = baseDuration + Math.random() * 10;
-            particle.style.animationDuration = `${randomDuration}s`;
+            (particle as HTMLElement).style.animationDuration = `${randomDuration}s`;
             
             const randomDelay = Math.random() * 5;
-            particle.style.animationDelay = `-${randomDelay}s`;
+            (particle as HTMLElement).style.animationDelay = `-${randomDelay}s`;
         });
         
         // Enhanced hover effect for navigation links
@@ -1161,15 +1169,15 @@
         
         menuLinks.forEach(link => {
             link.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-3px)';
-                this.style.color = 'var(--primary-blue)';
-                this.style.textShadow = '0 0 10px rgba(59, 130, 246, 0.3)';
+                (this as HTMLElement).style.transform = 'translateY(-3px)';
+                (this as HTMLElement).style.color = 'var(--primary-blue)';
+                (this as HTMLElement).style.textShadow = '0 0 10px rgba(59, 130, 246, 0.3)';
             });
             
             link.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-                this.style.color = '';
-                this.style.textShadow = '';
+                (this as HTMLElement).style.transform = 'translateY(0)';
+                (this as HTMLElement).style.color = '';
+                (this as HTMLElement).style.textShadow = '';
             });
         });
         
@@ -1179,13 +1187,13 @@
             button.addEventListener('mouseenter', function() {
                 const shine = this.querySelector('.btn-shine');
                 if (shine) {
-                    shine.style.animation = 'btn-shine 1s forwards';
+                    (shine as HTMLElement).style.animation = 'btn-shine 1s forwards';
                 }
-                this.style.transform = 'translateY(-5px)';
+                (this as HTMLElement).style.transform = 'translateY(-5px)';
             });
             
             button.addEventListener('mouseleave', function() {
-                this.style.transform = '';
+                (this as HTMLElement).style.transform = '';
             });
         });
     });
