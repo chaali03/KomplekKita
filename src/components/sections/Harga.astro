@@ -1,136 +1,1164 @@
----
----
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilihan Paket - Sistem Manajemen Perumahan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        /* Variabel CSS */
+        :root {
+            --primary-blue: #2563eb;
+            --primary-blue-dark: #1d4ed8;
+            --primary-blue-light: #93c5fd;
+            --muted-green: #16a34a;
+            --muted-orange: #ea580c;
+            --muted-red: #dc2626;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --white: #ffffff;
+            --bg-light: #f9fafb;
+            --bg-lighter: #f3f4f6;
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --card-shadow-hover: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+            --transition-slow: 0.5s ease;
+            --transition-fast: 0.3s ease;
+            --border-radius: 16px;
+        }
 
-<section id="harga" class="section harga-section">
-    <!-- Animated background elements -->
-    <div class="harga-bg-elements">
-        <div class="bg-element bg-element-1"></div>
-        <div class="bg-element bg-element-2"></div>
-        <div class="bg-element bg-element-3"></div>
-        <div class="bg-element bg-element-4"></div>
-        <div class="bg-element bg-element-5"></div>
-        <div class="bg-element bg-element-6"></div>
-        <div class="floating-shape floating-shape-1"></div>
-        <div class="floating-shape floating-shape-2"></div>
-        <div class="floating-shape floating-shape-3"></div>
-    </div>
-    
-    <!-- Animated decorative elements -->
-    <div class="decorative-elements">
-        <div class="deco-line deco-line-1"></div>
-        <div class="deco-line deco-line-2"></div>
-        <div class="deco-circle deco-circle-1"></div>
-        <div class="deco-circle deco-circle-2"></div>
-    </div>
+        /* Reset dan Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <div class="container">
-        <h2 class="section-title" data-aos="fade-up">Pilihan Paket</h2>
-        <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
-            Solusi manajemen komplek perumahan yang sesuai dengan kebutuhan Anda
-        </p>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
 
-        <div class="harga-tabs" data-aos="fade-up" data-aos-delay="200">
-            <button class="tab-btn active" data-tab="bulanan">Bulanan</button>
-            <button class="tab-btn" data-tab="tahunan">Tahunan</button>
-            <div class="tab-slider"></div>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Harga Section Styles */
+        .harga-section {
+            position: relative;
+            padding: 100px 0;
+            overflow: hidden;
+            background-color: var(--bg-light);
+            isolation: isolate;
+        }
+
+        /* Animated background elements */
+        .harga-bg-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .bg-element {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.05;
+            filter: blur(40px);
+        }
+        
+        .bg-element-1 {
+            width: 400px;
+            height: 400px;
+            top: -150px;
+            right: 10%;
+            background: var(--primary-blue);
+            animation: float-element 20s ease-in-out infinite alternate;
+        }
+        
+        .bg-element-2 {
+            width: 300px;
+            height: 300px;
+            bottom: -100px;
+            left: 5%;
+            background: var(--muted-green);
+            animation: float-element 15s ease-in-out 5s infinite alternate-reverse;
+        }
+        
+        .floating-shape {
+            position: absolute;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .floating-shape-1 {
+            top: 15%;
+            left: 10%;
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--primary-blue);
+            border-radius: 12px;
+            transform: rotate(15deg);
+            animation: float-rotate 15s ease-in-out infinite alternate;
+        }
+        
+        .floating-shape-2 {
+            bottom: 25%;
+            right: 15%;
+            width: 40px;
+            height: 40px;
+            background-color: transparent;
+            border: 2px solid var(--muted-green);
+            border-radius: 50%;
+            animation: pulse-move 20s ease-in-out infinite alternate;
+        }
+        
+        .floating-shape-3 {
+            top: 60%;
+            right: 30%;
+            width: 30px;
+            height: 30px;
+            background-color: transparent;
+            border: 2px solid var(--muted-orange);
+            transform: rotate(45deg);
+            animation: float-rotate 18s ease-in-out 3s infinite alternate-reverse;
+        }
+
+        /* Decorative elements */
+        .decorative-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .deco-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, var(--primary-blue), transparent);
+            height: 1px;
+            width: 100%;
+            opacity: 0.1;
+        }
+        
+        .deco-line-1 {
+            top: 20%;
+            animation: line-move 15s linear infinite;
+        }
+        
+        .deco-line-2 {
+            bottom: 30%;
+            animation: line-move 20s linear 5s infinite reverse;
+        }
+        
+        .deco-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid var(--primary-blue);
+            opacity: 0.1;
+        }
+        
+        .deco-circle-1 {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            right: 20%;
+            animation: pulse-opacity 10s ease-in-out infinite;
+        }
+        
+        .deco-circle-2 {
+            width: 150px;
+            height: 150px;
+            bottom: 15%;
+            left: 15%;
+            animation: pulse-opacity 15s ease-in-out 5s infinite;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Pricing Tabs */
+        .harga-tabs {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--white);
+            border-radius: 50px;
+            padding: 0.5rem;
+            width: fit-content;
+            margin: 0 auto 3rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--bg-lighter);
+        }
+
+        .tab-btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            background: transparent;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+            transition: color var(--transition-fast);
+            border-radius: 50px;
+        }
+
+        .tab-btn.active {
+            color: var(--white);
+        }
+
+        .tab-slider {
+            position: absolute;
+            height: 80%;
+            top: 10%;
+            left: 0.5rem;
+            width: calc(50% - 1rem);
+            background: var(--primary-blue);
+            border-radius: 50px;
+            transition: transform var(--transition-fast);
+            z-index: 1;
+        }
+
+        /* Pricing Cards Container */
+        .harga-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Pricing Card */
+        .harga-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2.5rem 2rem;
+            position: relative;
+            transition: all var(--transition-slow);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--bg-lighter);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .harga-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: var(--primary-blue-light);
+        }
+
+        .harga-card.featured {
+            background: var(--white);
+            border-color: var(--primary-blue-light);
+            box-shadow: 0 15px 35px -5px rgba(37, 99, 235, 0.15);
+            transform: scale(1.02);
+            position: relative;
+        }
+        
+        .harga-card.featured:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.2);
+        }
+
+        .harga-card-badge {
+            position: absolute;
+            top: 1rem;
+            right: -3rem;
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 0.5rem 3rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transform: rotate(45deg);
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .card-decoration {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: rgba(37, 99, 235, 0.05);
+            border-radius: 0 var(--border-radius) 0 100%;
+            opacity: 0.5;
+            transition: all var(--transition-slow);
+            z-index: -1;
+        }
+
+        .harga-card:hover .card-decoration {
+            width: 200px;
+            height: 200px;
+            opacity: 0.7;
+            transform: rotate(-5deg);
+        }
+
+        .card-glow {
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 100px;
+            height: 100px;
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 50%;
+            opacity: 0;
+            transition: all var(--transition-slow);
+            z-index: -1;
+            filter: blur(20px);
+        }
+
+        .harga-card:hover .card-glow {
+            opacity: 0.7;
+            width: 150px;
+            height: 150px;
+        }
+
+        /* Card Header */
+        .harga-card-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .harga-card-header h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .harga-price {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+        }
+
+        .period {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+        
+        .discount-badge {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--muted-orange);
+            color: white;
+            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 3px 10px rgba(234, 88, 12, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        /* Card Body */
+        .harga-card-body {
+            flex-grow: 1;
+            margin-bottom: 2rem;
+        }
+
+        .harga-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            transition: transform var(--transition-fast);
+        }
+
+        .feature-item:hover {
+            transform: translateX(5px);
+        }
+
+        .feature-icon {
+            margin-right: 1rem;
+            color: var(--primary-blue);
+            font-size: 1rem;
+            padding-top: 0.2rem;
+        }
+        
+        .feature-icon .fa-plus {
+            color: var(--primary-blue);
+        }
+
+        .feature-item.disabled .feature-icon {
+            color: var(--text-muted);
+        }
+
+        .feature-text {
+            color: var(--text-dark);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .feature-item.disabled .feature-text {
+            color: var(--text-muted);
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        /* Card Footer */
+        .harga-card-footer {
+            text-align: center;
+        }
+
+        .btn-harga {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: var(--white);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-blue-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-outline:hover {
+            background: rgba(37, 99, 235, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Comparison Table */
+        .harga-comparison {
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .comparison-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-dark);
+            position: relative;
+        }
+        
+        .comparison-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--primary-blue);
+            border-radius: 3px;
+        }
+
+        .comparison-table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            background: var(--white);
+            border: 1px solid var(--bg-lighter);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+        
+        .comparison-table-wrapper:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+            position: relative;
+            z-index: 1;
+            background: var(--white);
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1.2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--bg-lighter);
+            transition: all var(--transition-fast);
+        }
+
+        .comparison-table th {
+            background: rgba(37, 99, 235, 0.05);
+            color: var(--text-dark);
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .comparison-table th:first-child,
+        .comparison-table td:first-child {
+            text-align: left;
+            padding-left: 2rem;
+            position: sticky;
+            left: 0;
+            background: var(--white);
+            z-index: 5;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
+        }
+        
+        .comparison-table tbody tr:hover td:first-child {
+            color: var(--primary-blue);
+            padding-left: 2.5rem;
+            background: linear-gradient(to right, rgba(37, 99, 235, 0.05), var(--white));
+        }
+
+        .comparison-table tr {
+            position: relative;
+            transition: all var(--transition-fast);
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(37, 99, 235, 0.02);
+        }
+
+        .category-row td {
+            background: rgba(37, 99, 235, 0.08);
+            font-weight: 700;
+            color: var(--primary-blue-dark);
+            padding: 0.75rem 1rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(37, 99, 235, 0.1);
+        }
+        
+        .category-row:hover td {
+            background: rgba(37, 99, 235, 0.12);
+            color: var(--primary-blue);
+        }
+
+        .comparison-table td {
+            position: relative;
+        }
+        
+        .comparison-table tr:hover td {
+            background-color: rgba(37, 99, 235, 0.03);
+        }
+        
+        .comparison-table .fa-check {
+            color: var(--muted-green);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(22, 163, 74, 0.1);
+            border-radius: 50%;
+            transition: all var(--transition-slow);
+            font-size: 1.1rem;
+        }
+        
+        .comparison-table tr:hover .fa-check {
+            transform: scale(1.2);
+            background: rgba(22, 163, 74, 0.2);
+            box-shadow: 0 0 20px rgba(22, 163, 74, 0.2);
+            animation: check-bounce 0.8s ease;
+        }
+        
+        .comparison-table .fa-plus {
+            color: var(--primary-blue);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(37, 99, 235, 0.1);
+            border-radius: 50%;
+            transition: all var(--transition-slow);
+            font-size: 1.1rem;
+        }
+        
+        .comparison-table tr:hover .fa-plus {
+            transform: scale(1.2) rotate(135deg);
+            background: rgba(37, 99, 235, 0.2);
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.2);
+            animation: plus-rotate 0.8s ease;
+        }
+        
+        .comparison-table .fa-times {
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(220, 38, 38, 0.05);
+            border-radius: 50%;
+            transition: all var(--transition-slow);
+            font-size: 1.1rem;
+        }
+        
+        .comparison-table tr:hover .fa-times {
+            transform: scale(1.2);
+            background: rgba(220, 38, 38, 0.1);
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.1);
+            animation: times-shake 0.8s ease;
+        }
+
+        /* FAQ Section */
+        .harga-faq {
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .faq-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-dark);
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--white);
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--bg-lighter);
+            transition: all var(--transition-fast);
+        }
+
+        .faq-item:hover {
+            box-shadow: var(--card-shadow-hover);
+            border-color: var(--primary-blue-light);
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-question h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .faq-icon {
+            color: var(--primary-blue);
+            transition: transform var(--transition-fast);
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all var(--transition-fast);
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            max-height: 500px;
+        }
+
+        .faq-answer p {
+            margin: 0;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .harga-cta {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--bg-lighter);
+            overflow: hidden;
+        }
+
+        .harga-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(37, 99, 235, 0.03);
+            z-index: -1;
+        }
+
+        .cta-content {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .cta-content h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .cta-content p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .harga-container {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+
+            .harga-card.featured {
+                transform: scale(1);
+            }
+
+            .harga-card.featured:hover {
+                transform: translateY(-10px);
+            }
+
+            .harga-cta {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .cta-buttons {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .harga-section {
+                padding: 80px 0;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .section-subtitle {
+                font-size: 1rem;
+            }
+
+            .harga-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .harga-card-header h3 {
+                font-size: 1.5rem;
+            }
+
+            .price {
+                font-size: 2rem;
+            }
+
+            .comparison-title,
+            .faq-title,
+            .cta-content h3 {
+                font-size: 1.5rem;
+            }
+            
+            .harga-tabs {
+                flex-direction: column;
+                border-radius: 12px;
+            }
+            
+            .tab-slider {
+                display: none;
+            }
+            
+            .tab-btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .tab-btn.active {
+                background: var(--primary-blue);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .tab-btn {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .harga-cta {
+                padding: 2rem 1.5rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn-harga {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .comparison-table th, 
+            .comparison-table td {
+                padding: 0.8rem 1rem;
+            }
+            
+            .comparison-table th:first-child,
+            .comparison-table td:first-child {
+                padding-left: 1rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes float-element {
+            0% {
+                transform: translateY(0) translateX(0);
+            }
+            50% {
+                transform: translateY(-20px) translateX(10px);
+            }
+            100% {
+                transform: translateY(0) translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translateX(-50%) scale(1);
+                box-shadow: 0 3px 10px rgba(234, 88, 12, 0.3);
+            }
+            50% {
+                transform: translateX(-50%) scale(1.05);
+                box-shadow: 0 5px 15px rgba(234, 88, 12, 0.4);
+            }
+            100% {
+                transform: translateX(-50%) scale(1);
+                box-shadow: 0 3px 10px rgba(234, 88, 12, 0.3);
+            }
+        }
+
+        @keyframes float-rotate {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-15px) rotate(5deg);
+            }
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+        }
+
+        @keyframes pulse-move {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes line-move {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes pulse-opacity {
+            0% {
+                opacity: 0.1;
+            }
+            50% {
+                opacity: 0.2;
+            }
+            100% {
+                opacity: 0.1;
+            }
+        }
+        
+        @keyframes check-bounce {
+            0% {
+                transform: scale(0.9);
+            }
+            40% {
+                transform: scale(1.4);
+            }
+            60% {
+                transform: scale(0.9);
+            }
+            80% {
+                transform: scale(1.3);
+            }
+            100% {
+                transform: scale(1.2);
+            }
+        }
+        
+        @keyframes plus-rotate {
+            0% {
+                transform: scale(0.9) rotate(0deg);
+            }
+            40% {
+                transform: scale(1.4) rotate(90deg);
+            }
+            60% {
+                transform: scale(1.1) rotate(180deg);
+            }
+            80% {
+                transform: scale(1.3) rotate(135deg);
+            }
+            100% {
+                transform: scale(1.2) rotate(135deg);
+            }
+        }
+        
+        @keyframes times-shake {
+            0% {
+                transform: scale(0.9) rotate(0deg);
+            }
+            20% {
+                transform: scale(1.3) rotate(-15deg);
+            }
+            40% {
+                transform: scale(1.3) rotate(15deg);
+            }
+            60% {
+                transform: scale(1.3) rotate(-10deg);
+            }
+            80% {
+                transform: scale(1.3) rotate(5deg);
+            }
+            100% {
+                transform: scale(1.2) rotate(0deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <section id="harga" class="section harga-section">
+        <!-- Animated background elements -->
+        <div class="harga-bg-elements">
+            <div class="bg-element bg-element-1"></div>
+            <div class="bg-element bg-element-2"></div>
+            <div class="floating-shape floating-shape-1"></div>
+            <div class="floating-shape floating-shape-2"></div>
+            <div class="floating-shape floating-shape-3"></div>
+        </div>
+        
+        <!-- Animated decorative elements -->
+        <div class="decorative-elements">
+            <div class="deco-line deco-line-1"></div>
+            <div class="deco-line deco-line-2"></div>
+            <div class="deco-circle deco-circle-1"></div>
+            <div class="deco-circle deco-circle-2"></div>
         </div>
 
-        <div class="harga-container">
-            <!-- Paket Gratis -->
-            <div class="harga-card" data-aos="fade-up" data-aos-delay="300">
-                <div class="harga-card-header">
-                    <h3>Gratis</h3>
-                    <div class="harga-price" id="gratis-price">
-                        <span class="price">Rp 0</span>
-                        <span class="period">/bulan</span>
-                    </div>
-                </div>
-                <div class="harga-card-body">
-                    <ul class="harga-features">
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-check"></i></span>
-                            <span class="feature-text">Daftar pemasukan & pengeluaran bulanan</span>
-                        </li>
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-check"></i></span>
-                            <span class="feature-text">Request surat pindah/izin melalui sistem</span>
-                        </li>
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-check"></i></span>
-                            <span class="feature-text">Update data kepemilikan rumah & anggota keluarga</span>
-                        </li>
-                        <li class="feature-item disabled">
-                            <span class="feature-icon"><i class="fas fa-times"></i></span>
-                            <span class="feature-text">Laporan keuangan otomatis + grafik interaktif</span>
-                        </li>
-                        <li class="feature-item disabled">
-                            <span class="feature-icon"><i class="fas fa-times"></i></span>
-                            <span class="feature-text">Tracking status surat</span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="harga-card-footer">
-                    <a href="#" class="btn-harga btn-outline">Mulai Gratis</a>
-                </div>
-                <div class="card-decoration"></div>
-                <div class="card-glow"></div>
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Pilihan Paket</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Solusi manajemen komplek perumahan yang sesuai dengan kebutuhan Anda
+            </p>
+
+            <div class="harga-tabs" data-aos="fade-up" data-aos-delay="200">
+                <button class="tab-btn active" data-tab="bulanan">Bulanan</button>
+                <button class="tab-btn" data-tab="tahunan">Tahunan</button>
+                <div class="tab-slider"></div>
             </div>
 
-            <!-- Paket Premium -->
-            <div class="harga-card featured" data-aos="fade-up" data-aos-delay="400">
-                <div class="harga-card-badge">Terpopuler</div>
-                <div class="harga-card-header">
-                    <h3>Premium</h3>
-                    <div class="harga-price" id="premium-price">
-                        <span class="price">Rp 99.000</span>
-                        <span class="period">/bulan</span>
+            <div class="harga-container">
+                <!-- Paket Gratis -->
+                <div class="harga-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="harga-card-header">
+                        <h3>Gratis</h3>
+                        <div class="harga-price" id="gratis-price">
+                            <span class="price">Rp 0</span>
+                            <span class="period">/bulan</span>
+                        </div>
                     </div>
+                    <div class="harga-card-body">
+                        <ul class="harga-features">
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-check"></i></span>
+                                <span class="feature-text">Daftar pemasukan & pengeluaran bulanan</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-check"></i></span>
+                                <span class="feature-text">Request surat pindah/izin melalui sistem</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-check"></i></span>
+                                <span class="feature-text">Update data kepemilikan rumah & anggota keluarga</span>
+                            </li>
+                            <li class="feature-item disabled">
+                                <span class="feature-icon"><i class="fas fa-times"></i></span>
+                                <span class="feature-text">Laporan keuangan otomatis + grafik interaktif</span>
+                            </li>
+                            <li class="feature-item disabled">
+                                <span class="feature-icon"><i class="fas fa-times"></i></span>
+                                <span class="feature-text">Tracking status surat</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="harga-card-footer">
+                        <a href="#" class="btn-harga btn-outline">Mulai Gratis</a>
+                    </div>
+                    <div class="card-decoration"></div>
+                    <div class="card-glow"></div>
                 </div>
-                <div class="harga-card-body">
-                    <ul class="harga-features">
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-check"></i></span>
-                            <span class="feature-text">Semua fitur Gratis</span>
-                        </li>
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-check"></i></span>
-                            <span class="feature-text">Laporan keuangan otomatis + grafik interaktif</span>
-                        </li>
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-check"></i></span>
-                            <span class="feature-text">Download laporan keuangan (PDF/Excel)</span>
-                        </li>
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-check"></i></span>
-                            <span class="feature-text">Reminder pembayaran iuran via notifikasi</span>
-                        </li>
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-check"></i></span>
-                            <span class="feature-text">Tracking status surat</span>
-                        </li>
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-check"></i></span>
-                            <span class="feature-text">Tandatangan digital pengurus</span>
-                        </li>
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-check"></i></span>
-                            <span class="feature-text">Verifikasi otomatis dengan dokumen (KTP/KK)</span>
-                        </li>
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-check"></i></span>
-                            <span class="feature-text">Laporan demografi warga</span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="harga-card-footer">
-                    <a href="#" class="btn-harga btn-primary">Pilih Premium</a>
-                </div>
-                <div class="card-decoration"></div>
-                <div class="card-glow"></div>
-            </div>
 
-            <!-- Paket Enterprise -->
-            <div class="harga-card" data-aos="fade-up" data-aos-delay="500">
+                <!-- Paket Premium -->
+                <div class="harga-card featured" data-aos="fade-up" data-aos-delay="400">
+                    <div class="harga-card-badge">Terpopuler</div>
+                    <div class="harga-card-header">
+                        <h3>Premium</h3>
+                        <div class="harga-price" id="premium-price">
+                            <span class="price">Rp 99.000</span>
+                            <span class="period">/bulan</span>
+                        </div>
+                    </div>
+                    <div class="harga-card-body">
+                        <ul class="harga-features">
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-check"></i></span>
+                                <span class="feature-text">Semua fitur Gratis</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-check"></i></span>
+                                <span class="feature-text">Laporan keuangan otomatis + grafik interaktif</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-check"></i></span>
+                                <span class="feature-text">Download laporan keuangan (PDF/Excel)</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-check"></i></span>
+                                <span class="feature-text">Reminder pembayaran iuran via notifikasi</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-check"></i></span>
+                                <span class="feature-text">Tracking status surat</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-check"></i></span>
+                                <span class="feature-text">Tandatangan digital pengurus</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-check"></i></span>
+                                <span class="feature-text">Verifikasi otomatis dengan dokumen (KTP/KK)</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-check"></i></span>
+                                <span class="feature-text">Laporan demografi warga</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="harga-card-footer">
+                        <a href="#" class="btn-harga btn-primary">Pilih Premium</a>
+                    </div>
+                    <div class="card-decoration"></div>
+                    <div class="card-glow"></div>
+                </div>
+
+                <!-- Paket Plus -->
+                <div class="harga-card" data-aos="fade-up" data-aos-delay="500">
                     <div class="harga-card-header">
                         <h3>Plus</h3>
                         <div class="harga-price">
@@ -138,1574 +1166,296 @@
                             <span class="period">/bulan</span>
                             <div class="discount-badge">Diskon dari Rp 139.000</div>
                         </div>
+                    </div>
+                    <div class="harga-card-body">
+                        <ul class="harga-features">
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-plus"></i></span>
+                                <span class="feature-text">Semua fitur Premium</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-plus"></i></span>
+                                <span class="feature-text">Analitik keuangan lanjutan</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-plus"></i></span>
+                                <span class="feature-text">Integrasi dengan WhatsApp/email</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-plus"></i></span>
+                                <span class="feature-text">Dashboard pengurus untuk analisa data warga</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon"><i class="fas fa-plus"></i></span>
+                                <span class="feature-text">Dukungan prioritas 24/7</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="harga-card-footer">
+                        <a href="#" class="btn-harga btn-outline">Pilih Plus</a>
+                    </div>
+                    <div class="card-decoration"></div>
+                    <div class="card-glow"></div>
                 </div>
-                <div class="harga-card-body">
-                    <ul class="harga-features">
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-plus"></i></span>
-                            <span class="feature-text">Semua fitur Premium</span>
-                        </li>
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-plus"></i></span>
-                            <span class="feature-text">Analitik keuangan lanjutan</span>
-                        </li>
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-plus"></i></span>
-                            <span class="feature-text">Integrasi dengan WhatsApp/email</span>
-                        </li>
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-plus"></i></span>
-                            <span class="feature-text">Dashboard pengurus untuk analisa data warga</span>
-                        </li>
-                        <li class="feature-item">
-                            <span class="feature-icon"><i class="fas fa-plus"></i></span>
-                            <span class="feature-text">Dukungan prioritas 24/7</span>
-                        </li>
-                    </ul>
+            </div>
+
+            <div class="harga-comparison" data-aos="fade-up" data-aos-delay="600">
+                <h3 class="comparison-title">Perbandingan Fitur</h3>
+                
+                <div class="comparison-table-wrapper">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Fitur</th>
+                                <th class="plan-header gratis-header">Gratis</th>
+                                <th class="plan-header premium-header">Premium</th>
+                                <th class="plan-header plus-header">Plus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Transparansi Keuangan -->
+                            <tr class="category-row">
+                                <td colspan="4">Transparansi Keuangan</td>
+                            </tr>
+                            <tr>
+                                <td>Daftar pemasukan & pengeluaran bulanan</td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Laporan keuangan otomatis + grafik interaktif</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Download laporan keuangan (PDF/Excel)</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Reminder pembayaran iuran via notifikasi</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Notifikasi real-time transaksi baru</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Analitik keuangan lanjutan</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-plus"></i></td>
+                            </tr>
+                            
+                            <!-- Proses Birokrasi Warga -->
+                            <tr class="category-row">
+                                <td colspan="4">Proses Birokrasi Warga</td>
+                            </tr>
+                            <tr>
+                                <td>Request surat pindah/izin melalui sistem</td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Tracking status surat</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Tandatangan digital pengurus</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Arsip surat otomatis & riwayat pengajuan</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Cetak surat langsung dari aplikasi</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Integrasi dengan WhatsApp/email</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-plus"></i></td>
+                            </tr>
+                            
+                            <!-- Validasi Data Warga -->
+                            <tr class="category-row">
+                                <td colspan="4">Validasi Data Warga</td>
+                            </tr>
+                            <tr>
+                                <td>Update data kepemilikan rumah & anggota keluarga</td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Verifikasi otomatis dengan dokumen (KTP/KK)</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Riwayat perubahan data</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Laporan demografi warga</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Export data warga ke Excel</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                                <td><i class="fas fa-check"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Dashboard pengurus untuk analisa data warga</td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-times"></i></td>
+                                <td><i class="fas fa-plus"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="harga-card-footer">
-                    <a href="#" class="btn-harga btn-outline">Pilih Enterprise</a>
+            </div>
+
+            <div class="harga-faq" data-aos="fade-up" data-aos-delay="700">
+                <h3 class="faq-title">Pertanyaan Umum</h3>
+                
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Apakah saya bisa beralih paket kapan saja?</h4>
+                            <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Ya, Anda dapat beralih antar paket kapan saja. Jika Anda beralih ke paket yang lebih tinggi, perbedaan harga akan dihitung secara prorata. Jika Anda beralih ke paket yang lebih rendah, perubahan akan berlaku pada periode penagihan berikutnya.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Bagaimana cara pembayaran untuk paket Premium?</h4>
+                            <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Kami menerima pembayaran melalui transfer bank, kartu kredit, dan e-wallet populer di Indonesia. Anda akan menerima invoice secara otomatis dan dapat melakukan pembayaran melalui metode yang Anda pilih.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Apakah ada kontrak jangka panjang?</h4>
+                            <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Tidak ada kontrak jangka panjang yang mengikat. Anda dapat berlangganan bulanan atau tahunan, dan dapat membatalkan kapan saja. Untuk paket tahunan, Anda mendapatkan diskon 20% dibandingkan dengan pembayaran bulanan.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Apakah data kami aman?</h4>
+                            <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Keamanan data adalah prioritas utama kami. Kami menggunakan enkripsi end-to-end, backup data reguler, dan mengikuti standar keamanan industri untuk memastikan data Anda selalu aman dan terlindungi.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-decoration"></div>
-                <div class="card-glow"></div>
+            </div>
+
+            <div class="harga-cta" data-aos="fade-up" data-aos-delay="800">
+                <div class="cta-content">
+                    <h3>Siap untuk meningkatkan manajemen komplek perumahan Anda?</h3>
+                    <p>Mulai dengan paket Gratis atau hubungi kami untuk konsultasi kebutuhan khusus Anda.</p>
+                </div>
+                <div class="cta-buttons">
+                    <a href="#" class="btn-harga btn-outline">Mulai Gratis</a>
+                    <a href="/kontak" class="btn-harga btn-primary">Hubungi Kami</a>
+                </div>
             </div>
         </div>
-
-        <div class="harga-comparison" data-aos="fade-up" data-aos-delay="600">
-            <h3 class="comparison-title">Perbandingan Fitur</h3>
-            
-            <div class="comparison-table-wrapper">
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Fitur</th>
-                            <th class="plan-header gratis-header">Gratis</th>
-                            <th class="plan-header premium-header">Premium</th>
-                            <th class="plan-header plus-header">Plus</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Transparansi Keuangan -->
-                        <tr class="category-row">
-                            <td colspan="4">Transparansi Keuangan</td>
-                        </tr>
-                        <tr>
-                            <td>Daftar pemasukan & pengeluaran bulanan</td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Laporan keuangan otomatis + grafik interaktif</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Download laporan keuangan (PDF/Excel)</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Reminder pembayaran iuran via notifikasi</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Notifikasi real-time transaksi baru</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Analitik keuangan lanjutan</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-plus"></i></td>
-                        </tr>
-                        
-                        <!-- Proses Birokrasi Warga -->
-                        <tr class="category-row">
-                            <td colspan="4">Proses Birokrasi Warga</td>
-                        </tr>
-                        <tr>
-                            <td>Request surat pindah/izin melalui sistem</td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Tracking status surat</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Tandatangan digital pengurus</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Arsip surat otomatis & riwayat pengajuan</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Cetak surat langsung dari aplikasi</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Integrasi dengan WhatsApp/email</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-plus"></i></td>
-                        </tr>
-                        
-                        <!-- Validasi Data Warga -->
-                        <tr class="category-row">
-                            <td colspan="4">Validasi Data Warga</td>
-                        </tr>
-                        <tr>
-                            <td>Update data kepemilikan rumah & anggota keluarga</td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Verifikasi otomatis dengan dokumen (KTP/KK)</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Riwayat perubahan data</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Laporan demografi warga</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Export data warga ke Excel</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                            <td><i class="fas fa-check"></i></td>
-                        </tr>
-                        <tr>
-                            <td>Dashboard pengurus untuk analisa data warga</td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-times"></i></td>
-                            <td><i class="fas fa-plus"></i></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="harga-faq" data-aos="fade-up" data-aos-delay="700">
-            <h3 class="faq-title">Pertanyaan Umum</h3>
-            
-            <div class="faq-container">
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <h4>Apakah saya bisa beralih paket kapan saja?</h4>
-                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Ya, Anda dapat beralih antar paket kapan saja. Jika Anda beralih ke paket yang lebih tinggi, perbedaan harga akan dihitung secara prorata. Jika Anda beralih ke paket yang lebih rendah, perubahan akan berlaku pada periode penagihan berikutnya.</p>
-                    </div>
-                </div>
-                
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <h4>Bagaimana cara pembayaran untuk paket Premium?</h4>
-                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Kami menerima pembayaran melalui transfer bank, kartu kredit, dan e-wallet populer di Indonesia. Anda akan menerima invoice secara otomatis dan dapat melakukan pembayaran melalui metode yang Anda pilih.</p>
-                    </div>
-                </div>
-                
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <h4>Apakah ada kontrak jangka panjang?</h4>
-                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Tidak ada kontrak jangka panjang yang mengikat. Anda dapat berlangganan bulanan atau tahunan, dan dapat membatalkan kapan saja. Untuk paket tahunan, Anda mendapatkan diskon 20% dibandingkan dengan pembayaran bulanan.</p>
-                    </div>
-                </div>
-                
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <h4>Apakah data kami aman?</h4>
-                        <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Keamanan data adalah prioritas utama kami. Kami menggunakan enkripsi end-to-end, backup data reguler, dan mengikuti standar keamanan industri untuk memastikan data Anda selalu aman dan terlindungi.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="harga-cta" data-aos="fade-up" data-aos-delay="800">
-            <div class="cta-content">
-                <h3>Siap untuk meningkatkan manajemen komplek perumahan Anda?</h3>
-                <p>Mulai dengan paket Gratis atau hubungi kami untuk konsultasi kebutuhan khusus Anda.</p>
-            </div>
-            <div class="cta-buttons">
-                <a href="#" class="btn-harga btn-outline">Mulai Gratis</a>
-                <a href="/kontak" class="btn-harga btn-primary">Hubungi Kami</a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<style>
-    /* CSS Variables for Animation */
-    :root {
-        --muted-green-rgb: 22, 163, 74;
-        --muted-red-rgb: 220, 38, 38;
-        --primary-blue-rgb: 37, 99, 235;
-    }
-    
-    /* Harga Section Styles */
-    .harga-section {
-        position: relative;
-        padding: 120px 0;
-        overflow: hidden;
-        background-color: var(--bg-light);
-        isolation: isolate;
-    }
-
-    /* Animated background elements */
-    .harga-bg-elements {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 0;
-        overflow: hidden;
-    }
-    
-    .bg-element {
-        position: absolute;
-        border-radius: 50%;
-        opacity: 0.05;
-        filter: blur(40px);
-    }
-    
-    .bg-element-1 {
-        width: 400px;
-        height: 400px;
-        top: -150px;
-        right: 10%;
-        background: radial-gradient(circle, var(--primary-blue) 0%, transparent 70%);
-        animation: float 20s ease-in-out infinite alternate;
-    }
-    
-    .bg-element-2 {
-        width: 300px;
-        height: 300px;
-        bottom: -100px;
-        left: 5%;
-        background: radial-gradient(circle, var(--muted-green) 0%, transparent 70%);
-        animation: float 15s ease-in-out 5s infinite alternate-reverse;
-    }
-    
-    .bg-element-3 {
-        width: 200px;
-        height: 200px;
-        top: 30%;
-        left: 20%;
-        background: radial-gradient(circle, var(--muted-orange) 0%, transparent 70%);
-        animation: pulse 10s ease-in-out infinite;
-        opacity: 0.03;
-    }
-    
-    .bg-element-4 {
-        width: 250px;
-        height: 250px;
-        top: 40%;
-        right: 15%;
-        background: radial-gradient(circle, var(--primary-blue-light) 0%, transparent 70%);
-        animation: pulse 12s ease-in-out 2s infinite alternate;
-        opacity: 0.03;
-    }
-    
-    .bg-element-5 {
-        width: 350px;
-        height: 350px;
-        bottom: 20%;
-        right: 5%;
-        background: conic-gradient(from 225deg, var(--primary-blue) 0%, transparent 65%);
-        animation: rotate-pulse 25s linear infinite;
-        opacity: 0.04;
-    }
-    
-    .bg-element-6 {
-        width: 280px;
-        height: 280px;
-        top: 60%;
-        left: 10%;
-        background: conic-gradient(from 45deg, var(--muted-green) 0%, transparent 65%);
-        animation: rotate-pulse-reverse 20s linear infinite;
-        opacity: 0.04;
-    }
-    
-    .floating-shape {
-        position: absolute;
-        opacity: 0.1;
-        z-index: 0;
-    }
-    
-    .floating-shape-1 {
-        top: 15%;
-        left: 10%;
-        width: 60px;
-        height: 60px;
-        border: 2px solid var(--primary-blue);
-        border-radius: 12px;
-        transform: rotate(15deg);
-        animation: float-rotate 15s ease-in-out infinite alternate;
-    }
-    
-    .floating-shape-2 {
-        bottom: 25%;
-        right: 15%;
-        width: 40px;
-        height: 40px;
-        background-color: transparent;
-        border: 2px solid var(--muted-green);
-        border-radius: 50%;
-        animation: pulse-move 20s ease-in-out infinite alternate;
-    }
-    
-    .floating-shape-3 {
-        top: 60%;
-        right: 30%;
-        width: 30px;
-        height: 30px;
-        background-color: transparent;
-        border: 2px solid var(--muted-orange);
-        transform: rotate(45deg);
-        animation: float-rotate 18s ease-in-out 3s infinite alternate-reverse;
-    }
-    
-    /* Decorative elements */
-    .decorative-elements {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 0;
-        overflow: hidden;
-    }
-    
-    .deco-line {
-        position: absolute;
-        background: linear-gradient(90deg, transparent, rgba(var(--primary-blue-rgb), 0.2), transparent);
-        height: 1px;
-        width: 100%;
-        opacity: 0.3;
-    }
-    
-    .deco-line-1 {
-        top: 20%;
-        animation: line-move 15s linear infinite;
-    }
-    
-    .deco-line-2 {
-        bottom: 30%;
-        animation: line-move 20s linear 5s infinite reverse;
-    }
-    
-    .deco-circle {
-        position: absolute;
-        border-radius: 50%;
-        border: 1px solid rgba(var(--primary-blue-rgb), 0.2);
-        opacity: 0.3;
-    }
-    
-    .deco-circle-1 {
-        width: 200px;
-        height: 200px;
-        top: 10%;
-        right: 20%;
-        animation: pulse-opacity 10s ease-in-out infinite;
-    }
-    
-    .deco-circle-2 {
-        width: 150px;
-        height: 150px;
-        bottom: 15%;
-        left: 15%;
-        animation: pulse-opacity 15s ease-in-out 5s infinite;
-    }
-
-    .section-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 1rem;
-        color: var(--text-dark);
-        position: relative;
-        z-index: 1;
-    }
-
-    .section-subtitle {
-        font-size: 1.1rem;
-        text-align: center;
-        max-width: 700px;
-        margin: 0 auto 3rem;
-        color: var(--text-muted);
-        position: relative;
-        z-index: 1;
-    }
-
-    /* Pricing Tabs */
-    .harga-tabs {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: rgba(255, 255, 255, 0.5);
-        border-radius: 50px;
-        padding: 0.5rem;
-        width: fit-content;
-        margin: 0 auto 3rem;
-        position: relative;
-        z-index: 1;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .tab-btn {
-        padding: 0.75rem 2rem;
-        border: none;
-        background: transparent;
-        color: var(--text-dark);
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        position: relative;
-        z-index: 2;
-        transition: color 0.3s ease;
-    }
-
-    .tab-btn.active {
-        color: var(--white);
-    }
-
-    .tab-slider {
-        position: absolute;
-        height: 80%;
-        top: 10%;
-        left: 0.5rem;
-        width: calc(50% - 1rem);
-        background: var(--primary-blue);
-        border-radius: 50px;
-        transition: transform 0.3s ease;
-        z-index: 1;
-    }
-
-    /* Pricing Cards Container */
-    .harga-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-bottom: 4rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    /* Pricing Card */
-    .harga-card {
-        background: rgba(255, 255, 255, 0.7);
-        border-radius: 20px;
-        padding: 2.5rem 2rem;
-        position: relative;
-        transition: all 0.4s var(--bounce);
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        z-index: 1;
-    }
-
-    .harga-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, rgba(var(--primary-blue-rgb), 0.05) 0%, transparent 50%);
-        z-index: -1;
-        opacity: 0;
-        transition: opacity 0.4s ease;
-    }
-
-    .harga-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        border-color: rgba(var(--primary-blue-rgb), 0.3);
-    }
-    
-    .harga-card:hover::before {
-        opacity: 1;
-    }
-
-    .harga-card.featured {
-        background: rgba(255, 255, 255, 0.85);
-        border-color: rgba(var(--primary-blue-rgb), 0.2);
-        box-shadow: 0 15px 40px rgba(var(--primary-blue-rgb), 0.15);
-        transform: scale(1.05);
-        position: relative;
-    }
-    
-    .harga-card.featured::after {
-        content: '';
-        position: absolute;
-        top: -5px;
-        left: -5px;
-        right: -5px;
-        bottom: -5px;
-        background: linear-gradient(135deg, var(--primary-blue), transparent);
-        border-radius: 25px;
-        z-index: -2;
-        opacity: 0.1;
-        filter: blur(10px);
-        animation: pulse-glow 3s ease-in-out infinite alternate;
-    }
-
-    .harga-card.featured:hover {
-        transform: translateY(-10px) scale(1.05);
-        box-shadow: 0 25px 50px rgba(var(--primary-blue-rgb), 0.2);
-    }
-    
-    .harga-card.featured:hover::after {
-        opacity: 0.2;
-    }
-
-    .harga-card-badge {
-        position: absolute;
-        top: 1rem;
-        right: -3rem;
-        background: var(--primary-blue);
-        color: var(--white);
-        padding: 0.5rem 3rem;
-        font-size: 0.8rem;
-        font-weight: 600;
-        transform: rotate(45deg);
-        box-shadow: 0 2px 10px rgba(var(--primary-blue-rgb), 0.3);
-    }
-
-    .card-decoration {
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 150px;
-        height: 150px;
-        background: linear-gradient(135deg, rgba(var(--primary-blue-rgb), 0.1), transparent);
-        border-radius: 0 20px 0 100%;
-        opacity: 0.5;
-        transition: all 0.4s ease;
-        z-index: -1;
-    }
-
-    .harga-card:hover .card-decoration {
-        width: 200px;
-        height: 200px;
-        opacity: 0.7;
-        transform: rotate(-5deg);
-    }
-
-    .card-glow {
-        position: absolute;
-        bottom: -50px;
-        left: -50px;
-        width: 100px;
-        height: 100px;
-        background: radial-gradient(circle, rgba(var(--primary-blue-rgb), 0.3) 0%, transparent 70%);
-        border-radius: 50%;
-        opacity: 0;
-        transition: all 0.4s ease;
-        z-index: -1;
-        filter: blur(20px);
-    }
-
-    .harga-card:hover .card-glow {
-        opacity: 0.7;
-        width: 150px;
-        height: 150px;
-    }
-
-    /* Card Header */
-    .harga-card-header {
-        margin-bottom: 2rem;
-        text-align: center;
-    }
-
-    .harga-card-header h3 {
-        font-size: 1.8rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: var(--text-dark);
-    }
-
-    .harga-price {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-        position: relative;
-    }
-
-    .price {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: var(--primary-blue);
-        background: linear-gradient(90deg, var(--primary-blue), var(--muted-green));
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-        animation: gradient-shift 6s ease infinite;
-        background-size: 200% 100%;
-    }
-
-    .period {
-        font-size: 1rem;
-        color: var(--text-muted);
-    }
-    
-    .discount-badge {
-        position: absolute;
-        bottom: -25px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: linear-gradient(90deg, #ff6b6b, #ff9e7d);
-        color: white;
-        font-size: 0.8rem;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-weight: 600;
-        white-space: nowrap;
-        box-shadow: 0 3px 10px rgba(255, 107, 107, 0.3);
-        animation: pulse 2s infinite;
-    }
-
-    /* Card Body */
-    .harga-card-body {
-        flex-grow: 1;
-        margin-bottom: 2rem;
-    }
-
-    .harga-features {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .feature-item {
-        display: flex;
-        align-items: flex-start;
-        margin-bottom: 1rem;
-        transition: transform 0.3s ease;
-    }
-
-    .feature-item:hover {
-        transform: translateX(5px);
-    }
-
-    .feature-icon {
-        margin-right: 1rem;
-        color: var(--primary-blue);
-        font-size: 1rem;
-        padding-top: 0.2rem;
-    }
-    
-    .feature-icon .fa-plus {
-        color: var(--primary-blue);
-    }
-
-    .feature-item.disabled .feature-icon {
-        color: var(--text-muted);
-    }
-
-    .feature-text {
-        color: var(--text-dark);
-        font-size: 1rem;
-        line-height: 1.5;
-    }
-
-    .feature-item.disabled .feature-text {
-        color: var(--text-muted);
-        text-decoration: line-through;
-        opacity: 0.7;
-    }
-
-    /* Card Footer */
-    .harga-card-footer {
-        text-align: center;
-    }
-
-    .btn-harga {
-        display: inline-block;
-        padding: 0.75rem 2rem;
-        border-radius: 50px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s var(--bounce);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .btn-harga::before {
-        content: '';
-        position: absolute;
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
-        background: linear-gradient(90deg, var(--primary-blue), var(--muted-green), var(--primary-blue));
-        background-size: 200% 200%;
-        border-radius: 50px;
-        z-index: -1;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .btn-primary {
-        background: var(--primary-blue);
-        color: var(--white);
-        box-shadow: 0 5px 15px rgba(var(--primary-blue-rgb), 0.3);
-    }
-
-    .btn-primary:hover {
-        background: var(--primary-blue-dark);
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(var(--primary-blue-rgb), 0.4);
-    }
-    
-    .btn-primary:hover::before {
-        opacity: 1;
-        animation: gradient-shift 3s ease infinite;
-    }
-
-    .btn-outline {
-        background: transparent;
-        color: var(--primary-blue);
-        border: 2px solid var(--primary-blue);
-    }
-
-    .btn-outline:hover {
-        background: rgba(var(--primary-blue-rgb), 0.1);
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(var(--primary-blue-rgb), 0.2);
-    }
-    
-    .btn-outline:hover::before {
-        opacity: 0.2;
-        animation: gradient-shift 3s ease infinite;
-    }
-
-    /* Comparison Table */
-    .harga-comparison {
-        margin-bottom: 4rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    .comparison-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 2rem;
-        color: var(--text-dark);
-        position: relative;
-    }
-    
-    .comparison-title::after {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80px;
-        height: 3px;
-        background: linear-gradient(90deg, var(--primary-blue), var(--muted-green));
-        border-radius: 3px;
-    }
-
-    .comparison-table-wrapper {
-        overflow-x: auto;
-        border-radius: 20px;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        transition: transform 0.3s var(--bounce), box-shadow 0.3s ease;
-        position: relative;
-    }
-    
-    .comparison-table-wrapper::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 20px;
-        padding: 2px;
-        background: linear-gradient(45deg, transparent, rgba(var(--primary-blue-rgb), 0.3), transparent);
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        opacity: 0;
-        transition: opacity 0.5s ease;
-    }
-    
-    .comparison-table-wrapper:hover::before {
-        opacity: 1;
-        animation: gradient-shift 3s infinite alternate;
-    }
-    
-    .comparison-table-wrapper:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
-    }
-    
-    .comparison-table-wrapper::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, rgba(var(--primary-blue-rgb), 0.05) 0%, transparent 80%);
-        border-radius: 20px;
-        z-index: -1;
-    }
-
-    .comparison-table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 800px;
-        position: relative;
-        z-index: 1;
-        background: white;
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-    
-    .comparison-table::after {
-        content: '';
-        position: absolute;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(var(--primary-blue-rgb), 0.03) 0%, transparent 70%);
-        top: -50%;
-        left: -50%;
-        z-index: -1;
-        opacity: 0;
-        transition: opacity 0.5s ease;
-        pointer-events: none;
-    }
-    
-    .comparison-table-wrapper:hover .comparison-table::after {
-        opacity: 1;
-        animation: pulse-move 15s infinite alternate;
-    }
-
-    .comparison-table th,
-    .comparison-table td {
-        padding: 1.2rem 1.5rem;
-        text-align: center;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
-    }
-
-    .comparison-table th {
-        background: rgba(var(--primary-blue-rgb), 0.08);
-        color: var(--text-dark);
-        font-weight: 700;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
-    }
-    
-    .plan-header {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .plan-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        transform: translateY(-4px);
-        transition: transform 0.3s ease;
-    }
-    
-    .plan-header:hover::before {
-        transform: translateY(0);
-    }
-    
-    .gratis-header::before {
-        background: linear-gradient(90deg, #64748b, #94a3b8);
-    }
-    
-    .premium-header::before {
-        background: linear-gradient(90deg, #0ea5e9, #38bdf8);
-    }
-    
-    .plus-header::before {
-        background: linear-gradient(90deg, var(--primary-blue), #818cf8);
-    }
-    
-    .plan-header:hover {
-        background: rgba(var(--primary-blue-rgb), 0.12);
-    }
-
-    .comparison-table th:first-child,
-    .comparison-table td:first-child {
-        text-align: left;
-        padding-left: 2rem;
-        position: sticky;
-        left: 0;
-        background: rgba(255, 255, 255, 0.95);
-        z-index: 5;
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
-        transition: all 0.3s ease;
-    }
-    
-    .comparison-table tbody tr:hover td:first-child {
-        color: var(--primary-blue);
-        padding-left: 2.5rem;
-        background: linear-gradient(to right, rgba(var(--primary-blue-rgb), 0.05), rgba(255, 255, 255, 0.95));
-    }
-    
-    .comparison-table td:first-child::before {
-        content: '';
-        position: absolute;
-        left: 0.8rem;
-        top: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: var(--primary-blue);
-        transform: translateY(-50%);
-        opacity: 0;
-        transition: all 0.3s ease;
-    }
-    
-    .comparison-table tbody tr:hover td:first-child::before {
-        width: 6px;
-        height: 6px;
-        opacity: 1;
-    }
-
-    .comparison-table tr {
-        position: relative;
-        transition: all 0.3s ease;
-    }
-    
-    .comparison-table tr:hover {
-        background: rgba(var(--primary-blue-rgb), 0.02);
-        transform: translateX(5px);
-    }
-    
-    .comparison-table tbody tr::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 3px;
-        background: linear-gradient(to bottom, transparent, var(--primary-blue), transparent);
-        transform: scaleY(0);
-        transition: transform 0.3s ease;
-        opacity: 0;
-    }
-    
-    .comparison-table tbody tr:hover::before {
-        transform: scaleY(1);
-        opacity: 1;
-    }
-    
-    .comparison-table tr:hover td:first-child {
-        color: var(--primary-blue);
-        background: rgba(255, 255, 255, 0.98);
-    }
-
-    .category-row td {
-        background: rgba(var(--primary-blue-rgb), 0.1);
-        font-weight: 700;
-        color: var(--primary-blue-dark);
-        padding: 0.75rem 1rem;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        font-size: 0.9rem;
-        border-top: 1px solid rgba(var(--primary-blue-rgb), 0.1);
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-    
-    .category-row:hover td {
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2));
-        color: var(--primary-blue);
-        transform: translateX(5px) translateY(-2px);
-        box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2);
-        letter-spacing: 0.8px;
-    }
-    
-    .category-row td::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, rgba(var(--primary-blue-rgb), 0.1), transparent);
-        transform: translateX(-100%);
-        transition: transform 0.5s ease;
-    }
-    
-    .category-row:hover td::before {
-        transform: translateX(0);
-        animation: shine 2s infinite;
-        background: linear-gradient(90deg, transparent, rgba(var(--primary-blue-rgb), 0.2), transparent);
-        width: 150%;
-    }
-
-    .comparison-table td {
-        position: relative;
-        transition: all 0.3s ease;
-    }
-    
-    .comparison-table tr:hover td {
-        background-color: rgba(var(--primary-blue-rgb), 0.05);
-    }
-    
-    .comparison-table .fa-check {
-        color: var(--muted-green);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        background: rgba(var(--muted-green-rgb), 0.1);
-        border-radius: 50%;
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        transform: scale(0.9);
-        position: relative;
-        z-index: 1;
-        box-shadow: 0 0 5px rgba(var(--muted-green-rgb), 0.2);
-        font-size: 1.1rem;
-    }
-    
-    .comparison-table tr:hover .fa-check {
-        transform: scale(1.2);
-        background: rgba(var(--muted-green-rgb), 0.2);
-        box-shadow: 0 0 20px rgba(var(--muted-green-rgb), 0.4);
-        text-shadow: 0 0 15px rgba(var(--muted-green-rgb), 0.7);
-        animation: check-bounce 0.8s ease;
-    }
-    
-    .comparison-table .fa-check::after {
-        content: '';
-        position: absolute;
-        width: 24px;
-        height: 24px;
-        background: rgba(var(--muted-green-rgb), 0.15);
-        border-radius: 50%;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0);
-        z-index: -1;
-        transition: transform 0.3s ease;
-    }
-    
-    .comparison-table tr:hover .fa-check::after {
-        transform: translate(-50%, -50%) scale(1);
-        animation: pulse 1.5s infinite;
-    }
-
-    .comparison-table .fa-plus {
-        color: var(--primary-blue);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        background: rgba(var(--primary-blue-rgb), 0.1);
-        border-radius: 50%;
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        transform: scale(0.9);
-        position: relative;
-        z-index: 1;
-        box-shadow: 0 0 5px rgba(var(--primary-blue-rgb), 0.2);
-        font-size: 1.1rem;
-    }
-    
-    .comparison-table tr:hover .fa-plus {
-        transform: scale(1.2) rotate(135deg);
-        background: rgba(var(--primary-blue-rgb), 0.2);
-        box-shadow: 0 0 20px rgba(var(--primary-blue-rgb), 0.5);
-        text-shadow: 0 0 15px rgba(var(--primary-blue-rgb), 0.7);
-        animation: plus-rotate 0.8s ease;
-    }
-    
-    .comparison-table .fa-plus::after {
-        content: '';
-        position: absolute;
-        width: 24px;
-        height: 24px;
-        background: rgba(var(--primary-blue-rgb), 0.15);
-        border-radius: 50%;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0);
-        z-index: -1;
-        transition: transform 0.3s ease;
-    }
-    
-    .comparison-table tr:hover .fa-plus::after {
-        transform: translate(-50%, -50%) scale(1);
-        animation: pulse-glow 1.5s infinite;
-    }
-
-    .comparison-table .fa-times {
-        color: var(--text-muted);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        background: rgba(var(--muted-red-rgb), 0.05);
-        border-radius: 50%;
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        transform: scale(0.9);
-        position: relative;
-        z-index: 1;
-        box-shadow: 0 0 5px rgba(var(--muted-red-rgb), 0.1);
-        font-size: 1.1rem;
-    }
-    
-    .comparison-table tr:hover .fa-times {
-        transform: scale(1.2);
-        background: rgba(var(--muted-red-rgb), 0.1);
-        box-shadow: 0 0 20px rgba(var(--muted-red-rgb), 0.3);
-        text-shadow: 0 0 15px rgba(var(--muted-red-rgb), 0.5);
-        animation: times-shake 0.8s ease;
-    }
-    
-    .comparison-table .fa-times::after {
-        content: '';
-        position: absolute;
-        width: 24px;
-        height: 24px;
-        background: rgba(var(--muted-red-rgb), 0.15);
-        border-radius: 50%;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0);
-        z-index: -1;
-        transition: transform 0.3s ease;
-    }
-    
-    .comparison-table tr:hover .fa-times::after {
-        transform: translate(-50%, -50%) scale(1);
-    }
-
-    /* FAQ Section */
-    .harga-faq {
-        margin-bottom: 4rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    .faq-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 2rem;
-        color: var(--text-dark);
-    }
-
-    .faq-container {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .faq-item {
-        background: rgba(255, 255, 255, 0.7);
-        border-radius: 15px;
-        margin-bottom: 1rem;
-        overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transition: all 0.3s ease;
-    }
-
-    .faq-item:hover {
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        border-color: rgba(var(--primary-blue-rgb), 0.2);
-    }
-
-    .faq-question {
-        padding: 1.5rem;
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .faq-question h4 {
-        margin: 0;
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text-dark);
-    }
-
-    .faq-icon {
-        color: var(--primary-blue);
-        transition: transform 0.3s ease;
-    }
-
-    .faq-item.active .faq-icon {
-        transform: rotate(180deg);
-    }
-
-    .faq-answer {
-        padding: 0 1.5rem;
-        max-height: 0;
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-
-    .faq-item.active .faq-answer {
-        padding: 0 1.5rem 1.5rem;
-        max-height: 500px;
-    }
-
-    .faq-answer p {
-        margin: 0;
-        color: var(--text-muted);
-        line-height: 1.6;
-    }
-
-    /* CTA Section */
-    .harga-cta {
-        background: rgba(255, 255, 255, 0.8);
-        border-radius: 20px;
-        padding: 3rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 2rem;
-        position: relative;
-        z-index: 1;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        overflow: hidden;
-    }
-
-    .harga-cta::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, rgba(var(--primary-blue-rgb), 0.05) 0%, transparent 100%);
-        z-index: -1;
-    }
-
-    .cta-content {
-        flex: 1;
-        min-width: 300px;
-    }
-
-    .cta-content h3 {
-        font-size: 1.8rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: var(--text-dark);
-    }
-
-    .cta-content p {
-        font-size: 1.1rem;
-        color: var(--text-muted);
-        margin: 0;
-    }
-
-    .cta-buttons {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-
-    /* Responsive Styles */
-    @media (max-width: 992px) {
-        .harga-container {
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        }
-
-        .harga-card.featured {
-            transform: scale(1);
-        }
-
-        .harga-card.featured:hover {
-            transform: translateY(-10px);
-        }
-
-        .harga-cta {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .cta-buttons {
-            justify-content: center;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .harga-section {
-            padding: 80px 0;
-        }
-
-        .section-title {
-            font-size: 2rem;
-        }
-
-        .section-subtitle {
-            font-size: 1rem;
-        }
-
-        .harga-card {
-            padding: 2rem 1.5rem;
-        }
-
-        .harga-card-header h3 {
-            font-size: 1.5rem;
-        }
-
-        .price {
-            font-size: 2rem;
-        }
-
-        .comparison-title,
-        .faq-title,
-        .cta-content h3 {
-            font-size: 1.5rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .tab-btn {
-            padding: 0.75rem 1.5rem;
-            font-size: 0.9rem;
-        }
-
-        .harga-cta {
-            padding: 2rem 1.5rem;
-        }
-    }
-
-    /* Animations */
-    @keyframes float {
-        0% {
-            transform: translateY(0);
-        }
-        50% {
-            transform: translateY(-20px);
-        }
-        100% {
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes pulse {
-        0% {
-            transform: scale(1);
-            opacity: 0.03;
-        }
-        50% {
-            transform: scale(1.2);
-            opacity: 0.05;
-        }
-        100% {
-            transform: scale(1);
-            opacity: 0.03;
-        }
-    }
-
-    @keyframes gradient-shift {
-        0% {
-            background-position: 0% 50%;
-        }
-        50% {
-            background-position: 100% 50%;
-        }
-        100% {
-            background-position: 0% 50%;
-        }
-    }
-    
-    @keyframes check-bounce {
-        0% {
-            transform: scale(0.9);
-        }
-        40% {
-            transform: scale(1.4);
-        }
-        60% {
-            transform: scale(0.9);
-        }
-        80% {
-            transform: scale(1.3);
-        }
-        100% {
-            transform: scale(1.2);
-        }
-    }
-    
-    @keyframes plus-rotate {
-        0% {
-            transform: scale(0.9) rotate(0deg);
-        }
-        40% {
-            transform: scale(1.4) rotate(90deg);
-        }
-        60% {
-            transform: scale(1.1) rotate(180deg);
-        }
-        80% {
-            transform: scale(1.3) rotate(135deg);
-        }
-        100% {
-            transform: scale(1.2) rotate(135deg);
-        }
-    }
-    
-    @keyframes times-shake {
-        0% {
-            transform: scale(0.9) rotate(0deg);
-        }
-        20% {
-            transform: scale(1.3) rotate(-15deg);
-        }
-        40% {
-            transform: scale(1.3) rotate(15deg);
-        }
-        60% {
-            transform: scale(1.3) rotate(-10deg);
-        }
-        80% {
-            transform: scale(1.3) rotate(5deg);
-        }
-        100% {
-            transform: scale(1.2) rotate(0deg);
-        }
-    }
-
-    @keyframes pulse-glow {
-        0% {
-            opacity: 0.1;
-            filter: blur(10px);
-            transform: scale(0.9);
-        }
-        50% {
-            opacity: 0.3;
-            filter: blur(15px);
-            transform: scale(1.2);
-        }
-        100% {
-            opacity: 0.1;
-            filter: blur(10px);
-            transform: scale(0.9);
-        }
-    }
-</style>
-
-<script>
-    // Tab switching functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        const tabSlider = document.querySelector('.tab-slider');
-        const premiumPrice = document.getElementById('premium-price');
-        
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Remove active class from all buttons
-                tabBtns.forEach(b => b.classList.remove('active'));
-                
-                // Add active class to clicked button
-                this.classList.add('active');
-                
-                // Move slider
-                if (this.dataset.tab === 'bulanan') {
-                    tabSlider.style.transform = 'translateX(0)';
-                    if (premiumPrice) {
-                        premiumPrice.innerHTML = '<span class="price">Rp 99.000</span><span class="period">/bulan</span>';
-                    }
-                } else {
-                    tabSlider.style.transform = 'translateX(100%)';
-                    if (premiumPrice) {
-                        premiumPrice.innerHTML = '<span class="price">Rp 948.000</span><span class="period">/tahun</span>';
-                    }
-                }
+    </section>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Inisialisasi AOS
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                once: true,
+                offset: 100
             });
-        });
-        
-        // FAQ accordion functionality
-        const faqItems = document.querySelectorAll('.faq-item');
-        
-        faqItems.forEach(item => {
-            const question = item.querySelector('.faq-question');
             
-            question.addEventListener('click', function() {
-                // Toggle active class on clicked item
-                item.classList.toggle('active');
-                
-                // Close other items
-                faqItems.forEach(otherItem => {
-                    if (otherItem !== item) {
-                        otherItem.classList.remove('active');
+            // Tab switching functionality
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabSlider = document.querySelector('.tab-slider');
+            const premiumPrice = document.getElementById('premium-price');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Move slider
+                    if (this.dataset.tab === 'bulanan') {
+                        tabSlider.style.transform = 'translateX(0)';
+                        if (premiumPrice) {
+                            premiumPrice.innerHTML = '<span class="price">Rp 99.000</span><span class="period">/bulan</span>';
+                        }
+                    } else {
+                        tabSlider.style.transform = 'translateX(100%)';
+                        if (premiumPrice) {
+                            premiumPrice.innerHTML = '<span class="price">Rp 948.000</span><span class="period">/tahun</span>';
+                        }
                     }
                 });
             });
+            
+            // FAQ accordion functionality
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                
+                question.addEventListener('click', function() {
+                    // Toggle active class on clicked item
+                    item.classList.toggle('active');
+                    
+                    // Close other items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                });
+            });
         });
-    });
-</script>
+    </script>
+</body>
+</html>
