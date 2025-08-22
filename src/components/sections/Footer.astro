@@ -2,26 +2,41 @@
 ---
 
 <footer class="footer">
+	<!-- Animated background elements -->
+	<div class="footer-bg-elements">
+		<div class="footer-bg-element footer-bg-element-1"></div>
+		<div class="footer-bg-element footer-bg-element-2"></div>
+		<div class="footer-bg-element footer-bg-element-3"></div>
+		<div class="footer-bg-element footer-bg-element-4"></div>
+	</div>
+
 	<div class="container">
 		<div class="footer-content">
 			<div class="footer-brand" data-aos="fade-right" data-aos-delay="200">
 				<div class="footer-logo">
-					<img src="/logo.svg" alt="KomplekKita Logo" width="40" height="40">
+					<div class="logo-container">
+						<img src="/logo.svg" alt="KomplekKita Logo" width="40" height="40">
+						<div class="logo-glow"></div>
+					</div>
 					<h3>KomplekKita</h3>
 				</div>
 				<p>Manajemen komplek perumahan modern dengan transparansi dan efisiensi</p>
 				<div class="footer-social">
 					<a href="#" class="social-link" aria-label="Facebook">
 						<i class="fab fa-facebook"></i>
+						<span class="social-hover-effect"></span>
 					</a>
 					<a href="#" class="social-link" aria-label="Twitter">
 						<i class="fab fa-twitter"></i>
+						<span class="social-hover-effect"></span>
 					</a>
 					<a href="#" class="social-link" aria-label="Instagram">
 						<i class="fab fa-instagram"></i>
+						<span class="social-hover-effect"></span>
 					</a>
 					<a href="#" class="social-link" aria-label="LinkedIn">
 						<i class="fab fa-linkedin"></i>
+						<span class="social-hover-effect"></span>
 					</a>
 				</div>
 			</div>
@@ -29,73 +44,138 @@
 			<div class="footer-sections" data-aos="fade-up" data-aos-delay="400">
 				<div class="footer-section">
 					<h4>Produk</h4>
+					<div class="section-underline"></div>
 					<ul>
-						<li><a href="#background">Latar Belakang</a></li>
-						<li><a href="#problems">Masalah</a></li>
-						<li><a href="#solutions">Solusi</a></li>
-						<li><a href="#advantages">Keunggulan</a></li>
+						<li><a href="#background"><span class="link-icon"></span>Latar Belakang</a></li>
+						<li><a href="#problems"><span class="link-icon"></span>Masalah</a></li>
+						<li><a href="#solutions"><span class="link-icon"></span>Solusi</a></li>
+						<li><a href="#advantages"><span class="link-icon"></span>Keunggulan</a></li>
 					</ul>
 				</div>
 
 				<div class="footer-section">
 					<h4>Fitur</h4>
+					<div class="section-underline"></div>
 					<ul>
-						<li><a href="#demo">Demo Aplikasi</a></li>
-						<li><a href="#contact">Kontak</a></li>
-						<li><a href="#">Pricing</a></li>
-						<li><a href="#">API</a></li>
+						<li><a href="#demo"><span class="link-icon"></span>Demo Aplikasi</a></li>
+						<li><a href="#contact"><span class="link-icon"></span>Kontak</a></li>
+						<li><a href="#"><span class="link-icon"></span>Pricing</a></li>
+						<li><a href="#"><span class="link-icon"></span>API</a></li>
 					</ul>
 				</div>
 
 				<div class="footer-section">
 					<h4>Perusahaan</h4>
+					<div class="section-underline"></div>
 					<ul>
-						<li><a href="#">Tentang Kami</a></li>
-						<li><a href="#">Tim</a></li>
-						<li><a href="#">Karir</a></li>
-						<li><a href="#">Blog</a></li>
+						<li><a href="#"><span class="link-icon"></span>Tentang Kami</a></li>
+						<li><a href="#"><span class="link-icon"></span>Tim</a></li>
+						<li><a href="#"><span class="link-icon"></span>Karir</a></li>
+						<li><a href="#"><span class="link-icon"></span>Blog</a></li>
 					</ul>
 				</div>
 
 				<div class="footer-section">
 					<h4>Support</h4>
+					<div class="section-underline"></div>
 					<ul>
-						<li><a href="#">Dokumentasi</a></li>
-						<li><a href="#">FAQ</a></li>
-						<li><a href="#">Status</a></li>
-						<li><a href="#contact">Kontak</a></li>
+						<li><a href="#"><span class="link-icon"></span>Dokumentasi</a></li>
+						<li><a href="#"><span class="link-icon"></span>FAQ</a></li>
+						<li><a href="#"><span class="link-icon"></span>Status</a></li>
+						<li><a href="#contact"><span class="link-icon"></span>Kontak</a></li>
 					</ul>
 				</div>
 			</div>
 		</div>
 
-		<div class="footer-divider"></div>
+		<div class="footer-divider">
+			<div class="divider-glow"></div>
+		</div>
 
 		<div class="footer-bottom">
 			<div class="footer-bottom-content">
-				<p>&copy; 2024 KomplekKita. All rights reserved.</p>
+				<p class="copyright">&copy; 2024 KomplekKita. All rights reserved.</p>
 				<div class="footer-legal">
-					<a href="#">Privacy Policy</a>
-					<a href="#">Terms of Service</a>
-					<a href="#">Cookie Policy</a>
+					<a href="#" class="legal-link">Privacy Policy</a>
+					<a href="#" class="legal-link">Terms of Service</a>
+					<a href="#" class="legal-link">Cookie Policy</a>
 				</div>
 			</div>
 		</div>
 
 		<div class="footer-decoration">
 			<div class="footer-wave"></div>
+			<div class="footer-wave footer-wave-2"></div>
 		</div>
 	</div>
 </footer>
 
 <style>
-	/* Footer */
+	/* Enhanced Footer */
 	.footer {
 		background: linear-gradient(135deg, var(--text-dark) 0%, var(--dark-blue) 100%);
 		color: var(--white);
-		padding: 4rem 0 2rem;
+		padding: 6rem 0 3rem;
 		position: relative;
 		overflow: hidden;
+		isolation: isolate;
+	}
+	
+	/* Animated background elements */
+	.footer-bg-elements {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+		z-index: 0;
+		overflow: hidden;
+	}
+	
+	.footer-bg-element {
+		position: absolute;
+		border-radius: 50%;
+		opacity: 0.05;
+		filter: blur(40px);
+	}
+	
+	.footer-bg-element-1 {
+		width: 400px;
+		height: 400px;
+		top: -150px;
+		right: 10%;
+		background: radial-gradient(circle, var(--primary-blue) 0%, transparent 70%);
+		animation: pulse-rotate 30s ease-in-out infinite alternate;
+	}
+	
+	.footer-bg-element-2 {
+		width: 300px;
+		height: 300px;
+		bottom: -100px;
+		left: 5%;
+		background: radial-gradient(circle, var(--muted-green) 0%, transparent 70%);
+		animation: pulse-rotate 25s ease-in-out 5s infinite alternate-reverse;
+	}
+	
+	.footer-bg-element-3 {
+		width: 200px;
+		height: 200px;
+		top: 30%;
+		left: 20%;
+		background: conic-gradient(from 0deg, var(--primary-blue), var(--muted-green), var(--muted-orange), var(--primary-blue));
+		animation: float-rotate 40s linear infinite;
+		opacity: 0.03;
+	}
+	
+	.footer-bg-element-4 {
+		width: 250px;
+		height: 250px;
+		top: 40%;
+		right: 15%;
+		background: conic-gradient(from 180deg, var(--muted-orange), var(--primary-blue), var(--muted-green), var(--muted-orange));
+		animation: float-rotate 35s linear infinite reverse;
+		opacity: 0.03;
 	}
 
 	.footer-content {
@@ -105,6 +185,8 @@
 		margin-bottom: 3rem;
 		position: relative;
 		z-index: 1;
+		backdrop-filter: blur(5px);
+		-webkit-backdrop-filter: blur(5px);
 	}
 
 	.footer-brand {
@@ -118,11 +200,41 @@
 		margin-bottom: 1.5rem;
 	}
 
+	.logo-container {
+		position: relative;
+		width: 40px;
+		height: 40px;
+	}
+
+	.logo-glow {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: radial-gradient(circle, rgba(135, 206, 235, 0.8) 0%, transparent 70%);
+		filter: blur(8px);
+		opacity: 0;
+		transition: opacity 0.5s ease;
+		animation: pulse-glow 3s ease-in-out infinite alternate;
+	}
+
+	.footer-logo:hover .logo-glow {
+		opacity: 0.7;
+	}
+
 	.footer-logo h3 {
 		color: var(--primary-blue-light);
 		font-size: 1.75rem;
 		font-weight: 700;
 		margin: 0;
+		text-shadow: 0 0 10px rgba(135, 206, 235, 0.3);
+		transition: all 0.3s ease;
+	}
+
+	.footer-logo:hover h3 {
+		color: var(--white);
+		text-shadow: 0 0 15px rgba(135, 206, 235, 0.6);
 	}
 
 	.footer-brand p {
@@ -146,14 +258,47 @@
 		justify-content: center;
 		color: var(--white);
 		text-decoration: none;
-		transition: all var(--transition-normal) ease;
+		transition: all 0.4s var(--bounce);
 		border: 1px solid rgba(255, 255, 255, 0.2);
+		position: relative;
+		overflow: hidden;
+		z-index: 1;
+	}
+
+	.social-hover-effect {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+		opacity: 0;
+		transition: opacity 0.4s ease;
+		z-index: -1;
+		transform: scale(0.5);
+		border-radius: 50%;
 	}
 
 	.social-link:hover {
-		background: var(--primary-blue);
-		transform: translateY(-3px);
-		box-shadow: 0 10px 25px rgba(135, 206, 235, 0.3);
+		transform: translateY(-5px) scale(1.1);
+		box-shadow: 0 15px 30px rgba(135, 206, 235, 0.4);
+		color: var(--white);
+		border-color: var(--primary-blue-light);
+	}
+
+	.social-link:hover .social-hover-effect {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	.social-link i {
+		transition: all 0.3s ease;
+		position: relative;
+		z-index: 2;
+	}
+
+	.social-link:hover i {
+		transform: scale(1.2);
 	}
 
 	.footer-sections {
@@ -164,21 +309,34 @@
 
 	.footer-section h4 {
 		color: var(--primary-blue-light);
-		font-size: 1.1rem;
+		font-size: 1.2rem;
 		font-weight: 600;
 		margin-bottom: 1.5rem;
 		position: relative;
+		display: inline-block;
+		transition: all 0.3s ease;
 	}
 
-	.footer-section h4::after {
-		content: '';
-		position: absolute;
-		bottom: -8px;
-		left: 0;
-		width: 30px;
-		height: 2px;
-		background: var(--primary-blue);
-		border-radius: 1px;
+	.section-underline {
+		width: 40px;
+		height: 3px;
+		background: linear-gradient(90deg, var(--primary-blue), var(--primary-blue-light));
+		border-radius: 3px;
+		margin-bottom: 1.2rem;
+		position: relative;
+		transition: all 0.3s ease;
+	}
+
+	.footer-section:hover .section-underline {
+		width: 60px;
+		background: linear-gradient(90deg, var(--primary-blue), var(--muted-green), var(--primary-blue-light));
+		background-size: 200% 100%;
+		animation: gradient-shift 3s ease infinite;
+	}
+
+	.footer-section:hover h4 {
+		color: var(--white);
+		text-shadow: 0 0 10px rgba(135, 206, 235, 0.4);
 	}
 
 	.footer-section ul {
@@ -194,33 +352,55 @@
 	.footer-section a {
 		color: var(--gray-300);
 		text-decoration: none;
-		transition: all var(--transition-normal) ease;
+		transition: all 0.3s var(--bounce);
 		position: relative;
 		padding-left: 0;
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
 	}
 
-	.footer-section a::before {
-		content: '→';
-		position: absolute;
-		left: -20px;
+	.link-icon {
+		position: relative;
+		width: 0;
+		height: 0;
+		border-style: solid;
+		border-width: 4px 0 4px 6px;
+		border-color: transparent transparent transparent var(--primary-blue);
 		opacity: 0;
-		transition: all var(--transition-normal) ease;
-		color: var(--primary-blue);
+		transform: translateX(-10px);
+		transition: all 0.3s var(--bounce);
 	}
 
 	.footer-section a:hover {
-		color: var(--primary-blue-light);
-		padding-left: 20px;
+		color: var(--white);
+		padding-left: 10px;
+		text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
 	}
 
-	.footer-section a:hover::before {
+	.footer-section a:hover .link-icon {
 		opacity: 1;
+		transform: translateX(0);
 	}
 
 	.footer-divider {
 		height: 1px;
 		background: linear-gradient(90deg, transparent, var(--gray-600), transparent);
 		margin: 2rem 0;
+		position: relative;
+	}
+
+	.divider-glow {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 30%;
+		height: 1px;
+		background: linear-gradient(90deg, transparent, var(--primary-blue-light), transparent);
+		filter: blur(1px);
+		opacity: 0.7;
+		animation: divider-pulse 3s ease-in-out infinite alternate;
 	}
 
 	.footer-bottom {
@@ -229,6 +409,15 @@
 		color: var(--gray-400);
 		position: relative;
 		z-index: 1;
+	}
+
+	.copyright {
+		transition: all 0.3s ease;
+	}
+
+	.copyright:hover {
+		color: var(--white);
+		text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
 	}
 
 	.footer-bottom-content {
@@ -245,18 +434,36 @@
 		flex-wrap: wrap;
 	}
 
-	.footer-legal a {
+	.legal-link {
 		color: var(--gray-400);
 		text-decoration: none;
-		transition: color var(--transition-normal) ease;
+		transition: all 0.3s ease;
 		font-size: 0.875rem;
+		position: relative;
+		padding: 3px 0;
 	}
 
-	.footer-legal a:hover {
-		color: var(--primary-blue-light);
+	.legal-link::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 0;
+		height: 1px;
+		background: linear-gradient(90deg, var(--primary-blue-light), var(--white));
+		transition: width 0.3s ease;
 	}
 
-	/* Footer decoration */
+	.legal-link:hover {
+		color: var(--white);
+		text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+	}
+
+	.legal-link:hover::after {
+		width: 100%;
+	}
+
+	/* Enhanced footer decoration */
 	.footer-decoration {
 		position: absolute;
 		top: 0;
@@ -276,7 +483,16 @@
 		background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,8.12,149.2,8.12c56.27,0,113.84-12.21,168.54-25.73C348.36,20.11,421.77,7,497.66,7S643.67,20.11,723.2,28.54C777.92,41.2,835.56,54.41,891.8,54.41c45.66,0,101.41-13.89,149.2-28.21V0Z" fill="%23ffffff" opacity="0.05"/></svg>');
 		background-size: cover;
 		background-repeat: no-repeat;
+		opacity: 0.15;
+		animation: wave-animation 15s linear infinite alternate;
+	}
+
+	.footer-wave-2 {
+		top: 20px;
 		opacity: 0.1;
+		height: 80px;
+		animation: wave-animation 20s linear infinite alternate-reverse;
+		filter: blur(2px);
 	}
 
 	/* Responsive footer */
@@ -298,6 +514,40 @@
 		.footer-legal {
 			justify-content: center;
 		}
+	}
+
+	/* New animations */
+	@keyframes pulse-rotate {
+		0% { transform: scale(1) rotate(0deg); opacity: 0.05; }
+		50% { transform: scale(1.2) rotate(180deg); opacity: 0.08; }
+		100% { transform: scale(1) rotate(360deg); opacity: 0.05; }
+	}
+	
+	@keyframes float-rotate {
+		0% { transform: translateY(0) rotate(0deg); }
+		100% { transform: translateY(-20px) rotate(360deg); }
+	}
+	
+	@keyframes pulse-glow {
+		0% { opacity: 0.3; transform: scale(1); }
+		100% { opacity: 0.7; transform: scale(1.15); }
+	}
+	
+	@keyframes gradient-shift {
+		0% { background-position: 0% 50%; }
+		50% { background-position: 100% 50%; }
+		100% { background-position: 0% 50%; }
+	}
+	
+	@keyframes divider-pulse {
+		0% { opacity: 0.5; width: 20%; }
+		100% { opacity: 0.8; width: 40%; }
+	}
+	
+	@keyframes wave-animation {
+		0% { transform: translateX(0) translateY(0); }
+		50% { transform: translateX(-1%) translateY(5px); }
+		100% { transform: translateX(1%) translateY(-5px); }
 	}
 </style>
 

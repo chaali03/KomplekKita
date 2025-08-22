@@ -7,6 +7,14 @@
         <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
             Punya pertanyaan atau ingin tahu lebih lanjut? Jangan ragu untuk menghubungi tim kami.
         </p>
+        
+        <!-- Animated background elements -->
+        <div class="kontak-bg-elements">
+            <div class="bg-element bg-element-1"></div>
+            <div class="bg-element bg-element-2"></div>
+            <div class="bg-element bg-element-3"></div>
+            <div class="bg-element bg-element-4"></div>
+        </div>
 
         <div class="kontak-container" data-aos="fade-up" data-aos-delay="200">
             <!-- Bagian Informasi Kontak dengan Desain Baru -->
@@ -260,31 +268,89 @@
         position: relative;
         overflow: hidden;
         background: var(--surface);
+        isolation: isolate;
     }
     
-    /* Decorative elements */
+    /* Enhanced decorative elements */
     .kontak-section::before,
     .kontak-section::after {
         content: '';
         position: absolute;
-        width: 300px;
-        height: 300px;
+        width: 400px;
+        height: 400px;
         border-radius: 50%;
-        opacity: 0.1;
-        filter: blur(50px);
+        opacity: 0.08;
+        filter: blur(80px);
         z-index: 0;
     }
     
     .kontak-section::before {
-        top: -100px;
-        left: -100px;
-        animation: pulse 15s ease-in-out infinite alternate;
+        top: -150px;
+        left: -150px;
+        background: radial-gradient(circle, var(--primary-blue) 0%, transparent 70%);
+        animation: pulse-rotate 20s ease-in-out infinite alternate;
     }
     
     .kontak-section::after {
-        bottom: -100px;
-        right: -100px;
-        animation: pulse 15s ease-in-out 5s infinite alternate;
+        bottom: -150px;
+        right: -150px;
+        background: radial-gradient(circle, var(--muted-green) 0%, transparent 70%);
+        animation: pulse-rotate 25s ease-in-out 5s infinite alternate-reverse;
+    }
+    
+    /* Animated background elements */
+    .kontak-bg-elements {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
+    }
+    
+    .bg-element {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.05;
+        filter: blur(40px);
+    }
+    
+    .bg-element-1 {
+        width: 300px;
+        height: 300px;
+        top: 20%;
+        left: -100px;
+        background: conic-gradient(from 0deg, var(--primary-blue), var(--muted-green), var(--muted-orange), var(--primary-blue));
+        animation: float-rotate 30s linear infinite;
+    }
+    
+    .bg-element-2 {
+        width: 250px;
+        height: 250px;
+        bottom: 10%;
+        right: -50px;
+        background: conic-gradient(from 180deg, var(--muted-orange), var(--primary-blue), var(--muted-green), var(--muted-orange));
+        animation: float-rotate 25s linear infinite reverse;
+    }
+    
+    .bg-element-3 {
+        width: 150px;
+        height: 150px;
+        top: 60%;
+        left: 30%;
+        background: radial-gradient(circle, var(--muted-green) 0%, transparent 70%);
+        animation: pulse-move 20s ease-in-out infinite alternate;
+    }
+    
+    .bg-element-4 {
+        width: 200px;
+        height: 200px;
+        top: 30%;
+        right: 20%;
+        background: radial-gradient(circle, var(--primary-blue-light) 0%, transparent 70%);
+        animation: pulse-move 15s ease-in-out 3s infinite alternate-reverse;
     }
 
     .kontak-container {
@@ -308,14 +374,14 @@
     }
     
     .kontak-card {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.07);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         border-radius: var(--radius-lg);
         padding: 2rem;
         box-shadow: var(--shadow-md);
         transition: all var(--transition-normal);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -340,28 +406,29 @@
     }
 
     .kontak-card:hover {
-        transform: translateY(-5px) scale(1.02);
-        box-shadow: var(--shadow-lg);
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 0 20px rgba(135, 206, 235, 0.2);
         border-color: var(--primary-blue-light);
     }
     
-    /* Card glow effect */
+    /* Enhanced card glow effect */
     .card-glow {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.3), transparent 70%);
+        background: radial-gradient(circle at 50% 50%, rgba(135, 206, 235, 0.4), transparent 70%);
         opacity: 0;
         z-index: 0;
         transition: opacity 0.5s ease;
         pointer-events: none;
+        mix-blend-mode: soft-light;
     }
     
     .kontak-card:hover .card-glow {
-        opacity: 0.5;
-        animation: pulse-glow 2s ease-in-out infinite alternate;
+        opacity: 0.8;
+        animation: pulse-glow 3s ease-in-out infinite alternate;
     }
     
     /* Card decoration */
@@ -395,18 +462,19 @@
         margin-bottom: 1.5rem;
         color: white;
         font-size: 1.8rem;
-        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        box-shadow: 0 10px 25px rgba(135, 206, 235, 0.5);
         position: relative;
         overflow: hidden;
-        transition: transform 0.5s ease;
+        transition: all 0.5s var(--bounce);
         z-index: 2;
     }
     
     .kontak-card:hover .kontak-icon {
-        transform: scale(1.1) rotate(5deg);
+        transform: scale(1.15) rotate(8deg);
+        box-shadow: 0 15px 35px rgba(135, 206, 235, 0.6);
     }
     
-    /* Icon shine effect */
+    /* Enhanced icon shine effect */
     .kontak-icon::after {
         content: '';
         position: absolute;
@@ -414,14 +482,29 @@
         left: -50%;
         width: 200%;
         height: 200%;
-        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.8), transparent);
         transform: rotate(45deg);
         transition: all 0.5s ease;
         opacity: 0;
     }
     
     .kontak-card:hover .kontak-icon::after {
-        animation: shine 1.5s ease infinite;
+        animation: shine 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+    }
+    
+    /* Add icon before element for extra effect */
+    .kontak-icon::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+    
+    .kontak-card:hover .kontak-icon::before {
+        opacity: 0.4;
+        animation: pulse 2s ease-in-out infinite alternate;
     }
 
     .kontak-card h3 {
@@ -447,24 +530,24 @@
         z-index: 2;
     }
 
-    /* Improved form container */
+    /* Enhanced form container */
     .kontak-form-container {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.07);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
         border-radius: var(--radius-lg);
         padding: 3rem;
         box-shadow: var(--shadow-lg);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         position: relative;
         overflow: hidden;
         z-index: 1;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: all 0.4s var(--bounce);
     }
     
     .kontak-form-container:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        transform: translateY(-8px) scale(1.01);
+        box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.2), 0 0 30px rgba(135, 206, 235, 0.15);
     }
 
     .kontak-form-container::before {
@@ -478,60 +561,78 @@
         z-index: 2;
     }
     
-    /* Form decorative elements */
+    /* Enhanced form decorative elements */
     .form-decoration,
     .form-decoration-2,
     .form-decoration-3,
     .form-decoration-4 {
         position: absolute;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-blue-light), transparent);
-        opacity: 0.1;
-        filter: blur(30px);
         z-index: -1;
+        pointer-events: none;
     }
     
     .form-decoration {
-        width: 200px;
-        height: 200px;
-        top: -50px;
-        right: -50px;
-        animation: pulse 10s ease-in-out infinite alternate;
+        width: 250px;
+        height: 250px;
+        top: -80px;
+        right: -80px;
+        background: conic-gradient(from 0deg, 
+            rgba(135, 206, 235, 0.15), 
+            rgba(152, 216, 200, 0.15), 
+            rgba(244, 164, 96, 0.15), 
+            rgba(135, 206, 235, 0.15));
+        border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        filter: blur(20px);
+        animation: morph-rotate 25s linear infinite;
     }
     
     .form-decoration-2 {
-        width: 150px;
-        height: 150px;
-        bottom: -50px;
-        left: -50px;
-        animation: pulse 10s ease-in-out 3s infinite alternate;
+        width: 200px;
+        height: 200px;
+        bottom: -70px;
+        left: -70px;
+        background: conic-gradient(from 180deg, 
+            rgba(244, 164, 96, 0.15), 
+            rgba(135, 206, 235, 0.15), 
+            rgba(152, 216, 200, 0.15), 
+            rgba(244, 164, 96, 0.15));
+        border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%;
+        filter: blur(20px);
+        animation: morph-rotate 20s linear infinite reverse;
     }
     
     .form-decoration-3 {
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
         top: 30%;
-        left: -30px;
-        animation: pulse 8s ease-in-out 2s infinite alternate;
+        left: -40px;
+        background: radial-gradient(circle, rgba(152, 216, 200, 0.2) 0%, transparent 70%);
+        border-radius: 50%;
+        filter: blur(15px);
+        animation: pulse-move 15s ease-in-out infinite alternate;
     }
     
     .form-decoration-4 {
-        width: 120px;
-        height: 120px;
+        width: 150px;
+        height: 150px;
         bottom: 20%;
-        right: -30px;
-        animation: pulse 12s ease-in-out 4s infinite alternate;
+        right: -40px;
+        background: radial-gradient(circle, rgba(135, 206, 235, 0.2) 0%, transparent 70%);
+        border-radius: 50%;
+        filter: blur(15px);
+        animation: pulse-move 18s ease-in-out 3s infinite alternate-reverse;
     }
     
-    /* Form title */
+    /* Enhanced form title */
     .form-title {
-        font-size: 1.8rem;
+        font-size: 2rem;
         font-weight: 700;
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
         color: var(--text-dark);
         text-align: center;
         position: relative;
-        padding-bottom: 1rem;
+        padding-bottom: 1.2rem;
+        letter-spacing: -0.02em;
     }
     
     .form-title::after {
@@ -540,10 +641,12 @@
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 50px;
-        height: 3px;
-        background: linear-gradient(90deg, var(--primary-blue), var(--muted-green));
-        border-radius: 3px;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--muted-green), var(--muted-orange));
+        border-radius: 4px;
+        animation: gradient-shift 8s ease infinite;
+        background-size: 200% 200%;
     }
 
     .kontak-form {
@@ -570,21 +673,22 @@
         color: var(--primary-blue);
     }
     
-    /* Input container with icon */
+    /* Enhanced input container with icon */
     .input-container {
         position: relative;
         display: flex;
         align-items: center;
-        border-radius: 12px;
+        border-radius: 14px;
         border: 1px solid var(--border);
-        background: var(--surface-2);
-        transition: all var(--transition-fast);
+        background: rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
         overflow: hidden;
     }
     
     .input-container.focused {
         border-color: var(--primary-blue);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        box-shadow: 0 0 0 4px rgba(135, 206, 235, 0.2);
+        background: rgba(255, 255, 255, 0.08);
     }
     
     .input-icon {
@@ -635,10 +739,23 @@
         width: 100%;
     }
     
-    /* Submit button with particles */
+    /* Enhanced submit button with particles */
     .btn-primary {
         position: relative;
         overflow: hidden;
+        transition: all 0.4s var(--bounce);
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+        background-size: 200% 200%;
+        animation: gradient-shift 5s ease infinite;
+        border: none;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 15px 30px rgba(135, 206, 235, 0.4);
     }
     
     .btn-particles {
@@ -653,11 +770,12 @@
     
     .btn-particles .particle {
         position: absolute;
-        background: rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.7);
         border-radius: 50%;
         pointer-events: none;
-        animation: particle-float 1.5s ease-in-out infinite alternate;
+        animation: particle-float 2s ease-in-out infinite alternate;
         opacity: 0;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     }
     
     .btn-text, .btn-icon {
@@ -708,7 +826,7 @@
         animation: spin 1s linear infinite;
     }
     
-    /* Animations */
+    /* Enhanced animations */
     @keyframes float {
         0% { transform: translateY(0); }
         100% { transform: translateY(-10px); }
@@ -716,13 +834,13 @@
     
     @keyframes pulse {
         0% { transform: scale(1); opacity: 0.1; }
-        50% { transform: scale(1.1); opacity: 0.15; }
+        50% { transform: scale(1.1); opacity: 0.2; }
         100% { transform: scale(1); opacity: 0.1; }
     }
     
     @keyframes pulse-glow {
         0% { opacity: 0.3; transform: scale(1); }
-        100% { opacity: 0.6; transform: scale(1.1); }
+        100% { opacity: 0.7; transform: scale(1.15); }
     }
     
     @keyframes shine {
@@ -739,7 +857,37 @@
     @keyframes particle-float {
         0% { transform: translateY(0) scale(1); opacity: 0; }
         50% { opacity: 1; }
-        100% { transform: translateY(-20px) scale(0); opacity: 0; }
+        100% { transform: translateY(-30px) scale(0); opacity: 0; }
+    }
+    
+    @keyframes pulse-rotate {
+        0% { transform: scale(1) rotate(0deg); opacity: 0.08; }
+        50% { transform: scale(1.2) rotate(180deg); opacity: 0.12; }
+        100% { transform: scale(1) rotate(360deg); opacity: 0.08; }
+    }
+    
+    @keyframes float-rotate {
+        0% { transform: translateY(0) rotate(0deg); }
+        100% { transform: translateY(-20px) rotate(360deg); }
+    }
+    
+    @keyframes pulse-move {
+        0% { transform: translate(0, 0) scale(1); opacity: 0.1; }
+        50% { transform: translate(20px, -10px) scale(1.1); opacity: 0.15; }
+        100% { transform: translate(0, 0) scale(1); opacity: 0.1; }
+    }
+    
+    @keyframes morph-rotate {
+        0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transform: rotate(0deg); }
+        34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
+        67% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+        100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transform: rotate(360deg); }
+    }
+    
+    @keyframes gradient-shift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
 
     @media (max-width: 992px) {
