@@ -946,14 +946,14 @@
 		const cards = document.querySelectorAll('.testimonial-card');
 		
 		cards.forEach(card => {
-			card.addEventListener('mousemove', handleMouseMove);
-			card.addEventListener('mouseleave', handleMouseLeave);
-			card.addEventListener('click', handleCardClick);
+			(card as HTMLElement).addEventListener('mousemove', handleMouseMove);
+			(card as HTMLElement).addEventListener('mouseleave', handleMouseLeave);
+			(card as HTMLElement).addEventListener('click', handleCardClick);
 			// Add animate-ready class for scroll animation
 			card.classList.add('animate-ready');
 		});
 		
-		function handleMouseMove(e) {
+		function handleMouseMove(this: HTMLElement, e: MouseEvent) {
 			const card = this;
 			const cardRect = card.getBoundingClientRect();
 			const cardWidth = cardRect.width;
@@ -971,16 +971,16 @@
 			const shine = card.querySelector('.card-shine') || createShineElement(card);
 			const shineX = (mouseX / cardWidth) * 100 + 50;
 			const shineY = (mouseY / cardHeight) * 100 + 50;
-			shine.style.background = `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%)`;
+			(shine as HTMLElement).style.background = `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%)`;
 		}
 		
-		function handleMouseLeave() {
+		function handleMouseLeave(this: HTMLElement) {
 			this.style.transform = 'rotateX(0) rotateY(0) translateZ(0)';
-			const shine = this.querySelector('.card-shine');
+			const shine = this.querySelector('.card-shine') as HTMLElement | null;
 			if (shine) shine.style.background = 'none';
 		}
 		
-		function createShineElement(card) {
+		function createShineElement(card: HTMLElement): HTMLElement {
 			const shine = document.createElement('div');
 			shine.classList.add('card-shine');
 			shine.style.position = 'absolute';
@@ -996,14 +996,14 @@
 		}
 
 		// Confetti effect when clicking on testimonial cards
-		function handleCardClick(e) {
+		function handleCardClick(this: HTMLElement, _e: MouseEvent) {
 			const card = this;
 			const cardRect = card.getBoundingClientRect();
 			const centerX = cardRect.left + cardRect.width / 2;
 			const centerY = cardRect.top + cardRect.height / 2;
 			
 			// Create confetti container if it doesn't exist
-			let confettiContainer = document.querySelector('.confetti-container');
+			let confettiContainer = document.querySelector('.confetti-container') as HTMLElement | null;
 			if (!confettiContainer) {
 				confettiContainer = document.createElement('div');
 				confettiContainer.classList.add('confetti-container');
@@ -1036,7 +1036,7 @@
 				confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
 				confetti.style.top = `${centerY}px`;
 				confetti.style.left = `${centerX}px`;
-				confetti.style.opacity = Math.random() * 0.8 + 0.2;
+				confetti.style.opacity = String(Math.random() * 0.8 + 0.2);
 				confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
 				confetti.style.zIndex = '9999';
 				confettiContainer.appendChild(confetti);
@@ -1059,9 +1059,10 @@
 						rotationAngle += rotation;
 						
 						confetti.style.transform = `translate(${x}px, ${y}px) rotate(${rotationAngle}deg)`;
-						confetti.style.opacity = parseFloat(confetti.style.opacity) - 0.01;
+						const currentOpacity = parseFloat(confetti.style.opacity || '0');
+						confetti.style.opacity = String(currentOpacity - 0.01);
 						
-						if (parseFloat(confetti.style.opacity) <= 0 || 
+						if (parseFloat(confetti.style.opacity || '0') <= 0 || 
 							y > window.innerHeight || 
 						x < -centerX || 
 						x > window.innerWidth - centerX) {
@@ -1085,7 +1086,7 @@
 		// Add floating animation to metrics
 		const metrics = document.querySelectorAll('.testimonial-metrics .metric');
 		metrics.forEach((metric, index) => {
-			metric.style.animation = `float 3s ease-in-out ${index * 0.2}s infinite alternate`;
+			(metric as HTMLElement).style.animation = `float 3s ease-in-out ${index * 0.2}s infinite alternate`;
 		});
 
 		// Add scroll-triggered animations with IntersectionObserver
