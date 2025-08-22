@@ -1,0 +1,784 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <div class="login-container">
+    <!-- Animated Background Elements -->
+    <div class="animated-background">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+      <div class="particles-container" id="particles-container"></div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card" data-aos="fade-up" data-aos-duration="800">
+      <div class="card-header">
+        <div class="logo-container">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" class="brand-mark">
+            <rect width="40" height="40" rx="8" fill="#1E40AF" />
+            <path d="M12 16h16v12a2 2 0 01-2 2H14a2 2 0 01-2-2V16zM16 12h8v4H16v-4z" fill="white" />
+          </svg>
+          <h1 class="brand-text">KomplekKita</h1>
+        </div>
+        <h2 class="login-title">Masuk ke Akun Anda</h2>
+        <p class="login-subtitle">Kelola komplek perumahan Anda dengan mudah dan efisien</p>
+      </div>
+
+      <form class="login-form" id="login-form">
+        <div class="form-group" data-aos="fade-up" data-aos-delay="100">
+          <label for="email">
+            <i class="fas fa-envelope"></i>
+            <span>Email</span>
+          </label>
+          <input type="email" id="email" name="email" placeholder="Masukkan email Anda" required />
+          <div class="input-highlight"></div>
+        </div>
+
+        <div class="form-group" data-aos="fade-up" data-aos-delay="200">
+          <label for="password">
+            <i class="fas fa-lock"></i>
+            <span>Password</span>
+          </label>
+          <div class="password-input-container">
+            <input type="password" id="password" name="password" placeholder="Masukkan password Anda" required />
+            <button type="button" class="toggle-password" aria-label="Toggle password visibility">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="input-highlight"></div>
+        </div>
+
+        <div class="form-options" data-aos="fade-up" data-aos-delay="300">
+          <div class="remember-me">
+            <input type="checkbox" id="remember" name="remember" />
+            <label for="remember">Ingat saya</label>
+          </div>
+          <a href="#" class="forgot-password">Lupa password?</a>
+        </div>
+
+        <button type="submit" class="login-button" data-aos="zoom-in" data-aos-delay="400">
+          <span class="button-text">Masuk</span>
+          <i class="fas fa-arrow-right"></i>
+          <div class="button-loader"></div>
+        </button>
+
+        <div class="social-login" data-aos="fade-up" data-aos-delay="500">
+          <p>Atau masuk dengan</p>
+          <div class="social-buttons">
+            <button type="button" class="social-button google">
+              <i class="fab fa-google"></i>
+              <span>Google</span>
+            </button>
+            <button type="button" class="social-button facebook">
+              <i class="fab fa-facebook-f"></i>
+              <span>Facebook</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="register-link" data-aos="fade-up" data-aos-delay="600">
+          <p>Belum punya akun?</p>
+          <a href="/register" class="register-button">
+            <span>Daftar Sekarang</span>
+            <i class="fas fa-user-plus"></i>
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Back to Home Button -->
+    <a href="/" class="back-to-home" data-aos="fade-in" data-aos-delay="700">
+      <i class="fas fa-home"></i>
+      <span>Kembali ke Beranda</span>
+    </a>
+  </div>
+</Layout>
+
+<style>
+  /* Main Container Styles */
+  .login-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    z-index: 1;
+  }
+
+  /* Animated Background */
+  .animated-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+  }
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.4;
+    animation: float 15s ease-in-out infinite;
+  }
+
+  .blob-1 {
+    width: 500px;
+    height: 500px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.6), rgba(16, 185, 129, 0.4));
+    top: -200px;
+    left: -100px;
+    animation-delay: 0s;
+  }
+
+  .blob-2 {
+    width: 600px;
+    height: 600px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.5), rgba(245, 158, 11, 0.3));
+    bottom: -250px;
+    right: -150px;
+    animation-delay: -5s;
+  }
+
+  .blob-3 {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(59, 130, 246, 0.3));
+    top: 50%;
+    left: 60%;
+    animation-delay: -10s;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) rotate(10deg) scale(1.05);
+    }
+    66% {
+      transform: translate(-20px, 20px) rotate(-5deg) scale(0.95);
+    }
+    100% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+  }
+
+  .particles-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Login Card Styles */
+  .login-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 500px;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transform: translateY(0);
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
+  }
+
+  .login-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
+    z-index: -1;
+  }
+
+  /* Card Header Styles */
+  .card-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    gap: 0.75rem;
+  }
+
+  .brand-mark {
+    filter: drop-shadow(0 2px 4px rgba(30, 64, 175, 0.2));
+    animation: pulse 3s infinite ease-in-out;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .brand-text {
+    font-size: 1.75rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #3B82F6, #1E40AF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+  }
+
+  .login-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 0.5rem;
+  }
+
+  .login-subtitle {
+    font-size: 1rem;
+    color: #6B7280;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Form Styles */
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    position: relative;
+  }
+
+  .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4B5563;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-group label i {
+    color: #3B82F6;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    background: rgba(255, 255, 255, 1);
+  }
+
+  .input-highlight {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 0;
+    background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+    transition: width 0.3s ease;
+    border-radius: 2px;
+  }
+
+  .form-group input:focus ~ .input-highlight {
+    width: 100%;
+  }
+
+  .password-input-container {
+    position: relative;
+  }
+
+  .toggle-password {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6B7280;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+
+  .toggle-password:hover {
+    color: #3B82F6;
+  }
+
+  /* Form Options Styles */
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+  }
+
+  .remember-me {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .remember-me input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 1px solid #E5E7EB;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .remember-me input[type="checkbox"]:checked {
+    background: #3B82F6;
+    border-color: #3B82F6;
+  }
+
+  .remember-me input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 0.8rem;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .remember-me label {
+    color: #4B5563;
+    cursor: pointer;
+  }
+
+  .forgot-password {
+    color: #3B82F6;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+
+  .forgot-password:hover {
+    color: #1E40AF;
+    text-decoration: underline;
+  }
+
+  /* Login Button Styles */
+  .login-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: linear-gradient(135deg, #3B82F6, #1E40AF);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0.9rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+  }
+
+  .login-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.7s ease;
+  }
+
+  .login-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+    background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+  }
+
+  .login-button:hover::before {
+    left: 100%;
+  }
+
+  .login-button i {
+    transition: transform 0.3s ease;
+  }
+
+  .login-button:hover i {
+    transform: translateX(3px);
+  }
+
+  .button-loader {
+    display: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Social Login Styles */
+  .social-login {
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  .social-login p {
+    color: #6B7280;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
+  .social-login p::before,
+  .social-login p::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 30%;
+    height: 1px;
+    background: #E5E7EB;
+  }
+
+  .social-login p::before {
+    left: 0;
+  }
+
+  .social-login p::after {
+    right: 0;
+  }
+
+  .social-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    background: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+  }
+
+  .social-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .social-button.google {
+    color: #EA4335;
+  }
+
+  .social-button.facebook {
+    color: #1877F2;
+  }
+
+  /* Register Link Styles */
+  .register-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1.5rem;
+    gap: 0.75rem;
+  }
+
+  .register-link p {
+    color: #6B7280;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .register-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #3B82F6;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: rgba(59, 130, 246, 0.1);
+  }
+
+  .register-button:hover {
+    background: rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .register-button i {
+    transition: transform 0.3s ease;
+  }
+
+  .register-button:hover i {
+    transform: translateX(3px);
+  }
+
+  /* Back to Home Button */
+  .back-to-home {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #4B5563;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .back-to-home:hover {
+    background: white;
+    color: #3B82F6;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .login-card {
+      padding: 2rem;
+    }
+
+    .back-to-home {
+      top: 1rem;
+      left: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .social-buttons {
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .login-container {
+      padding: 1rem;
+    }
+
+    .login-card {
+      padding: 1.5rem;
+    }
+
+    .login-title {
+      font-size: 1.5rem;
+    }
+
+    .form-options {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .back-to-home span {
+      display: none;
+    }
+
+    .back-to-home {
+      padding: 0.5rem;
+      border-radius: 50%;
+    }
+  }
+</style>
+
+<script>
+  // Initialize AOS animations
+  document.addEventListener('DOMContentLoaded', function() {
+    AOS.init({
+      once: true,
+      duration: 800,
+      easing: 'ease-out'
+    });
+
+    // Toggle password visibility
+    const togglePassword = document.querySelector('.toggle-password');
+    const passwordInput = document.querySelector('#password');
+
+    if (togglePassword && passwordInput) {
+      togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.querySelector('i').classList.toggle('fa-eye');
+        this.querySelector('i').classList.toggle('fa-eye-slash');
+      });
+    }
+
+    // Input highlight animation
+    const inputs = document.querySelectorAll('.form-group input');
+    inputs.forEach(input => {
+      input.addEventListener('focus', function() {
+        this.parentElement.querySelector('.input-highlight')?.classList.add('active');
+      });
+
+      input.addEventListener('blur', function() {
+        if (!this.value) {
+          this.parentElement.querySelector('.input-highlight')?.classList.remove('active');
+        }
+      });
+    });
+
+    // Form submission animation
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+      loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const button = this.querySelector('.login-button');
+        const buttonText = button.querySelector('.button-text');
+        const buttonIcon = button.querySelector('i');
+        const buttonLoader = button.querySelector('.button-loader');
+        
+        // Show loading state
+        buttonText.style.opacity = '0';
+        buttonIcon.style.opacity = '0';
+        buttonLoader.style.display = 'block';
+        
+        // Simulate API call
+        setTimeout(() => {
+          // Reset button state
+          buttonText.style.opacity = '1';
+          buttonIcon.style.opacity = '1';
+          buttonLoader.style.display = 'none';
+          
+          // Redirect to dashboard (in a real app)
+          // window.location.href = '/dashboard';
+          
+          // For demo purposes, just show success
+          alert('Login successful! This is a demo.');
+        }, 2000);
+      });
+    }
+
+    // Create floating particles
+    createParticles();
+  });
+
+  // Function to create floating particles
+  function createParticles() {
+    const container = document.getElementById('particles-container');
+    if (!container) return;
+
+    const particleCount = 30;
+    const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#F59E0B'];
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      
+      // Random properties
+      const size = Math.random() * 10 + 3;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      
+      // Position
+      const posX = Math.random() * 100;
+      const posY = Math.random() * 100;
+      
+      // Animation duration and delay
+      const animationDuration = Math.random() * 20 + 10;
+      const animationDelay = Math.random() * 10;
+      
+      // Apply styles
+      particle.style.cssText = `
+        position: absolute;
+        top: ${posY}%;
+        left: ${posX}%;
+        width: ${size}px;
+        height: ${size}px;
+        background-color: ${color};
+        border-radius: 50%;
+        opacity: ${Math.random() * 0.6 + 0.2};
+        animation: floatParticle ${animationDuration}s ease-in-out ${animationDelay}s infinite;
+      `;
+      
+      container.appendChild(particle);
+    }
+  }
+
+  // Define the particle animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes floatParticle {
+      0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+      25% {
+        transform: translate(50px, -30px) rotate(90deg);
+      }
+      50% {
+        transform: translate(0, -60px) rotate(180deg);
+      }
+      75% {
+        transform: translate(-50px, -30px) rotate(270deg);
+      }
+    }
+  `;
+  document.head.appendChild(style);
+</script>
