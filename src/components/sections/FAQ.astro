@@ -479,7 +479,7 @@
 	border-radius: 20px;
 	overflow: hidden;
 	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
-	transition: all var(--transition-normal) cubic-bezier(0.16, 1, 0.3, 1);
+	transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 	position: relative;
 	border: 1px solid var(--border);
 	backdrop-filter: blur(10px);
@@ -629,7 +629,7 @@
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
-	transition: all var(--transition-normal) cubic-bezier(0.34, 1.56, 0.64, 1);
+	transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 	position: relative;
 	flex-shrink: 0;
 	box-shadow: 0 2px 5px rgba(59, 130, 246, 0.1);
@@ -665,7 +665,8 @@
 		content: '';
 		position: absolute;
 		background: var(--text-light);
-		transition: all var(--transition-normal);
+		transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+		will-change: transform, opacity, background;
 	}
 	
 	.toggle-icon::before {
@@ -694,8 +695,8 @@
 .faq-card.active .card-toggle {
 	background: var(--primary-blue-light);
 	border-color: var(--primary-blue);
-	transform: scale(1.2) rotate(180deg);
-	box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
+	transform: scale(1.3) rotate(225deg);
+	box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
 }
 
 .faq-card:hover .card-toggle {
@@ -707,12 +708,14 @@
 		padding: 0;
 		max-height: 0;
 		overflow: hidden;
-		transition: all var(--transition-normal);
+		transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+		will-change: max-height, padding;
 	}
 	
 	.faq-card.active .card-content {
 		padding: 1.5rem;
-		max-height: 300px;
+		max-height: 500px;
+		transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 	
 	.card-content p {
@@ -738,7 +741,7 @@
 	font-size: 0.75rem;
 	font-weight: 600;
 	color: var(--primary-blue);
-	transition: all var(--transition-normal) cubic-bezier(0.34, 1.56, 0.64, 1);
+	transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 	position: relative;
 	overflow: hidden;
 	border: 1px solid transparent;
@@ -995,135 +998,172 @@
 
 <script>
 	document.addEventListener('DOMContentLoaded', function() {
-		// FAQ Card Toggle
-	const faqCards = document.querySelectorAll('.faq-card');
-	faqCards.forEach(card => {
-		const toggle = card.querySelector('.card-toggle') as HTMLElement;
-		if (!toggle) return;
-		toggle.addEventListener('click', () => {
-				// Close all other cards
+		// Import GSAP if not already available
+		if (typeof gsap === 'undefined') {
+			const script = document.createElement('script');
+			script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js';
+			document.head.appendChild(script);
+		}
+		
+		// FAQ Card Toggle with enhanced animations
+		const faqCards = document.querySelectorAll('.faq-card');
+		faqCards.forEach(card => {
+			const toggle = card.querySelector('.card-toggle') as HTMLElement;
+			if (!toggle) return;
+			toggle.addEventListener('click', () => {
+				// Close all other cards with smooth animation
 				faqCards.forEach(otherCard => {
 					if (otherCard !== card && otherCard.classList.contains('active')) {
-						otherCard.classList.remove('active');
+						const otherContent = otherCard.querySelector('.card-content') as HTMLElement;
+						if (otherContent && typeof gsap !== 'undefined') {
+							gsap.to(otherContent, {
+								maxHeight: 0,
+								padding: 0,
+								duration: 0.4,
+								ease: 'power2.out',
+								onComplete: () => {
+									otherCard.classList.remove('active');
+								}
+							});
+						} else {
+							otherCard.classList.remove('active');
+						}
 					}
 				});
 				
-				// Toggle current card
-				card.classList.toggle('active');
+				// Toggle current card with enhanced animation
+				const isActive = card.classList.contains('active');
+				const content = card.querySelector('.card-content') as HTMLElement;
 				
-				// Add ripple effect
+				if (isActive && content && typeof gsap !== 'undefined') {
+					gsap.to(content, {
+						maxHeight: 0,
+						padding: 0,
+						duration: 0.4,
+						ease: 'power2.out',
+						onComplete: () => {
+							card.classList.remove('active');
+						}
+					});
+				} else {
+					card.classList.add('active');
+					if (content && typeof gsap !== 'undefined') {
+						// Get content height
+						content.style.display = 'block';
+						const height = content.scrollHeight;
+						content.style.display = '';
+						
+						gsap.fromTo(content, 
+							{ maxHeight: 0, padding: 0 },
+							{ maxHeight: height, padding: '1.5rem', duration: 0.6, ease: 'power2.out' }
+						);
+					}
+				}
+				
+				// Add enhanced ripple effect
 				const ripple = document.createElement('span');
 				ripple.classList.add('ripple');
 				ripple.style.position = 'absolute';
 				ripple.style.borderRadius = '50%';
 				ripple.style.transform = 'scale(0)';
-				ripple.style.animation = 'ripple 0.6s linear';
-				ripple.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+				ripple.style.animation = 'ripple 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+				ripple.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
 				
-		const rect = toggle.getBoundingClientRect();
-		ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) * 2 + 'px';
-		ripple.style.left = -rect.width / 2 + 'px';
-		ripple.style.top = -rect.height / 2 + 'px';
-		
-		if (toggle) toggle.appendChild(ripple);
+				const rect = toggle.getBoundingClientRect();
+				ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) * 2 + 'px';
+				ripple.style.left = -rect.width / 2 + 'px';
+				ripple.style.top = -rect.height / 2 + 'px';
 				
+				if (toggle) toggle.appendChild(ripple);
+						
 				setTimeout(() => {
 					ripple.remove();
-				}, 600);
+				}, 800);
 			});
 		});
 		
-		// FAQ Tab Filtering
-	const faqTabs = document.querySelectorAll('.faq-tab');
-	const tabIndicator = document.querySelector('.tab-indicator') as HTMLElement;
-		
-	// Initialize tab indicator position
-	if (tabIndicator) {
-		const activeTab = document.querySelector('.faq-tab.active') as HTMLElement;
-		if (activeTab) {
-			const tabRect = activeTab.getBoundingClientRect();
-			const tabsContainer = document.querySelector('.faq-tabs') as HTMLElement;
-			if (tabsContainer) {
-				const tabsRect = tabsContainer.getBoundingClientRect();
-				tabIndicator.style.width = tabRect.width + 'px';
-				tabIndicator.style.left = (tabRect.left - tabsRect.left + 0.5) + 'px';
-			}
-			}
-		}
-		
-		faqTabs.forEach(tab => {
-			tab.addEventListener('click', () => {
-				// Update active tab
-				faqTabs.forEach(t => t.classList.remove('active'));
-				tab.classList.add('active');
-				
-		// Move tab indicator
-		if (tabIndicator) {
-			const tabRect = tab.getBoundingClientRect();
-			const tabsContainer = document.querySelector('.faq-tabs') as HTMLElement;
-			if (tabsContainer) {
-				const tabsRect = tabsContainer.getBoundingClientRect();
-				tabIndicator.style.width = tabRect.width + 'px';
-				tabIndicator.style.left = (tabRect.left - tabsRect.left + 0.5) + 'px';
-			}
-				}
-				
-		// Filter cards
-		const tabElement = tab as HTMLElement;
-		const category = tabElement.dataset.tab;
+		// Enhanced 3D Card Tilt Effect with GSAP
 		const cards = document.querySelectorAll('.faq-card');
-		
 		cards.forEach(card => {
 			const cardElement = card as HTMLElement;
-			if (category === 'all' || cardElement.dataset.category === category) {
-				cardElement.style.display = '';
-				setTimeout(() => {
-					cardElement.style.opacity = '1';
-					cardElement.style.transform = '';
-				}, 10);
-			} else {
-				cardElement.style.opacity = '0';
-				cardElement.style.transform = 'translateY(20px)';
-				setTimeout(() => {
-					cardElement.style.display = 'none';
-				}, 300);
-			}
-		});
+			cardElement.addEventListener('mousemove', (e: MouseEvent) => {
+				const cardRect = cardElement.getBoundingClientRect();
+				const cardWidth = cardRect.width;
+				const cardHeight = cardRect.height;
+				const centerX = cardRect.left + cardWidth / 2;
+				const centerY = cardRect.top + cardHeight / 2;
+				const mouseX = e.clientX - centerX;
+				const mouseY = e.clientY - centerY;
+				const rotateX = (mouseY / (cardHeight / 2)) * -5;
+				const rotateY = (mouseX / (cardWidth / 2)) * 5;
+				
+				// Use GSAP for smoother animation
+				if (typeof gsap !== 'undefined') {
+					gsap.to(cardElement, {
+						rotationX: rotateX,
+						rotationY: rotateY,
+						z: 20,
+						duration: 0.3,
+						ease: 'power2.out',
+						transformPerspective: 1000,
+						transformOrigin: 'center'
+					});
+					
+					// Enhanced shine effect
+					const shine = cardElement.querySelector('.card-shine') as HTMLElement;
+					if (shine) {
+						const shineX = (mouseX / cardWidth) * 100 + 50;
+						const shineY = (mouseY / cardHeight) * 100 + 50;
+						gsap.to(shine, {
+							background: `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%)`,
+							opacity: 1,
+							duration: 0.3
+						});
+					}
+				} else {
+					cardElement.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+					
+					const shine = cardElement.querySelector('.card-shine') as HTMLElement;
+					if (shine) {
+						const shineX = (mouseX / cardWidth) * 100 + 50;
+						const shineY = (mouseY / cardHeight) * 100 + 50;
+						shine.style.background = `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%)`;
+					}
+				}
 			});
-		});
-		
-		// 3D Card Tilt Effect
-	const cards = document.querySelectorAll('.faq-card');
-	cards.forEach(card => {
-		const cardElement = card as HTMLElement;
-		cardElement.addEventListener('mousemove', (e: MouseEvent) => {
-			const cardRect = cardElement.getBoundingClientRect();
-			const cardWidth = cardRect.width;
-			const cardHeight = cardRect.height;
-			const centerX = cardRect.left + cardWidth / 2;
-			const centerY = cardRect.top + cardHeight / 2;
-			const mouseX = e.clientX - centerX;
-			const mouseY = e.clientY - centerY;
-			const rotateX = (mouseY / (cardHeight / 2)) * -3;
-			const rotateY = (mouseX / (cardWidth / 2)) * 3;
 			
-			cardElement.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
-			
-			const shine = cardElement.querySelector('.card-shine') as HTMLElement;
-			if (shine) {
-				const shineX = (mouseX / cardWidth) * 100 + 50;
-				const shineY = (mouseY / cardHeight) * 100 + 50;
-				shine.style.background = `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%)`;
-			}
-		});
-		
-		cardElement.addEventListener('mouseleave', () => {
-			cardElement.style.transform = '';
-			const shine = cardElement.querySelector('.card-shine') as HTMLElement;
-			if (shine) {
-				shine.style.background = '';
-			}
-		});
+			cardElement.addEventListener('mouseleave', () => {
+				// Use GSAP for smooth return animation
+				if (typeof gsap !== 'undefined') {
+					gsap.to(cardElement, {
+						rotationX: 0,
+						rotationY: 0,
+						z: 0,
+						scale: 1,
+						duration: 0.5,
+						ease: 'power3.out'
+					});
+					
+					const shine = cardElement.querySelector('.card-shine') as HTMLElement;
+					if (shine) {
+						gsap.to(shine, {
+							opacity: 0,
+							duration: 0.5,
+							ease: 'power2.out',
+							onComplete: () => {
+								shine.style.background = '';
+								shine.style.opacity = '';
+							}
+						});
+					}
+				} else {
+					cardElement.style.transform = '';
+					const shine = cardElement.querySelector('.card-shine') as HTMLElement;
+					if (shine) {
+						shine.style.background = '';
+					}
+				}
+			});
 		});
 		
 		// Enhanced animation for feature tags
