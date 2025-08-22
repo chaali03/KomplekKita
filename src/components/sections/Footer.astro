@@ -1,0 +1,303 @@
+---
+---
+
+<footer class="footer">
+	<div class="container">
+		<div class="footer-content">
+			<div class="footer-brand" data-aos="fade-right" data-aos-delay="200">
+				<div class="footer-logo">
+					<img src="/logo.svg" alt="KomplekKita Logo" width="40" height="40">
+					<h3>KomplekKita</h3>
+				</div>
+				<p>Manajemen komplek perumahan modern dengan transparansi dan efisiensi</p>
+				<div class="footer-social">
+					<a href="#" class="social-link" aria-label="Facebook">
+						<i class="fab fa-facebook"></i>
+					</a>
+					<a href="#" class="social-link" aria-label="Twitter">
+						<i class="fab fa-twitter"></i>
+					</a>
+					<a href="#" class="social-link" aria-label="Instagram">
+						<i class="fab fa-instagram"></i>
+					</a>
+					<a href="#" class="social-link" aria-label="LinkedIn">
+						<i class="fab fa-linkedin"></i>
+					</a>
+				</div>
+			</div>
+
+			<div class="footer-sections" data-aos="fade-up" data-aos-delay="400">
+				<div class="footer-section">
+					<h4>Produk</h4>
+					<ul>
+						<li><a href="#background">Latar Belakang</a></li>
+						<li><a href="#problems">Masalah</a></li>
+						<li><a href="#solutions">Solusi</a></li>
+						<li><a href="#advantages">Keunggulan</a></li>
+					</ul>
+				</div>
+
+				<div class="footer-section">
+					<h4>Fitur</h4>
+					<ul>
+						<li><a href="#demo">Demo Aplikasi</a></li>
+						<li><a href="#contact">Kontak</a></li>
+						<li><a href="#">Pricing</a></li>
+						<li><a href="#">API</a></li>
+					</ul>
+				</div>
+
+				<div class="footer-section">
+					<h4>Perusahaan</h4>
+					<ul>
+						<li><a href="#">Tentang Kami</a></li>
+						<li><a href="#">Tim</a></li>
+						<li><a href="#">Karir</a></li>
+						<li><a href="#">Blog</a></li>
+					</ul>
+				</div>
+
+				<div class="footer-section">
+					<h4>Support</h4>
+					<ul>
+						<li><a href="#">Dokumentasi</a></li>
+						<li><a href="#">FAQ</a></li>
+						<li><a href="#">Status</a></li>
+						<li><a href="#contact">Kontak</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="footer-divider"></div>
+
+		<div class="footer-bottom">
+			<div class="footer-bottom-content">
+				<p>&copy; 2024 KomplekKita. All rights reserved.</p>
+				<div class="footer-legal">
+					<a href="#">Privacy Policy</a>
+					<a href="#">Terms of Service</a>
+					<a href="#">Cookie Policy</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="footer-decoration">
+			<div class="footer-wave"></div>
+		</div>
+	</div>
+</footer>
+
+<style>
+	/* Footer */
+	.footer {
+		background: linear-gradient(135deg, var(--text-dark) 0%, var(--dark-blue) 100%);
+		color: var(--white);
+		padding: 4rem 0 2rem;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.footer-content {
+		display: grid;
+		grid-template-columns: 1fr 2fr;
+		gap: 4rem;
+		margin-bottom: 3rem;
+		position: relative;
+		z-index: 1;
+	}
+
+	.footer-brand {
+		max-width: 300px;
+	}
+
+	.footer-logo {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.footer-logo h3 {
+		color: var(--primary-blue-light);
+		font-size: 1.75rem;
+		font-weight: 700;
+		margin: 0;
+	}
+
+	.footer-brand p {
+		color: var(--gray-300);
+		line-height: 1.6;
+		margin-bottom: 2rem;
+	}
+
+	.footer-social {
+		display: flex;
+		gap: 1rem;
+	}
+
+	.social-link {
+		width: 45px;
+		height: 45px;
+		background: rgba(255, 255, 255, 0.1);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--white);
+		text-decoration: none;
+		transition: all var(--transition-normal) ease;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+	}
+
+	.social-link:hover {
+		background: var(--primary-blue);
+		transform: translateY(-3px);
+		box-shadow: 0 10px 25px rgba(135, 206, 235, 0.3);
+	}
+
+	.footer-sections {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 2rem;
+	}
+
+	.footer-section h4 {
+		color: var(--primary-blue-light);
+		font-size: 1.1rem;
+		font-weight: 600;
+		margin-bottom: 1.5rem;
+		position: relative;
+	}
+
+	.footer-section h4::after {
+		content: '';
+		position: absolute;
+		bottom: -8px;
+		left: 0;
+		width: 30px;
+		height: 2px;
+		background: var(--primary-blue);
+		border-radius: 1px;
+	}
+
+	.footer-section ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.footer-section li {
+		margin-bottom: 0.75rem;
+	}
+
+	.footer-section a {
+		color: var(--gray-300);
+		text-decoration: none;
+		transition: all var(--transition-normal) ease;
+		position: relative;
+		padding-left: 0;
+	}
+
+	.footer-section a::before {
+		content: '→';
+		position: absolute;
+		left: -20px;
+		opacity: 0;
+		transition: all var(--transition-normal) ease;
+		color: var(--primary-blue);
+	}
+
+	.footer-section a:hover {
+		color: var(--primary-blue-light);
+		padding-left: 20px;
+	}
+
+	.footer-section a:hover::before {
+		opacity: 1;
+	}
+
+	.footer-divider {
+		height: 1px;
+		background: linear-gradient(90deg, transparent, var(--gray-600), transparent);
+		margin: 2rem 0;
+	}
+
+	.footer-bottom {
+		text-align: center;
+		padding-top: 2rem;
+		color: var(--gray-400);
+		position: relative;
+		z-index: 1;
+	}
+
+	.footer-bottom-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.footer-legal {
+		display: flex;
+		gap: 2rem;
+		flex-wrap: wrap;
+	}
+
+	.footer-legal a {
+		color: var(--gray-400);
+		text-decoration: none;
+		transition: color var(--transition-normal) ease;
+		font-size: 0.875rem;
+	}
+
+	.footer-legal a:hover {
+		color: var(--primary-blue-light);
+	}
+
+	/* Footer decoration */
+	.footer-decoration {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+		z-index: 0;
+	}
+
+	.footer-wave {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100px;
+		background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,8.12,149.2,8.12c56.27,0,113.84-12.21,168.54-25.73C348.36,20.11,421.77,7,497.66,7S643.67,20.11,723.2,28.54C777.92,41.2,835.56,54.41,891.8,54.41c45.66,0,101.41-13.89,149.2-28.21V0Z" fill="%23ffffff" opacity="0.05"/></svg>');
+		background-size: cover;
+		background-repeat: no-repeat;
+		opacity: 0.1;
+	}
+
+	/* Responsive footer */
+	@media (max-width: 768px) {
+		.footer-content {
+			grid-template-columns: 1fr;
+			gap: 3rem;
+		}
+
+		.footer-sections {
+			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+		}
+
+		.footer-bottom-content {
+			flex-direction: column;
+			text-align: center;
+		}
+
+		.footer-legal {
+			justify-content: center;
+		}
+	}
+</style>
+

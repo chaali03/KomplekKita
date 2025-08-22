@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KomplekKita - Header Modern</title>
+    <style>
+        :root {
+            --primary-blue: #3B82F6;
+            --primary-blue-dark: #1E40AF;
+            --muted-green: #10B981;
+            --accent-purple: #8B5CF6;
+            --accent-orange: #F59E0B;
+            --text-dark: #1F2937;
+            --text-light: #6B7280;
+            --surface: #FFFFFF;
+            --surface-2: #F9FAFB;
+            --border: #E5E7EB;
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--text-dark);
+            min-height: 200vh; /* Untuk testing scroll */
+        }
+
+        /* Header Modern dengan Glassmorphism */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            isolation: isolate;
+            transition: all var(--transition-normal);
+            padding: 0.75rem 0;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+            z-index: -1;
+            transition: all var(--transition-normal);
+        }
+
+        .header.scrolled::before {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            padding: 0.5rem 0;
+        }
+
+        /* Container navbar */
+        .navbar-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            transition: padding var(--transition-normal);
+        }
+
+        .header.scrolled .navbar-container {
+            padding: 0.25rem 2rem;
+        }
+
+        /* Brand styling */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            z-index: 2;
+        }
+
+        .brand-icon {
+            position: relative;
+            transition: all var(--transition-normal);
+        }
+
+        .brand-mark {
+            transition: transform var(--transition-normal);
+            filter: drop-shadow(0 2px 4px rgba(30, 64, 175, 0.2));
+        }
+
+        .brand-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: all var(--transition-normal);
+        }
+
+        /* Menu styling */
+        .navbar-menu {
+            display: flex;
+            list-style: none;
+            gap: 0.5rem;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.6rem 1.1rem;
+            border-radius: 12px;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--muted-green));
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+            z-index: -1;
+        }
+
+        .nav-link:hover::before {
+            opacity: 0.08;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        /* Action buttons */
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 2;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-outline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-blue);
+            transition: left var(--transition-normal);
+            z-index: -1;
+        }
+
+        .btn-outline:hover::before {
+            left: 0;
+        }
+
+        .btn-outline:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Hamburger menu */
+        .navbar-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 10;
+        }
+
+        .navbar-toggle span {
+            display: block;
+            width: 24px;
+            height: 2.5px;
+            background: var(--primary-blue);
+            border-radius: 2px;
+            transition: all var(--transition-normal);
+        }
+
+        /* Animasi spotlight */
+        .spotlight {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity var(--transition-slow);
+        }
+
+        .spotlight::before {
+            content: "";
+            position: absolute;
+            inset: -20%;
+            background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), 
+                        rgba(255, 255, 255, 0.5), 
+                        rgba(255, 255, 255, 0.2) 40%, 
+                        transparent 70%);
+            filter: blur(20px);
+            transition: background-position 0.1s linear;
+        }
+
+        .header:hover .spotlight {
+            opacity: 1;
+        }
+
+        /* Background decorative elements */
+        .nav-art {
+            position: absolute;
+            inset: -40px 0 auto 0;
+            height: 140px;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        .nav-art .blob {
+            position: absolute;
+            mix-blend-mode: overlay;
+        }
+
+        .nav-art .blob-a {
+            top: -60px;
+            left: -60px;
+            animation: floatA 18s ease-in-out infinite;
+        }
+
+        .nav-art .blob-b {
+            top: -40px;
+            right: -40px;
+            animation: floatB 22s ease-in-out infinite;
+        }
+
+        @keyframes floatA {
+            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            33% { transform: translate(15px, 10px) rotate(2deg) scale(1.05); }
+            66% { transform: translate(-5px, 15px) rotate(-1deg) scale(0.98); }
+        }
+
+        @keyframes floatB {
+            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            33% { transform: translate(-10px, -8px) rotate(-3deg) scale(1.03); }
+            66% { transform: translate(8px, -12px) rotate(2deg) scale(0.97); }
+        }
+
+        .nav-art .grain {
+            position: absolute;
+            inset: -10px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            mix-blend-mode: soft-light;
+            pointer-events: none;
+        }
+
+        /* Scroll progress indicator */
+        .scroll-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: transparent;
+            z-index: 1001;
+        }
+
+        .scroll-progress .bar {
+            display: block;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--primary-blue), var(--muted-green), var(--accent-purple));
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+            transition: width 0.15s ease-out;
+        }
+
+        /* Ripple effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple-effect 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-effect {
+            to {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 992px) {
+            .navbar-menu {
+                position: fixed;
+                top: 72px;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                padding: 1rem;
+                gap: 0.5rem;
+                transform: translateY(-100%);
+                opacity: 0;
+                pointer-events: none;
+                transition: all var(--transition-normal);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                border-radius: 0 0 16px 16px;
+            }
+
+            .navbar-menu.active {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .nav-link {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 0.9rem 1.5rem;
+                border-radius: 10px;
+                background: var(--surface-2);
+            }
+
+            .navbar-toggle {
+                display: flex;
+            }
+
+            .navbar-toggle.active span:nth-child(1) {
+                transform: translateY(6.5px) rotate(45deg);
+            }
+
+            .navbar-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .navbar-toggle.active span:nth-child(3) {
+                transform: translateY(-6.5px) rotate(-45deg);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-container {
+                padding: 0 1rem;
+            }
+            
+            .header.scrolled .navbar-container {
+                padding: 0.25rem 1rem;
+            }
+            
+            .brand-text {
+                font-size: 1.25rem;
+            }
+            
+            .btn {
+                padding: 0.6rem 1.1rem;
+                font-size: 0.875rem;
+            }
+            
+            .navbar-actions {
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="header">
+        <!-- Interactive spotlight following cursor -->
+        <div class="spotlight" aria-hidden="true"></div>
+
+        <!-- Artistic background canvas for unique, stylish look -->
+        <div class="nav-art" aria-hidden="true">
+            <svg class="blob blob-a" viewBox="0 0 600 600" width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+                <g filter="url(#glowA)">
+                    <path fill="url(#gradA)" d="M300,520Q226,640,120,560Q14,480,54,360Q94,240,170,174Q246,108,343,137Q440,166,493,253Q546,340,510,430Q474,520,300,520Z" />
+                </g>
+                <defs>
+                    <linearGradient id="gradA" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#3B82F6"/>
+                        <stop offset="100%" stop-color="#10B981"/>
+                    </linearGradient>
+                    <filter id="glowA">
+                        <feGaussianBlur stdDeviation="18" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+            </svg>
+            <svg class="blob blob-b" viewBox="0 0 600 600" width="280" height="280" xmlns="http://www.w3.org/2000/svg">
+                <g filter="url(#glowB)">
+                    <path fill="url(#gradB)" d="M300,520Q216,580,148,512Q80,444,82,342Q84,240,160,176Q236,112,330,132Q424,152,482,226Q540,300,518,394Q496,488,300,520Z" />
+                </g>
+                <defs>
+                    <linearGradient id="gradB" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#8B5CF6"/>
+                        <stop offset="100%" stop-color="#F59E0B"/>
+                    </linearGradient>
+                    <filter id="glowB">
+                        <feGaussianBlur stdDeviation="14" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+            </svg>
+            <div class="grain"></div>
+        </div>
+
+        <!-- Scroll progress indicator -->
+        <div class="scroll-progress" aria-hidden="true"><span class="bar"></span></div>
+
+        <div class="navbar-container">
+            <a href="#" class="navbar-brand">
+                <div class="brand-icon">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" class="brand-mark">
+                        <rect width="40" height="40" rx="8" fill="#1E40AF" />
+                        <path d="M12 16h16v12a2 2 0 01-2 2H14a2 2 0 01-2-2V16zM16 12h8v4H16v-4z" fill="white" />
+                    </svg>
+                </div>
+                <span class="brand-text">KomplekKita</span>
+            </a>
+
+            <ul class="navbar-menu">
+                <li><a href="#solutions" class="nav-link">Fitur</a></li>
+                <li><a href="#advantages" class="nav-link">Keunggulan</a></li>
+                <li><a href="#pricing" class="nav-link">Harga</a></li>
+                <li><a href="#faq" class="nav-link">FAQ</a></li>
+                <li><a href="#testimonials" class="nav-link">Testimonial</a></li>
+                <li><a href="#contact" class="nav-link">Kontak</a></li>
+            </ul>
+
+            <div class="navbar-actions">
+                <a href="#demo" class="btn btn-outline">Demo</a>
+                <a href="#contact" class="btn btn-primary">Mulai Sekarang</a>
+            </div>
+
+            <button class="navbar-toggle" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const header = document.querySelector('.header');
+            const progress = document.querySelector('.scroll-progress .bar');
+            const menu = document.querySelector('.navbar-menu');
+            const toggle = document.querySelector('.navbar-toggle');
+            const brandMark = document.querySelector('.brand-mark');
+
+            // Scroll effects
+            const onScroll = () => {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrollPercent = scrollTop / docHeight * 100;
+                
+                if (progress) {
+                    progress.style.width = scrollPercent + '%';
+                }
+                
+                if (header) {
+                    header.classList.toggle('scrolled', scrollTop > 20);
+                }
+                
+                if (brandMark) {
+                    const rotation = scrollPercent / 100 * 10;
+                    brandMark.style.transform = `rotate(${rotation}deg)`;
+                }
+            };
+            
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll(); // Initialize
+
+            // Mobile menu toggle
+            if (toggle && menu) {
+                toggle.addEventListener('click', () => {
+                    toggle.classList.toggle('active');
+                    menu.classList.toggle('active');
+                });
+                
+                // Close menu when clicking on links
+                menu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        toggle.classList.remove('active');
+                        menu.classList.remove('active');
+                    });
+                });
+            }
+
+            // Spotlight follow mouse within header
+            header.addEventListener('mousemove', (e) => {
+                const rect = header.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                header.style.setProperty('--mx', `${x}px`);
+                header.style.setProperty('--my', `${y}px`);
+            });
+
+            // Ripple effect for buttons and links
+            const createRipple = (e) => {
+                const element = e.currentTarget;
+                const circle = document.createElement('span');
+                const diameter = Math.max(element.clientWidth, element.clientHeight);
+                const radius = diameter / 2;
+
+                const rect = element.getBoundingClientRect();
+                circle.style.width = circle.style.height = `${diameter}px`;
+                circle.style.left = `${e.clientX - rect.left - radius}px`;
+                circle.style.top = `${e.clientY - rect.top - radius}px`;
+                circle.classList.add('ripple');
+
+                // Remove existing ripples
+                const ripple = element.getElementsByClassName('ripple')[0];
+                if (ripple) {
+                    ripple.remove();
+                }
+
+                element.appendChild(circle);
+            };
+
+            // Add ripple effect to buttons and nav links
+            const buttons = document.querySelectorAll('.btn, .nav-link');
+            buttons.forEach(button => {
+                button.addEventListener('click', createRipple);
+            });
+        });
+    </script>
+</body>
+</html>
