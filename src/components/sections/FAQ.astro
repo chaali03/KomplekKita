@@ -2,85 +2,304 @@
 ---
 
 <section class="section" id="faq">
+	<div class="faq-decoration">
+		<div class="faq-blob faq-blob-1"></div>
+		<div class="faq-blob faq-blob-2"></div>
+		<div class="faq-blob faq-blob-3"></div>
+		<div class="faq-blob faq-blob-4"></div>
+		<div class="faq-particles"></div>
+		<div class="faq-grid"></div>
+	</div>
+	
 	<div class="container">
 		<div class="section-header" data-aos="fade-up">
-			<h2 class="section-title">Pertanyaan Umum</h2>
-			<p class="section-subtitle">Jawaban ringkas untuk pertanyaan yang sering diajukan</p>
+			<div class="section-badge">
+				<span class="badge-text">FAQ</span>
+				<span class="badge-shine"></span>
+			</div>
+			<h2 class="section-title">
+				<span class="text-gradient">Pertanyaan</span> yang Sering Ditanyakan
+			</h2>
+			<p class="section-subtitle">Jawaban ringkas untuk pertanyaan yang sering diajukan oleh pengguna KomplekKita</p>
 		</div>
 		
 		<div class="faq-wrapper">
-			<div class="faq-decoration">
-				<div class="faq-blob"></div>
-				<div class="faq-blob-2"></div>
+			<div class="faq-tabs">
+				<button class="faq-tab active" data-tab="all">Semua</button>
+				<button class="faq-tab" data-tab="general">Umum</button>
+				<button class="faq-tab" data-tab="technical">Teknis</button>
+				<button class="faq-tab" data-tab="pricing">Harga</button>
+				<div class="tab-indicator"></div>
 			</div>
 			
-			<div class="auto-grid" style="--cell-min: 300px; --grid-gap: 1.5rem;">
-				<div class="card" data-aos="fade-up" data-aos-delay="100">
-					<div class="card-icon">
-						<i class="fas fa-building"></i>
+			<div class="faq-cards">
+				<div class="faq-card" data-aos="fade-up" data-aos-delay="100" data-category="general">
+					<div class="card-header">
+						<div class="card-icon">
+							<i class="fas fa-building"></i>
+						</div>
+						<h4>Apakah KomplekKita bisa untuk komplek kecil?</h4>
+						<button class="card-toggle">
+							<span class="toggle-icon"></span>
+						</button>
 					</div>
-					<h4>Apakah KomplekKita bisa untuk komplek kecil?</h4>
-					<p>Ya. Sistem kami skalabel untuk komplek kecil hingga besar, bisa disesuaikan kebutuhan.</p>
+					<div class="card-content">
+						<p>Ya. Sistem kami skalabel untuk komplek kecil hingga besar, bisa disesuaikan kebutuhan. Bahkan untuk komplek dengan 10 rumah sekalipun, KomplekKita dapat membantu mengoptimalkan pengelolaan dan komunikasi.</p>
+						<div class="card-features">
+							<span class="feature-tag">Skalabel</span>
+							<span class="feature-tag">Fleksibel</span>
+							<span class="feature-tag">Kustomisasi</span>
+						</div>
+					</div>
 					<div class="card-shine"></div>
 				</div>
-				<div class="card" data-aos="fade-up" data-aos-delay="200">
-					<div class="card-icon">
-						<i class="fas fa-shield-alt"></i>
+				
+				<div class="faq-card" data-aos="fade-up" data-aos-delay="200" data-category="technical">
+					<div class="card-header">
+						<div class="card-icon">
+							<i class="fas fa-shield-alt"></i>
+						</div>
+						<h4>Bagaimana dengan keamanan data?</h4>
+						<button class="card-toggle">
+							<span class="toggle-icon"></span>
+						</button>
 					</div>
-					<h4>Bagaimana dengan keamanan data?</h4>
-					<p>Data disimpan terenkripsi dengan backup otomatis dan kontrol akses yang ketat.</p>
+					<div class="card-content">
+						<p>Data disimpan terenkripsi dengan backup otomatis dan kontrol akses yang ketat. Kami menggunakan enkripsi end-to-end dan server dengan sertifikasi ISO 27001 untuk menjamin keamanan data Anda.</p>
+						<div class="card-features">
+							<span class="feature-tag">Enkripsi</span>
+							<span class="feature-tag">Backup Otomatis</span>
+							<span class="feature-tag">ISO 27001</span>
+						</div>
+					</div>
 					<div class="card-shine"></div>
 				</div>
-				<div class="card" data-aos="fade-up" data-aos-delay="300">
-					<div class="card-icon">
-						<i class="fas fa-rocket"></i>
+				
+				<div class="faq-card" data-aos="fade-up" data-aos-delay="300" data-category="pricing">
+					<div class="card-header">
+						<div class="card-icon">
+							<i class="fas fa-rocket"></i>
+						</div>
+						<h4>Apakah ada trial?</h4>
+						<button class="card-toggle">
+							<span class="toggle-icon"></span>
+						</button>
 					</div>
-					<h4>Apakah ada trial?</h4>
-					<p>Ada. Paket Starter gratis agar Anda bisa mencoba sebelum upgrade.</p>
+					<div class="card-content">
+						<p>Ada. Paket Starter gratis agar Anda bisa mencoba sebelum upgrade. Trial berlaku selama 30 hari dengan akses ke semua fitur premium, sehingga Anda dapat merasakan manfaat penuh dari KomplekKita.</p>
+						<div class="card-features">
+							<span class="feature-tag">30 Hari</span>
+							<span class="feature-tag">Fitur Lengkap</span>
+							<span class="feature-tag">Tanpa CC</span>
+						</div>
+					</div>
 					<div class="card-shine"></div>
 				</div>
-				<div class="card" data-aos="fade-up" data-aos-delay="400">
-					<div class="card-icon">
-						<i class="fas fa-cogs"></i>
+				
+				<div class="faq-card" data-aos="fade-up" data-aos-delay="400" data-category="general">
+					<div class="card-header">
+						<div class="card-icon">
+							<i class="fas fa-cogs"></i>
+						</div>
+						<h4>Bagaimana proses implementasi?</h4>
+						<button class="card-toggle">
+							<span class="toggle-icon"></span>
+						</button>
 					</div>
-					<h4>Bagaimana proses implementasi?</h4>
-					<p>Tim kami bantu migrasi data, pelatihan, dan onboarding hingga siap jalan.</p>
+					<div class="card-content">
+						<p>Tim kami bantu migrasi data, pelatihan, dan onboarding hingga siap jalan. Proses implementasi biasanya memakan waktu 1-3 hari tergantung kompleksitas dan ukuran komplek Anda.</p>
+						<div class="card-features">
+							<span class="feature-tag">Migrasi Data</span>
+							<span class="feature-tag">Pelatihan</span>
+							<span class="feature-tag">Onboarding</span>
+						</div>
+					</div>
 					<div class="card-shine"></div>
 				</div>
-				<div class="card" data-aos="fade-up" data-aos-delay="500">
-					<div class="card-icon">
-						<i class="fas fa-headset"></i>
+				
+				<div class="faq-card" data-aos="fade-up" data-aos-delay="500" data-category="technical">
+					<div class="card-header">
+						<div class="card-icon">
+							<i class="fas fa-headset"></i>
+						</div>
+						<h4>Bagaimana dengan dukungan teknis?</h4>
+						<button class="card-toggle">
+							<span class="toggle-icon"></span>
+						</button>
 					</div>
-					<h4>Bagaimana dengan dukungan teknis?</h4>
-					<p>Kami menyediakan dukungan teknis 24/7 melalui chat, email, dan telepon.</p>
+					<div class="card-content">
+						<p>Kami menyediakan dukungan teknis 24/7 melalui chat, email, dan telepon. Tim support kami siap membantu dengan respons cepat rata-rata kurang dari 15 menit untuk semua pertanyaan dan kendala teknis.</p>
+						<div class="card-features">
+							<span class="feature-tag">24/7</span>
+							<span class="feature-tag">Multi-channel</span>
+							<span class="feature-tag">Respons Cepat</span>
+						</div>
+					</div>
 					<div class="card-shine"></div>
 				</div>
-				<div class="card" data-aos="fade-up" data-aos-delay="600">
-					<div class="card-icon">
-						<i class="fas fa-mobile-alt"></i>
+				
+				<div class="faq-card" data-aos="fade-up" data-aos-delay="600" data-category="technical">
+					<div class="card-header">
+						<div class="card-icon">
+							<i class="fas fa-mobile-alt"></i>
+						</div>
+						<h4>Apakah ada aplikasi mobile?</h4>
+						<button class="card-toggle">
+							<span class="toggle-icon"></span>
+						</button>
 					</div>
-					<h4>Apakah ada aplikasi mobile?</h4>
-					<p>Ya, tersedia untuk Android dan iOS dengan fitur lengkap seperti di web.</p>
+					<div class="card-content">
+						<p>Ya, tersedia untuk Android dan iOS dengan fitur lengkap seperti di web. Aplikasi mobile kami dirancang dengan UI/UX terbaik dan mendukung notifikasi push untuk informasi penting.</p>
+						<div class="card-features">
+							<span class="feature-tag">Android</span>
+							<span class="feature-tag">iOS</span>
+							<span class="feature-tag">Push Notification</span>
+						</div>
+					</div>
 					<div class="card-shine"></div>
 				</div>
 			</div>
+		</div>
+		
+		<div class="faq-cta" data-aos="fade-up">
+			<div class="cta-content">
+				<h3>Masih punya pertanyaan?</h3>
+				<p>Tim kami siap membantu menjawab semua pertanyaan Anda tentang KomplekKita</p>
+			</div>
+			<a href="#kontak" class="btn btn-primary">
+				<span class="btn-text">Hubungi Kami</span>
+				<span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+				<span class="btn-shine"></span>
+			</a>
 		</div>
 	</div>
 </section>
 
 <style>
+	/* Base styles and variables */
+	:root {
+		--primary-blue: #3B82F6;
+		--primary-blue-dark: #1E40AF;
+		--primary-blue-light: #93C5FD;
+		--muted-green: #10B981;
+		--accent-purple: #8B5CF6;
+		--accent-pink: #F472B6;
+		--accent-orange: #F59E0B;
+		--text-dark: #1F2937;
+		--text-light: #6B7280;
+		--surface: #FFFFFF;
+		--surface-2: #F9FAFB;
+		--border: #E5E7EB;
+		--transition-fast: 0.2s ease;
+		--transition-normal: 0.3s ease;
+		--transition-slow: 0.5s ease;
+		--bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+	}
+
 	/* FAQ Section */
 	.section#faq {
 		position: relative;
 		overflow: hidden;
-		padding: 6rem 0;
+		padding: 8rem 0;
+		background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
 	}
 	
-	.faq-wrapper {
+	/* Section Header Styling */
+	.section-header {
+		text-align: center;
+		margin-bottom: 4rem;
+		position: relative;
+		z-index: 2;
+	}
+	
+	.section-badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.5rem 1rem;
+		background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+		border-radius: 50px;
+		margin-bottom: 1.5rem;
+		position: relative;
+		overflow: hidden;
+		border: 1px solid rgba(59, 130, 246, 0.2);
+	}
+	
+	.badge-text {
+		font-weight: 700;
+		font-size: 0.875rem;
+		color: var(--primary-blue);
+		letter-spacing: 1px;
+		text-transform: uppercase;
 		position: relative;
 		z-index: 1;
 	}
 	
+	.badge-shine {
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(
+			to right,
+			rgba(255, 255, 255, 0) 0%,
+			rgba(255, 255, 255, 0.5) 50%,
+			rgba(255, 255, 255, 0) 100%
+		);
+		animation: badge-shine 3s infinite;
+	}
+	
+	@keyframes badge-shine {
+		0% { left: -100%; }
+		20% { left: 100%; }
+		100% { left: 100%; }
+	}
+	
+	.section-title {
+		font-size: 2.75rem;
+		font-weight: 800;
+		color: var(--text-dark);
+		margin-bottom: 1.5rem;
+		line-height: 1.2;
+		position: relative;
+	}
+	
+	.text-gradient {
+		background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		position: relative;
+		display: inline-block;
+	}
+	
+	.text-gradient::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 30%;
+		background: linear-gradient(90deg, var(--primary-blue-light), var(--accent-purple));
+		opacity: 0.2;
+		z-index: -1;
+		transform: translateY(40%);
+		transition: transform var(--transition-normal);
+	}
+	
+	.section-title:hover .text-gradient::after {
+		transform: translateY(20%);
+	}
+	
+	.section-subtitle {
+		font-size: 1.125rem;
+		color: var(--text-light);
+		max-width: 700px;
+		margin: 0 auto;
+		line-height: 1.6;
+	}
+	
+	/* FAQ Decoration */
 	.faq-decoration {
 		position: absolute;
 		top: 0;
@@ -88,35 +307,61 @@
 		width: 100%;
 		height: 100%;
 		pointer-events: none;
-		z-index: -1;
+		z-index: 0;
 		overflow: hidden;
 	}
 	
 	.faq-blob {
-		position: absolute;
+	position: absolute;
+	border-radius: 50%;
+	filter: blur(50px);
+	opacity: 0.1;
+	transition: all var(--transition-slow);
+}
+
+.section#faq:hover .faq-blob {
+	filter: blur(40px);
+	opacity: 0.15;
+	transform: scale(1.1);
+}
+	
+	.faq-blob-1 {
 		top: -150px;
 		right: -150px;
 		width: 400px;
 		height: 400px;
-		border-radius: 50%;
-		background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(16, 185, 129, 0.1));
-		filter: blur(50px);
-		animation: float 15s ease-in-out infinite alternate;
+		background: linear-gradient(135deg, var(--primary-blue), var(--muted-green));
+		animation: float-blob 15s ease-in-out infinite alternate;
 	}
 	
 	.faq-blob-2 {
-		position: absolute;
 		bottom: -100px;
 		left: -100px;
 		width: 300px;
 		height: 300px;
-		border-radius: 50%;
-		background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(37, 99, 235, 0.1));
-		filter: blur(40px);
-		animation: float 12s ease-in-out infinite alternate-reverse;
+		background: linear-gradient(135deg, var(--accent-orange), var(--primary-blue));
+		animation: float-blob 12s ease-in-out infinite alternate-reverse;
 	}
 	
-	@keyframes float {
+	.faq-blob-3 {
+		top: 20%;
+		left: -200px;
+		width: 350px;
+		height: 350px;
+		background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+		animation: float-blob 18s ease-in-out infinite alternate;
+	}
+	
+	.faq-blob-4 {
+		bottom: 30%;
+		right: -150px;
+		width: 250px;
+		height: 250px;
+		background: linear-gradient(135deg, var(--muted-green), var(--primary-blue-light));
+		animation: float-blob 20s ease-in-out infinite alternate-reverse;
+	}
+	
+	@keyframes float-blob {
 		0% {
 			transform: translate(0, 0) rotate(0deg) scale(1);
 		}
@@ -127,89 +372,403 @@
 			transform: translate(-20px, 10px) rotate(-5deg) scale(0.95);
 		}
 	}
-
-	.auto-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(var(--cell-min, 300px), 1fr));
-		gap: var(--grid-gap, 1.5rem);
-		position: relative;
-		z-index: 1;
-	}
-
-	.card {
-		background: var(--white);
-		border-radius: 25px;
-		padding: 2.5rem;
-		text-align: center;
-		border-left: 5px solid var(--accent-blue);
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-		position: relative;
-		overflow: hidden;
-		backdrop-filter: blur(10px);
-		background: rgba(255, 255, 255, 0.95);
-	}
-
-	.card-icon {
-		margin-bottom: 1.5rem;
-		font-size: 2rem;
-		color: var(--primary-blue);
-		background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-	}
 	
-	.card:hover .card-icon {
-		transform: scale(1.2) translateY(-5px);
-	}
-
-	.card::before {
-		content: '';
+	.faq-particles {
 		position: absolute;
 		top: 0;
 		left: 0;
-		right: 0;
-		height: 5px;
-		background: linear-gradient(90deg, var(--accent-blue), var(--primary-blue));
-		transform: scaleX(0);
-		transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-		transform-origin: left;
-	}
-
-	.card:hover::before {
-		transform: scaleX(1);
-	}
-
-	.card:hover {
-		transform: translateY(-15px) scale(1.03);
-		box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
-		border-left-width: 8px;
-	}
-
-	.card h4 {
-		color: var(--text-dark);
-		font-size: 1.25rem;
-		font-weight: 700;
-		margin-bottom: 1rem;
-		line-height: 1.4;
-		transition: color 0.3s ease;
+		width: 100%;
+		height: 100%;
+		background-image: 
+			radial-gradient(var(--primary-blue) 1px, transparent 1px),
+			radial-gradient(var(--muted-green) 1px, transparent 1px);
+		background-size: 50px 50px;
+		background-position: 0 0, 25px 25px;
+		opacity: 0.05;
+		animation: particles-float 60s linear infinite;
 	}
 	
-	.card:hover h4 {
+	@keyframes particles-float {
+		0% { transform: translateY(0) rotate(0deg); }
+		100% { transform: translateY(-100px) rotate(10deg); }
+	}
+	
+	.faq-grid {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-image: linear-gradient(var(--border) 1px, transparent 1px),
+			linear-gradient(90deg, var(--border) 1px, transparent 1px);
+		background-size: 50px 50px;
+		opacity: 0.03;
+	}
+
+	/* FAQ Wrapper */
+	.faq-wrapper {
+		position: relative;
+		z-index: 1;
+		max-width: 1000px;
+		margin: 0 auto;
+	}
+	
+	/* FAQ Tabs */
+	.faq-tabs {
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+		margin-bottom: 3rem;
+		position: relative;
+		background: rgba(255, 255, 255, 0.5);
+		padding: 0.5rem;
+		border-radius: 50px;
+		border: 1px solid var(--border);
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+	}
+	
+	.faq-tab {
+		padding: 0.75rem 1.5rem;
+		border-radius: 50px;
+		font-weight: 600;
+		font-size: 0.875rem;
+		color: var(--text-light);
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		transition: all var(--transition-normal);
+		position: relative;
+		z-index: 2;
+	}
+	
+	.faq-tab.active {
 		color: var(--primary-blue);
 	}
-
-	.card p {
-		color: var(--text-light);
-		line-height: 1.6;
-		font-size: 1rem;
-		transition: color 0.3s ease;
+	
+	.faq-tab:hover:not(.active) {
+		color: var(--text-dark);
+		transform: translateY(-2px);
 	}
 	
-	.card:hover p {
-		color: var(--gray-700);
+	.tab-indicator {
+		position: absolute;
+		left: 0.5rem;
+		top: 0.5rem;
+		height: calc(100% - 1rem);
+		width: 100px;
+		background: var(--white);
+		border-radius: 50px;
+		transition: all var(--transition-normal) var(--bounce);
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+		z-index: 1;
 	}
+	
+	/* FAQ Cards */
+	.faq-cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: 2rem;
+		position: relative;
+		z-index: 1;
+	}
+	
+	.faq-card {
+	background: rgba(255, 255, 255, 0.9);
+	border-radius: 20px;
+	overflow: hidden;
+	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+	transition: all var(--transition-normal) cubic-bezier(0.16, 1, 0.3, 1);
+	position: relative;
+	border: 1px solid var(--border);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	transform-style: preserve-3d;
+	perspective: 1000px;
+}
+
+.faq-card::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+	opacity: 0;
+	transition: opacity 0.5s ease;
+	z-index: -1;
+}
+
+.faq-card:hover::before {
+	opacity: 1;
+}
+	
+	.faq-card:hover {
+	transform: translateY(-8px) scale(1.01);
+	box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+	border-color: rgba(59, 130, 246, 0.3);
+}
+
+.faq-card:hover .card-header {
+	background: linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+}
+	
+	.card-header {
+	display: flex;
+	align-items: center;
+	padding: 1.5rem;
+	gap: 1rem;
+	border-bottom: 1px solid var(--border);
+	transition: all var(--transition-normal) cubic-bezier(0.34, 1.56, 0.64, 1);
+	position: relative;
+	overflow: hidden;
+}
+
+.card-header::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 4px;
+	height: 0;
+	background: linear-gradient(to bottom, var(--primary-blue), var(--accent-purple));
+	transition: height 0.3s ease;
+}
+
+.faq-card:hover .card-header::before {
+	height: 100%;
+}
+	
+	.card-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 12px;
+	background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+	color: white;
+	font-size: 1.25rem;
+	flex-shrink: 0;
+	transition: all var(--transition-normal) cubic-bezier(0.34, 1.56, 0.64, 1);
+	box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+	position: relative;
+	overflow: hidden;
+}
+
+.card-icon::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	z-index: 0;
+}
+
+.faq-card:hover .card-icon::before {
+	opacity: 0.1;
+}
+
+.faq-card:hover .card-icon i {
+	position: relative;
+	z-index: 1;
+	color: var(--primary-blue-dark);
+}
+	
+	.faq-card:hover .card-icon {
+	transform: scale(1.1) rotate(5deg);
+	background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+	box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+}
+
+.faq-card.active .card-icon {
+	transform: scale(1.15) rotate(0deg);
+	background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+	box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
+}
+	
+	.card-header h4 {
+	font-size: 1.125rem;
+	font-weight: 700;
+	color: var(--text-dark);
+	margin: 0;
+	flex-grow: 1;
+	transition: all var(--transition-normal);
+	position: relative;
+	padding-left: 5px;
+}
+
+.faq-card:hover .card-header h4 {
+	color: var(--primary-blue);
+	transform: translateX(5px);
+}
+
+.faq-card.active .card-header h4 {
+	color: var(--primary-blue);
+	font-weight: 700;
+	transform: translateX(5px);
+}
+	
+	.faq-card:hover .card-header h4 {
+		color: var(--primary-blue);
+	}
+	
+	.card-toggle {
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: var(--surface-2);
+	border: 1px solid var(--border);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all var(--transition-normal) cubic-bezier(0.34, 1.56, 0.64, 1);
+	position: relative;
+	flex-shrink: 0;
+	box-shadow: 0 2px 5px rgba(59, 130, 246, 0.1);
+}
+
+.card-toggle::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	z-index: 0;
+	border-radius: 50%;
+}
+
+.faq-card:hover .card-toggle::before {
+	opacity: 0.2;
+}
+	
+	.toggle-icon {
+	position: relative;
+	width: 10px;
+	height: 10px;
+	z-index: 1;
+}
+	
+	.toggle-icon::before,
+	.toggle-icon::after {
+		content: '';
+		position: absolute;
+		background: var(--text-light);
+		transition: all var(--transition-normal);
+	}
+	
+	.toggle-icon::before {
+		top: 4px;
+		left: 0;
+		width: 10px;
+		height: 2px;
+	}
+	
+	.toggle-icon::after {
+		top: 0;
+		left: 4px;
+		width: 2px;
+		height: 10px;
+	}
+	
+	.faq-card.active .toggle-icon::after {
+	transform: rotate(90deg);
+	opacity: 0;
+}
+
+.faq-card.active .toggle-icon::before {
+	background: var(--primary-blue);
+}
+
+.faq-card.active .card-toggle {
+	background: var(--primary-blue-light);
+	border-color: var(--primary-blue);
+	transform: scale(1.2) rotate(180deg);
+	box-shadow: 0 6px 15px rgba(59, 130, 246, 0.25);
+}
+
+.faq-card:hover .card-toggle {
+	transform: scale(1.1);
+	box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+}
+	
+	.card-content {
+		padding: 0;
+		max-height: 0;
+		overflow: hidden;
+		transition: all var(--transition-normal);
+	}
+	
+	.faq-card.active .card-content {
+		padding: 1.5rem;
+		max-height: 300px;
+	}
+	
+	.card-content p {
+		font-size: 1rem;
+		line-height: 1.7;
+		color: var(--text-light);
+		margin-bottom: 1.5rem;
+	}
+	
+	.card-features {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	
+	.feature-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.25rem 0.75rem;
+	background: rgba(59, 130, 246, 0.1);
+	border-radius: 50px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	color: var(--primary-blue);
+	transition: all var(--transition-normal) cubic-bezier(0.34, 1.56, 0.64, 1);
+	position: relative;
+	overflow: hidden;
+	border: 1px solid transparent;
+}
+
+.feature-tag::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(90deg, 
+		rgba(59, 130, 246, 0), 
+		rgba(59, 130, 246, 0.2), 
+		rgba(59, 130, 246, 0));
+	transition: all 0.5s ease;
+}
+
+.feature-tag:hover::before {
+	left: 100%;
+}
+	
+	.feature-tag:hover {
+	background: var(--primary-blue);
+	color: white;
+	transform: translateY(-5px) scale(1.05);
+	box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+	border-color: rgba(59, 130, 246, 0.3);
+}
 	
 	.card-shine {
 		position: absolute;
@@ -226,89 +785,446 @@
 		transform: translateX(-100%);
 		transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 		pointer-events: none;
+		z-index: 1;
 	}
 	
-	.card:hover .card-shine {
+	.faq-card:hover .card-shine {
 		transform: translateX(100%);
 	}
-
+	
+	/* FAQ CTA */
+	.faq-cta {
+		margin-top: 4rem;
+		background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+		border-radius: 20px;
+		padding: 3rem;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 2rem;
+		position: relative;
+		overflow: hidden;
+		box-shadow: 0 20px 50px rgba(59, 130, 246, 0.3);
+	}
+	
+	.faq-cta::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+		opacity: 0.2;
+	}
+	
+	.cta-content {
+		flex-grow: 1;
+	}
+	
+	.cta-content h3 {
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: white;
+		margin-bottom: 0.5rem;
+	}
+	
+	.cta-content p {
+		font-size: 1.125rem;
+		color: rgba(255, 255, 255, 0.9);
+		margin: 0;
+	}
+	
+	.faq-cta .btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.875rem 1.75rem;
+		border-radius: 10px;
+		font-weight: 600;
+		font-size: 1rem;
+		text-decoration: none;
+		transition: all var(--transition-normal);
+		position: relative;
+		overflow: hidden;
+		flex-shrink: 0;
+	}
+	
+	.faq-cta .btn-primary {
+		background: white;
+		color: var(--primary-blue-dark);
+		box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+	}
+	
+	.faq-cta .btn-primary:hover {
+		transform: translateY(-5px);
+		box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+	}
+	
+	.faq-cta .btn-primary:hover .btn-icon {
+		transform: translateX(3px);
+	}
+	
+	.btn-shine {
+		position: absolute;
+		top: 0;
+		left: -100%;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(
+			to right,
+			rgba(255, 255, 255, 0) 0%,
+			rgba(255, 255, 255, 0.3) 50%,
+			rgba(255, 255, 255, 0) 100%
+		);
+		animation: btn-shine 3s infinite;
+		z-index: 0;
+	}
+	
+	@keyframes btn-shine {
+		0% { left: -100%; }
+		20% { left: 100%; }
+		100% { left: 100%; }
+	}
+	
 	/* Responsive adjustments for FAQ */
 	@media (max-width: 992px) {
 		.section#faq {
-			padding: 5rem 0;
+			padding: 6rem 0;
 		}
 		
-		.auto-grid {
+		.section-title {
+			font-size: 2.25rem;
+		}
+		
+		.faq-cards {
 			grid-template-columns: repeat(2, 1fr);
-			gap: 1.5rem;
+		}
+		
+		.faq-cta {
+			padding: 2.5rem;
 		}
 	}
 	
 	@media (max-width: 768px) {
 		.section#faq {
-			padding: 4rem 0;
+			padding: 5rem 0;
 		}
 		
-		.auto-grid {
+		.section-title {
+			font-size: 2rem;
+		}
+		
+		.section-subtitle {
+			font-size: 1rem;
+		}
+		
+		.faq-tabs {
+			flex-wrap: wrap;
+			gap: 0.5rem;
+			padding: 0.5rem;
+		}
+		
+		.faq-tab {
+			padding: 0.5rem 1rem;
+			font-size: 0.75rem;
+		}
+		
+		.faq-cards {
 			grid-template-columns: 1fr;
 			gap: 1.5rem;
 		}
 
-		.card {
+		.faq-cta {
+			flex-direction: column;
+			text-align: center;
 			padding: 2rem;
-			border-left-width: 4px;
 		}
 		
-		.card-icon {
-			font-size: 1.75rem;
-			margin-bottom: 1.25rem;
-		}
-
-		.card h4 {
-			font-size: 1.1rem;
-		}
-
-		.card p {
-			font-size: 0.95rem;
+		.cta-content {
+			margin-bottom: 1.5rem;
 		}
 		
-		.faq-blob {
-			width: 250px;
-			height: 250px;
-			right: -100px;
-			top: -100px;
+		.cta-content h3 {
+			font-size: 1.5rem;
 		}
 		
-		.faq-blob-2 {
-			width: 200px;
-			height: 200px;
-			left: -80px;
-			bottom: -80px;
+		.cta-content p {
+			font-size: 1rem;
 		}
 	}
 	
 	@media (max-width: 480px) {
 		.section#faq {
-			padding: 3rem 0;
+			padding: 4rem 0;
 		}
 		
-		.card {
-			padding: 1.75rem;
+		.section-title {
+			font-size: 1.75rem;
+		}
+		
+		.card-header {
+			padding: 1.25rem;
 		}
 		
 		.card-icon {
-			font-size: 1.5rem;
+			width: 36px;
+			height: 36px;
+			font-size: 1rem;
+		}
+		
+		.card-header h4 {
+			font-size: 1rem;
+		}
+		
+		.faq-card.active .card-content {
+			padding: 1.25rem;
+		}
+		
+		.card-content p {
+			font-size: 0.9rem;
 			margin-bottom: 1rem;
 		}
 		
-		.card h4 {
-			font-size: 1rem;
-			margin-bottom: 0.75rem;
+		.feature-tag {
+			font-size: 0.7rem;
+			padding: 0.2rem 0.6rem;
+		}
+		}
+</style>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		// FAQ Card Toggle
+	const faqCards = document.querySelectorAll('.faq-card');
+	faqCards.forEach(card => {
+		const toggle = card.querySelector('.card-toggle') as HTMLElement;
+		if (!toggle) return;
+		toggle.addEventListener('click', () => {
+				// Close all other cards
+				faqCards.forEach(otherCard => {
+					if (otherCard !== card && otherCard.classList.contains('active')) {
+						otherCard.classList.remove('active');
+					}
+				});
+				
+				// Toggle current card
+				card.classList.toggle('active');
+				
+				// Add ripple effect
+				const ripple = document.createElement('span');
+				ripple.classList.add('ripple');
+				ripple.style.position = 'absolute';
+				ripple.style.borderRadius = '50%';
+				ripple.style.transform = 'scale(0)';
+				ripple.style.animation = 'ripple 0.6s linear';
+				ripple.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+				
+		const rect = toggle.getBoundingClientRect();
+		ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) * 2 + 'px';
+		ripple.style.left = -rect.width / 2 + 'px';
+		ripple.style.top = -rect.height / 2 + 'px';
+		
+		if (toggle) toggle.appendChild(ripple);
+				
+				setTimeout(() => {
+					ripple.remove();
+				}, 600);
+			});
+		});
+		
+		// FAQ Tab Filtering
+	const faqTabs = document.querySelectorAll('.faq-tab');
+	const tabIndicator = document.querySelector('.tab-indicator') as HTMLElement;
+		
+	// Initialize tab indicator position
+	if (tabIndicator) {
+		const activeTab = document.querySelector('.faq-tab.active') as HTMLElement;
+		if (activeTab) {
+			const tabRect = activeTab.getBoundingClientRect();
+			const tabsContainer = document.querySelector('.faq-tabs') as HTMLElement;
+			if (tabsContainer) {
+				const tabsRect = tabsContainer.getBoundingClientRect();
+				tabIndicator.style.width = tabRect.width + 'px';
+				tabIndicator.style.left = (tabRect.left - tabsRect.left + 0.5) + 'px';
+			}
+			}
 		}
 		
-		.card p {
-			font-size: 0.9rem;
+		faqTabs.forEach(tab => {
+			tab.addEventListener('click', () => {
+				// Update active tab
+				faqTabs.forEach(t => t.classList.remove('active'));
+				tab.classList.add('active');
+				
+		// Move tab indicator
+		if (tabIndicator) {
+			const tabRect = tab.getBoundingClientRect();
+			const tabsContainer = document.querySelector('.faq-tabs') as HTMLElement;
+			if (tabsContainer) {
+				const tabsRect = tabsContainer.getBoundingClientRect();
+				tabIndicator.style.width = tabRect.width + 'px';
+				tabIndicator.style.left = (tabRect.left - tabsRect.left + 0.5) + 'px';
+			}
+				}
+				
+		// Filter cards
+		const tabElement = tab as HTMLElement;
+		const category = tabElement.dataset.tab;
+		const cards = document.querySelectorAll('.faq-card');
+		
+		cards.forEach(card => {
+			const cardElement = card as HTMLElement;
+			if (category === 'all' || cardElement.dataset.category === category) {
+				cardElement.style.display = '';
+				setTimeout(() => {
+					cardElement.style.opacity = '1';
+					cardElement.style.transform = '';
+				}, 10);
+			} else {
+				cardElement.style.opacity = '0';
+				cardElement.style.transform = 'translateY(20px)';
+				setTimeout(() => {
+					cardElement.style.display = 'none';
+				}, 300);
+			}
+		});
+			});
+		});
+		
+		// 3D Card Tilt Effect
+	const cards = document.querySelectorAll('.faq-card');
+	cards.forEach(card => {
+		const cardElement = card as HTMLElement;
+		cardElement.addEventListener('mousemove', (e: MouseEvent) => {
+			const cardRect = cardElement.getBoundingClientRect();
+			const cardWidth = cardRect.width;
+			const cardHeight = cardRect.height;
+			const centerX = cardRect.left + cardWidth / 2;
+			const centerY = cardRect.top + cardHeight / 2;
+			const mouseX = e.clientX - centerX;
+			const mouseY = e.clientY - centerY;
+			const rotateX = (mouseY / (cardHeight / 2)) * -3;
+			const rotateY = (mouseX / (cardWidth / 2)) * 3;
+			
+			cardElement.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+			
+			const shine = cardElement.querySelector('.card-shine') as HTMLElement;
+			if (shine) {
+				const shineX = (mouseX / cardWidth) * 100 + 50;
+				const shineY = (mouseY / cardHeight) * 100 + 50;
+				shine.style.background = `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%)`;
+			}
+		});
+		
+		cardElement.addEventListener('mouseleave', () => {
+			cardElement.style.transform = '';
+			const shine = cardElement.querySelector('.card-shine') as HTMLElement;
+			if (shine) {
+				shine.style.background = '';
+			}
+		});
+		});
+		
+		// Enhanced animation for feature tags
+		const featureTags = document.querySelectorAll('.feature-tag');
+	featureTags.forEach((tag, index) => {
+		const tagElement = tag as HTMLElement;
+		const delay = index * 50;
+		tagElement.style.transitionDelay = `${delay}ms`;
+		
+		tagElement.addEventListener('mouseenter', () => {
+			tagElement.style.transform = 'translateY(-5px) scale(1.05)';
+			
+			const parent = tagElement.parentElement;
+			if (parent) {
+				const siblings = parent.querySelectorAll('.feature-tag');
+				siblings.forEach(sibling => {
+					const siblingElement = sibling as HTMLElement;
+					if (siblingElement !== tagElement) {
+						siblingElement.style.transform = 'translateY(-2px) scale(0.98)';
+						siblingElement.style.opacity = '0.7';
+					}
+				});
+			}
+		});
+		
+		tagElement.addEventListener('mouseleave', () => {
+			tagElement.style.transform = '';
+			
+			const parent = tagElement.parentElement;
+			if (parent) {
+				const siblings = parent.querySelectorAll('.feature-tag');
+				siblings.forEach(sibling => {
+					const siblingElement = sibling as HTMLElement;
+					if (siblingElement !== tagElement) {
+						siblingElement.style.transform = '';
+						siblingElement.style.opacity = '';
+					}
+				});
+			}
+		});
+		
+		setTimeout(() => {
+			tagElement.style.transform = 'translateY(-5px) scale(1.05)';
+			setTimeout(() => {
+				tagElement.style.transform = '';
+			}, 300);
+		}, 1000 + delay);
+		});
+		
+	// Enhanced ripple effect for CTA button
+	const ctaButton = document.querySelector('.faq-cta .btn') as HTMLElement;
+	if (ctaButton) {
+		ctaButton.addEventListener('click', (e: MouseEvent) => {
+			const rect = ctaButton.getBoundingClientRect();
+			const x = e.clientX - rect.left;
+			const y = e.clientY - rect.top;
+			
+			const existingRipples = ctaButton.querySelectorAll('.ripple');
+			existingRipples.forEach(r => r.remove());
+			
+			const ripple = document.createElement('span');
+			ripple.classList.add('ripple');
+			ripple.style.position = 'absolute';
+			ripple.style.borderRadius = '50%';
+			ripple.style.transform = 'scale(0)';
+			ripple.style.animation = 'ripple 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+			ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+			ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) * 2.5 + 'px';
+			ripple.style.left = `${x - (Math.max(rect.width, rect.height) * 1.25)}px`;
+			ripple.style.top = `${y - (Math.max(rect.width, rect.height) * 1.25)}px`;
+			ripple.style.pointerEvents = 'none';
+			ripple.style.zIndex = '1';
+			
+			ctaButton.appendChild(ripple);
+			
+			ctaButton.style.transform = 'scale(0.98)';
+			setTimeout(() => {
+				ctaButton.style.transform = '';
+			}, 200);
+			
+			setTimeout(() => {
+				ripple.remove();
+			}, 800);
+		});
+		
+		ctaButton.addEventListener('mouseenter', () => {
+			const btnText = ctaButton.querySelector('.btn-text') as HTMLElement;
+			const btnIcon = ctaButton.querySelector('.btn-icon') as HTMLElement;
+			
+			if (btnText) btnText.style.transform = 'translateX(-3px)';
+			if (btnIcon) btnIcon.style.transform = 'translateX(3px)';
+		});
+		
+		ctaButton.addEventListener('mouseleave', () => {
+			const btnText = ctaButton.querySelector('.btn-text') as HTMLElement;
+			const btnIcon = ctaButton.querySelector('.btn-icon') as HTMLElement;
+			
+			if (btnText) btnText.style.transform = '';
+			if (btnIcon) btnIcon.style.transform = '';
+		});
 		}
-	}
-</style>
+	});
+</script>
 
