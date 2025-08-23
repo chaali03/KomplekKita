@@ -1,0 +1,72 @@
+---
+
+---
+<section>
+
+         <div class="parent">
+            <div class="square">
+             <h3>Kas Awal</h3>
+             <p>Rp.</p>
+            </div>
+            <div class="square">
+                <h3>Pemasukan</h3>
+                <p>Rp.</p>
+            </div>
+            <div class="square">
+                 <h3>Pengeluaran</h3>
+                <p>Rp.</p>
+            </div>
+            <div class="square">
+                 <h3>Kas Akhir</h3>
+                <p>Rp.</p>
+            </div>
+        </div>
+
+</section>
+
+
+
+<style>
+    .square{
+    box-sizing: border-box;
+    box-shadow: ;
+    border-radius: 30px;
+    background-color: #F1E7D3;
+    width: 275px;
+    height: 150px;
+    margin: 40px ;
+    padding: 10px ;
+    flex-shrink: 0;
+}
+
+.square h3{
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: large;
+    padding-left: 10px;
+    
+}
+
+.square p {
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: small;
+    padding-left: 10px;
+    
+}
+
+.parent{
+    display: flex;
+    flex-direction: row;
+}
+
+  @media (max-width: 768px) {
+    .parent{
+       overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    }
+}
+</style>
+
+
+

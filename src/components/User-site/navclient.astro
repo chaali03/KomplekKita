@@ -1,0 +1,231 @@
+---
+const nama = "Duta Bijaksana"
+---
+
+
+<header class="main-header">
+    <div class="header-content">
+            <img src="../../../public/images/hero-app.png" alt="Komplek Kita Logo" class="logo-image" />
+        <div class="login-button-container">
+            <a href="#" class="login-button">
+                Login Admin
+            </a>
+        </div>
+    </div>
+</header>
+
+
+<section>
+
+  <div class="selamat-datang">
+    <h1 class="blue">Selamat Datang</h1>
+    <h1 class="komplek">
+      Di Komplek {nama}
+    </h1>
+  </div>
+
+  <nav class="parent-nav">
+
+    <button class="burgir" aria-label="Toggle nav">
+      <span class="line"></span>
+      <span class="line"></span>
+      <span class="line"></span>
+    </button>
+
+    <ul class="links">
+      <li><a href="/user">Home</a></li>
+      <li><a href="/userlaporan">Laporan</a></li>
+      <li><a href="/userprogram">Program</a></li>
+      <li><a href="/userinfo">Info</a></li>
+    </ul>
+  </nav>
+
+  <div class="divider"></div>
+</section>
+
+<style>
+  
+  section {
+    padding: 2rem 1rem;
+    font-family: sans-serif;
+  }
+
+  /* Header shi */
+.main-header {
+  padding: 1rem;
+  font-family: sans-serif;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto;
+  flex-wrap: wrap; 
+}
+
+.logo-image {
+  max-width: 100%;
+  height: auto;
+  margin-right: ;
+}
+
+
+.login-button {
+  text-decoration: none;
+  background-color: transparent;
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: color 0.3s ease;
+  color: #000;
+}
+
+.login-button:hover {
+    color: #FFB61D;
+}
+
+    /* uphere is header */
+
+
+  .selamat-datang {
+    text-align: left; 
+    margin-bottom: 2rem;
+  }
+
+  .selamat-datang h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+    font-weight: 600;
+  }
+
+  .selamat-datang .blue {
+    color: #007bff;
+    font-size: 3rem;
+  }
+
+ 
+  .parent-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5rem;
+  }
+  
+  .links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .parent-nav a {
+    text-decoration: none;
+    color: #000;
+    font-weight: 500;
+    font-size: 1.1rem;
+    padding: 0.5rem 0;
+    transition: color 0.3s ease;
+  }
+
+  .parent-nav a:hover {
+    color: #FFB61D;
+  }
+  
+ 
+  .burgir {
+    display: none; 
+    flex-direction: column;
+    justify-content: space-around;
+    width: 2rem;
+    height: 2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  .burgir .line {
+    width: 2rem;
+    height: 0.25rem;
+    background: #333;
+    border-radius: 10px;
+    transition: all 0.3s linear;
+    position: relative;
+    transform-origin: 1px;
+  }
+
+  
+  .divider {
+    border-bottom: 5px solid #000; 
+    margin-top: 2rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 7rem;
+  }
+
+    body.no-scroll {
+    overflow: hidden;
+  }
+
+ 
+  @media (max-width: 768px) {
+
+
+
+    .parent-nav {
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    
+    .burgir {
+      display: flex;
+      position: fixed;
+      top: 3rem;
+      right: 1rem;
+      z-index: 9999;
+    }
+
+    .links {
+      display: none; 
+      flex-direction: column;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.5);
+      z-index: 5;
+      padding-top: 5rem;
+    }
+    
+    .links.is-active {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+  }
+
+</style>
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const burgerMenu = document.querySelector('.burgir');
+    const navLinks = document.querySelector('.links');
+    const body = document.body;
+
+    if (burgerMenu && navLinks) {
+      burgerMenu.addEventListener('click', () => {
+        navLinks.classList.toggle('is-active');
+        burgerMenu.classList.toggle('is-active');
+        body.classList.toggle('no-scroll'); 
+      });
+    }
+  });
+</script>
