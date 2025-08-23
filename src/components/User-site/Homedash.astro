@@ -1,0 +1,317 @@
+---
+
+---
+
+
+<!-- laporan -->
+ <section>
+
+     <div class="parent">
+            <div class="square">
+             <h3>Kas Awal</h3>
+             <p>Rp.</p>
+            </div>
+            <div class="square">
+                <h3>Pemasukan</h3>
+                <p>Rp.</p>
+            </div>
+            <div class="square">
+                 <h3>Pengeluaran</h3>
+                <p>Rp.</p>
+            </div>
+            <div class="square">
+                 <h3>Kas Akhir</h3>
+                <p>Rp.</p>
+            </div>
+        </div>
+
+        <!-- main container -->
+        <div class="dashboard-container">
+            
+        <!-- p Program container -->
+    <section class="progress-program-container">
+      <div class="progress-header">
+        <h3>Progress Program</h3>
+        <span></span>
+      </div>
+      <div class="progress-content">
+
+      </div>
+
+    </section>
+
+    <section class="upcoming-events-container">
+      <div class="upcoming-header">
+        <h3>Acara Mendatang</h3>
+        <span></span>
+      </div>
+      <ul class="event-list">
+        <li class="event-item">
+          <span class="event-name">Acara Akbar 17 Agustus</span>
+          <span class="event-date">10.29.2020</span>
+        </li>
+        <li class="event-item">
+          <span class="event-name">Pengajian</span>
+          <span class="event-date">10.29.2020</span>
+        </li>
+        <li class="event-item">
+          <span class="event-name">Arisan Komplek</span>
+          <span class="event-date">10.29.2020</span>
+        </li>
+        <li class="event-item">
+          <span class="event-name">Pengajian</span>
+          <span class="event-date">10.29.2020</span>
+        </li>
+        <li class="event-item">
+          <span class="event-name">Pengajian</span>
+          <span class="event-date">10.29.2020</span>
+        </li>
+      </ul>
+    </section>
+  </div>
+
+<section class="info-section">
+  <h2>Informasi Komplek Duta Bijaksana</h2>
+  <div class="card-container">
+    <div class="info-card">
+      <div class="card-content">
+      </div>
+      
+      <div class="card-footer">
+        <p>Tanah di Jual, Blok H no 08<br><span>Informasi selanjutnya</span></p>
+        <span class="card-arrow">&gt;</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="card-content">
+      </div>
+      <div class="card-footer">
+        <p>Infromasi Jadwal pengangkuta....<br><span>Informasi selanjutnya</span></p>
+        <span class="card-arrow">&gt;</span>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="card-content">
+      </div>
+      <div class="card-footer">
+        <p>Jadwal Kerja Bakti Bulan Agu....<br><span>Informasi selanjutnya</span></p>
+        <span class="card-arrow">&gt;</span>
+      </div>
+    </div>
+  </div>
+
+</section>  
+
+
+</section>
+
+
+<style>
+
+/* hapus */
+.square{
+    box-sizing: border-box;
+    box-shadow: ;
+    border-radius: 30px;
+    background-color: #F1E7D3;
+    width: 275px;
+    height: 150px;
+    margin: 40px ;
+    padding: 10px ;
+    flex-shrink: 0;
+}
+
+.square h3{
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: large;
+    padding-left: 10px;
+    
+}
+
+.square p {
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: small;
+    padding-left: 10px;
+    
+}
+
+.parent{
+    display: flex;
+    flex-direction: row;
+}
+
+/* hapus */
+
+
+  .dashboard-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    font-family: sans-serif;
+  }
+
+
+  .progress-program-container {
+    background-color: #f4f1ea;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    flex: 1; /* New */
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .progress-header h3 {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .progress-content {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    position: relative;
+    background-color: #e8e4de;
+    border-radius: 6px;
+    height: 150px;
+  }
+
+
+
+  /* Acara menadatang  */
+  .upcoming-events-container {
+    background-color: #f9f5f1;
+    border-radius: 8px;
+    padding: 20px;
+    flex: 1; 
+  }
+
+  .upcoming-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .upcoming-header h3 {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .event-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .event-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    background-color: white;
+    border-radius: 6px;
+  }
+
+  .event-name {
+    font-size: 1em;
+    color: #333;
+  }
+
+  .event-date {
+    font-size: 0.9em;
+    color: #777;
+  }
+
+
+
+   /* Paling bawaah */
+  .info-section {
+    max-width: 900px;
+    margin: 2rem auto;
+    font-family: sans-serif;
+  }
+
+  .info-section h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+  }
+
+  .info-card {
+    background-color: #f1f2e9;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-content {
+    background-color: #e8e4de;
+    border-radius: 0.75rem;
+    min-height: 150px;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 1.5rem;
+  }
+
+  .card-footer p {
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  .card-footer p span {
+    color: #666;
+    font-size: 0.8rem;
+  }
+
+  .card-arrow {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #999;
+  }
+
+  @media (max-width: 768px) {
+    .card-container {
+      grid-template-columns: 1fr; 
+    }
+  }
+
+ 
+  @media (max-width: 768px) {
+    .dashboard-container {
+      flex-direction: column;
+    }
+    .parent{
+       overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    }
+  }
+
+
+
+</style>
