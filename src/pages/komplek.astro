@@ -9,93 +9,200 @@ import Footer from '../components/sections/Footer.astro';
 
   <section class="komplek-page">
     <div class="bg-decor" aria-hidden="true">
-      <div class="waves-container">
-        <div class="wave wave-1"></div>
-        <div class="wave wave-2"></div>
-        <div class="wave wave-3"></div>
+      <div class="gradient-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
       </div>
-      <div class="shapes">
-        <div class="shape blob-1"></div>
-        <div class="shape blob-2"></div>
-        <div class="shape ring"></div>
+      <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
       </div>
+      <div class="grid-pattern"></div>
     </div>
 
     <div class="container">
       <div class="section-header" data-aos="fade-up">
         <div class="section-badge">
+          <span class="badge-icon">🏘️</span>
           <span class="badge-text">Komplek</span>
-          <span class="badge-shine"></span>
+          <div class="badge-glow"></div>
         </div>
         <h1 class="section-title">
-          <span class="text-gradient">Daftar Komplek</span> Tersedia
+          <span class="text-gradient">Daftar Komplek</span> 
+          <span class="title-accent">Tersedia</span>
         </h1>
-        <p class="section-subtitle">Pilih komplek untuk melihat demo tampilan dan fitur. Semua item bertanda Demo.</p>
+        <p class="section-subtitle">
+          Pilih komplek untuk melihat demo tampilan dan fitur lengkap. 
+          <span class="subtitle-highlight">Semua item bertanda Demo</span>
+        </p>
       </div>
 
       <div class="komplek-grid">
-        <a href="#" class="komplek-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="komplek-card" data-aos="fade-up" data-aos-delay="100">
           <div class="card-glow"></div>
-          <div class="card-header">
-            <div class="card-icon"><i class="fas fa-city"></i></div>
-            <div class="card-title">Komplek Melati Indah</div>
-            <span class="card-badge">Demo</span>
+          <div class="card-bg"></div>
+          <div class="card-content">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fas fa-city"></i>
+                <div class="icon-pulse"></div>
+              </div>
+              <div class="card-info">
+                <h3 class="card-title">Komplek Melati Indah</h3>
+                <p class="card-location">Jakarta Selatan</p>
+              </div>
+              <span class="demo-tag">
+                <span class="demo-dot"></span>
+                Demo
+              </span>
+            </div>
+            
+            <div class="card-body">
+              <p class="card-description">
+                Komplek modern dengan pengelolaan transparan dan fitur digital lengkap untuk kemudahan warga.
+              </p>
+              <div class="card-features">
+                <div class="feature-item">
+                  <div class="feature-icon">💳</div>
+                  <span>Iuran Online</span>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">📢</div>
+                  <span>Pengumuman</span>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">🛡️</div>
+                  <span>Laporan Keamanan</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-footer">
+              <button class="demo-btn">
+                <span class="btn-text">Lihat Demo</span>
+                <div class="btn-icon">
+                  <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="btn-ripple"></div>
+              </button>
+            </div>
           </div>
-          <div class="card-body">
-            <p>Komplek modern dengan pengelolaan transparan dan fitur digital lengkap.</p>
-            <ul class="card-features">
-              <li><i class="fas fa-check"></i> Iuran Online</li>
-              <li><i class="fas fa-check"></i> Pengumuman</li>
-              <li><i class="fas fa-check"></i> Laporan Keamanan</li>
-            </ul>
-          </div>
-          <div class="card-footer">
-            <span class="cta-text">Lihat Demo</span>
-            <span class="cta-icon"><i class="fas fa-arrow-right"></i></span>
-          </div>
-        </a>
+        </div>
 
-        <a href="#" class="komplek-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="komplek-card" data-aos="fade-up" data-aos-delay="200">
           <div class="card-glow"></div>
-          <div class="card-header">
-            <div class="card-icon"><i class="fas fa-home"></i></div>
-            <div class="card-title">Komplek Anggrek Asri</div>
-            <span class="card-badge">Demo</span>
+          <div class="card-bg"></div>
+          <div class="card-content">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fas fa-home"></i>
+                <div class="icon-pulse"></div>
+              </div>
+              <div class="card-info">
+                <h3 class="card-title">Komplek Anggrek Asri</h3>
+                <p class="card-location">Tangerang</p>
+              </div>
+              <span class="demo-tag">
+                <span class="demo-dot"></span>
+                Demo
+              </span>
+            </div>
+            
+            <div class="card-body">
+              <p class="card-description">
+                Lingkungan asri dengan manajemen smart community terpadu dan sistem keamanan 24 jam.
+              </p>
+              <div class="card-features">
+                <div class="feature-item">
+                  <div class="feature-icon">📝</div>
+                  <span>Buku Tamu</span>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">📰</div>
+                  <span>Kabar Warga</span>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">🔔</div>
+                  <span>Notifikasi</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-footer">
+              <button class="demo-btn">
+                <span class="btn-text">Lihat Demo</span>
+                <div class="btn-icon">
+                  <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="btn-ripple"></div>
+              </button>
+            </div>
           </div>
-          <div class="card-body">
-            <p>Lingkungan asri dengan manajemen smart community terpadu.</p>
-            <ul class="card-features">
-              <li><i class="fas fa-check"></i> Buku Tamu</li>
-              <li><i class="fas fa-check"></i> Kabar Warga</li>
-              <li><i class="fas fa-check"></i> Notifikasi</li>
-            </ul>
-          </div>
-          <div class="card-footer">
-            <span class="cta-text">Lihat Demo</span>
-            <span class="cta-icon"><i class="fas fa-arrow-right"></i></span>
-          </div>
-        </a>
+        </div>
 
-        <a href="#" class="komplek-card" data-aos="fade-up" data-aos-delay="300">
+        <div class="komplek-card" data-aos="fade-up" data-aos-delay="300">
           <div class="card-glow"></div>
-          <div class="card-header">
-            <div class="card-icon"><i class="fas fa-tree"></i></div>
-            <div class="card-title">Komplek Kenanga Raya</div>
-            <span class="card-badge">Demo</span>
+          <div class="card-bg"></div>
+          <div class="card-content">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fas fa-tree"></i>
+                <div class="icon-pulse"></div>
+              </div>
+              <div class="card-info">
+                <h3 class="card-title">Komplek Kenanga Raya</h3>
+                <p class="card-location">Bekasi</p>
+              </div>
+              <span class="demo-tag">
+                <span class="demo-dot"></span>
+                Demo
+              </span>
+            </div>
+            
+            <div class="card-body">
+              <p class="card-description">
+                Area hijau yang nyaman dengan fitur komunikasi cepat antar warga dan fasilitas lengkap.
+              </p>
+              <div class="card-features">
+                <div class="feature-item">
+                  <div class="feature-icon">💬</div>
+                  <span>Chat Warga</span>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">📅</div>
+                  <span>Jadwal Kegiatan</span>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">📁</div>
+                  <span>Arsip Dokumen</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-footer">
+              <button class="demo-btn">
+                <span class="btn-text">Lihat Demo</span>
+                <div class="btn-icon">
+                  <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="btn-ripple"></div>
+              </button>
+            </div>
           </div>
-          <div class="card-body">
-            <p>Area hijau yang nyaman dengan fitur komunikasi cepat antar warga.</p>
-            <ul class="card-features">
-              <li><i class="fas fa-check"></i> Chat Warga</li>
-              <li><i class="fas fa-check"></i> Jadwal Kegiatan</li>
-              <li><i class="fas fa-check"></i> Arsip Dokumen</li>
-            </ul>
-          </div>
-          <div class="card-footer">
-            <span class="cta-text">Lihat Demo</span>
-            <span class="cta-icon"><i class="fas fa-arrow-right"></i></span>
-          </div>
-        </a>
+        </div>
+      </div>
+
+      <div class="cta-section" data-aos="fade-up" data-aos-delay="400">
+        <div class="cta-content">
+          <h2 class="cta-title">Ingin Komplek Anda Terdaftar?</h2>
+          <p class="cta-subtitle">Bergabunglah dengan ribuan komplek lainnya dan nikmati kemudahan pengelolaan digital</p>
+          <button class="cta-btn">
+            <span>Daftar Sekarang</span>
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
       </div>
     </div>
   </section>
@@ -105,97 +212,691 @@ import Footer from '../components/sections/Footer.astro';
 
 <style>
   :root {
-    --primary-blue: #3B82F6;
-    --primary-blue-dark: #1E40AF;
-    --primary-blue-light: #93C5FD;
-    --accent-purple: #8B5CF6;
-    --text-dark: #1F2937;
-    --text-light: #6B7280;
+    --primary: #4F46E5;
+    --primary-light: #818CF8;
+    --primary-dark: #3730A3;
+    --secondary: #06B6D4;
+    --accent: #F59E0B;
+    --success: #10B981;
+    --text-primary: #111827;
+    --text-secondary: #6B7280;
+    --text-light: #9CA3AF;
     --surface: #FFFFFF;
-    --surface-2: #F9FAFB;
+    --surface-soft: #F9FAFB;
+    --surface-card: rgba(255, 255, 255, 0.95);
     --border: #E5E7EB;
+    --border-soft: rgba(229, 231, 235, 0.5);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --shadow-glow: 0 0 0 1px rgba(79, 70, 229, 0.1);
+    --radius: 16px;
+    --radius-lg: 24px;
   }
 
   .komplek-page {
     position: relative;
-    padding: 8rem 0 4rem;
-    background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
-    overflow: hidden;
     min-height: 100vh;
+    padding: 8rem 0 6rem;
+    background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+    overflow: hidden;
   }
 
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1; }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 2;
+  }
 
-  .section-header { text-align: center; margin-bottom: 2.5rem; }
-  .section-badge { display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem 1rem; background: linear-gradient(135deg, rgba(59,130,246,.1), rgba(139,92,246,.1)); border-radius: 50px; border: 1px solid rgba(59,130,246,.2); position: relative; overflow: hidden; margin-bottom: 1rem; }
-  .badge-text { font-weight: 700; font-size: .875rem; color: var(--primary-blue); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 1; }
-  .badge-shine { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,.5) 50%, rgba(255,255,255,0) 100%); animation: badge-shine 3s infinite; }
-  @keyframes badge-shine { 0%{left:-100%} 20%{left:100%} 100%{left:100%} }
-  .section-title { font-size: 2.5rem; font-weight: 800; color: var(--text-dark); line-height: 1.2; }
-  .text-gradient { background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .section-subtitle { color: var(--text-light); max-width: 720px; margin: .5rem auto 0; }
+  /* Background Effects */
+  .bg-decor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
 
-  .komplek-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+  .gradient-orbs {
+    position: absolute;
+    inset: 0;
+  }
 
-  .komplek-card { position: relative; display: flex; flex-direction: column; gap: .75rem; background: rgba(255,255,255,.9); border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; text-decoration: none; color: inherit; overflow: hidden; box-shadow: 0 12px 30px rgba(0,0,0,.06); transition: transform .4s cubic-bezier(.16,1,.3,1), box-shadow .4s cubic-bezier(.16,1,.3,1); }
-  .komplek-card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 20px 40px rgba(59,130,246,.18); }
-  .komplek-card .card-glow { position: absolute; inset: 0; background: radial-gradient(1200px 120px at var(--x, 10%) var(--y, 10%), rgba(59,130,246,.12), transparent 60%); opacity: 0; transition: opacity .3s ease; pointer-events: none; }
-  .komplek-card:hover .card-glow { opacity: 1; }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.3;
+    animation: float 20s ease-in-out infinite;
+  }
 
-  .card-header { display: flex; align-items: center; gap: .75rem; }
-  .card-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark)); box-shadow: 0 6px 14px rgba(59,130,246,.35); }
-  .card-title { font-weight: 700; color: var(--text-dark); font-size: 1.05rem; }
-  .card-badge { margin-left: auto; font-size: .75rem; font-weight: 700; color: var(--primary-blue-dark); background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.25); padding: .25rem .5rem; border-radius: 999px; }
+  .orb-1 {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    top: -150px;
+    left: -150px;
+    animation-delay: 0s;
+  }
 
-  .card-body p { color: var(--text-light); line-height: 1.6; margin: .25rem 0 .5rem; }
-  .card-features { display: grid; grid-template-columns: 1fr 1fr; gap: .25rem .75rem; }
-  .card-features li { list-style: none; font-size: .9rem; color: var(--text-dark); display: flex; align-items: center; gap: .5rem; }
-  .card-features i { color: var(--primary-blue); }
+  .orb-2 {
+    width: 250px;
+    height: 250px;
+    background: linear-gradient(135deg, var(--accent), var(--primary-light));
+    top: 30%;
+    right: -125px;
+    animation-delay: -7s;
+  }
 
-  .card-footer { display: flex; align-items: center; justify-content: flex-end; gap: .5rem; color: var(--primary-blue-dark); font-weight: 600; }
-  .komplek-card:hover .cta-icon { transform: translateX(6px); }
-  .cta-icon { transition: transform .3s ease; }
+  .orb-3 {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, var(--success), var(--secondary));
+    bottom: -100px;
+    left: 20%;
+    animation-delay: -14s;
+  }
 
-  /* Background */
-  .bg-decor { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-  .waves-container { position: absolute; inset: 0; overflow: hidden; }
-  .wave { position: absolute; bottom: 0; left: 0; width: 200%; height: 100px; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="%233B82F6"/></svg>') repeat-x; background-size: 1200px 100px; animation: wave 10s linear infinite; }
-  .wave-1 { opacity: .25; animation-duration: 12s; }
-  .wave-2 { opacity: .18; bottom: 10px; animation-duration: 8s; animation-delay: -2s; }
-  .wave-3 { opacity: .12; bottom: 20px; animation-duration: 6s; animation-delay: -4s; }
-  @keyframes wave { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .floating-shapes {
+    position: absolute;
+    inset: 0;
+  }
 
-  .shapes { position: absolute; inset: 0; }
-  .shape { position: absolute; opacity: .12; filter: blur(40px); }
-  .blob-1 { width: 320px; height: 320px; background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple)); top: -120px; left: -120px; border-radius: 48% 52% 51% 49% / 53% 48% 52% 47%; animation: float 16s ease-in-out infinite alternate; }
-  .blob-2 { width: 240px; height: 240px; background: linear-gradient(135deg, var(--primary-blue-light), var(--primary-blue)); bottom: -100px; right: -80px; border-radius: 36% 64% 50% 50% / 44% 39% 61% 56%; animation: float 18s ease-in-out infinite alternate-reverse; }
-  .ring { width: 160px; height: 160px; border-radius: 50%; border: 24px solid rgba(59,130,246,.25); top: 20%; right: 15%; }
-  @keyframes float { 0%{transform:translate(0,0)} 50%{transform:translate(18px,12px)} 100%{transform:translate(-12px,8px)} }
+  .shape {
+    position: absolute;
+    opacity: 0.1;
+    animation: drift 25s linear infinite;
+  }
 
+  .shape-1 {
+    width: 60px;
+    height: 60px;
+    background: var(--primary);
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+  }
+
+  .shape-2 {
+    width: 40px;
+    height: 40px;
+    background: var(--secondary);
+    border-radius: 50%;
+    top: 60%;
+    right: 20%;
+    animation-delay: -8s;
+  }
+
+  .shape-3 {
+    width: 80px;
+    height: 80px;
+    background: var(--accent);
+    border-radius: 20px;
+    bottom: 30%;
+    left: 80%;
+    transform: rotate(45deg);
+    animation-delay: -16s;
+  }
+
+  .grid-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0);
+    background-size: 40px 40px;
+    opacity: 0.3;
+  }
+
+  /* Header Styles */
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--surface-card);
+    border: 1px solid var(--border-soft);
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-glow), var(--shadow-sm);
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .badge-icon {
+    font-size: 1.2rem;
+  }
+
+  .badge-text {
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-glow {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(79, 70, 229, 0.1), transparent);
+    transform: translateX(-100%);
+    animation: badge-shine 3s ease-in-out infinite;
+  }
+
+  .section-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .title-accent {
+    color: var(--text-secondary);
+  }
+
+  .section-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .subtitle-highlight {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  /* Grid */
+  .komplek-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+
+  /* Card Styles */
+  .komplek-card {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    group: card;
+  }
+
+  .komplek-card:hover {
+    transform: translateY(-8px) scale(1.02);
+  }
+
+  .card-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--surface-card);
+    border: 1px solid var(--border-soft);
+    backdrop-filter: blur(20px);
+    transition: all 0.4s ease;
+  }
+
+  .komplek-card:hover .card-bg {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow-lg), 0 0 40px rgba(79, 70, 229, 0.1);
+  }
+
+  .card-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), 
+      rgba(79, 70, 229, 0.1) 0%, 
+      transparent 40%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .komplek-card:hover .card-glow {
+    opacity: 1;
+  }
+
+  .card-content {
+    position: relative;
+    padding: 2rem;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-icon {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+    flex-shrink: 0;
+  }
+
+  .icon-pulse {
+    position: absolute;
+    inset: -4px;
+    border-radius: 20px;
+    border: 2px solid var(--primary-light);
+    opacity: 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .card-info {
+    flex: 1;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+  }
+
+  .card-location {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    margin: 0;
+  }
+
+  .demo-tag {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(79, 70, 229, 0.1);
+    border: 1px solid rgba(79, 70, 229, 0.2);
+    border-radius: 25px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .demo-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  .card-body {
+    flex: 1;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: var(--surface-soft);
+    border-radius: 12px;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+  }
+
+  .feature-item:hover {
+    background: rgba(79, 70, 229, 0.05);
+    transform: translateX(4px);
+  }
+
+  .feature-icon {
+    font-size: 1.125rem;
+  }
+
+  .card-footer {
+    margin-top: auto;
+  }
+
+  .demo-btn {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  }
+
+  .demo-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+  }
+
+  .btn-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .demo-btn:hover .btn-icon {
+    transform: translateX(4px);
+  }
+
+  .btn-ripple {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+
+  .demo-btn:hover .btn-ripple {
+    transform: translateX(100%);
+  }
+
+  /* CTA Section */
+  .cta-section {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: var(--surface-card);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(10px);
+  }
+
+  .cta-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+
+  .cta-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--success), #059669);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+  }
+
+  /* Animations */
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(20px, -20px) scale(1.1); }
+    66% { transform: translate(-10px, 10px) scale(0.9); }
+  }
+
+  @keyframes drift {
+    0% { transform: translateY(0px) rotate(0deg); }
+    100% { transform: translateY(-100px) rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.1); }
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @keyframes badge-shine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(300%); }
+  }
+
+  /* Responsive Design */
   @media (max-width: 768px) {
-    .section-title { font-size: 2rem; }
-    .komplek-grid { grid-template-columns: 1fr; }
+    .komplek-page {
+      padding: 6rem 0 4rem;
+    }
+
+    .container {
+      padding: 0 1rem;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+    }
+
+    .komplek-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .card-features {
+      grid-template-columns: 1fr;
+    }
+
+    .cta-section {
+      padding: 2rem 1.5rem;
+    }
+
+    .cta-title {
+      font-size: 1.75rem;
+    }
+
+    .orb-1 {
+      width: 200px;
+      height: 200px;
+    }
+
+    .orb-2 {
+      width: 150px;
+      height: 150px;
+    }
+
+    .orb-3 {
+      width: 100px;
+      height: 100px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .section-title {
+      font-size: 2rem;
+    }
+
+    .komplek-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .card-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .card-info {
+      order: -1;
+    }
+
+    .demo-tag {
+      align-self: flex-start;
+    }
   }
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    // Glow follows cursor on card
-    document.querySelectorAll('.komplek-card').forEach(card => {
+  document.addEventListener('DOMContentLoaded', function() {
+    // Enhanced mouse tracking for card glow effect
+    const cards = document.querySelectorAll('.komplek-card');
+    
+    cards.forEach(card => {
+      const glow = card.querySelector('.card-glow');
+      
       card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 100;
         const y = ((e.clientY - rect.top) / rect.height) * 100;
-        const glow = card.querySelector('.card-glow');
+        
         if (glow) {
-          glow.style.setProperty('--x', x + '%');
-          glow.style.setProperty('--y', y + '%');
+          glow.style.setProperty('--x', `${x}%`);
+          glow.style.setProperty('--y', `${y}%`);
         }
       });
+      
       card.addEventListener('mouseleave', () => {
-        const glow = card.querySelector('.card-glow');
-        if (glow) { glow.style.opacity = '0'; }
+        if (glow) {
+          glow.style.opacity = '0';
+        }
       });
     });
+
+    // Demo button click handlers
+    const demoBtns = document.querySelectorAll('.demo-btn');
+    demoBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Create ripple effect
+        const ripple = document.createElement('span');
+        const rect = btn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.cssText = `
+          position: absolute;
+          width: ${size}px;
+          height: ${size}px;
+          left: ${x}px;
+          top: ${y}px;
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          transform: scale(0);
+          animation: ripple 0.6s linear;
+          pointer-events: none;
+        `;
+        
+        btn.appendChild(ripple);
+        
+        setTimeout(() => {
+          ripple.remove();
+        }, 600);
+        
+        // Show demo alert (replace with actual navigation)
+        setTimeout(() => {
+          alert('Demo akan segera tersedia! 🏘️');
+        }, 200);
+      });
+    });
+
+    // CTA button handler
+    const ctaBtn = document.querySelector('.cta-btn');
+    if (ctaBtn) {
+      ctaBtn.addEventListener('click', () => {
+        alert('Pendaftaran komplek baru akan segera tersedia! 🎉');
+      });
+    }
+
+    // Parallax effect for floating shapes
+    let ticking = false;
+    
+    function updateParallax() {
+      const scrolled = window.pageYOffset;
+      const shapes = document.querySelectorAll('.shape');
+      
+      shapes.forEach((shape, index) => {
+        const speed = 0.5 + (index * 0.2);
+        const yPos = -(scrolled * speed);
+        shape.style.transform = `translateY(${yPos}px) rotate(${scrolled * 0.1}deg)`;
+      });
+      
+      ticking = false;
+    }
+    
+    function requestTick() {
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    }
+    
+    window.addEventListener('scroll', requestTick);
   });
+
+  // Add ripple animation keyframes
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+  `;
+  document.head.appendChild(style);
 </script>
