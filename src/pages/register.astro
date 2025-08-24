@@ -118,24 +118,11 @@ import Footer from '../components/sections/Footer.astro';
                                 </div>
                             </div>
 
-                            <button type="submit" class="register-button">
+                            <button type="submit" class="register-button" disabled>
                                 <span class="button-text">Daftar Sekarang</span>
                                 <i class="fa-solid fa-user-plus"></i>
                             </button>
 
-                            <div class="social-register">
-                                <p class="social-text">Atau daftar dengan</p>
-                                <div class="social-buttons">
-                                    <button type="button" class="social-button google">
-                                        <i class="fa-brands fa-google"></i>
-                                        <span>Google</span>
-                                    </button>
-                                    <button type="button" class="social-button facebook">
-                                        <i class="fa-brands fa-facebook-f"></i>
-                                        <span>Facebook</span>
-                                    </button>
-                                </div>
-                            </div>
 
                             <div class="login-link">
                                 <p>Sudah punya akun? <a href="/login">Masuk sekarang</a></p>
@@ -368,13 +355,14 @@ import Footer from '../components/sections/Footer.astro';
         outline: none;
     }
 
-    .toggle-password {
+.toggle-password {
         position: absolute;
         right: 1rem;
         top: 50%;
         transform: translateY(-50%);
         color: #666;
         cursor: pointer;
+        z-index: 2;
     }
 
     .password-strength {
@@ -445,9 +433,22 @@ import Footer from '../components/sections/Footer.astro';
         overflow: hidden;
     }
 
-    .register-button:hover {
+.register-button:hover {
         background: #3a5bd9;
         transform: translateY(-2px);
+    }
+
+    .register-button:disabled {
+        background: #bbb;
+        cursor: not-allowed;
+        opacity: 0.7;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .register-button:disabled:hover {
+        background: #bbb;
+        transform: none;
     }
 
     .register-button:active {
@@ -850,60 +851,90 @@ import Footer from '../components/sections/Footer.astro';
             path: '/animations/icon-morph.json'
         });
 
-        // Toggle password visibility
+        // Toggle password visibility (eye open = masked, eye slash = visible)
         const togglePasswordButtons = document.querySelectorAll('.toggle-password');
-        
-        togglePasswordButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const input = this.previousElementSibling;
-                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-                input.setAttribute('type', type);
-                this.classList.toggle('fa-eye');
-                this.classList.toggle('fa-eye-slash');
+        togglePasswordButtons.forEach((button) => {
+            const container = button.closest('.input-container');
+            const input = container ? container.querySelector('input.form-input') : null;
+            if (!input) return;
+
+            // Initial state
+            input.setAttribute('type', 'password');
+            button.classList.remove('fa-eye-slash');
+            button.classList.add('fa-eye');
+            button.setAttribute('role', 'button');
+            button.setAttribute('tabindex', '0');
+            button.setAttribute('aria-pressed', 'false');
+            button.setAttribute('title', 'Tampilkan password');
+
+            const toggle = () => {
+                const masked = input.getAttribute('type') === 'password';
+                input.setAttribute('type', masked ? 'text' : 'password');
+                if (masked) {
+                    button.classList.remove('fa-eye');
+                    button.classList.add('fa-eye-slash');
+                } else {
+                    button.classList.remove('fa-eye-slash');
+                    button.classList.add('fa-eye');
+                }
+                button.setAttribute('aria-pressed', String(masked));
+                button.setAttribute('title', masked ? 'Sembunyikan password' : 'Tampilkan password');
+            };
+
+            button.addEventListener('click', toggle);
+            button.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggle();
+                }
             });
         });
 
-        // Password strength meter
+        // Password strength meter (robust and reactive)
         const passwordInput = document.getElementById('password');
         const strengthProgress = document.querySelector('.strength-progress');
         const strengthText = document.querySelector('.strength-text');
+        const strengthBar = document.querySelector('.strength-bar');
 
-        if (passwordInput && strengthProgress && strengthText) {
-            passwordInput.addEventListener('input', function() {
-                const password = this.value;
-                let strength = 0;
-                let color = '#ff6b6b';
-                let text = 'Lemah';
+        const calcStrength = (password) => {
+            let score = 0;
+            if (password.length >= 8) score += 1;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
+            if (/\d/.test(password)) score += 1;
+            if (/[^a-zA-Z\d]/.test(password)) score += 1;
+            return score;
+        };
 
-                if (password.length >= 8) strength += 1;
-                if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 1;
-                if (password.match(/\d/)) strength += 1;
-                if (password.match(/[^a-zA-Z\d]/)) strength += 1;
-
-                switch (strength) {
-                    case 0:
-                    case 1:
-                        color = '#ff6b6b';
-                        text = 'Lemah';
-                        break;
-                    case 2:
-                        color = '#ffbb33';
-                        text = 'Sedang';
-                        break;
-                    case 3:
-                        color = '#00c851';
-                        text = 'Kuat';
-                        break;
-                    case 4:
-                        color = '#007e33';
-                        text = 'Sangat Kuat';
-                        break;
-                }
-
-                const width = (strength / 4) * 100;
+        const updateStrengthUI = (score) => {
+            const map = {
+                0: { color: '#ff6b6b', label: 'Lemah' },
+                1: { color: '#ff6b6b', label: 'Lemah' },
+                2: { color: '#ffbb33', label: 'Sedang' },
+                3: { color: '#00c851', label: 'Kuat' },
+                4: { color: '#007e33', label: 'Sangat Kuat' },
+            };
+            const width = (score / 4) * 100;
+            const { color, label } = map[score];
+            if (strengthProgress) {
                 strengthProgress.style.width = `${width}%`;
                 strengthProgress.style.background = color;
-                strengthText.textContent = `Kekuatan password: ${text}`;
+                strengthProgress.setAttribute('aria-valuenow', String(width));
+            }
+            if (strengthText) {
+                strengthText.textContent = `Kekuatan password: ${label}`;
+            }
+        };
+
+        if (passwordInput && strengthProgress && strengthText) {
+            strengthProgress.setAttribute('role', 'progressbar');
+            strengthProgress.setAttribute('aria-valuemin', '0');
+            strengthProgress.setAttribute('aria-valuemax', '100');
+            updateStrengthUI(0);
+            // ensure bar visible baseline
+            if (strengthBar) strengthBar.style.opacity = '1';
+            passwordInput.addEventListener('input', function() {
+                const score = calcStrength(this.value);
+                updateStrengthUI(score);
             });
         }
 
@@ -911,9 +942,22 @@ import Footer from '../components/sections/Footer.astro';
         const registerForm = document.querySelector('.register-form');
         const registerButton = document.querySelector('.register-button');
 
+        // Disable register button until terms are accepted
+        const termsCheckbox = document.getElementById('terms');
+        if (termsCheckbox && registerButton) {
+            const syncRegisterButton = () => {
+                registerButton.disabled = !termsCheckbox.checked;
+            };
+            syncRegisterButton();
+            termsCheckbox.addEventListener('change', syncRegisterButton);
+        }
+
         if (registerForm && registerButton) {
             registerForm.addEventListener('submit', function(e) {
                 e.preventDefault();
+                
+                // Prevent submit if disabled for any reason
+                if (registerButton.disabled) return;
                 
                 // Add loading state
                 registerButton.classList.add('loading');
