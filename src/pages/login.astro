@@ -85,7 +85,7 @@ import Footer from '../components/sections/Footer.astro';
                                     <input type="checkbox" id="remember" name="remember" />
                                     <label for="remember">Ingat saya</label>
                                 </div>
-                                <a href="#" class="forgot-password">Lupa password?</a>
+                                <a href="/forgot-password" class="forgot-password">Lupa password?</a>
                             </div>
 
                             <button type="submit" class="login-button">
@@ -93,19 +93,6 @@ import Footer from '../components/sections/Footer.astro';
                                 <i class="fa-solid fa-arrow-right"></i>
                             </button>
 
-                            <div class="social-login">
-                                <p class="social-text">Atau masuk dengan</p>
-                                <div class="social-buttons">
-                                    <button type="button" class="social-button google">
-                                        <i class="fa-brands fa-google"></i>
-                                        <span>Google</span>
-                                    </button>
-                                    <button type="button" class="social-button facebook">
-                                        <i class="fa-brands fa-facebook-f"></i>
-                                        <span>Facebook</span>
-                                    </button>
-                                </div>
-                            </div>
 
                             <div class="register-link">
                                 <p>Belum punya akun? <a href="/register">Daftar sekarang</a></p>
@@ -377,13 +364,14 @@ import Footer from '../components/sections/Footer.astro';
         outline: none;
     }
 
-    .toggle-password {
+.toggle-password {
         position: absolute;
         right: 1rem;
         top: 50%;
         transform: translateY(-50%);
         color: #666;
         cursor: pointer;
+        z-index: 2;
     }
 
     .form-options {
@@ -779,18 +767,44 @@ import Footer from '../components/sections/Footer.astro';
             path: '/animations/hero-building.json'
         });
 
-        // Toggle password visibility
-        const togglePassword = document.querySelector('.toggle-password');
-        const passwordInput = document.querySelector('#password');
+        // Toggle password visibility (eye open = masked, eye slash = visible)
+        const toggles = document.querySelectorAll('.toggle-password');
+        toggles.forEach(icon => {
+            const container = icon.closest('.input-container');
+            const input = container ? container.querySelector('input.form-input') : null;
+            if (!input) return;
 
-        if (togglePassword && passwordInput) {
-            togglePassword.addEventListener('click', function() {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                this.classList.toggle('fa-eye');
-                this.classList.toggle('fa-eye-slash');
+            // Initial state: masked
+            input.setAttribute('type', 'password');
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+            icon.setAttribute('role', 'button');
+            icon.setAttribute('tabindex', '0');
+            icon.setAttribute('aria-pressed', 'false');
+            icon.setAttribute('title', 'Tampilkan password');
+
+            const toggle = () => {
+                const masked = input.getAttribute('type') === 'password';
+                input.setAttribute('type', masked ? 'text' : 'password');
+                if (masked) {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+                icon.setAttribute('aria-pressed', String(masked));
+                icon.setAttribute('title', masked ? 'Sembunyikan password' : 'Tampilkan password');
+            };
+
+            icon.addEventListener('click', toggle);
+            icon.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggle();
+                }
             });
-        }
+        });
 
         // Form submission animation
         const loginForm = document.querySelector('.login-form');

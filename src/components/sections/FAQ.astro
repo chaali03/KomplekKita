@@ -644,6 +644,9 @@
 		gap: 2rem;
 		position: relative;
 		z-index: 1;
+		/* Smooth height transitions when switching tabs */
+		transition: min-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+		will-change: min-height;
 	}
 	
 	.faq-card {
@@ -1468,11 +1471,8 @@
 				// Animate tab indicator
 				updateTabIndicator(tab, tabIndicator);
 				
-				// Animate content transition
-				animateContentTransition(activeTabIndex, index, allCards);
-				
-				// Show content for selected tab
-				showContentForTab(tabType, allCards);
+		// Switch content with smoother animation
+				switchTabSmooth(tabType, allCards);
 				
 				// Update active tab index
 				activeTabIndex = index;
@@ -1489,76 +1489,52 @@
 		});
 	}
 
-	function updateTabIndicator(activeTab, indicator) {
-		if (!indicator) return;
-		
-		const tabRect = activeTab.getBoundingClientRect();
-		const containerRect = activeTab.parentElement.getBoundingClientRect();
-		
-		const left = tabRect.left - containerRect.left;
-		const width = tabRect.width;
-		
-		// Animate indicator movement
-		indicator.style.left = left + 'px';
-		indicator.style.width = width + 'px';
-		
-		// Add subtle shadow effect
-		indicator.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
-	}
+    function updateTabIndicator(activeTab, indicator) {
+        if (!indicator) return;
+        const tabRect = activeTab.getBoundingClientRect();
+        const containerRect = activeTab.parentElement.getBoundingClientRect();
+        const left = tabRect.left - containerRect.left;
+        const width = tabRect.width;
+        if (typeof gsap !== 'undefined') {
+            gsap.to(indicator, { left, width, duration: 0.35, ease: 'power2.out' });
+        } else {
+            indicator.style.left = left + 'px';
+            indicator.style.width = width + 'px';
+        }
+        indicator.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
+    }
 
 	function animateContentTransition(oldIndex, newIndex, allCards) {
-		// Smooth fade out all cards first
-		allCards.forEach(card => {
-			card.style.transition = 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
-			card.style.opacity = '0';
-			card.style.transform = 'translateY(20px) scale(0.95)';
-		});
-		
-		// Wait for fade out to complete before showing new content
-		setTimeout(() => {
-			// Reset transition for smooth entrance
-			allCards.forEach(card => {
-				card.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-			});
-		}, 300);
+		// Deprecated: handled by switchTabSmooth
 	}
 
 	function showContentForTab(tabType, allCards) {
-		// Define which cards to show for each tab based on data-category
+		// Backward-compatible fallback switch (kept for non-GSAP env)
 		const tabContentMap = {
-			'all': 'all',           // Semua - show all cards
-			'general': 'general',   // Umum - show cards with general category
-			'technical': 'technical', // Teknis - show cards with technical category
-			'pricing': 'pricing'    // Harga - show cards with pricing category
+			'all': 'all',
+			'general': 'general',
+			'technical': 'technical',
+			'pricing': 'pricing'
 		};
-		
 		const targetCategory = tabContentMap[tabType];
-		
 		allCards.forEach((card, index) => {
 			const cardCategory = card.getAttribute('data-category');
-			
 			if (targetCategory === 'all' || cardCategory === targetCategory) {
-				// Show card with smooth staggered animation
 				card.style.display = 'block';
 				card.style.opacity = '0';
-				card.style.transform = 'translateY(30px) scale(0.9)';
-				
-				// Staggered entrance animation
+				card.style.transform = 'translateY(20px) scale(0.98)';
 				setTimeout(() => {
-					card.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+					card.style.transition = 'all 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
 					card.style.opacity = '1';
 					card.style.transform = 'translateY(0) scale(1)';
-				}, index * 120);
+				}, index * 90);
 			} else {
-				// Hide card with smooth fade out
-				card.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+				card.style.transition = 'all 0.35s cubic-bezier(0.22, 1, 0.36, 1)';
 				card.style.opacity = '0';
-				card.style.transform = 'translateY(30px) scale(0.9)';
-				
-				// Hide after animation
+				card.style.transform = 'translateY(20px) scale(0.98)';
 				setTimeout(() => {
 					card.style.display = 'none';
-				}, 400);
+				}, 350);
 			}
 		});
 	}
@@ -1598,6 +1574,59 @@
 		setTimeout(() => ripple.remove(), 600);
 	}
 
+	// Smooth tab switching with height animation and GSAP when available
+	function switchTabSmooth(tabType, allCards) {
+		const grid = document.querySelector('.faq-cards');
+		if (!grid) {
+			showContentForTab(tabType, allCards);
+			return;
+		}
+		
+		const map = { all: 'all', general: 'general', technical: 'technical', pricing: 'pricing' };
+		const target = map[tabType];
+		
+		const toShow = [] as Element[];
+		const toHide = [] as Element[];
+		allCards.forEach(card => {
+			const cat = card.getAttribute('data-category');
+			if (target === 'all' || cat === target) toShow.push(card); else toHide.push(card);
+		});
+		
+		// Lock current height
+		const oldHeight = (grid as HTMLElement).offsetHeight;
+		(grid as HTMLElement).style.minHeight = oldHeight + 'px';
+		
+        if (typeof gsap !== 'undefined') {
+            const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+            // Animate grid height between states
+            tl.add(() => {
+                const newHeightPrep = oldHeight; // will animate after visibility change
+                (grid as HTMLElement).style.minHeight = newHeightPrep + 'px';
+            }, 0)
+            .to(toHide, { opacity: 0, y: 20, scale: 0.98, filter: 'blur(2px)', duration: 0.25, stagger: 0.03 }, 0)
+            .add(() => {
+                toHide.forEach(c => (c as HTMLElement).style.display = 'none');
+                toShow.forEach(c => {
+                    const el = c as HTMLElement;
+                    el.style.display = 'block';
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(16px) scale(0.98)';
+                    (el as HTMLElement).style.filter = 'blur(2px)';
+                });
+                const newHeight = (grid as HTMLElement).offsetHeight;
+                gsap.fromTo(grid, { minHeight: oldHeight }, { minHeight: newHeight, duration: 0.4, ease: 'power2.out' });
+            })
+            .to(toShow, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.45, stagger: 0.06, clearProps: 'filter,transform,opacity' }, '>-0.05')
+            .add(() => {
+                setTimeout(() => { (grid as HTMLElement).style.minHeight = ''; }, 120);
+            });
+        } else {
+			// Fallback
+			showContentForTab(tabType, allCards);
+			setTimeout(() => { (grid as HTMLElement).style.minHeight = ''; }, 400);
+		}
+	}
+	
 	// Add CSS animations for new elements
 	const style = document.createElement('style');
 	style.textContent = `

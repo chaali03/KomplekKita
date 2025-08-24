@@ -1,0 +1,201 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/sections/Header.astro';
+import Footer from '../components/sections/Footer.astro';
+---
+
+<Layout>
+  <Header />
+
+  <section class="komplek-page">
+    <div class="bg-decor" aria-hidden="true">
+      <div class="waves-container">
+        <div class="wave wave-1"></div>
+        <div class="wave wave-2"></div>
+        <div class="wave wave-3"></div>
+      </div>
+      <div class="shapes">
+        <div class="shape blob-1"></div>
+        <div class="shape blob-2"></div>
+        <div class="shape ring"></div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <div class="section-badge">
+          <span class="badge-text">Komplek</span>
+          <span class="badge-shine"></span>
+        </div>
+        <h1 class="section-title">
+          <span class="text-gradient">Daftar Komplek</span> Tersedia
+        </h1>
+        <p class="section-subtitle">Pilih komplek untuk melihat demo tampilan dan fitur. Semua item bertanda Demo.</p>
+      </div>
+
+      <div class="komplek-grid">
+        <a href="#" class="komplek-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="card-glow"></div>
+          <div class="card-header">
+            <div class="card-icon"><i class="fas fa-city"></i></div>
+            <div class="card-title">Komplek Melati Indah</div>
+            <span class="card-badge">Demo</span>
+          </div>
+          <div class="card-body">
+            <p>Komplek modern dengan pengelolaan transparan dan fitur digital lengkap.</p>
+            <ul class="card-features">
+              <li><i class="fas fa-check"></i> Iuran Online</li>
+              <li><i class="fas fa-check"></i> Pengumuman</li>
+              <li><i class="fas fa-check"></i> Laporan Keamanan</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <span class="cta-text">Lihat Demo</span>
+            <span class="cta-icon"><i class="fas fa-arrow-right"></i></span>
+          </div>
+        </a>
+
+        <a href="#" class="komplek-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="card-glow"></div>
+          <div class="card-header">
+            <div class="card-icon"><i class="fas fa-home"></i></div>
+            <div class="card-title">Komplek Anggrek Asri</div>
+            <span class="card-badge">Demo</span>
+          </div>
+          <div class="card-body">
+            <p>Lingkungan asri dengan manajemen smart community terpadu.</p>
+            <ul class="card-features">
+              <li><i class="fas fa-check"></i> Buku Tamu</li>
+              <li><i class="fas fa-check"></i> Kabar Warga</li>
+              <li><i class="fas fa-check"></i> Notifikasi</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <span class="cta-text">Lihat Demo</span>
+            <span class="cta-icon"><i class="fas fa-arrow-right"></i></span>
+          </div>
+        </a>
+
+        <a href="#" class="komplek-card" data-aos="fade-up" data-aos-delay="300">
+          <div class="card-glow"></div>
+          <div class="card-header">
+            <div class="card-icon"><i class="fas fa-tree"></i></div>
+            <div class="card-title">Komplek Kenanga Raya</div>
+            <span class="card-badge">Demo</span>
+          </div>
+          <div class="card-body">
+            <p>Area hijau yang nyaman dengan fitur komunikasi cepat antar warga.</p>
+            <ul class="card-features">
+              <li><i class="fas fa-check"></i> Chat Warga</li>
+              <li><i class="fas fa-check"></i> Jadwal Kegiatan</li>
+              <li><i class="fas fa-check"></i> Arsip Dokumen</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <span class="cta-text">Lihat Demo</span>
+            <span class="cta-icon"><i class="fas fa-arrow-right"></i></span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</Layout>
+
+<style>
+  :root {
+    --primary-blue: #3B82F6;
+    --primary-blue-dark: #1E40AF;
+    --primary-blue-light: #93C5FD;
+    --accent-purple: #8B5CF6;
+    --text-dark: #1F2937;
+    --text-light: #6B7280;
+    --surface: #FFFFFF;
+    --surface-2: #F9FAFB;
+    --border: #E5E7EB;
+  }
+
+  .komplek-page {
+    position: relative;
+    padding: 8rem 0 4rem;
+    background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+    overflow: hidden;
+    min-height: 100vh;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1; }
+
+  .section-header { text-align: center; margin-bottom: 2.5rem; }
+  .section-badge { display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem 1rem; background: linear-gradient(135deg, rgba(59,130,246,.1), rgba(139,92,246,.1)); border-radius: 50px; border: 1px solid rgba(59,130,246,.2); position: relative; overflow: hidden; margin-bottom: 1rem; }
+  .badge-text { font-weight: 700; font-size: .875rem; color: var(--primary-blue); letter-spacing: 1px; text-transform: uppercase; position: relative; z-index: 1; }
+  .badge-shine { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,.5) 50%, rgba(255,255,255,0) 100%); animation: badge-shine 3s infinite; }
+  @keyframes badge-shine { 0%{left:-100%} 20%{left:100%} 100%{left:100%} }
+  .section-title { font-size: 2.5rem; font-weight: 800; color: var(--text-dark); line-height: 1.2; }
+  .text-gradient { background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .section-subtitle { color: var(--text-light); max-width: 720px; margin: .5rem auto 0; }
+
+  .komplek-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+
+  .komplek-card { position: relative; display: flex; flex-direction: column; gap: .75rem; background: rgba(255,255,255,.9); border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; text-decoration: none; color: inherit; overflow: hidden; box-shadow: 0 12px 30px rgba(0,0,0,.06); transition: transform .4s cubic-bezier(.16,1,.3,1), box-shadow .4s cubic-bezier(.16,1,.3,1); }
+  .komplek-card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 20px 40px rgba(59,130,246,.18); }
+  .komplek-card .card-glow { position: absolute; inset: 0; background: radial-gradient(1200px 120px at var(--x, 10%) var(--y, 10%), rgba(59,130,246,.12), transparent 60%); opacity: 0; transition: opacity .3s ease; pointer-events: none; }
+  .komplek-card:hover .card-glow { opacity: 1; }
+
+  .card-header { display: flex; align-items: center; gap: .75rem; }
+  .card-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark)); box-shadow: 0 6px 14px rgba(59,130,246,.35); }
+  .card-title { font-weight: 700; color: var(--text-dark); font-size: 1.05rem; }
+  .card-badge { margin-left: auto; font-size: .75rem; font-weight: 700; color: var(--primary-blue-dark); background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.25); padding: .25rem .5rem; border-radius: 999px; }
+
+  .card-body p { color: var(--text-light); line-height: 1.6; margin: .25rem 0 .5rem; }
+  .card-features { display: grid; grid-template-columns: 1fr 1fr; gap: .25rem .75rem; }
+  .card-features li { list-style: none; font-size: .9rem; color: var(--text-dark); display: flex; align-items: center; gap: .5rem; }
+  .card-features i { color: var(--primary-blue); }
+
+  .card-footer { display: flex; align-items: center; justify-content: flex-end; gap: .5rem; color: var(--primary-blue-dark); font-weight: 600; }
+  .komplek-card:hover .cta-icon { transform: translateX(6px); }
+  .cta-icon { transition: transform .3s ease; }
+
+  /* Background */
+  .bg-decor { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+  .waves-container { position: absolute; inset: 0; overflow: hidden; }
+  .wave { position: absolute; bottom: 0; left: 0; width: 200%; height: 100px; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="%233B82F6"/></svg>') repeat-x; background-size: 1200px 100px; animation: wave 10s linear infinite; }
+  .wave-1 { opacity: .25; animation-duration: 12s; }
+  .wave-2 { opacity: .18; bottom: 10px; animation-duration: 8s; animation-delay: -2s; }
+  .wave-3 { opacity: .12; bottom: 20px; animation-duration: 6s; animation-delay: -4s; }
+  @keyframes wave { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+  .shapes { position: absolute; inset: 0; }
+  .shape { position: absolute; opacity: .12; filter: blur(40px); }
+  .blob-1 { width: 320px; height: 320px; background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple)); top: -120px; left: -120px; border-radius: 48% 52% 51% 49% / 53% 48% 52% 47%; animation: float 16s ease-in-out infinite alternate; }
+  .blob-2 { width: 240px; height: 240px; background: linear-gradient(135deg, var(--primary-blue-light), var(--primary-blue)); bottom: -100px; right: -80px; border-radius: 36% 64% 50% 50% / 44% 39% 61% 56%; animation: float 18s ease-in-out infinite alternate-reverse; }
+  .ring { width: 160px; height: 160px; border-radius: 50%; border: 24px solid rgba(59,130,246,.25); top: 20%; right: 15%; }
+  @keyframes float { 0%{transform:translate(0,0)} 50%{transform:translate(18px,12px)} 100%{transform:translate(-12px,8px)} }
+
+  @media (max-width: 768px) {
+    .section-title { font-size: 2rem; }
+    .komplek-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Glow follows cursor on card
+    document.querySelectorAll('.komplek-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        const glow = card.querySelector('.card-glow');
+        if (glow) {
+          glow.style.setProperty('--x', x + '%');
+          glow.style.setProperty('--y', y + '%');
+        }
+      });
+      card.addEventListener('mouseleave', () => {
+        const glow = card.querySelector('.card-glow');
+        if (glow) { glow.style.opacity = '0'; }
+      });
+    });
+  });
+</script>
