@@ -38,6 +38,32 @@
 	
 	<!-- Initialize Modern Libraries -->
 <script>
+		// TypeScript declarations for external libraries
+		declare const Lenis: any;
+		declare const AOS: {
+			init: (options: { duration: number, once: boolean }) => void;
+		};
+		declare const lottie: {
+			loadAnimation: (options: {
+				container: HTMLElement | null;
+				renderer: string;
+				loop: boolean;
+				autoplay: boolean;
+				path: string;
+				rendererSettings?: {
+					className: string;
+					preserveAspectRatio: string;
+				};
+			}) => any;
+		};
+		declare const gsap: {
+			from: (selector: string, options: any) => void;
+			to: (selector: string, options: any) => void;
+			timeline: (options?: any) => any;
+			registerPlugin: (plugin: any) => void;
+		};
+		declare const ScrollTrigger: any;
+
 		document.addEventListener('DOMContentLoaded', function() {
 			// Function to initialize smooth scrolling fallback
 			function initSmoothScrollFallback() {
@@ -78,6 +104,18 @@
 					(el as HTMLElement).style.transition = 'opacity 0.8s ease, transform 0.8s ease';
 					observer.observe(el);
 				});
+			}
+
+			// Initialize AOS
+			if (typeof AOS !== 'undefined') {
+				try {
+					AOS.init({ duration: 1000, once: true });
+				} catch (e) {
+					console.error('Error initializing AOS:', e);
+					initAnimationFallback();
+				}
+			} else {
+				initAnimationFallback();
 			}
 
 			// Try to initialize Lenis with timeout fallback

@@ -372,6 +372,21 @@ import Footer from '../components/sections/Footer.astro';
         color: #666;
         cursor: pointer;
         z-index: 2;
+        transition: all 0.3s ease;
+    }
+    
+    .toggle-password:hover {
+        color: #4a6cf7;
+    }
+    
+    .animate-click {
+        animation: pulse 0.3s ease;
+    }
+    
+    @keyframes pulse {
+        0% { transform: translateY(-50%) scale(1); }
+        50% { transform: translateY(-50%) scale(1.2); }
+        100% { transform: translateY(-50%) scale(1); }
     }
 
     .form-options {
@@ -751,21 +766,62 @@ import Footer from '../components/sections/Footer.astro';
 </style>
 
 <script>
+    // TypeScript declarations for external libraries
+    declare const AOS: {
+        init: (options: { duration: number, once: boolean }) => void;
+    };
+    declare const lottie: {
+        loadAnimation: (options: {
+            container: HTMLElement | null;
+            renderer: string;
+            loop: boolean;
+            autoplay: boolean;
+            path: string;
+            rendererSettings?: {
+                className: string;
+                preserveAspectRatio: string;
+            };
+        }) => any;
+    };
+    declare const gsap: {
+        from: (selector: string, options: any) => void;
+        to: (selector: string, options: any) => void;
+        timeline: (options?: any) => any;
+        registerPlugin: (plugin: any) => void;
+    };
+    
     // Initialize AOS Animation Library
-    document.addEventListener('DOMContentLoaded', function() {
-        AOS.init({
-            duration: 1000,
-            once: true
-        });
+    window.addEventListener('DOMContentLoaded', function() {
+        // Initialize AOS
+        if (typeof AOS !== 'undefined') {
+            try {
+                AOS.init({
+                    duration: 1000,
+                    once: true
+                });
+            } catch (e) {
+                console.error('Error initializing AOS:', e);
+            }
+        }
 
         // Initialize Lottie Animation
-        const loginAnimation = lottie.loadAnimation({
-            container: document.getElementById('lottie-login'),
-            renderer: 'svg',
-            loop: true,
-            autoplay: true,
-            path: '/animations/hero-building.json'
-        });
+        if (typeof lottie !== 'undefined') {
+            try {
+                const loginAnimation = lottie.loadAnimation({
+                    container: document.getElementById('lottie-login'),
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    path: '/animations/hero-building.json',
+                    rendererSettings: {
+                        className: 'lottie-svg',
+                        preserveAspectRatio: 'xMidYMid slice'
+                    }
+                });
+            } catch (e) {
+                console.error('Error initializing Lottie animation:', e);
+            }
+        }
 
         // Toggle password visibility (eye open = masked, eye slash = visible)
         const toggles = document.querySelectorAll('.toggle-password');
@@ -789,20 +845,32 @@ import Footer from '../components/sections/Footer.astro';
                 if (masked) {
                     icon.classList.remove('fa-eye');
                     icon.classList.add('fa-eye-slash');
+                    icon.setAttribute('title', 'Sembunyikan password');
                 } else {
                     icon.classList.remove('fa-eye-slash');
                     icon.classList.add('fa-eye');
+                    icon.setAttribute('title', 'Tampilkan password');
                 }
                 icon.setAttribute('aria-pressed', String(masked));
-                icon.setAttribute('title', masked ? 'Sembunyikan password' : 'Tampilkan password');
             };
 
+            // Add click event listener
             icon.addEventListener('click', toggle);
-            icon.addEventListener('keydown', (e) => {
+            
+            // Add keyboard accessibility
+            icon.addEventListener('keydown', (e: KeyboardEvent) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     toggle();
                 }
+            });
+            
+            // Add animation effect
+            icon.addEventListener('click', function(this: HTMLElement) {
+                this.classList.add('animate-click');
+                setTimeout(() => {
+                    this.classList.remove('animate-click');
+                }, 300);
             });
         });
 
@@ -814,45 +882,70 @@ import Footer from '../components/sections/Footer.astro';
             loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                // Add loading state
-                loginButton.classList.add('loading');
-                loginButton.innerHTML = '<span class="button-text">Memproses...</span><i class="fa-solid fa-spinner fa-spin"></i>';
-                
-                // Simulate form submission (replace with actual form submission)
-                setTimeout(() => {
-                    // Reset button state
-                    loginButton.classList.remove('loading');
-                    loginButton.innerHTML = '<span class="button-text">Masuk</span><i class="fa-solid fa-arrow-right"></i>';
+                try {
+                    // Add loading state
+                    loginButton.classList.add('loading');
+                    (loginButton as HTMLElement).innerHTML = '<span class="button-text">Memproses...</span><i class="fa-solid fa-spinner fa-spin"></i>';
                     
-                    // Redirect or show success message
-                    // window.location.href = '/dashboard';
-                }, 2000);
+                    // Collect form data
+                    const formData = new FormData(loginForm as HTMLFormElement);
+                    const formDataObj = Object.fromEntries(formData.entries());
+                    console.log('Form data:', formDataObj);
+                    
+                    // Simulate form submission (replace with actual form submission)
+                    setTimeout(() => {
+                        try {
+                            // Reset button state
+                            loginButton.classList.remove('loading');
+                            (loginButton as HTMLElement).innerHTML = '<span class="button-text">Masuk</span><i class="fa-solid fa-arrow-right"></i>';
+                            
+                            // Redirect or show success message
+                            window.location.href = '/dashboard';
+                        } catch (err) {
+                            console.error('Error in form submission callback:', err);
+                            // Reset button state in case of error
+                            loginButton.classList.remove('loading');
+                            (loginButton as HTMLElement).innerHTML = '<span class="button-text">Masuk</span><i class="fa-solid fa-arrow-right"></i>';
+                        }
+                    }, 2000);
+                } catch (err) {
+                    console.error('Error in form submission:', err);
+                    // Reset button state in case of error
+                    loginButton.classList.remove('loading');
+                    (loginButton as HTMLElement).innerHTML = '<span class="button-text">Masuk</span><i class="fa-solid fa-arrow-right"></i>';
+                }
             });
         }
 
         // GSAP Animations
-        gsap.from('.welcome-section', {
-            y: 30,
-            opacity: 0,
-            duration: 1,
-            ease: 'power3.out'
-        });
+        if (typeof gsap !== 'undefined') {
+            try {
+                gsap.from('.welcome-section', {
+                    y: 30,
+                    opacity: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                });
 
-        gsap.from('.login-form-container', {
-            y: 50,
-            opacity: 0,
-            duration: 1,
-            ease: 'power3.out',
-            delay: 0.3
-        });
+                gsap.from('.login-form-container', {
+                    y: 50,
+                    opacity: 0,
+                    duration: 1,
+                    ease: 'power3.out',
+                    delay: 0.3
+                });
 
-        gsap.from('.form-group', {
-            y: 20,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.2,
-            ease: 'power3.out',
-            delay: 0.8
-        });
+                gsap.from('.form-group', {
+                    y: 20,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: 0.2,
+                    ease: 'power3.out',
+                    delay: 0.8
+                });
+            } catch (e) {
+                console.error('Error initializing GSAP animations:', e);
+            }
+        }
     });
 </script>
