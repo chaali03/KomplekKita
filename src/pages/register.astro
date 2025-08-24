@@ -363,6 +363,21 @@ import Footer from '../components/sections/Footer.astro';
         color: #666;
         cursor: pointer;
         z-index: 2;
+        transition: all 0.3s ease;
+    }
+    
+    .toggle-password:hover {
+        color: #4a6cf7;
+    }
+    
+    .animate-click {
+        animation: pulse 0.3s ease;
+    }
+    
+    @keyframes pulse {
+        0% { transform: translateY(-50%) scale(1); }
+        50% { transform: translateY(-50%) scale(1.2); }
+        100% { transform: translateY(-50%) scale(1); }
     }
 
     .password-strength {
@@ -378,6 +393,7 @@ import Footer from '../components/sections/Footer.astro';
         background: #eee;
         border-radius: 5px;
         overflow: hidden;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
     }
 
     .strength-progress {
@@ -385,11 +401,24 @@ import Footer from '../components/sections/Footer.astro';
         width: 0;
         background: #ff6b6b;
         transition: all 0.3s ease;
+        border-radius: 5px;
+    }
+    
+    .animate-strength {
+        animation: pulse-width 0.5s ease;
+    }
+    
+    @keyframes pulse-width {
+        0% { transform: scaleX(0.95); }
+        50% { transform: scaleX(1.05); }
+        100% { transform: scaleX(1); }
     }
 
     .strength-text {
         font-size: 0.8rem;
         color: #666;
+        font-weight: 500;
+        transition: color 0.3s ease;
     }
 
     .checkbox-container {
@@ -835,21 +864,62 @@ import Footer from '../components/sections/Footer.astro';
 </style>
 
 <script>
+    // TypeScript declarations for external libraries
+    declare const AOS: {
+        init: (options: { duration: number, once: boolean }) => void;
+    };
+    declare const lottie: {
+        loadAnimation: (options: {
+            container: HTMLElement | null;
+            renderer: string;
+            loop: boolean;
+            autoplay: boolean;
+            path: string;
+            rendererSettings?: {
+                className: string;
+                preserveAspectRatio: string;
+            };
+        }) => any;
+    };
+    declare const gsap: {
+        from: (selector: string, options: any) => void;
+        to: (selector: string, options: any) => void;
+        timeline: (options?: any) => any;
+        registerPlugin: (plugin: any) => void;
+    };
+    
     // Initialize AOS Animation Library
-    document.addEventListener('DOMContentLoaded', function() {
-        AOS.init({
-            duration: 1000,
-            once: true
-        });
+    window.addEventListener('DOMContentLoaded', function() {
+        // Initialize AOS
+        if (typeof AOS !== 'undefined') {
+            try {
+                AOS.init({
+                    duration: 1000,
+                    once: true
+                });
+            } catch (e) {
+                console.error('Error initializing AOS:', e);
+            }
+        }
 
         // Initialize Lottie Animation
-        const registerAnimation = lottie.loadAnimation({
-            container: document.getElementById('lottie-register'),
-            renderer: 'svg',
-            loop: true,
-            autoplay: true,
-            path: '/animations/icon-morph.json'
-        });
+        if (typeof lottie !== 'undefined') {
+            try {
+                const registerAnimation = lottie.loadAnimation({
+                    container: document.getElementById('lottie-register'),
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    path: '/animations/icon-morph.json',
+                    rendererSettings: {
+                        className: 'lottie-svg',
+                        preserveAspectRatio: 'xMidYMid slice'
+                    }
+                });
+            } catch (e) {
+                console.error('Error initializing Lottie animation:', e);
+            }
+        }
 
         // Toggle password visibility (eye open = masked, eye slash = visible)
         const togglePasswordButtons = document.querySelectorAll('.toggle-password');
@@ -873,20 +943,38 @@ import Footer from '../components/sections/Footer.astro';
                 if (masked) {
                     button.classList.remove('fa-eye');
                     button.classList.add('fa-eye-slash');
+                    button.setAttribute('title', 'Sembunyikan password');
                 } else {
                     button.classList.remove('fa-eye-slash');
                     button.classList.add('fa-eye');
+                    button.setAttribute('title', 'Tampilkan password');
                 }
                 button.setAttribute('aria-pressed', String(masked));
-                button.setAttribute('title', masked ? 'Sembunyikan password' : 'Tampilkan password');
+                
+                // Update password strength if this is the password field
+                if (input.id === 'password') {
+                    const score = calcStrength((input as HTMLInputElement).value || '');
+                    updateStrengthUI(score);
+                }
             };
 
+            // Add click event listener
             button.addEventListener('click', toggle);
-            button.addEventListener('keydown', (e) => {
+            
+            // Add keyboard accessibility
+            button.addEventListener('keydown', (e: KeyboardEvent) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     toggle();
                 }
+            });
+            
+            // Add animation effect
+            button.addEventListener('click', function(this: HTMLElement) {
+                this.classList.add('animate-click');
+                setTimeout(() => {
+                    this.classList.remove('animate-click');
+                }, 300);
             });
         });
 
@@ -896,7 +984,7 @@ import Footer from '../components/sections/Footer.astro';
         const strengthText = document.querySelector('.strength-text');
         const strengthBar = document.querySelector('.strength-bar');
 
-        const calcStrength = (password) => {
+        const calcStrength = (password: string): number => {
             let score = 0;
             if (password.length >= 8) score += 1;
             if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
@@ -905,7 +993,7 @@ import Footer from '../components/sections/Footer.astro';
             return score;
         };
 
-        const updateStrengthUI = (score) => {
+        const updateStrengthUI = (score: number): void => {
             const map = {
                 0: { color: '#ff6b6b', label: 'Lemah' },
                 1: { color: '#ff6b6b', label: 'Lemah' },
@@ -914,14 +1002,23 @@ import Footer from '../components/sections/Footer.astro';
                 4: { color: '#007e33', label: 'Sangat Kuat' },
             };
             const width = (score / 4) * 100;
-            const { color, label } = map[score];
+            const { color, label } = map[score as keyof typeof map];
             if (strengthProgress) {
-                strengthProgress.style.width = `${width}%`;
-                strengthProgress.style.background = color;
+                (strengthProgress as HTMLElement).style.width = `${width}%`;
+                (strengthProgress as HTMLElement).style.background = color;
                 strengthProgress.setAttribute('aria-valuenow', String(width));
             }
             if (strengthText) {
                 strengthText.textContent = `Kekuatan password: ${label}`;
+                (strengthText as HTMLElement).style.color = color;
+            }
+            
+            // Add animation effect to strength bar
+            if (strengthProgress) {
+                strengthProgress.classList.add('animate-strength');
+                setTimeout(() => {
+                    strengthProgress.classList.remove('animate-strength');
+                }, 500);
             }
         };
 
@@ -931,8 +1028,8 @@ import Footer from '../components/sections/Footer.astro';
             strengthProgress.setAttribute('aria-valuemax', '100');
             updateStrengthUI(0);
             // ensure bar visible baseline
-            if (strengthBar) strengthBar.style.opacity = '1';
-            passwordInput.addEventListener('input', function() {
+            if (strengthBar) (strengthBar as HTMLElement).style.opacity = '1';
+            passwordInput.addEventListener('input', function(this: HTMLInputElement) {
                 const score = calcStrength(this.value);
                 updateStrengthUI(score);
             });
@@ -943,10 +1040,10 @@ import Footer from '../components/sections/Footer.astro';
         const registerButton = document.querySelector('.register-button');
 
         // Disable register button until terms are accepted
-        const termsCheckbox = document.getElementById('terms');
+        const termsCheckbox = document.getElementById('terms') as HTMLInputElement;
         if (termsCheckbox && registerButton) {
             const syncRegisterButton = () => {
-                registerButton.disabled = !termsCheckbox.checked;
+                (registerButton as HTMLButtonElement).disabled = !termsCheckbox.checked;
             };
             syncRegisterButton();
             termsCheckbox.addEventListener('change', syncRegisterButton);
@@ -957,40 +1054,65 @@ import Footer from '../components/sections/Footer.astro';
                 e.preventDefault();
                 
                 // Prevent submit if disabled for any reason
-                if (registerButton.disabled) return;
+                if ((registerButton as HTMLButtonElement).disabled) return;
                 
-                // Add loading state
-                registerButton.classList.add('loading');
-                registerButton.innerHTML = '<span class="button-text">Memproses...</span><i class="fa-solid fa-spinner fa-spin"></i>';
-                
-                // Simulate form submission (replace with actual form submission)
-                setTimeout(() => {
-                    // Reset button state
-                    registerButton.classList.remove('loading');
-                    registerButton.innerHTML = '<span class="button-text">Daftar Sekarang</span><i class="fa-solid fa-user-plus"></i>';
+                try {
+                    // Add loading state
+                    registerButton.classList.add('loading');
+                    (registerButton as HTMLElement).innerHTML = '<span class="button-text">Memproses...</span><i class="fa-solid fa-spinner fa-spin"></i>';
                     
-                    // Redirect or show success message
-                    // window.location.href = '/dashboard';
-                }, 2000);
+                    // Collect form data
+                    const formData = new FormData(registerForm as HTMLFormElement);
+                    const formDataObj = Object.fromEntries(formData.entries());
+                    console.log('Form data:', formDataObj);
+                    
+                    // Simulate form submission (replace with actual form submission)
+                    setTimeout(() => {
+                        try {
+                            // Reset button state
+                            registerButton.classList.remove('loading');
+                            (registerButton as HTMLElement).innerHTML = '<span class="button-text">Daftar Sekarang</span><i class="fa-solid fa-user-plus"></i>';
+                            
+                            // Redirect or show success message
+                            window.location.href = '/dashboard';
+                        } catch (err) {
+                            console.error('Error in form submission callback:', err);
+                            // Reset button state in case of error
+                            registerButton.classList.remove('loading');
+                            (registerButton as HTMLElement).innerHTML = '<span class="button-text">Daftar Sekarang</span><i class="fa-solid fa-user-plus"></i>';
+                        }
+                    }, 2000);
+                } catch (err) {
+                    console.error('Error in form submission:', err);
+                    // Reset button state in case of error
+                    registerButton.classList.remove('loading');
+                    (registerButton as HTMLElement).innerHTML = '<span class="button-text">Daftar Sekarang</span><i class="fa-solid fa-user-plus"></i>';
+                }
             });
         }
 
         // GSAP Animations
-        gsap.from('.register-form-container', {
-            y: 50,
-            opacity: 0,
-            duration: 1,
-            ease: 'power3.out'
-        });
+        if (typeof gsap !== 'undefined') {
+            try {
+                gsap.from('.register-form-container', {
+                    y: 50,
+                    opacity: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                });
 
-        gsap.from('.form-group', {
-            y: 20,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.2,
-            ease: 'power3.out',
-            delay: 0.5
-        });
+                gsap.from('.form-group', {
+                    y: 20,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: 0.2,
+                    ease: 'power3.out',
+                    delay: 0.5
+                });
+            } catch (e) {
+                console.error('Error initializing GSAP animations:', e);
+            }
+        }
 
         gsap.from('.feature-item', {
             x: 50,
