@@ -1495,13 +1495,17 @@ import Footer from '../components/sections/Footer.astro';
       const encodedName = encodeURIComponent(data.komplekName);
       const encodedAddress = encodeURIComponent(data.alamat);
       
-      // URL untuk menampilkan lokasi spesifik dengan marker dan info
-      const mapSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyDJyYt8UY_vd-L8JL9VHDgVAjUKpvvPcDY&q=${encodedAddress}&zoom=16&maptype=roadmap`;
+      // Gunakan embed tanpa API key dengan koordinat agar tidak tergantung Maps Embed API key
+      const mapSrc = `https://www.google.com/maps?q=${data.lat},${data.lng}&z=17&hl=id&output=embed`;
+      // Fallback menggunakan alamat (jika koordinat tidak valid)
+      const fallbackMapSrc = `https://www.google.com/maps?q=${encodedAddress}&z=16&hl=id&output=embed`;
       
-      // Menggunakan alamat komplek langsung untuk akurasi yang lebih baik
-      const fallbackMapSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyDJyYt8UY_vd-L8JL9VHDgVAjUKpvvPcDY&q=${encodedAddress}&center=${data.lat},${data.lng}&zoom=17&maptype=roadmap`;
-      
-      mapFrame.src = fallbackMapSrc;
+      // Tampilkan peta langsung dari koordinat jika tersedia, jika tidak gunakan alamat
+      if (data.lat && data.lng) {
+        mapFrame.src = mapSrc;
+      } else {
+        mapFrame.src = fallbackMapSrc;
+      }
       
       modalOverlay.classList.add('active');
       if (document.body) document.body.style.overflow = 'hidden';
