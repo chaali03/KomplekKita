@@ -87,6 +87,8 @@
     }
 </style>
 
+<!-- Tabel informasi pengeluaran -->
+
 <section class="parent-filter">
     <div class="filter-bar">
         <span class="filter-label">Periode</span>
@@ -127,7 +129,7 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 15px;
-        margin: 100px 0 30px 0;
+        margin: 50px 0 30px 0;
     }
 
     .filter-label {
@@ -195,6 +197,8 @@
         }
     }
 </style>
+
+
 
 <section class="co-container">
     <div class="table-container">
@@ -283,9 +287,82 @@
     </div>
 </section>
 
+
+
+<!-- tambah Transaksi  -->
 <section class="parent-filter">
     <h1>Tambah Transaksi</h1>
     <div class="input-container">
+    <section class="parent-filter">
+        <div class="filter-bar">
+            <span class="filter-label">Periode</span>
+            <div class="filter-item">
+                <select>
+                    <option>Semua Bln</option>
+                    <option>Januari</option>
+                    <option>Februari</option>
+                    <option>Maret</option>
+                    <option>April</option>
+                    <option>Mei</option>
+                    <option>Juni</option>
+                    <option>Juli</option>
+                    <option>Agustus</option>
+                    <option>September</option>
+                    <option>Oktober</option>
+                    <option>November</option>
+                    <option>Desember</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <select>
+                    <option>2025</option>
+                </select>
+            </div>
+            <button class="filter-button">Bulan Ini</button>
+            <button class="filter-button">Tahun Ini</button>
+        </div>
+    </section>
+        <input type="text" placeholder="Nominal" class="input-field" />
+        <input type="text" placeholder="Desc" class="input-field" />
+        <button class="input-button">Input</button>
+    </div>
+</section>
+
+
+<!-- edit daftar transaksi -->
+
+<section class="parent-filter">
+    <h1>Edit Data Transaksi</h1>
+    <div class="input-container">
+    <section class="parent-filter">
+        <div class="filter-bar">
+            <span class="filter-label">Periode</span>
+            <div class="filter-item">
+                <select>
+                    <option>Semua Bln</option>
+                    <option>Januari</option>
+                    <option>Februari</option>
+                    <option>Maret</option>
+                    <option>April</option>
+                    <option>Mei</option>
+                    <option>Juni</option>
+                    <option>Juli</option>
+                    <option>Agustus</option>
+                    <option>September</option>
+                    <option>Oktober</option>
+                    <option>November</option>
+                    <option>Desember</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <select>
+                    <option>2025</option>
+                </select>
+            </div>
+            <button class="filter-button">Bulan Ini</button>
+            <button class="filter-button">Tahun Ini</button>
+        </div>
+    </section>
         <input type="text" placeholder="Nominal" class="input-field" />
         <input type="text" placeholder="Desc" class="input-field" />
         <button class="input-button">Input</button>
@@ -296,11 +373,12 @@
     /* Simple nAvabr? */
     .parent-filter {
         justify-items: center;
-        margin: 20px;
+        margin: 0 20px 0 20px;
     }
 
     .parent-filter h1{
     color: #085895;
+    font-size: 30px;
     text-align: left;
     margin: 70px 0 20px 0;
     }
@@ -392,12 +470,12 @@
         border-radius: 15px;
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         width: 100%;
-        max-width: 500px;
-        margin-top: 70px;
+        margin: 70px 0 80px 0;
         display: flex;
         flex-direction: column;
         gap: 20px;
         box-sizing: border-box;
+        max-width: 700px;
 
     }
 
