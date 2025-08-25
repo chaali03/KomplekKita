@@ -210,27 +210,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.75)) padding-box,
-                        linear-gradient(120deg, rgba(37,99,235,0.35), rgba(147,197,253,0.35)) border-box;
-            border-radius: 50px;
+            background-color: #f3f4f6;
+            border-radius: 8px;
             padding: 0.5rem;
             width: fit-content;
             margin: 0 auto 3rem;
             position: relative;
             z-index: 1;
-            border: 1px solid transparent;
-            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.08), 0 2px 10px rgba(0,0,0,0.04);
-            backdrop-filter: saturate(140%) blur(8px);
-        }
-
-        .harga-tabs::after {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 60px;
-            background: radial-gradient(120px 60px at var(--x, 50%) 50%, rgba(37,99,235,0.12), transparent 60%);
-            pointer-events: none;
-            transition: --x var(--transition-fast);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .tab-btn {
@@ -243,32 +230,30 @@
             cursor: pointer;
             position: relative;
             z-index: 2;
-            transition: color var(--transition-fast), transform var(--transition-fast), text-shadow var(--transition-fast);
-            border-radius: 50px;
+            transition: color var(--transition-fast), transform var(--transition-fast);
+            border-radius: 6px;
         }
 
         .tab-btn.active {
             color: var(--white);
-            text-shadow: 0 1px 6px rgba(0,0,0,0.15);
         }
 
-        .tab-btn:hover {
-            transform: translateY(-1px);
+        .tab-btn:hover:not(.active) {
+            color: var(--primary-blue);
         }
 
         .tab-slider {
             position: absolute;
-            height: 80%;
-            top: 10%;
-            left: 0.5rem;
-            width: calc(50% - 1rem);
-            background: linear-gradient(135deg, #2563eb, #60a5fa);
-            border-radius: 50px;
-            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+            height: calc(100% - 8px);
+            top: 4px;
+            left: 4px;
+            width: calc(50% - 8px);
+            background-color: var(--primary-blue);
+            border-radius: 6px;
+            transition: transform var(--transition-fast);
             z-index: 1;
             pointer-events: none;
-            box-shadow: 0 10px 25px rgba(37,99,235,0.25), inset 0 0 0 1px rgba(255,255,255,0.3);
-            will-change: transform;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
         }
 
         /* Pricing Cards Container */
@@ -283,58 +268,46 @@
 
         /* Pricing Card */
         .harga-card {
-            background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.85));
+            background: var(--white);
             border-radius: var(--border-radius);
             padding: 2.5rem 2rem;
             position: relative;
-            transition: transform var(--transition-slow), box-shadow var(--transition-slow), border-color var(--transition-slow);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
             overflow: hidden;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(147,197,253,0.35);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
             display: flex;
             flex-direction: column;
             height: 100%;
             z-index: 1;
-            backdrop-filter: saturate(140%) blur(6px);
         }
 
         .harga-card:hover {
-            transform: translateY(-10px) scale(1.01);
-            box-shadow: 0 20px 50px -10px rgba(37, 99, 235, 0.18);
-            border-color: rgba(37,99,235,0.45);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-color: #d1d5db;
         }
 
         .harga-card.featured {
-            background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9)) padding-box,
-                        linear-gradient(135deg, rgba(37,99,235,0.5), rgba(96,165,250,0.5)) border-box;
-            border: 1px solid transparent;
-            box-shadow: 0 20px 55px -10px rgba(37, 99, 235, 0.22);
-            transform: scale(1.02);
+            background: var(--white);
+            border: 2px solid var(--primary-blue);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.15);
             position: relative;
         }
         
         .harga-card.featured:hover {
-            transform: translateY(-10px) scale(1.03);
-            box-shadow: 0 30px 65px -10px rgba(37, 99, 235, 0.28);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.2);
         }
 
-        .harga-card.featured::after {
+        .harga-card.featured::before {
             content: '';
             position: absolute;
-            top: -30%;
-            left: -30%;
-            width: 60%;
-            height: 160%;
-            transform: rotate(25deg);
-            background: linear-gradient(90deg, rgba(255,255,255,0.0), rgba(255,255,255,0.35), rgba(255,255,255,0.0));
-            pointer-events: none;
-            transition: opacity var(--transition-slow);
-            opacity: 0;
-        }
-
-        .harga-card.featured:hover::after {
-            opacity: 1;
-            animation: shine 1.2s ease forwards;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: var(--primary-blue);
         }
 
         @keyframes shine {
@@ -449,7 +422,7 @@
 
         .feature-item {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             margin-bottom: 1rem;
             transition: transform var(--transition-fast);
         }
@@ -459,14 +432,38 @@
         }
 
         .feature-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             margin-right: 1rem;
-            color: var(--primary-blue);
-            font-size: 1rem;
-            padding-top: 0.2rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .feature-icon i {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .feature-icon .fa-check {
+            color: #16a34a;
+            background: #f0fdf4;
         }
         
         .feature-icon .fa-plus {
             color: var(--primary-blue);
+            background: #f0f7ff;
+        }
+        
+        .feature-icon .fa-times {
+            color: #6b7280;
+            background: #f3f4f6;
         }
 
         .feature-item.disabled .feature-icon {
@@ -493,39 +490,35 @@
         .btn-harga {
             display: inline-block;
             padding: 0.75rem 2rem;
-            border-radius: 50px;
+            border-radius: 8px;
             font-weight: 600;
             text-decoration: none;
             transition: all var(--transition-fast);
             position: relative;
-            overflow: hidden;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #2563eb, #60a5fa);
+            background-color: var(--primary-blue);
             color: var(--white);
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
-            background-size: 200% 200%;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.15);
         }
 
         .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 18px 35px rgba(37, 99, 235, 0.45);
-            background-position: 100% 0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.2);
+            background-color: #1d4ed8;
         }
 
         .btn-outline {
-            background: linear-gradient(#ffffff, #ffffff) padding-box,
-                        linear-gradient(135deg, rgba(37,99,235,0.6), rgba(96,165,250,0.6)) border-box;
+            background-color: var(--white);
             color: var(--primary-blue);
-            border: 2px solid transparent;
+            border: 2px solid var(--primary-blue);
         }
 
         .btn-outline:hover {
-            background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9)) padding-box,
-                        linear-gradient(135deg, rgba(37,99,235,0.8), rgba(96,165,250,0.8)) border-box;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+            background-color: #f0f7ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
         }
 
         /* Reduced motion preference */
@@ -543,7 +536,7 @@
             }
         }
 
-        /* Comparison Table - IMPROVED STYLES */
+        /* Comparison Table - MODERN CLEAN STYLES */
         .harga-comparison {
             margin-bottom: 4rem;
             position: relative;
@@ -554,7 +547,7 @@
             font-size: 1.8rem;
             font-weight: 700;
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             color: var(--text-dark);
             position: relative;
         }
@@ -562,10 +555,10 @@
         .comparison-title::after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: -12px;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
+            width: 60px;
             height: 3px;
             background: var(--primary-blue);
             border-radius: 3px;
@@ -574,15 +567,15 @@
         .comparison-table-wrapper {
             overflow-x: auto;
             border-radius: var(--border-radius);
-            box-shadow: var(--card-shadow);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
             background: var(--white);
-            border: 1px solid var(--bg-lighter);
+            border: 1px solid #e5e7eb;
             transition: transform var(--transition-fast), box-shadow var(--transition-fast);
         }
         
         .comparison-table-wrapper:hover {
             transform: translateY(-5px);
-            box-shadow: var(--card-shadow-hover);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
         }
 
         .comparison-table {
@@ -599,36 +592,37 @@
 
         .comparison-table th,
         .comparison-table td {
-            padding: 1.2rem 1.5rem;
+            padding: 1rem;
             text-align: center;
-            border-bottom: 1px solid var(--bg-lighter);
-            transition: all var(--transition-fast);
+            border-bottom: 1px solid #e5e7eb;
             vertical-align: middle;
+            height: 60px;
         }
 
         .comparison-table th {
-            background: rgba(37, 99, 235, 0.06);
+            background: #f3f4f6;
             color: var(--text-dark);
             font-weight: 700;
             position: sticky;
             top: 0;
             z-index: 10;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
-        .comparison-table thead th:first-child { border-top-left-radius: 12px; }
-        .comparison-table thead th:last-child { border-top-right-radius: 12px; }
+        .comparison-table thead th:first-child { border-top-left-radius: 8px; }
+        .comparison-table thead th:last-child { border-top-right-radius: 8px; }
 
         .comparison-table th:first-child,
         .comparison-table td:first-child {
             text-align: left;
-            padding-left: 2rem;
+            padding-left: 1.5rem;
             position: sticky;
             left: 0;
             background: var(--white);
             z-index: 5;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
+            box-shadow: 1px 0 5px rgba(0, 0, 0, 0.03);
             width: 40%;
+            font-weight: 500;
         }
         
         .comparison-table th:not(:first-child),
@@ -638,8 +632,7 @@
 
         .comparison-table tbody tr:hover td:first-child {
             color: var(--primary-blue);
-            padding-left: 2.5rem;
-            background: rgba(37, 99, 235, 0.04);
+            background: #f9fafb;
         }
 
         .comparison-table tr {
@@ -648,26 +641,27 @@
         }
         
         .comparison-table tr:hover {
-            background: rgba(37, 99, 235, 0.02);
+            background: #f9fafb;
         }
 
-        .comparison-table tbody tr:nth-child(even) td { background: rgba(17,24,39,0.015); }
-        .comparison-table tbody tr:nth-child(even):hover td { background: rgba(37, 99, 235, 0.03); }
+        .comparison-table tbody tr:nth-child(even) td { background: #f9fafb; }
+        .comparison-table tbody tr:nth-child(even):hover td { background: #f3f4f6; }
 
         .category-row td {
-            background: rgba(37, 99, 235, 0.08);
+            background: #f3f4f6;
             font-weight: 700;
-            color: var(--primary-blue-dark);
-            padding: 0.75rem 1rem;
+            color: #374151;
+            padding: 0.75rem 1.5rem;
             letter-spacing: 0.5px;
             text-transform: uppercase;
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(37, 99, 235, 0.1);
+            font-size: 0.85rem;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            height: 50px;
         }
         
-        .category-row:hover td {
-            background: rgba(37, 99, 235, 0.12);
-            color: var(--primary-blue);
+        .category-row td:first-child {
+            background: #f3f4f6;
         }
 
         .comparison-table td {
@@ -675,68 +669,74 @@
         }
         
         .comparison-table tr:hover td {
-            background-color: rgba(37, 99, 235, 0.03);
+            background-color: #f9fafb;
         }
         
-        .comparison-table .fa-check {
-            color: var(--muted-green);
+        .comparison-table .fa-check,
+        .comparison-table .fa-plus,
+        .comparison-table .fa-times {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
-            background: rgba(22, 163, 74, 0.1);
-            border-radius: 50%;
-            transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
-            font-size: 1.1rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            margin: 0 auto;
+            transition: none;
+            font-size: 0.85rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
-        .comparison-table tr:hover .fa-check {
-            background: rgba(22, 163, 74, 0.2);
-            box-shadow: 0 0 12px rgba(22, 163, 74, 0.18);
+
+        .comparison-table .fa-check {
+            color: #16a34a;
+            background: #f0fdf4;
         }
         
         .comparison-table .fa-plus {
             color: var(--primary-blue);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            background: rgba(37, 99, 235, 0.1);
-            border-radius: 50%;
-            transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
-            font-size: 1.1rem;
-        }
-        .comparison-table tr:hover .fa-plus {
-            background: rgba(37, 99, 235, 0.2);
-            box-shadow: 0 0 12px rgba(37, 99, 235, 0.18);
+            background: #f0f7ff;
         }
         
         .comparison-table .fa-times {
-            color: var(--text-muted);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            background: rgba(220, 38, 38, 0.05);
-            border-radius: 50%;
-            transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
-            font-size: 1.1rem;
-        }
-        .comparison-table tr:hover .fa-times {
-            background: rgba(220, 38, 38, 0.1);
-            box-shadow: 0 0 12px rgba(220, 38, 38, 0.12);
+            color: #6b7280;
+            background: #f3f4f6;
         }
 
-        /* Ensure center alignment without jump */
+        /* Ensure center alignment and consistent sizing */
         .comparison-table td:not(:first-child) {
             text-align: center;
+            vertical-align: middle;
+            height: 60px;
         }
+        
         .comparison-table td:not(:first-child) > i {
             display: inline-flex;
             vertical-align: middle;
             line-height: 1;
+            margin: 0 auto;
+        }
+        
+        /* Remove hover effects for consistency */
+        .comparison-table tbody tr:hover td:first-child {
+            color: var(--text-dark);
+            background: var(--white);
+        }
+        
+        .comparison-table tbody tr:nth-child(even) td { 
+            background: #f9fafb; 
+        }
+        
+        .comparison-table tbody tr:nth-child(even) td:first-child { 
+            background: #f9fafb; 
+        }
+        
+        /* Fix icon alignment in table */
+        .comparison-table td i {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
         }
 
         /* FAQ Section */
