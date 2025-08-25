@@ -2,43 +2,153 @@
 
 ---
 
-
 <!-- laporan -->
- <section>
+<section>
+  <div class="parent">
+    <div class="square total">
+      <h3>Kas Awal</h3>
+      <p>Rp.</p>
+    </div>
+    <div class="square pemasukan">
+      <h3>Pemasukan</h3>
+      <p>Rp.</p>
+    </div>
+    <div class="square pemasukan">
+      <h3>Pengeluaran</h3>
+      <p>Rp.</p>
+    </div>
+    <div class="square pengeluaran">
+      <h3>Kas Akhir</h3>
+      <p>Rp.</p>
+    </div>
+  </div>
 
-     <div class="parent">
-            <div class="square">
-             <h3>Kas Awal</h3>
-             <p>Rp.</p>
-            </div>
-            <div class="square">
-                <h3>Pemasukan</h3>
-                <p>Rp.</p>
-            </div>
-            <div class="square">
-                 <h3>Pengeluaran</h3>
-                <p>Rp.</p>
-            </div>
-            <div class="square">
-                 <h3>Kas Akhir</h3>
-                <p>Rp.</p>
-            </div>
-        </div>
+  <style>
+    .square {
+      background-color: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      min-width: 250px;
+      height: 135px;
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: #333;
+      flex-shrink: 0;
+      transition: transform 0.3s ease-in-out;
+    }
 
-        <!-- main container -->
-        <div class="dashboard-container">
-            
-        <!-- p Program container -->
+    .square:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .square h3 {
+      font-size: 1.2rem;
+      margin: 0 0 10px;
+      font-weight: 500;
+      color: #444;
+    }
+
+    .square p {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin: 0;
+      color: #085895;
+    }
+
+    .square.total {
+      border-left: 5px solid #085895;
+    }
+
+    .square.pemasukan {
+      border-left: 5px solid #28a745;
+    }
+
+    .square.pengeluaran {
+      border-left: 5px solid #dc3545;
+    }
+
+    .parent {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+      box-sizing: border-box;
+      width: 100%;
+      font-family: sans-serif;
+    }
+
+    @media (max-width: 768px) {
+      .parent {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        justify-content: flex-start;
+      }
+
+      .square {
+        height: 110px;
+        width: 130px;
+      }
+    }
+  </style>
+
+  <!-- main container -->
+  <div class="dashboard-container">
+    <!-- p Program container -->
     <section class="progress-program-container">
       <div class="progress-header">
         <h3>Progress Program</h3>
         <span></span>
       </div>
-      <div class="progress-content">
-
-      </div>
-
+      <div class="progress-img"></div>
     </section>
+
+    <style>
+      .dashboard-container {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+        font-family: sans-serif;
+      }
+
+      .progress-program-container {
+        background-color: #ffffff;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        flex: 1;
+      }
+
+      .progress-header {
+        display: flex;
+        color: #085895;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .progress-header h3 {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .progress-img {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        position: relative;
+        background: linear-gradient(to top right, #0076b65e, #00b4d8);
+        border-radius: 6px;
+        /* width: fit-content; */
+        height: 150px;
+      }
+    </style>
 
     <section class="upcoming-events-container">
       <div class="upcoming-header">
@@ -70,174 +180,102 @@
     </section>
   </div>
 
-<section class="info-section">
-  <h2>Informasi Komplek Duta Bijaksana</h2>
-  <div class="card-container">
-    <div class="info-card">
-      <div class="card-content">
+  <style>
+    .upcoming-events-container {
+      background-color: #ffffff;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 20px;
+      flex: 1;
+    }
+
+    .upcoming-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      color: #085895;
+      font-size: 1.2em;
+      font-weight: bold;
+      margin: 0;
+    }
+
+
+
+    .event-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .event-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      margin-bottom: 8px;
+      background-color: #8cb4d298;
+      border-radius: 6px;
+    }
+
+    .event-item:hover{
+      background-color: #00b4d881;
+    }
+
+    .event-name {
+      font-size: 1em;
+      color: #333;
+    }
+
+    .event-date {
+      font-size: 0.9em;
+      color: #777;
+    }
+  </style>
+
+  <section class="info-section">
+    <h2>Informasi Komplek Duta Bijaksana</h2>
+    
+    <div class="card-container">
+      <div class="info-card">
+        <div class="card-content"></div>
+
+        <div class="card-footer">
+          <p>
+            Tanah di Jual, Blok H no 08<br /><span>Informasi selanjutnya</span>
+          </p>
+          <span class="card-arrow">&gt;</span>
+        </div>
       </div>
-      
-      <div class="card-footer">
-        <p>Tanah di Jual, Blok H no 08<br><span>Informasi selanjutnya</span></p>
-        <span class="card-arrow">&gt;</span>
+
+      <div class="info-card">
+        <div class="card-content"></div>
+        <div class="card-footer">
+          <p>
+            Infromasi Jadwal pengangkuta....<br /><span
+              >Informasi selanjutnya</span>
+          </p>
+          <span class="card-arrow">&gt;</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="card-content"></div>
+        <div class="card-footer">
+          <p>
+            Jadwal Kerja Bakti Bulan Agu....<br /><span
+              >Informasi selanjutnya</span>
+          </p>
+          <span class="card-arrow">&gt;</span>
+        </div>
       </div>
     </div>
-
-    <div class="info-card">
-      <div class="card-content">
-      </div>
-      <div class="card-footer">
-        <p>Infromasi Jadwal pengangkuta....<br><span>Informasi selanjutnya</span></p>
-        <span class="card-arrow">&gt;</span>
-      </div>
-    </div>
-
-    <div class="info-card">
-      <div class="card-content">
-      </div>
-      <div class="card-footer">
-        <p>Jadwal Kerja Bakti Bulan Agu....<br><span>Informasi selanjutnya</span></p>
-        <span class="card-arrow">&gt;</span>
-      </div>
-    </div>
-  </div>
-
-</section>  
-
-
+  </section>
 </section>
-
 
 <style>
 
-/* hapus */
-.square{
-    box-sizing: border-box;
-    box-shadow: ;
-    border-radius: 30px;
-    background-color: #F1E7D3;
-    width: 275px;
-    height: 150px;
-    margin: 40px ;
-    padding: 10px ;
-    flex-shrink: 0;
-}
-
-.square h3{
-    font-family: sans-serif;
-    font-weight: bold;
-    font-size: large;
-    padding-left: 10px;
-    
-}
-
-.square p {
-    font-family: sans-serif;
-    font-weight: bold;
-    font-size: small;
-    padding-left: 10px;
-    
-}
-
-.parent{
-    display: flex;
-    flex-direction: row;
-}
-
-/* hapus */
-
-
-  .dashboard-container {
-    display: flex;
-    gap: 20px;
-    padding: 20px;
-    font-family: sans-serif;
-  }
-
-
-  .progress-program-container {
-    background-color: #f4f1ea;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    flex: 1; /* New */
-  }
-
-  .progress-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-
-  .progress-header h3 {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin: 0;
-  }
-
-  .progress-content {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    position: relative;
-    background-color: #e8e4de;
-    border-radius: 6px;
-    height: 150px;
-  }
-
-
-
-  /* Acara menadatang  */
-  .upcoming-events-container {
-    background-color: #f9f5f1;
-    border-radius: 8px;
-    padding: 20px;
-    flex: 1; 
-  }
-
-  .upcoming-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-
-  .upcoming-header h3 {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin: 0;
-  }
-
-  .event-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .event-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 15px;
-    margin-bottom: 8px;
-    background-color: white;
-    border-radius: 6px;
-  }
-
-  .event-name {
-    font-size: 1em;
-    color: #333;
-  }
-
-  .event-date {
-    font-size: 0.9em;
-    color: #777;
-  }
-
-
-
-   /* Paling bawaah */
+  /* Paling bawaah */
   .info-section {
     max-width: 900px;
     margin: 2rem auto;
@@ -248,6 +286,7 @@
     font-size: 2rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
+    color: #085895;
   }
 
   .card-container {
@@ -257,17 +296,22 @@
   }
 
   .info-card {
-    background-color: #f1f2e9;
+    background-color: #ffffff;
     border-radius: 1rem;
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
   }
 
+  .info-card:hover {
+    transform: translateY(-10px);
+
+  }
+         
   .card-content {
-    background-color: #e8e4de;
+    background: linear-gradient(to top right, #0076b65e, #00b4d8);
     border-radius: 0.75rem;
     min-height: 150px;
   }
@@ -287,31 +331,37 @@
   .card-footer p span {
     color: #666;
     font-size: 0.8rem;
+    cursor: pointer;
+  }
+
+  .card-footer p span:hover{
+    color: #085895;  
   }
 
   .card-arrow {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #999;
+    color: #085895;
+    cursor: pointer;
+  }
+
+  .card-arrow:hover{
+    transform: translatey(-3px);
   }
 
   @media (max-width: 768px) {
     .card-container {
-      grid-template-columns: 1fr; 
+      grid-template-columns: 1fr;
     }
   }
 
- 
   @media (max-width: 768px) {
     .dashboard-container {
       flex-direction: column;
     }
-    .parent{
-       overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    .parent {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
   }
-
-
-
 </style>

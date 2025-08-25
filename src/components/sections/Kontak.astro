@@ -1,0 +1,770 @@
+---
+---
+
+<section id="kontak" class="section kontak-section">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Hubungi Kami</h2>
+        <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+            Punya pertanyaan atau ingin tahu lebih lanjut? Jangan ragu untuk menghubungi tim kami.
+        </p>
+
+        <div class="kontak-container" data-aos="fade-up" data-aos-delay="200">
+            <!-- Bagian Informasi Kontak dengan Desain Baru -->
+            <div class="kontak-info">
+                <div class="kontak-card-wrapper">
+                    <div class="kontak-card" data-tilt data-tilt-max="10" data-aos="zoom-in" data-aos-delay="300">
+                        <div class="kontak-card-inner">
+                            <div class="kontak-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h3>Alamat</h3>
+                            <p>SMK Taruna Bhakti<br>Jl. Pekapuran, Cimanggis, Depok</p>
+                            <div class="card-decoration"></div>
+                            <div class="card-glow"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kontak-card-wrapper">
+                    <div class="kontak-card" data-tilt data-tilt-max="10" data-aos="zoom-in" data-aos-delay="400">
+                        <div class="kontak-card-inner">
+                            <div class="kontak-icon">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <h3>Telepon</h3>
+                            <p>+62 812 3456 7890</p>
+                            <div class="card-decoration"></div>
+                            <div class="card-glow"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kontak-card-wrapper">
+                    <div class="kontak-card" data-tilt data-tilt-max="10" data-aos="zoom-in" data-aos-delay="500">
+                        <div class="kontak-card-inner">
+                            <div class="kontak-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h3>Email</h3>
+                            <p>info@komplekita.id</p>
+                            <div class="card-decoration"></div>
+                            <div class="card-glow"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kontak-card-wrapper">
+                    <div class="kontak-card" data-tilt data-tilt-max="10" data-aos="zoom-in" data-aos-delay="600">
+                        <div class="kontak-card-inner">
+                            <div class="kontak-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3>Jam Operasional</h3>
+                            <p>Senin - Jumat: 09.00 - 17.00<br>Sabtu: 09.00 - 15.00</p>
+                            <div class="card-decoration"></div>
+                            <div class="card-glow"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Kontak dengan Desain Baru -->
+            <div class="kontak-form-container" data-aos="fade-left" data-aos-delay="300">
+                <div class="form-decoration"></div>
+                <div class="form-decoration-2"></div>
+                <div class="form-decoration-3"></div>
+                <div class="form-decoration-4"></div>
+                <form class="kontak-form" id="kontakForm">
+                    <h3 class="form-title">Kirim Pesan</h3>
+                    
+                    <div class="form-group" data-aos="fade-up" data-aos-delay="400">
+                        <label for="nama">Nama Lengkap</label>
+                        <div class="input-container">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" id="nama" name="nama" placeholder="Masukkan nama lengkap Anda" required>
+                            <div class="input-focus-effect"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-aos="fade-up" data-aos-delay="500">
+                        <label for="email">Email</label>
+                        <div class="input-container">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="email" name="email" placeholder="Masukkan alamat email Anda" required>
+                            <div class="input-focus-effect"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-aos="fade-up" data-aos-delay="600">
+                        <label for="telepon">Nomor Telepon</label>
+                        <div class="input-container">
+                            <i class="fas fa-phone input-icon"></i>
+                            <input type="tel" id="telepon" name="telepon" placeholder="Masukkan nomor telepon Anda">
+                            <div class="input-focus-effect"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-aos="fade-up" data-aos-delay="700">
+                        <label for="pesan">Pesan</label>
+                        <div class="input-container textarea-container">
+                            <i class="fas fa-comment input-icon"></i>
+                            <textarea id="pesan" name="pesan" rows="5" placeholder="Tulis pesan Anda di sini" required></textarea>
+                            <div class="input-focus-effect"></div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" data-aos="fade-up" data-aos-delay="800">
+                        <span class="btn-text">Kirim Pesan</span>
+                        <span class="btn-icon"><i class="fas fa-paper-plane"></i></span>
+                        <span class="btn-shine"></span>
+                        <span class="btn-particles"></span>
+                    </button>
+                    <div id="formStatus" class="form-status"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Form submission handler with email functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('kontakForm');
+        const formStatus = document.getElementById('formStatus');
+        
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Show loading state
+                formStatus.innerHTML = '<div class="loading-spinner"></div><p>Mengirim pesan...</p>';
+                formStatus.classList.add('visible', 'loading');
+                
+                // Simulate form submission (in real implementation, replace with actual API call)
+                setTimeout(() => {
+                    // Success state
+                    formStatus.innerHTML = '<i class="fas fa-check-circle"></i><p>Pesan berhasil dikirim! Kami akan menghubungi Anda segera.</p>';
+                    formStatus.classList.remove('loading');
+                    formStatus.classList.add('success');
+                    
+                    // Reset form
+                    form.reset();
+                    
+                    // Hide status after 5 seconds
+                    setTimeout(() => {
+                        formStatus.classList.remove('visible', 'success');
+                    }, 5000);
+                }, 2000);
+                
+                // In a real implementation, you would use a service like EmailJS, Formspree, or your own backend
+                // Example with EmailJS:
+                /*
+                emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', form)
+                    .then(function() {
+                        formStatus.innerHTML = '<i class="fas fa-check-circle"></i><p>Pesan berhasil dikirim! Kami akan menghubungi Anda segera.</p>';
+                        formStatus.classList.remove('loading');
+                        formStatus.classList.add('success');
+                        form.reset();
+                    }, function(error) {
+                        formStatus.innerHTML = '<i class="fas fa-times-circle"></i><p>Gagal mengirim pesan. Silakan coba lagi.</p>';
+                        formStatus.classList.remove('loading');
+                        formStatus.classList.add('error');
+                    });
+                */
+            });
+        }
+        
+        // Add 3D tilt effect to kontak cards
+        if (typeof VanillaTilt !== 'undefined') {
+            VanillaTilt.init(document.querySelectorAll(".kontak-card"), {
+                max: 10,
+                speed: 400,
+                glare: true,
+                "max-glare": 0.3,
+            });
+        }
+        
+        // Add floating animation to kontak cards with random parameters
+        const kontakCards = document.querySelectorAll('.kontak-card');
+        kontakCards.forEach((card, index) => {
+            const delay = index * 0.2;
+            const duration = 3 + Math.random() * 2;
+            const translateY = 5 + Math.random() * 5;
+            card.style.animation = `float ${duration}s ease-in-out ${delay}s infinite alternate`;
+        });
+        
+        // Add input focus animations
+        const inputs = document.querySelectorAll('.form-group input, .form-group textarea');
+        inputs.forEach(input => {
+            const container = input.closest('.input-container');
+            const formGroup = input.closest('.form-group');
+            
+            input.addEventListener('focus', () => {
+                formGroup.classList.add('focused');
+                container.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', () => {
+                if (!input.value) {
+                    formGroup.classList.remove('focused');
+                    container.classList.remove('focused');
+                }
+            });
+            
+            // Check initial state
+            if (input.value) {
+                formGroup.classList.add('focused');
+                container.classList.add('focused');
+            }
+        });
+        
+        // Add particle effects to submit button
+        const submitBtn = document.querySelector('.kontak-form .btn-primary');
+        if (submitBtn) {
+            const btnParticles = submitBtn.querySelector('.btn-particles');
+            
+            submitBtn.addEventListener('mouseenter', () => {
+                createParticles(btnParticles, 10);
+            });
+        }
+        
+        function createParticles(container, count) {
+            container.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('span');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 5 + 3;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 0.5;
+                const duration = Math.random() * 1 + 1;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                
+                container.appendChild(particle);
+            }
+        }
+    });
+</script>
+
+<style>
+    .kontak-section {
+        padding: 6rem 0;
+        position: relative;
+        overflow: hidden;
+        background: var(--surface);
+    }
+    
+    /* Decorative elements */
+    .kontak-section::before,
+    .kontak-section::after {
+        content: '';
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        opacity: 0.1;
+        filter: blur(50px);
+        z-index: 0;
+    }
+    
+    .kontak-section::before {
+        top: -100px;
+        left: -100px;
+        animation: pulse 15s ease-in-out infinite alternate;
+    }
+    
+    .kontak-section::after {
+        bottom: -100px;
+        right: -100px;
+        animation: pulse 15s ease-in-out 5s infinite alternate;
+    }
+
+    .kontak-container {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 3rem;
+        margin-bottom: 3rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .kontak-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    /* Improved card design */
+    .kontak-card-wrapper {
+        perspective: 1000px;
+    }
+    
+    .kontak-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        transition: all var(--transition-normal);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        transform-style: preserve-3d;
+        transform: translateZ(0);
+        height: 100%;
+    }
+    
+    .kontak-card-inner {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .kontak-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-blue-light);
+    }
+    
+    /* Card glow effect */
+    .card-glow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.3), transparent 70%);
+        opacity: 0;
+        z-index: 0;
+        transition: opacity 0.5s ease;
+        pointer-events: none;
+    }
+    
+    .kontak-card:hover .card-glow {
+        opacity: 0.5;
+        animation: pulse-glow 2s ease-in-out infinite alternate;
+    }
+    
+    /* Card decoration */
+    .card-decoration {
+        position: absolute;
+        bottom: -50px;
+        right: -50px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-blue-light), transparent);
+        opacity: 0.2;
+        filter: blur(20px);
+        z-index: 0;
+        transition: all 0.5s ease;
+    }
+    
+    .kontak-card:hover .card-decoration {
+        transform: scale(1.5) rotate(45deg);
+        opacity: 0.3;
+    }
+
+    .kontak-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        color: white;
+        font-size: 1.8rem;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.5s ease;
+        z-index: 2;
+    }
+    
+    .kontak-card:hover .kontak-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    /* Icon shine effect */
+    .kontak-icon::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+        transform: rotate(45deg);
+        transition: all 0.5s ease;
+        opacity: 0;
+    }
+    
+    .kontak-card:hover .kontak-icon::after {
+        animation: shine 1.5s ease infinite;
+    }
+
+    .kontak-card h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        color: var(--text-dark);
+        transition: color 0.3s ease;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .kontak-card:hover h3 {
+        color: var(--primary-blue);
+        text-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+    }
+
+    .kontak-card p {
+        color: var(--text-light);
+        line-height: 1.6;
+        font-size: 1.1rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Improved form container */
+    .kontak-form-container {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: var(--radius-lg);
+        padding: 3rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .kontak-form-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    }
+
+    .kontak-form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--muted-green), var(--muted-orange));
+        z-index: 2;
+    }
+    
+    /* Form decorative elements */
+    .form-decoration,
+    .form-decoration-2,
+    .form-decoration-3,
+    .form-decoration-4 {
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-blue-light), transparent);
+        opacity: 0.1;
+        filter: blur(30px);
+        z-index: -1;
+    }
+    
+    .form-decoration {
+        width: 200px;
+        height: 200px;
+        top: -50px;
+        right: -50px;
+        animation: pulse 10s ease-in-out infinite alternate;
+    }
+    
+    .form-decoration-2 {
+        width: 150px;
+        height: 150px;
+        bottom: -50px;
+        left: -50px;
+        animation: pulse 10s ease-in-out 3s infinite alternate;
+    }
+    
+    .form-decoration-3 {
+        width: 100px;
+        height: 100px;
+        top: 30%;
+        left: -30px;
+        animation: pulse 8s ease-in-out 2s infinite alternate;
+    }
+    
+    .form-decoration-4 {
+        width: 120px;
+        height: 120px;
+        bottom: 20%;
+        right: -30px;
+        animation: pulse 12s ease-in-out 4s infinite alternate;
+    }
+    
+    /* Form title */
+    .form-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: var(--text-dark);
+        text-align: center;
+        position: relative;
+        padding-bottom: 1rem;
+    }
+    
+    .form-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--muted-green));
+        border-radius: 3px;
+    }
+
+    .kontak-form {
+        display: grid;
+        gap: 1.5rem;
+        position: relative;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        position: relative;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: var(--text-dark);
+        transition: color 0.3s ease;
+        font-size: 1rem;
+    }
+    
+    .form-group.focused label {
+        color: var(--primary-blue);
+    }
+    
+    /* Input container with icon */
+    .input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        transition: all var(--transition-fast);
+        overflow: hidden;
+    }
+    
+    .input-container.focused {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        color: var(--text-light);
+        transition: color 0.3s ease;
+        font-size: 1rem;
+    }
+    
+    .input-container.focused .input-icon {
+        color: var(--primary-blue);
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 0.9rem 1rem 0.9rem 2.8rem;
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        font-size: 1rem;
+        width: 100%;
+        color: var(--text-dark);
+        transition: all var(--transition-fast);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+    }
+    
+    .textarea-container .input-icon {
+        top: 1rem;
+    }
+    
+    /* Input focus effect */
+    .input-focus-effect {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--muted-green));
+        transition: width 0.3s ease;
+    }
+    
+    .input-container.focused .input-focus-effect {
+        width: 100%;
+    }
+    
+    /* Submit button with particles */
+    .btn-primary {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    .btn-particles .particle {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        pointer-events: none;
+        animation: particle-float 1.5s ease-in-out infinite alternate;
+        opacity: 0;
+    }
+    
+    .btn-text, .btn-icon {
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Form status styles */
+    .form-status {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        opacity: 0;
+        height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .form-status.visible {
+        opacity: 1;
+        height: auto;
+    }
+    
+    .form-status.loading {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: var(--primary-blue);
+    }
+    
+    .form-status.success {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: var(--muted-green);
+    }
+    
+    .form-status.error {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--muted-red);
+    }
+    
+    .loading-spinner {
+        width: 24px;
+        height: 24px;
+        border: 2px solid rgba(59, 130, 246, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary-blue);
+        animation: spin 1s linear infinite;
+    }
+    
+    /* Animations */
+    @keyframes float {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-10px); }
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 0.1; }
+        50% { transform: scale(1.1); opacity: 0.15; }
+        100% { transform: scale(1); opacity: 0.1; }
+    }
+    
+    @keyframes pulse-glow {
+        0% { opacity: 0.3; transform: scale(1); }
+        100% { opacity: 0.6; transform: scale(1.1); }
+    }
+    
+    @keyframes shine {
+        0% { left: -100%; opacity: 0; }
+        20% { opacity: 1; }
+        100% { left: 100%; opacity: 0; }
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes particle-float {
+        0% { transform: translateY(0) scale(1); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: translateY(-20px) scale(0); opacity: 0; }
+    }
+
+    @media (max-width: 992px) {
+        .kontak-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .kontak-form-container {
+            padding: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .kontak-info {
+            grid-template-columns: 1fr;
+        }
+        
+        .kontak-card {
+            padding: 1.5rem;
+        }
+        
+        .kontak-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 1.5rem;
+        }
+    }
+</style>

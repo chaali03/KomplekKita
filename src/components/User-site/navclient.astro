@@ -5,7 +5,7 @@ const nama = "Duta Bijaksana"
 
 <header class="main-header">
     <div class="header-content">
-            <img src="../../../public/images/hero-app.png" alt="Komplek Kita Logo" class="logo-image" />
+            <img src="/images/hero-app.png" alt="Komplek Kita Logo" class="logo-image" />
         <div class="login-button-container">
             <a href="#" class="login-button">
                 Login Admin
@@ -36,7 +36,7 @@ const nama = "Duta Bijaksana"
       <li><a href="/user">Home</a></li>
       <li><a href="/userlaporan">Laporan</a></li>
       <li><a href="/userprogram">Program</a></li>
-      <li><a href="/userinfo">Info</a></li>
+      <li><a href="/userinfo">Informasi</a></li>
     </ul>
   </nav>
 
@@ -48,19 +48,20 @@ const nama = "Duta Bijaksana"
   section {
     padding: 2rem 1rem;
     font-family: sans-serif;
+     background-color: white;
   }
 
   /* Header shi */
 .main-header {
   padding: 1rem;
   font-family: sans-serif;
+  background-color: white;
 }
 
 .header-content {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  max-width: 900px;
+  max-width: screen;
   margin: 0 auto;
   flex-wrap: wrap; 
 }
@@ -132,10 +133,7 @@ const nama = "Duta Bijaksana"
     transition: color 0.3s ease;
   }
 
-  .parent-nav a:hover {
-    color: #FFB61D;
-  }
-  
+
  
   .burgir {
     display: none; 
@@ -187,7 +185,7 @@ const nama = "Duta Bijaksana"
       display: flex;
       position: fixed;
       top: 3rem;
-      right: 1rem;
+      left: 1rem;
       z-index: 9999;
     }
 
