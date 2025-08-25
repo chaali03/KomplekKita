@@ -406,7 +406,35 @@
             color: var(--text-muted);
         }
         
-        /* removed under-price discount badge */
+        /* Style untuk harga diskon */
+        .harga-price.discounted {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+
+        .original-price {
+            position: absolute;
+            top: -1.2rem;
+            font-size: 1.2rem;
+            color: var(--muted-red);
+            text-decoration: line-through;
+            font-weight: 600;
+        }
+
+        .discount-badge {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--muted-red);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3);
+        }
 
         /* Card Body */
         .harga-card-body {
@@ -847,6 +875,7 @@
         .cta-content {
             flex: 1;
             min-width: 300px;
+            text-align: center;
         }
 
         .cta-content h3 {
@@ -866,6 +895,8 @@
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
         }
 
         /* Responsive Styles */
@@ -1231,12 +1262,14 @@
 
                 <!-- Paket Plus -->
                 <div class="harga-card" data-aos="fade-up" data-aos-delay="500">
-                    <div class="harga-card-badge harga-card-badge--discount">Diskon</div>
+                    <div class="harga-card-badge harga-card-badge--discount">Diskon 20%</div>
                     <div class="harga-card-header">
                         <h3>Plus</h3>
-                        <div class="harga-price" id="plus-price">
+                        <div class="harga-price discounted" id="plus-price">
+                            <span class="original-price" id="plus-original-price">Rp 150.000</span>
                             <span class="price">Rp 119.000</span>
                             <span class="period">/bulan</span>
+                            <span class="discount-badge" id="plus-discount-text">Hemat Rp 31.000</span>
                         </div>
                     </div>
                     <div class="harga-card-body">
@@ -1475,33 +1508,44 @@
     <script>
         // Inisialisasi AOS (guarded)
         document.addEventListener('DOMContentLoaded', function() {
-            const w = window /** @type {any} */ as any;
+            const w = window /** @type {any} */;
             if (typeof window !== 'undefined' && w && w.AOS) {
                 w.AOS.init({ duration: 800, once: true, offset: 100 });
             }
 
-            const tabBtns = document.querySelectorAll<HTMLButtonElement>('.tab-btn');
-            const tabSlider = document.querySelector<HTMLDivElement>('.tab-slider');
-            const premiumPrice = document.getElementById('premium-price') as HTMLDivElement | null;
-            const plusPrice = document.getElementById('plus-price') as HTMLDivElement | null;
-            const tabsContainer = document.querySelector<HTMLDivElement>('.harga-tabs');
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabSlider = document.querySelector('.tab-slider');
+            const premiumPrice = document.getElementById('premium-price');
+            const plusPrice = document.getElementById('plus-price');
+            const plusOriginalPrice = document.getElementById('plus-original-price');
+            const plusDiscountText = document.getElementById('plus-discount-text');
+            const tabsContainer = document.querySelector('.harga-tabs');
 
             // Data harga untuk setiap paket
-            const hargaPaket: { bulanan: { premium: string; plus: string }; tahunan: { premium: string; plus: string } } = {
-                bulanan: { premium: 'Rp 99.000', plus: 'Rp 119.000' },
-                tahunan: { premium: 'Rp 948.000', plus: 'Rp 1.188.000' }
+            const hargaPaket = {
+                bulanan: { 
+                    premium: 'Rp 99.000', 
+                    plus: 'Rp 119.000',
+                    plusOriginal: 'Rp 150.000',
+                    plusDiscount: 'Hemat Rp 31.000'
+                },
+                tahunan: { 
+                    premium: 'Rp 948.000', 
+                    plus: 'Rp 1.188.000',
+                    plusOriginal: 'Rp 1.485.000',
+                    plusDiscount: 'Hemat Rp 297.000'
+                }
             };
 
             // Initialize ARIA states
             if (tabsContainer) tabsContainer.setAttribute('role', 'tablist');
-            tabBtns.forEach((btn: HTMLButtonElement) => {
+            tabBtns.forEach((btn) => {
                 btn.setAttribute('role', 'tab');
                 btn.setAttribute('aria-pressed', btn.classList.contains('active') ? 'true' : 'false');
-                btn.addEventListener('click', (ev: MouseEvent) => {
-                    const currentBtn = ev.currentTarget as HTMLButtonElement | null;
-                    if (!currentBtn) return;
+                btn.addEventListener('click', (ev) => {
+                    const currentBtn = ev.currentTarget;
                     // Remove active from all
-                    tabBtns.forEach((b: HTMLButtonElement) => {
+                    tabBtns.forEach((b) => {
                         b.classList.remove('active');
                         b.setAttribute('aria-pressed', 'false');
                     });
@@ -1509,7 +1553,7 @@
                     currentBtn.classList.add('active');
                     currentBtn.setAttribute('aria-pressed', 'true');
 
-                    const periode: 'bulanan' | 'tahunan' = currentBtn.dataset.tab === 'tahunan' ? 'tahunan' : 'bulanan';
+                    const periode = currentBtn.dataset.tab === 'tahunan' ? 'tahunan' : 'bulanan';
 
                     // Move slider
                     if (tabSlider) {
@@ -1519,15 +1563,15 @@
                 });
 
                 // Keyboard support
-                btn.addEventListener('keydown', (e: KeyboardEvent) => {
+                btn.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        (btn as HTMLButtonElement).click();
+                        btn.click();
                     }
                     if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
                         e.preventDefault();
-                        const buttons = Array.from(tabBtns) as HTMLButtonElement[];
-                        const idx = buttons.indexOf(btn as HTMLButtonElement);
+                        const buttons = Array.from(tabBtns);
+                        const idx = buttons.indexOf(btn);
                         const nextIdx = e.key === 'ArrowRight' ? (idx + 1) % buttons.length : (idx - 1 + buttons.length) % buttons.length;
                         buttons[nextIdx].focus();
                         buttons[nextIdx].click();
@@ -1536,40 +1580,40 @@
             });
 
             // Ensure initial state reflects active tab
-            const initial = (Array.from(tabBtns) as HTMLButtonElement[]).find((b) => b.classList.contains('active')) || tabBtns[0];
+            const initial = Array.from(tabBtns).find((b) => b.classList.contains('active')) || tabBtns[0];
             if (initial) {
-                (initial as HTMLButtonElement).click();
+                initial.click();
             }
 
             // Function to update prices based on selected period
-            function updatePrices(periode: 'bulanan' | 'tahunan') {
+            function updatePrices(periode) {
                 if (premiumPrice) {
-                    /** @type {HTMLSpanElement|null} */
-                    const priceElement = premiumPrice.querySelector<HTMLSpanElement>('.price');
-                    /** @type {HTMLSpanElement|null} */
-                    const periodElement = premiumPrice.querySelector<HTMLSpanElement>('.period');
+                    const priceElement = premiumPrice.querySelector('.price');
+                    const periodElement = premiumPrice.querySelector('.period');
                     if (priceElement) priceElement.textContent = hargaPaket[periode].premium;
                     if (periodElement) periodElement.textContent = periode === 'bulanan' ? '/bulan' : '/tahun';
                 }
+                
                 if (plusPrice) {
-                    /** @type {HTMLSpanElement|null} */
-                    const priceElement = plusPrice.querySelector<HTMLSpanElement>('.price');
-                    /** @type {HTMLSpanElement|null} */
-                    const periodElement = plusPrice.querySelector<HTMLSpanElement>('.period');
+                    const priceElement = plusPrice.querySelector('.price');
+                    const periodElement = plusPrice.querySelector('.period');
+                    
                     if (priceElement) priceElement.textContent = hargaPaket[periode].plus;
                     if (periodElement) periodElement.textContent = periode === 'bulanan' ? '/bulan' : '/tahun';
+                    if (plusOriginalPrice) plusOriginalPrice.textContent = hargaPaket[periode].plusOriginal;
+                    if (plusDiscountText) plusDiscountText.textContent = hargaPaket[periode].plusDiscount;
                 }
             }
 
             // FAQ accordion functionality
-            const faqItems = document.querySelectorAll<HTMLElement>('.faq-item');
+            const faqItems = document.querySelectorAll('.faq-item');
             faqItems.forEach((item) => {
-                const question = item.querySelector<HTMLElement>('.faq-question');
+                const question = item.querySelector('.faq-question');
                 if (!question) return;
                 question.addEventListener('click', function() {
                     item.classList.toggle('active');
                     faqItems.forEach((otherItem) => {
-                        if (otherItem !== item) (otherItem as HTMLElement).classList.remove('active');
+                        if (otherItem !== item) otherItem.classList.remove('active');
                     });
                 });
             });
