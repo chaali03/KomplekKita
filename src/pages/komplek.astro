@@ -1496,10 +1496,10 @@ import Footer from '../components/sections/Footer.astro';
       const encodedAddress = encodeURIComponent(data.alamat);
       
       // URL untuk menampilkan lokasi spesifik dengan marker dan info
-      const mapSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dUsX1Sv0WoNgf4&q=${encodedAddress}&zoom=16&maptype=roadmap`;
+      const mapSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyDJyYt8UY_vd-L8JL9VHDgVAjUKpvvPcDY&q=${encodedAddress}&zoom=16&maptype=roadmap`;
       
       // Menggunakan alamat komplek langsung untuk akurasi yang lebih baik
-      const fallbackMapSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dUsX1Sv0WoNgf4&q=${encodedAddress}&center=${data.lat},${data.lng}&zoom=17&maptype=roadmap`;
+      const fallbackMapSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyDJyYt8UY_vd-L8JL9VHDgVAjUKpvvPcDY&q=${encodedAddress}&center=${data.lat},${data.lng}&zoom=17&maptype=roadmap`;
       
       mapFrame.src = fallbackMapSrc;
       
@@ -1567,19 +1567,8 @@ import Footer from '../components/sections/Footer.astro';
       // Menutup modal terlebih dahulu
       closeModal();
       
-      // Scroll ke bagian demo komplek yang sesuai
-      setTimeout(() => {
-        const demoCard = document.querySelector(`.komplek-card[data-name="${currentKomplekName}"]`) as HTMLElement;
-        if (demoCard) {
-          demoCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          demoCard.classList.add('highlight-card');
-          
-          // Hapus highlight setelah beberapa detik
-          setTimeout(() => {
-            demoCard.classList.remove('highlight-card');
-          }, 2000);
-        }
-      }, 300);
+      // Arahkan ke halaman user
+      window.location.href = '/user';
     });
 
     // Demo button handlers
