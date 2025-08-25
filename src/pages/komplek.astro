@@ -29,8 +29,7 @@ import Footer from '../components/sections/Footer.astro';
           <span class="title-accent">Tersedia</span>
         </h1>
         <p class="section-subtitle">
-          Pilih komplek untuk melihat demo tampilan dan fitur lengkap. 
-          <span class="subtitle-highlight">Semua item bertanda Demo</span>
+          Pilih komplek untuk melihat informasi lengkap dan lokasi di peta.
         </p>
       </div>
 
@@ -58,7 +57,13 @@ import Footer from '../components/sections/Footer.astro';
       </div>
 
       <div class="komplek-grid" id="komplekGrid">
-        <div class="komplek-card" data-aos="fade-up" data-aos-delay="100" data-name="melati indah">
+        <div class="komplek-card" data-aos="fade-up" data-aos-delay="100" data-name="melati indah" 
+             data-lat="-6.2088" data-lng="106.8456" 
+             data-ketua-rt="Budi Santoso" 
+             data-ketua-rt-foto="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+             data-bendahara="Siti Aminah"
+             data-bendahara-foto="https://images.unsplash.com/photo-1494790108755-2616b612b977?w=150&h=150&fit=crop&crop=face"
+             data-alamat="Jl. Melati Raya No. 15, Jakarta Selatan">
           <div class="card-glow"></div>
           <div class="card-bg"></div>
           <div class="card-content">
@@ -92,7 +97,13 @@ import Footer from '../components/sections/Footer.astro';
           </div>
         </div>
 
-        <div class="komplek-card" data-aos="fade-up" data-aos-delay="200" data-name="anggrek asri">
+        <div class="komplek-card" data-aos="fade-up" data-aos-delay="200" data-name="anggrek asri"
+             data-lat="-6.1701" data-lng="106.6403"
+             data-ketua-rt="Ahmad Rahman"
+             data-ketua-rt-foto="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+             data-bendahara="Dewi Sartika"
+             data-bendahara-foto="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+             data-alamat="Jl. Anggrek Mas Blok A, Tangerang">
           <div class="card-glow"></div>
           <div class="card-bg"></div>
           <div class="card-content">
@@ -126,7 +137,13 @@ import Footer from '../components/sections/Footer.astro';
           </div>
         </div>
 
-        <div class="komplek-card" data-aos="fade-up" data-aos-delay="300" data-name="kenanga raya">
+        <div class="komplek-card" data-aos="fade-up" data-aos-delay="300" data-name="kenanga raya"
+             data-lat="-6.2441" data-lng="107.0000"
+             data-ketua-rt="Hendra Gunawan"
+             data-ketua-rt-foto="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face"
+             data-bendahara="Linda Marlina"
+             data-bendahara-foto="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face"
+             data-alamat="Jl. Kenanga Raya Blok C, Bekasi">
           <div class="card-glow"></div>
           <div class="card-bg"></div>
           <div class="card-content">
@@ -173,6 +190,113 @@ import Footer from '../components/sections/Footer.astro';
             <i class="fas fa-refresh"></i>
             Tampilkan Semua Komplek
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popup Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modalTitle">Informasi Komplek</h3>
+          <button class="modal-close" id="modalClose">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Alamat Komplek -->
+          <div class="komplek-address">
+            <div class="address-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="address-content">
+              <h4>Alamat Komplek</h4>
+              <p id="komplekAlamat">-</p>
+            </div>
+          </div>
+
+          <!-- Pengurus Info -->
+          <div class="komplek-info">
+            <h4 class="info-section-title">
+              <i class="fas fa-users"></i>
+              Pengurus Komplek
+            </h4>
+            <div class="pengurus-grid">
+              <!-- Ketua RT -->
+              <div class="pengurus-card">
+                <div class="pengurus-photo">
+                  <img id="ketuaRTFoto" src="" alt="Ketua RT" class="person-photo">
+                  <div class="photo-overlay">
+                    <i class="fas fa-crown"></i>
+                  </div>
+                </div>
+                <div class="pengurus-info">
+                  <h5>Ketua RT</h5>
+                  <p id="ketuaRTNama">-</p>
+                  <div class="contact-buttons">
+                    <button class="contact-btn whatsapp-btn">
+                      <i class="fab fa-whatsapp"></i>
+                      WhatsApp
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bendahara -->
+              <div class="pengurus-card">
+                <div class="pengurus-photo">
+                  <img id="bendaharaFoto" src="" alt="Bendahara" class="person-photo">
+                  <div class="photo-overlay">
+                    <i class="fas fa-wallet"></i>
+                  </div>
+                </div>
+                <div class="pengurus-info">
+                  <h5>Bendahara</h5>
+                  <p id="bendaharaNama">-</p>
+                  <div class="contact-buttons">
+                    <button class="contact-btn whatsapp-btn">
+                      <i class="fab fa-whatsapp"></i>
+                      WhatsApp
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Maps Section -->
+          <div class="map-container">
+            <div class="map-header">
+              <h4><i class="fas fa-location-dot"></i> Lokasi Komplek</h4>
+              <button class="open-maps-btn" id="openMapsBtn">
+                <i class="fas fa-external-link-alt"></i>
+                Buka di Google Maps
+              </button>
+            </div>
+            <div class="map-wrapper">
+              <iframe 
+                id="mapFrame" 
+                width="100%" 
+                height="350" 
+                style="border:0; border-radius: 12px;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+              </iframe>
+            </div>
+            <div class="map-footer">
+              <div class="map-buttons">
+                <button class="directions-btn" id="directionsBtn">
+                  <i class="fas fa-route"></i>
+                  Dapatkan Petunjuk Arah
+                </button>
+                <button class="demo-view-btn" id="viewDemoBtn">
+                  <i class="fas fa-eye"></i>
+                  Lihat Demo
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -350,11 +474,6 @@ import Footer from '../components/sections/Footer.astro';
     max-width: 600px;
     margin: 0 auto;
     line-height: 1.6;
-  }
-
-  .subtitle-highlight {
-    color: var(--primary);
-    font-weight: 600;
   }
 
   /* Search Section */
@@ -708,6 +827,369 @@ import Footer from '../components/sections/Footer.astro';
     box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
   }
 
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    padding: 1rem;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-container {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-soft);
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s ease;
+  }
+
+  .modal-overlay.active .modal-container {
+    transform: scale(1) translateY(0);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 2rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface-soft) 100%);
+  }
+
+  .modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-close:hover {
+    background: var(--surface-soft);
+    color: var(--text-secondary);
+  }
+
+  .modal-body {
+    padding: 2rem;
+    overflow-y: auto;
+    max-height: calc(90vh - 120px);
+  }
+
+  /* Address Section */
+  .komplek-address {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+    border-radius: var(--radius);
+    margin-bottom: 2rem;
+    color: white;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+  }
+
+  .address-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .address-content h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .address-content p {
+    font-size: 1rem;
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  /* Pengurus Section */
+  .komplek-info {
+    margin-bottom: 2rem;
+  }
+
+  .info-section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .info-section-title i {
+    color: var(--primary);
+  }
+
+  .pengurus-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .pengurus-card {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .pengurus-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-light);
+  }
+
+  .pengurus-photo {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1rem;
+  }
+
+  .person-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--primary-light);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  }
+
+  .photo-overlay {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.875rem;
+    border: 2px solid var(--surface);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  }
+
+  .pengurus-info {
+    text-align: center;
+  }
+
+  .pengurus-info h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+  }
+
+  .pengurus-info p {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0 0 1rem 0;
+  }
+
+  .contact-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  .contact-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .whatsapp-btn {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: white;
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+  }
+
+  .whatsapp-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+  }
+
+  .phone-btn {
+    background: linear-gradient(135deg, var(--accent), #D97706);
+    color: white;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  }
+
+  .phone-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  }
+
+  /* Map Container */
+  .map-container {
+    background: var(--surface-soft);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border-soft);
+  }
+
+  .map-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .map-header h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .map-header h4 i {
+    color: var(--primary);
+  }
+
+  .open-maps-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, var(--success), #059669);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+
+  .open-maps-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  }
+
+  .map-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    background: var(--surface);
+    margin-bottom: 1rem;
+  }
+
+  .map-footer {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .map-buttons {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .directions-btn, .demo-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .directions-btn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+
+  .directions-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+  }
+  
+  .demo-view-btn {
+    background: linear-gradient(135deg, var(--accent), #D97706);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  }
+  
+  .demo-view-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+  }
+
   /* Animations */
   @keyframes float {
     0%, 100% { transform: translate(0, 0) scale(1); }
@@ -734,6 +1216,30 @@ import Footer from '../components/sections/Footer.astro';
     0% { transform: translateX(0); opacity: 0; }
     30% { opacity: 1; }
     100% { transform: translateX(200%); opacity: 0; }
+  }
+  
+  @keyframes highlight-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+  }
+  
+  .highlight-card {
+    animation: highlight-pulse 1.5s ease-in-out;
+    border-color: var(--primary);
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8) translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
   }
 
   /* Responsive Design */
@@ -781,6 +1287,48 @@ import Footer from '../components/sections/Footer.astro';
     .search-box {
       padding: 0.5rem 1rem;
     }
+
+    .modal-container {
+      max-width: 95%;
+      margin: 1rem;
+    }
+
+    .modal-header {
+      padding: 1.5rem 1.5rem 1rem;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .pengurus-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .pengurus-card {
+      padding: 1rem;
+    }
+
+    .map-container {
+      padding: 1rem;
+    }
+
+    .map-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .komplek-address {
+      flex-direction: column;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .contact-buttons {
+      flex-direction: column;
+    }
   }
 
   @media (max-width: 480px) {
@@ -805,28 +1353,73 @@ import Footer from '../components/sections/Footer.astro';
     .demo-tag {
       align-self: flex-start;
     }
+
+    .modal-header {
+      padding: 1rem 1rem 0.75rem;
+    }
+
+    .modal-body {
+      padding: 1rem;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+    }
+
+    .pengurus-grid {
+      gap: 0.75rem;
+    }
+
+    .pengurus-photo {
+      width: 60px;
+      height: 60px;
+    }
+
+    .photo-overlay {
+      width: 24px;
+      height: 24px;
+      font-size: 0.75rem;
+    }
   }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchInput');
-    const clearSearch = document.getElementById('clearSearch');
-    const komplekGrid = document.getElementById('komplekGrid');
-    const noResults = document.getElementById('noResults');
-    const resultsCount = document.getElementById('resultsCount');
-    const countText = document.getElementById('countText');
-    const komplekCards = document.querySelectorAll('.komplek-card');
+    const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+    const clearSearch = document.getElementById('clearSearch') as HTMLElement;
+    const komplekGrid = document.getElementById('komplekGrid') as HTMLElement;
+    const noResults = document.getElementById('noResults') as HTMLElement;
+    const resultsCount = document.getElementById('resultsCount') as HTMLElement;
+    const countText = document.getElementById('countText') as HTMLElement;
+    const komplekCards = document.querySelectorAll<HTMLElement>('.komplek-card');
+    const modalOverlay = document.getElementById('modalOverlay') as HTMLElement;
+    const modalClose = document.getElementById('modalClose') as HTMLElement;
+    const modalTitle = document.getElementById('modalTitle') as HTMLElement;
+    
+    // Modal elements
+    const komplekAlamat = document.getElementById('komplekAlamat') as HTMLElement;
+    const ketuaRTNama = document.getElementById('ketuaRTNama') as HTMLElement;
+    const ketuaRTFoto = document.getElementById('ketuaRTFoto') as HTMLImageElement;
+    const bendaharaNama = document.getElementById('bendaharaNama') as HTMLElement;
+    const bendaharaFoto = document.getElementById('bendaharaFoto') as HTMLImageElement;
+    const mapFrame = document.getElementById('mapFrame') as HTMLIFrameElement;
+    const openMapsBtn = document.getElementById('openMapsBtn') as HTMLElement;
+    const directionsBtn = document.getElementById('directionsBtn') as HTMLElement;
+
+    let currentLat = '';
+    let currentLng = '';
+    let currentKomplekName = '';
 
     // Search functionality
     function performSearch() {
+      if (!searchInput) return;
       const query = searchInput.value.toLowerCase().trim();
       let visibleCount = 0;
 
       komplekCards.forEach(card => {
-        const name = card.getAttribute('data-name').toLowerCase();
-        const title = card.querySelector('.card-title').textContent.toLowerCase();
-        const location = card.querySelector('.card-location').textContent.toLowerCase();
+        const name = card.getAttribute('data-name')?.toLowerCase() || '';
+        const title = card.querySelector('.card-title')?.textContent?.toLowerCase() || '';
+        const location = card.querySelector('.card-location')?.textContent?.toLowerCase() || '';
         
         const matches = name.includes(query) || title.includes(query) || location.includes(query);
         
@@ -840,22 +1433,22 @@ import Footer from '../components/sections/Footer.astro';
 
       // Show/hide no results message
       if (visibleCount === 0 && query !== '') {
-        noResults.style.display = 'block';
-        komplekGrid.style.display = 'none';
-        resultsCount.style.display = 'none';
+        if (noResults) noResults.style.display = 'block';
+        if (komplekGrid) komplekGrid.style.display = 'none';
+        if (resultsCount) resultsCount.style.display = 'none';
       } else {
-        noResults.style.display = 'none';
-        komplekGrid.style.display = 'grid';
-        resultsCount.style.display = 'block';
+        if (noResults) noResults.style.display = 'none';
+        if (komplekGrid) komplekGrid.style.display = 'grid';
+        if (resultsCount) resultsCount.style.display = 'block';
       }
 
       // Update results count
       if (query === '') {
-        countText.textContent = 'Menampilkan semua komplek';
-        clearSearch.style.display = 'none';
+        if (countText) countText.textContent = 'Menampilkan semua komplek';
+        if (clearSearch) clearSearch.style.display = 'none';
       } else {
-        countText.textContent = `Ditemukan ${visibleCount} komplek`;
-        clearSearch.style.display = 'block';
+        if (countText) countText.textContent = `Ditemukan ${visibleCount} komplek`;
+        if (clearSearch) clearSearch.style.display = 'block';
       }
     }
 
@@ -866,26 +1459,168 @@ import Footer from '../components/sections/Footer.astro';
       searchInput.focus();
     }
 
-    // Make clearSearch function global
-    window.clearSearch = clearSearchFunc;
+    // Make clearSearch function global with proper type declaration
+    (window as any).clearSearch = clearSearchFunc;
+
+    // Modal functions
+    function openModal(data: {
+      komplekName: string;
+      lat: string;
+      lng: string;
+      alamat: string;
+      ketuaRT: string;
+      ketuaRTFoto: string;
+      bendahara: string;
+      bendaharaFoto: string;
+    }): void {
+      if (!modalTitle || !komplekAlamat || !ketuaRTNama || !ketuaRTFoto || 
+          !bendaharaNama || !bendaharaFoto || !mapFrame || !modalOverlay) return;
+      
+      // Set modal content
+      modalTitle.textContent = `${data.komplekName}`;
+      komplekAlamat.textContent = data.alamat;
+      ketuaRTNama.textContent = data.ketuaRT;
+      ketuaRTFoto.src = data.ketuaRTFoto;
+      ketuaRTFoto.alt = `Foto ${data.ketuaRT}`;
+      bendaharaNama.textContent = data.bendahara;
+      bendaharaFoto.src = data.bendaharaFoto;
+      bendaharaFoto.alt = `Foto ${data.bendahara}`;
+      
+      // Set current data
+      currentLat = data.lat;
+      currentLng = data.lng;
+      currentKomplekName = data.komplekName;
+      
+      // Load Google Maps embed dengan marker dan label komplek
+      const encodedName = encodeURIComponent(data.komplekName);
+      const encodedAddress = encodeURIComponent(data.alamat);
+      
+      // URL untuk menampilkan lokasi spesifik dengan marker dan info
+      const mapSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dUsX1Sv0WoNgf4&q=${encodedAddress}&zoom=16&maptype=roadmap`;
+      
+      // Menggunakan alamat komplek langsung untuk akurasi yang lebih baik
+      const fallbackMapSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dUsX1Sv0WoNgf4&q=${encodedAddress}&center=${data.lat},${data.lng}&zoom=17&maptype=roadmap`;
+      
+      mapFrame.src = fallbackMapSrc;
+      
+      modalOverlay.classList.add('active');
+      if (document.body) document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(): void {
+      if (!modalOverlay || !document.body || !mapFrame) return;
+      modalOverlay.classList.remove('active');
+      document.body.style.overflow = 'auto';
+      // Clear map source to stop loading
+      setTimeout(() => {
+        if (mapFrame) mapFrame.src = '';
+      }, 300);
+    }
 
     // Event listeners
-    searchInput.addEventListener('input', performSearch);
-    searchInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        clearSearchFunc();
+    if (searchInput) {
+      searchInput.addEventListener('input', performSearch);
+      searchInput.addEventListener('keydown', function(e: KeyboardEvent) {
+        if (e.key === 'Escape') {
+          clearSearchFunc();
+        }
+      });
+    }
+
+    if (clearSearch) clearSearch.addEventListener('click', clearSearchFunc);
+
+    // Modal event listeners
+    if (modalClose) modalClose.addEventListener('click', closeModal);
+    
+    if (modalOverlay) modalOverlay.addEventListener('click', function(e: MouseEvent) {
+      if (e.target === modalOverlay) {
+        closeModal();
+      }
+    });
+
+    // Escape key to close modal
+    document.addEventListener('keydown', function(e: KeyboardEvent) {
+      if (e.key === 'Escape' && modalOverlay && modalOverlay.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    // Open in Google Maps
+    if (openMapsBtn) openMapsBtn.addEventListener('click', function() {
+      if (currentLat && currentLng) {
+        const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(currentKomplekName)}/@${currentLat},${currentLng},16z`;
+        window.open(mapsUrl, '_blank');
+      }
+    });
+
+    // Directions button
+    if (directionsBtn) directionsBtn.addEventListener('click', function() {
+      if (currentLat && currentLng) {
+        const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${currentLat},${currentLng}&destination_place_id=${encodeURIComponent(currentKomplekName)}`;
+        window.open(directionsUrl, '_blank');
       }
     });
     
-    clearSearch.addEventListener('click', clearSearchFunc);
+    // View Demo button
+    const viewDemoBtn = document.getElementById('viewDemoBtn') as HTMLElement;
+    if (viewDemoBtn) viewDemoBtn.addEventListener('click', function() {
+      // Menutup modal terlebih dahulu
+      closeModal();
+      
+      // Scroll ke bagian demo komplek yang sesuai
+      setTimeout(() => {
+        const demoCard = document.querySelector(`.komplek-card[data-name="${currentKomplekName}"]`) as HTMLElement;
+        if (demoCard) {
+          demoCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          demoCard.classList.add('highlight-card');
+          
+          // Hapus highlight setelah beberapa detik
+          setTimeout(() => {
+            demoCard.classList.remove('highlight-card');
+          }, 2000);
+        }
+      }, 300);
+    });
 
     // Demo button handlers
     document.querySelectorAll('.demo-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const card = this.closest('.komplek-card');
-        const komplekName = card.querySelector('.card-title').textContent;
-        alert(`Membuka demo untuk ${komplekName}`);
+      btn.addEventListener('click', function(this: HTMLElement) {
+        const card = this.closest('.komplek-card') as HTMLElement;
+        if (!card) return;
+        
+        const data = {
+          komplekName: card.querySelector('.card-title')?.textContent || 'Komplek',
+          lat: card.getAttribute('data-lat') || '',
+          lng: card.getAttribute('data-lng') || '',
+          alamat: card.getAttribute('data-alamat') || '-',
+          ketuaRT: card.getAttribute('data-ketua-rt') || '-',
+          ketuaRTFoto: card.getAttribute('data-ketua-rt-foto') || '',
+          bendahara: card.getAttribute('data-bendahara') || '-',
+          bendaharaFoto: card.getAttribute('data-bendahara-foto') || ''
+        };
+        
+        openModal(data);
       });
+    });
+
+    // Contact button handlers
+    document.addEventListener('click', function(e) {
+      const target = e.target as HTMLElement;
+      
+      if (target.closest('.whatsapp-btn')) {
+        e.preventDefault();
+        // Demo WhatsApp number - replace with actual data
+        const phoneNumber = '6281234567890';
+        const message = encodeURIComponent(`Halo, saya ingin bertanya tentang ${currentKomplekName}`);
+        window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+      }
+      
+      if (target.closest('.phone-btn')) {
+        e.preventDefault();
+        // Demo phone number - replace with actual data
+        const phoneNumber = '+6281234567890';
+        window.open(`tel:${phoneNumber}`, '_self');
+      }
     });
 
     // Parallax effect for floating shapes
@@ -893,12 +1628,12 @@ import Footer from '../components/sections/Footer.astro';
     
     function updateParallax() {
       const scrolled = window.pageYOffset;
-      const shapes = document.querySelectorAll('.shape');
+      const shapes = document.querySelectorAll<HTMLElement>('.shape');
       
       shapes.forEach((shape, index) => {
         const speed = 0.5 + (index * 0.2);
         const yPos = -(scrolled * speed);
-        (shape as HTMLElement).style.transform = `translateY(${yPos}px) rotate(${scrolled * 0.1}deg)`;
+        shape.style.transform = `translateY(${yPos}px) rotate(${scrolled * 0.1}deg)`;
       });
       
       ticking = false;
@@ -927,4 +1662,5 @@ import Footer from '../components/sections/Footer.astro';
       }
     }
   `;
-  document.head.appendChild(style);
+  if (document.head) document.head.appendChild(style);
+</script>
