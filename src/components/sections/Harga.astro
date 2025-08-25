@@ -146,7 +146,7 @@
         
         .deco-line {
             position: absolute;
-            background: linear-gradient(90deg, transparent, var(--primary-blue), transparent);
+            background: var(--primary-blue);
             height: 1px;
             width: 100%;
             opacity: 0.1;
@@ -210,15 +210,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: var(--white);
-            border-radius: 50px;
+            background-color: #f3f4f6;
+            border-radius: 8px;
             padding: 0.5rem;
             width: fit-content;
             margin: 0 auto 3rem;
             position: relative;
             z-index: 1;
-            box-shadow: var(--card-shadow);
-            border: 1px solid var(--bg-lighter);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .tab-btn {
@@ -231,24 +230,30 @@
             cursor: pointer;
             position: relative;
             z-index: 2;
-            transition: color var(--transition-fast);
-            border-radius: 50px;
+            transition: color var(--transition-fast), transform var(--transition-fast);
+            border-radius: 6px;
         }
 
         .tab-btn.active {
             color: var(--white);
         }
 
+        .tab-btn:hover:not(.active) {
+            color: var(--primary-blue);
+        }
+
         .tab-slider {
             position: absolute;
-            height: 80%;
-            top: 10%;
-            left: 0.5rem;
-            width: calc(50% - 1rem);
-            background: var(--primary-blue);
-            border-radius: 50px;
+            height: calc(100% - 8px);
+            top: 4px;
+            left: 4px;
+            width: calc(50% - 8px);
+            background-color: var(--primary-blue);
+            border-radius: 6px;
             transition: transform var(--transition-fast);
             z-index: 1;
+            pointer-events: none;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
         }
 
         /* Pricing Cards Container */
@@ -267,10 +272,10 @@
             border-radius: var(--border-radius);
             padding: 2.5rem 2rem;
             position: relative;
-            transition: all var(--transition-slow);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
             overflow: hidden;
-            box-shadow: var(--card-shadow);
-            border: 1px solid var(--bg-lighter);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
             display: flex;
             flex-direction: column;
             height: 100%;
@@ -278,22 +283,37 @@
         }
 
         .harga-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--card-shadow-hover);
-            border-color: var(--primary-blue-light);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-color: #d1d5db;
         }
 
         .harga-card.featured {
             background: var(--white);
-            border-color: var(--primary-blue-light);
-            box-shadow: 0 15px 35px -5px rgba(37, 99, 235, 0.15);
-            transform: scale(1.02);
+            border: 2px solid var(--primary-blue);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.15);
             position: relative;
         }
         
         .harga-card.featured:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.2);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.2);
+        }
+
+        .harga-card.featured::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: var(--primary-blue);
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(0) rotate(25deg); opacity: 0; }
+            30% { opacity: 1; }
+            100% { transform: translateX(220%) rotate(25deg); opacity: 0; }
         }
 
         .harga-card-badge {
@@ -307,6 +327,11 @@
             font-weight: 600;
             transform: rotate(45deg);
             box-shadow: 0 2px 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .harga-card-badge--discount {
+            background: #ea580c;
+            box-shadow: 0 2px 10px rgba(234, 88, 12, 0.35);
         }
 
         .card-decoration {
@@ -381,20 +406,34 @@
             color: var(--text-muted);
         }
         
+        /* Style untuk harga diskon */
+        .harga-price.discounted {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+
+        .original-price {
+            position: absolute;
+            top: -1.2rem;
+            font-size: 1.2rem;
+            color: var(--muted-red);
+            text-decoration: line-through;
+            font-weight: 600;
+        }
+
         .discount-badge {
             position: absolute;
-            bottom: -25px;
+            bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--muted-orange);
-            color: white;
-            font-size: 0.8rem;
-            padding: 3px 10px;
+            background: var(--muted-red);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
             border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: 600;
             white-space: nowrap;
-            box-shadow: 0 3px 10px rgba(234, 88, 12, 0.3);
-            animation: pulse 2s infinite;
+            box-shadow: 0 2px 5px rgba(220, 38, 38, 0.3);
         }
 
         /* Card Body */
@@ -411,7 +450,7 @@
 
         .feature-item {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             margin-bottom: 1rem;
             transition: transform var(--transition-fast);
         }
@@ -421,14 +460,38 @@
         }
 
         .feature-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             margin-right: 1rem;
-            color: var(--primary-blue);
-            font-size: 1rem;
-            padding-top: 0.2rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .feature-icon i {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .feature-icon .fa-check {
+            color: #16a34a;
+            background: #f0fdf4;
         }
         
         .feature-icon .fa-plus {
             color: var(--primary-blue);
+            background: #f0f7ff;
+        }
+        
+        .feature-icon .fa-times {
+            color: #6b7280;
+            background: #f3f4f6;
         }
 
         .feature-item.disabled .feature-icon {
@@ -455,39 +518,53 @@
         .btn-harga {
             display: inline-block;
             padding: 0.75rem 2rem;
-            border-radius: 50px;
+            border-radius: 8px;
             font-weight: 600;
             text-decoration: none;
             transition: all var(--transition-fast);
             position: relative;
-            overflow: hidden;
         }
 
         .btn-primary {
-            background: var(--primary-blue);
+            background-color: var(--primary-blue);
             color: var(--white);
-            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.15);
         }
 
         .btn-primary:hover {
-            background: var(--primary-blue-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.2);
+            background-color: #1d4ed8;
         }
 
         .btn-outline {
-            background: transparent;
+            background-color: var(--white);
             color: var(--primary-blue);
             border: 2px solid var(--primary-blue);
         }
 
         .btn-outline:hover {
-            background: rgba(37, 99, 235, 0.1);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+            background-color: #f0f7ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.1);
         }
 
-        /* Comparison Table */
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            .tab-btn,
+            .tab-slider,
+            .harga-card,
+            .harga-card.featured::after,
+            .btn-harga,
+            .comparison-table .fa-check,
+            .comparison-table .fa-plus,
+            .comparison-table .fa-times {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+
+        /* Comparison Table - MODERN CLEAN STYLES */
         .harga-comparison {
             margin-bottom: 4rem;
             position: relative;
@@ -498,7 +575,7 @@
             font-size: 1.8rem;
             font-weight: 700;
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             color: var(--text-dark);
             position: relative;
         }
@@ -506,10 +583,10 @@
         .comparison-title::after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: -12px;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
+            width: 60px;
             height: 3px;
             background: var(--primary-blue);
             border-radius: 3px;
@@ -518,60 +595,72 @@
         .comparison-table-wrapper {
             overflow-x: auto;
             border-radius: var(--border-radius);
-            box-shadow: var(--card-shadow);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
             background: var(--white);
-            border: 1px solid var(--bg-lighter);
+            border: 1px solid #e5e7eb;
             transition: transform var(--transition-fast), box-shadow var(--transition-fast);
         }
         
         .comparison-table-wrapper:hover {
             transform: translateY(-5px);
-            box-shadow: var(--card-shadow-hover);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
         }
 
         .comparison-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             min-width: 800px;
             position: relative;
             z-index: 1;
             background: var(--white);
             overflow: hidden;
+            table-layout: fixed;
         }
 
         .comparison-table th,
         .comparison-table td {
-            padding: 1.2rem 1.5rem;
+            padding: 1rem;
             text-align: center;
-            border-bottom: 1px solid var(--bg-lighter);
-            transition: all var(--transition-fast);
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: middle;
+            height: 60px;
         }
 
         .comparison-table th {
-            background: rgba(37, 99, 235, 0.05);
+            background: #f3f4f6;
             color: var(--text-dark);
             font-weight: 700;
             position: sticky;
             top: 0;
             z-index: 10;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
+
+        .comparison-table thead th:first-child { border-top-left-radius: 8px; }
+        .comparison-table thead th:last-child { border-top-right-radius: 8px; }
 
         .comparison-table th:first-child,
         .comparison-table td:first-child {
             text-align: left;
-            padding-left: 2rem;
+            padding-left: 1.5rem;
             position: sticky;
             left: 0;
             background: var(--white);
             z-index: 5;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
+            box-shadow: 1px 0 5px rgba(0, 0, 0, 0.03);
+            width: 40%;
+            font-weight: 500;
         }
         
+        .comparison-table th:not(:first-child),
+        .comparison-table td:not(:first-child) {
+            width: 20%;
+        }
+
         .comparison-table tbody tr:hover td:first-child {
             color: var(--primary-blue);
-            padding-left: 2.5rem;
-            background: linear-gradient(to right, rgba(37, 99, 235, 0.05), var(--white));
+            background: #f9fafb;
         }
 
         .comparison-table tr {
@@ -580,23 +669,27 @@
         }
         
         .comparison-table tr:hover {
-            background: rgba(37, 99, 235, 0.02);
+            background: #f9fafb;
         }
 
+        .comparison-table tbody tr:nth-child(even) td { background: #f9fafb; }
+        .comparison-table tbody tr:nth-child(even):hover td { background: #f3f4f6; }
+
         .category-row td {
-            background: rgba(37, 99, 235, 0.08);
+            background: #f3f4f6;
             font-weight: 700;
-            color: var(--primary-blue-dark);
-            padding: 0.75rem 1rem;
+            color: #374151;
+            padding: 0.75rem 1.5rem;
             letter-spacing: 0.5px;
             text-transform: uppercase;
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(37, 99, 235, 0.1);
+            font-size: 0.85rem;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            height: 50px;
         }
         
-        .category-row:hover td {
-            background: rgba(37, 99, 235, 0.12);
-            color: var(--primary-blue);
+        .category-row td:first-child {
+            background: #f3f4f6;
         }
 
         .comparison-table td {
@@ -604,67 +697,74 @@
         }
         
         .comparison-table tr:hover td {
-            background-color: rgba(37, 99, 235, 0.03);
+            background-color: #f9fafb;
         }
         
-        .comparison-table .fa-check {
-            color: var(--muted-green);
+        .comparison-table .fa-check,
+        .comparison-table .fa-plus,
+        .comparison-table .fa-times {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
-            background: rgba(22, 163, 74, 0.1);
-            border-radius: 50%;
-            transition: all var(--transition-slow);
-            font-size: 1.1rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            margin: 0 auto;
+            transition: none;
+            font-size: 0.85rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
-        
-        .comparison-table tr:hover .fa-check {
-            transform: scale(1.2);
-            background: rgba(22, 163, 74, 0.2);
-            box-shadow: 0 0 20px rgba(22, 163, 74, 0.2);
-            animation: check-bounce 0.8s ease;
+
+        .comparison-table .fa-check {
+            color: #16a34a;
+            background: #f0fdf4;
         }
         
         .comparison-table .fa-plus {
             color: var(--primary-blue);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            background: rgba(37, 99, 235, 0.1);
-            border-radius: 50%;
-            transition: all var(--transition-slow);
-            font-size: 1.1rem;
-        }
-        
-        .comparison-table tr:hover .fa-plus {
-            transform: scale(1.2) rotate(135deg);
-            background: rgba(37, 99, 235, 0.2);
-            box-shadow: 0 0 20px rgba(37, 99, 235, 0.2);
-            animation: plus-rotate 0.8s ease;
+            background: #f0f7ff;
         }
         
         .comparison-table .fa-times {
-            color: var(--text-muted);
+            color: #6b7280;
+            background: #f3f4f6;
+        }
+
+        /* Ensure center alignment and consistent sizing */
+        .comparison-table td:not(:first-child) {
+            text-align: center;
+            vertical-align: middle;
+            height: 60px;
+        }
+        
+        .comparison-table td:not(:first-child) > i {
+            display: inline-flex;
+            vertical-align: middle;
+            line-height: 1;
+            margin: 0 auto;
+        }
+        
+        /* Remove hover effects for consistency */
+        .comparison-table tbody tr:hover td:first-child {
+            color: var(--text-dark);
+            background: var(--white);
+        }
+        
+        .comparison-table tbody tr:nth-child(even) td { 
+            background: #f9fafb; 
+        }
+        
+        .comparison-table tbody tr:nth-child(even) td:first-child { 
+            background: #f9fafb; 
+        }
+        
+        /* Fix icon alignment in table */
+        .comparison-table td i {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
-            background: rgba(220, 38, 38, 0.05);
-            border-radius: 50%;
-            transition: all var(--transition-slow);
-            font-size: 1.1rem;
-        }
-        
-        .comparison-table tr:hover .fa-times {
-            transform: scale(1.2);
-            background: rgba(220, 38, 38, 0.1);
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.1);
-            animation: times-shake 0.8s ease;
+            width: 100%;
+            height: 100%;
         }
 
         /* FAQ Section */
@@ -775,6 +875,7 @@
         .cta-content {
             flex: 1;
             min-width: 300px;
+            text-align: center;
         }
 
         .cta-content h3 {
@@ -794,6 +895,8 @@
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
         }
 
         /* Responsive Styles */
@@ -1058,8 +1161,8 @@
             </p>
 
             <div class="harga-tabs" data-aos="fade-up" data-aos-delay="200">
-                <button class="tab-btn active" data-tab="bulanan">Bulanan</button>
-                <button class="tab-btn" data-tab="tahunan">Tahunan</button>
+                <button type="button" class="tab-btn active" data-tab="bulanan">Bulanan</button>
+                <button type="button" class="tab-btn" data-tab="tahunan">Tahunan</button>
                 <div class="tab-slider"></div>
             </div>
 
@@ -1159,12 +1262,14 @@
 
                 <!-- Paket Plus -->
                 <div class="harga-card" data-aos="fade-up" data-aos-delay="500">
+                    <div class="harga-card-badge harga-card-badge--discount">Diskon 20%</div>
                     <div class="harga-card-header">
                         <h3>Plus</h3>
-                        <div class="harga-price">
+                        <div class="harga-price discounted" id="plus-price">
+                            <span class="original-price" id="plus-original-price">Rp 150.000</span>
                             <span class="price">Rp 119.000</span>
                             <span class="period">/bulan</span>
-                            <div class="discount-badge">Diskon dari Rp 139.000</div>
+                            <span class="discount-badge" id="plus-discount-text">Hemat Rp 31.000</span>
                         </div>
                     </div>
                     <div class="harga-card-body">
@@ -1401,57 +1506,114 @@
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Inisialisasi AOS
+        // Inisialisasi AOS (guarded)
         document.addEventListener('DOMContentLoaded', function() {
-            AOS.init({
-                duration: 800,
-                once: true,
-                offset: 100
-            });
-            
-            // Tab switching functionality
+            const w = window /** @type {any} */;
+            if (typeof window !== 'undefined' && w && w.AOS) {
+                w.AOS.init({ duration: 800, once: true, offset: 100 });
+            }
+
             const tabBtns = document.querySelectorAll('.tab-btn');
             const tabSlider = document.querySelector('.tab-slider');
             const premiumPrice = document.getElementById('premium-price');
-            
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Remove active class from all buttons
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    
-                    // Add active class to clicked button
-                    this.classList.add('active');
-                    
+            const plusPrice = document.getElementById('plus-price');
+            const plusOriginalPrice = document.getElementById('plus-original-price');
+            const plusDiscountText = document.getElementById('plus-discount-text');
+            const tabsContainer = document.querySelector('.harga-tabs');
+
+            // Data harga untuk setiap paket
+            const hargaPaket = {
+                bulanan: { 
+                    premium: 'Rp 99.000', 
+                    plus: 'Rp 119.000',
+                    plusOriginal: 'Rp 150.000',
+                    plusDiscount: 'Hemat Rp 31.000'
+                },
+                tahunan: { 
+                    premium: 'Rp 948.000', 
+                    plus: 'Rp 1.188.000',
+                    plusOriginal: 'Rp 1.485.000',
+                    plusDiscount: 'Hemat Rp 297.000'
+                }
+            };
+
+            // Initialize ARIA states
+            if (tabsContainer) tabsContainer.setAttribute('role', 'tablist');
+            tabBtns.forEach((btn) => {
+                btn.setAttribute('role', 'tab');
+                btn.setAttribute('aria-pressed', btn.classList.contains('active') ? 'true' : 'false');
+                btn.addEventListener('click', (ev) => {
+                    const currentBtn = ev.currentTarget;
+                    // Remove active from all
+                    tabBtns.forEach((b) => {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-pressed', 'false');
+                    });
+                    // Activate current
+                    currentBtn.classList.add('active');
+                    currentBtn.setAttribute('aria-pressed', 'true');
+
+                    const periode = currentBtn.dataset.tab === 'tahunan' ? 'tahunan' : 'bulanan';
+
                     // Move slider
-                    if (this.dataset.tab === 'bulanan') {
-                        tabSlider.style.transform = 'translateX(0)';
-                        if (premiumPrice) {
-                            premiumPrice.innerHTML = '<span class="price">Rp 99.000</span><span class="period">/bulan</span>';
-                        }
-                    } else {
-                        tabSlider.style.transform = 'translateX(100%)';
-                        if (premiumPrice) {
-                            premiumPrice.innerHTML = '<span class="price">Rp 948.000</span><span class="period">/tahun</span>';
-                        }
+                    if (tabSlider) {
+                        tabSlider.style.transform = periode === 'bulanan' ? 'translateX(0)' : 'translateX(100%)';
+                    }
+                    updatePrices(periode);
+                });
+
+                // Keyboard support
+                btn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        btn.click();
+                    }
+                    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        const buttons = Array.from(tabBtns);
+                        const idx = buttons.indexOf(btn);
+                        const nextIdx = e.key === 'ArrowRight' ? (idx + 1) % buttons.length : (idx - 1 + buttons.length) % buttons.length;
+                        buttons[nextIdx].focus();
+                        buttons[nextIdx].click();
                     }
                 });
             });
-            
+
+            // Ensure initial state reflects active tab
+            const initial = Array.from(tabBtns).find((b) => b.classList.contains('active')) || tabBtns[0];
+            if (initial) {
+                initial.click();
+            }
+
+            // Function to update prices based on selected period
+            function updatePrices(periode) {
+                if (premiumPrice) {
+                    const priceElement = premiumPrice.querySelector('.price');
+                    const periodElement = premiumPrice.querySelector('.period');
+                    if (priceElement) priceElement.textContent = hargaPaket[periode].premium;
+                    if (periodElement) periodElement.textContent = periode === 'bulanan' ? '/bulan' : '/tahun';
+                }
+                
+                if (plusPrice) {
+                    const priceElement = plusPrice.querySelector('.price');
+                    const periodElement = plusPrice.querySelector('.period');
+                    
+                    if (priceElement) priceElement.textContent = hargaPaket[periode].plus;
+                    if (periodElement) periodElement.textContent = periode === 'bulanan' ? '/bulan' : '/tahun';
+                    if (plusOriginalPrice) plusOriginalPrice.textContent = hargaPaket[periode].plusOriginal;
+                    if (plusDiscountText) plusDiscountText.textContent = hargaPaket[periode].plusDiscount;
+                }
+            }
+
             // FAQ accordion functionality
             const faqItems = document.querySelectorAll('.faq-item');
-            
-            faqItems.forEach(item => {
+            faqItems.forEach((item) => {
                 const question = item.querySelector('.faq-question');
-                
+                if (!question) return;
                 question.addEventListener('click', function() {
-                    // Toggle active class on clicked item
                     item.classList.toggle('active');
-                    
-                    // Close other items
-                    faqItems.forEach(otherItem => {
-                        if (otherItem !== item) {
-                            otherItem.classList.remove('active');
-                        }
+                    faqItems.forEach((otherItem) => {
+                        if (otherItem !== item) otherItem.classList.remove('active');
                     });
                 });
             });

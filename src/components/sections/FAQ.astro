@@ -1,1684 +1,1790 @@
----
----
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KomplekKita - FAQ Section</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #3B82F6;
+            --primary-blue-dark: #1E40AF;
+            --primary-blue-light: #93C5FD;
+            --muted-green: #10B981;
+            --accent-purple: #8B5CF6;
+            --accent-pink: #F472B6;
+            --accent-orange: #F59E0B;
+            --text-dark: #1F2937;
+            --text-light: #6B7280;
+            --surface: #FFFFFF;
+            --surface-2: #F9FAFB;
+            --border: #E5E7EB;
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+            --bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
-<section class="section" id="faq">
-	<div class="faq-decoration">
-		<div class="faq-blob faq-blob-1"></div>
-		<div class="faq-blob faq-blob-2"></div>
-		<div class="faq-blob faq-blob-3"></div>
-		<div class="faq-blob faq-blob-4"></div>
-		<div class="faq-particles"></div>
-		<div class="faq-grid"></div>
-	</div>
-	
-	<div class="container">
-		<div class="section-header" data-aos="fade-up">
-			<div class="section-badge">
-				<span class="badge-text">FAQ</span>
-				<span class="badge-shine"></span>
-			</div>
-			<h2 class="section-title">
-				<span class="text-gradient">Pertanyaan</span> yang Sering Ditanyakan
-			</h2>
-			<p class="section-subtitle">Jawaban ringkas untuk pertanyaan yang sering diajukan oleh pengguna KomplekKita</p>
-		</div>
-		
-		<div class="faq-wrapper">
-			<div class="faq-tabs">
-				<button class="faq-tab active" data-tab="all">Semua</button>
-				<button class="faq-tab" data-tab="general">Umum</button>
-				<button class="faq-tab" data-tab="technical">Teknis</button>
-				<button class="faq-tab" data-tab="pricing">Harga</button>
-				<div class="tab-indicator"></div>
-			</div>
-			
-			<div class="faq-cards">
-				<div class="faq-card" data-aos="fade-up" data-aos-delay="100" data-category="general">
-					<div class="card-header">
-						<div class="card-icon">
-							<i class="fas fa-building"></i>
-						</div>
-						<h4>Apakah KomplekKita bisa untuk komplek kecil?</h4>
-						<button class="card-toggle">
-							<span class="toggle-icon"></span>
-						</button>
-					</div>
-					<div class="card-content">
-						<p>Ya. Sistem kami skalabel untuk komplek kecil hingga besar, bisa disesuaikan kebutuhan. Bahkan untuk komplek dengan 10 rumah sekalipun, KomplekKita dapat membantu mengoptimalkan pengelolaan dan komunikasi.</p>
-						<div class="card-features">
-							<span class="feature-tag">Skalabel</span>
-							<span class="feature-tag">Fleksibel</span>
-							<span class="feature-tag">Kustomisasi</span>
-						</div>
-					</div>
-					<div class="card-shine"></div>
-				</div>
-				
-				<div class="faq-card" data-aos="fade-up" data-aos-delay="200" data-category="technical">
-					<div class="card-header">
-						<div class="card-icon">
-							<i class="fas fa-shield-alt"></i>
-						</div>
-						<h4>Bagaimana dengan keamanan data?</h4>
-						<button class="card-toggle">
-							<span class="toggle-icon"></span>
-						</button>
-					</div>
-					<div class="card-content">
-						<p>Data disimpan terenkripsi dengan backup otomatis dan kontrol akses yang ketat. Kami menggunakan enkripsi end-to-end dan server dengan sertifikasi ISO 27001 untuk menjamin keamanan data Anda.</p>
-						<div class="card-features">
-							<span class="feature-tag">Enkripsi</span>
-							<span class="feature-tag">Backup Otomatis</span>
-							<span class="feature-tag">ISO 27001</span>
-						</div>
-					</div>
-					<div class="card-shine"></div>
-				</div>
-				
-				<div class="faq-card" data-aos="fade-up" data-aos-delay="300" data-category="pricing">
-					<div class="card-header">
-						<div class="card-icon">
-							<i class="fas fa-rocket"></i>
-						</div>
-						<h4>Apakah ada trial?</h4>
-						<button class="card-toggle">
-							<span class="toggle-icon"></span>
-						</button>
-					</div>
-					<div class="card-content">
-						<p>Ada. Paket Starter gratis agar Anda bisa mencoba sebelum upgrade. Trial berlaku selama 30 hari dengan akses ke semua fitur premium, sehingga Anda dapat merasakan manfaat penuh dari KomplekKita.</p>
-						<div class="card-features">
-							<span class="feature-tag">30 Hari</span>
-							<span class="feature-tag">Fitur Lengkap</span>
-							<span class="feature-tag">Tanpa CC</span>
-						</div>
-					</div>
-					<div class="card-shine"></div>
-				</div>
-				
-				<div class="faq-card" data-aos="fade-up" data-aos-delay="400" data-category="general">
-					<div class="card-header">
-						<div class="card-icon">
-							<i class="fas fa-cogs"></i>
-						</div>
-						<h4>Bagaimana proses implementasi?</h4>
-						<button class="card-toggle">
-							<span class="toggle-icon"></span>
-						</button>
-					</div>
-					<div class="card-content">
-						<p>Tim kami bantu migrasi data, pelatihan, dan onboarding hingga siap jalan. Proses implementasi biasanya memakan waktu 1-3 hari tergantung kompleksitas dan ukuran komplek Anda.</p>
-						<div class="card-features">
-							<span class="feature-tag">Migrasi Data</span>
-							<span class="feature-tag">Pelatihan</span>
-							<span class="feature-tag">Onboarding</span>
-						</div>
-					</div>
-					<div class="card-shine"></div>
-				</div>
-				
-				<div class="faq-card" data-aos="fade-up" data-aos-delay="500" data-category="technical">
-					<div class="card-header">
-						<div class="card-icon">
-							<i class="fas fa-headset"></i>
-						</div>
-						<h4>Bagaimana dengan dukungan teknis?</h4>
-						<button class="card-toggle">
-							<span class="toggle-icon"></span>
-						</button>
-					</div>
-					<div class="card-content">
-						<p>Kami menyediakan dukungan teknis 24/7 melalui chat, email, dan telepon. Tim support kami siap membantu dengan respons cepat rata-rata kurang dari 15 menit untuk semua pertanyaan dan kendala teknis.</p>
-						<div class="card-features">
-							<span class="feature-tag">24/7</span>
-							<span class="feature-tag">Multi-channel</span>
-							<span class="feature-tag">Respons Cepat</span>
-						</div>
-					</div>
-					<div class="card-shine"></div>
-				</div>
-				
-				<div class="faq-card" data-aos="fade-up" data-aos-delay="600" data-category="technical">
-					<div class="card-header">
-						<div class="card-icon">
-							<i class="fas fa-mobile-alt"></i>
-						</div>
-						<h4>Apakah ada aplikasi mobile?</h4>
-						<button class="card-toggle">
-							<span class="toggle-icon"></span>
-						</button>
-					</div>
-					<div class="card-content">
-						<p>Ya, tersedia untuk Android dan iOS dengan fitur lengkap seperti di web. Aplikasi mobile kami dirancang dengan UI/UX terbaik dan mendukung notifikasi push untuk informasi penting.</p>
-						<div class="card-features">
-							<span class="feature-tag">Android</span>
-							<span class="feature-tag">iOS</span>
-							<span class="feature-tag">Push Notification</span>
-						</div>
-					</div>
-					<div class="card-shine"></div>
-				</div>
-			</div>
-		</div>
-		
-		<div class="faq-cta" data-aos="fade-up">
-			<div class="cta-content">
-				<h3>Masih punya pertanyaan?</h3>
-				<p>Tim kami siap membantu menjawab semua pertanyaan Anda tentang KomplekKita</p>
-			</div>
-			<a href="#kontak" class="btn btn-primary">
-				<span class="btn-text">Hubungi Kami</span>
-				<span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
-				<span class="btn-shine"></span>
-			</a>
-		</div>
-	</div>
-</section>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-	/* Base styles and variables */
-	:root {
-		--primary-blue: #3B82F6;
-		--primary-blue-dark: #1E40AF;
-		--primary-blue-light: #93C5FD;
-		--muted-green: #10B981;
-		--accent-purple: #8B5CF6;
-		--accent-pink: #F472B6;
-		--accent-orange: #F59E0B;
-		--text-dark: #1F2937;
-		--text-light: #6B7280;
-		--surface: #FFFFFF;
-		--surface-2: #F9FAFB;
-		--border: #E5E7EB;
-		--transition-fast: 0.2s ease;
-		--transition-normal: 0.3s ease;
-		--transition-slow: 0.5s ease;
-		--bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-	}
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--surface-2);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
 
-	/* FAQ Section */
-	.section#faq {
-		position: relative;
-		overflow: hidden;
-		padding: 8rem 0;
-		background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
-	}
-	
-	/* Section Header Styling */
-	.section-header {
-		text-align: center;
-		margin-bottom: 4rem;
-		position: relative;
-		z-index: 2;
-	}
-	
-	.section-badge {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.5rem 1rem;
-		background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-		border-radius: 50px;
-		margin-bottom: 1.5rem;
-		position: relative;
-		overflow: hidden;
-		border: 1px solid rgba(59, 130, 246, 0.2);
-	}
-	
-	.badge-text {
-		font-weight: 700;
-		font-size: 0.875rem;
-		color: var(--primary-blue);
-		letter-spacing: 1px;
-		text-transform: uppercase;
-		position: relative;
-		z-index: 1;
-	}
-	
-	.badge-shine {
-		position: absolute;
-		top: 0;
-		left: -100%;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(
-			to right,
-			rgba(255, 255, 255, 0) 0%,
-			rgba(255, 255, 255, 0.5) 50%,
-			rgba(255, 255, 255, 0) 100%
-		);
-		animation: badge-shine 3s infinite;
-	}
-	
-	@keyframes badge-shine {
-		0% { left: -100%; }
-		20% { left: 100%; }
-		100% { left: 100%; }
-	}
-	
-	.section-title {
-		font-size: 2.75rem;
-		font-weight: 800;
-		color: var(--text-dark);
-		margin-bottom: 1.5rem;
-		line-height: 1.2;
-		position: relative;
-	}
-	
-	.text-gradient {
-		background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		position: relative;
-		display: inline-block;
-	}
-	
-	.text-gradient::after {
-		content: '';
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		width: 100%;
-		height: 30%;
-		background: linear-gradient(90deg, var(--primary-blue-light), var(--accent-purple));
-		opacity: 0.2;
-		z-index: -1;
-		transform: translateY(40%);
-		transition: transform var(--transition-normal);
-	}
-	
-	.section-title:hover .text-gradient::after {
-		transform: translateY(20%);
-	}
-	
-	.section-subtitle {
-		font-size: 1.125rem;
-		color: var(--text-light);
-		max-width: 700px;
-		margin: 0 auto;
-		line-height: 1.6;
-	}
-	
-	/* FAQ Decoration */
-	.faq-decoration {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		pointer-events: none;
-		z-index: 0;
-		overflow: hidden;
-	}
-	
-	.faq-blob {
-	position: absolute;
-	border-radius: 50%;
-	filter: blur(50px);
-	opacity: 0.1;
-	transition: all var(--transition-slow);
-}
+        /* FAQ Section */
+        .section#faq {
+            position: relative;
+            overflow: hidden;
+            padding: 8rem 0;
+            background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+        }
+        
+        /* Section Header Styling */
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+            border-radius: 50px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.15);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .section-badge:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.25);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+        }
+        
+        .badge-text {
+            font-weight: 700;
+            font-size: 0.875rem;
+            color: var(--primary-blue);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .badge-shine {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.5) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: badge-shine 3s infinite;
+        }
+        
+        @keyframes badge-shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+        
+        .section-title {
+            font-size: 2.75rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            position: relative;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: title-float 3s ease-in-out infinite;
+        }
 
-.section#faq:hover .faq-blob {
-	filter: blur(40px);
-	opacity: 0.15;
-	transform: scale(1.1);
-}
-	
-	.faq-blob-1 {
-		top: -150px;
-		right: -150px;
-		width: 400px;
-		height: 400px;
-		background: linear-gradient(135deg, var(--primary-blue), var(--muted-green));
-		animation: float-blob 15s ease-in-out infinite alternate;
-	}
-	
-	.faq-blob-2 {
-		bottom: -100px;
-		left: -100px;
-		width: 300px;
-		height: 300px;
-		background: linear-gradient(135deg, var(--accent-orange), var(--primary-blue));
-		animation: float-blob 12s ease-in-out infinite alternate-reverse;
-	}
-	
-	.faq-blob-3 {
-		top: 20%;
-		left: -200px;
-		width: 350px;
-		height: 350px;
-		background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
-		animation: float-blob 18s ease-in-out infinite alternate;
-	}
-	
-	.faq-blob-4 {
-		bottom: 30%;
-		right: -150px;
-		width: 250px;
-		height: 250px;
-		background: linear-gradient(135deg, var(--muted-green), var(--primary-blue-light));
-		animation: float-blob 20s ease-in-out infinite alternate-reverse;
-	}
-	
-	@keyframes float-blob {
-		0% {
-			transform: translate(0, 0) rotate(0deg) scale(1);
-		}
-		50% {
-			transform: translate(20px, 20px) rotate(5deg) scale(1.05);
-		}
-		100% {
-			transform: translate(-20px, 10px) rotate(-5deg) scale(0.95);
-		}
-	}
-	
-	.faq-particles {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-image: 
-			radial-gradient(var(--primary-blue) 1px, transparent 1px),
-			radial-gradient(var(--muted-green) 1px, transparent 1px);
-		background-size: 50px 50px;
-		background-position: 0 0, 25px 25px;
-		opacity: 0.05;
-		animation: particles-float 60s linear infinite;
-	}
-	
-	@keyframes particles-float {
-		0% { transform: translateY(0) rotate(0deg); }
-		100% { transform: translateY(-100px) rotate(10deg); }
-	}
-	
-	.faq-grid {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-image: linear-gradient(var(--border) 1px, transparent 1px),
-			linear-gradient(90deg, var(--border) 1px, transparent 1px);
-		background-size: 50px 50px;
-		opacity: 0.03;
-	}
+        @keyframes title-float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
 
-	/* FAQ Wrapper */
-	.faq-wrapper {
-		position: relative;
-		z-index: 1;
-		max-width: 1000px;
-		margin: 0 auto;
-	}
-	
-	/* Enhanced FAQ Tab Animations */
-	.faq-tabs {
-		display: flex;
-		justify-content: center;
-		gap: 1rem;
-		margin-bottom: 3rem;
-		position: relative;
-		background: rgba(255, 255, 255, 0.5);
-		padding: 0.5rem;
-		border-radius: 50px;
-		border: 1px solid var(--border);
-		backdrop-filter: blur(10px);
-		-webkit-backdrop-filter: blur(10px);
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-		overflow: hidden;
-	}
+        .text-gradient::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(90deg, var(--primary-blue-light), var(--accent-purple));
+            opacity: 0.2;
+            z-index: -1;
+            transform: translateY(40%);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            filter: blur(5px);
+        }
+        
+        .section-title:hover .text-gradient {
+            background: linear-gradient(135deg, var(--accent-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transform: translateY(-5px) scale(1.05);
+            text-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+            letter-spacing: 1px;
+        }
+        
+        .section-title:hover .text-gradient::after {
+            transform: translateY(20%) scale(1.2);
+            opacity: 0.4;
+            filter: blur(3px);
+            background: linear-gradient(90deg, var(--accent-purple), var(--primary-blue-light));
+        }
+        
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* FAQ Decoration */
+        .faq-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .faq-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(50px);
+            opacity: 0.1;
+            transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
 
-	.faq-tab {
-		padding: 0.75rem 1.5rem;
-		border-radius: 50px;
-		font-weight: 600;
-		font-size: 0.875rem;
-		color: var(--text-light);
-		background: transparent;
-		border: none;
-		cursor: pointer;
-		transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-		position: relative;
-		z-index: 2;
-		overflow: hidden;
-	}
+        .section#faq:hover .faq-blob {
+            filter: blur(40px);
+            opacity: 0.2;
+            transform: scale(1.15);
+        }
+        
+        .faq-blob-1 {
+            top: -150px;
+            right: -150px;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--muted-green));
+            animation: float-blob 25s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+        }
+        
+        .faq-blob-2 {
+            bottom: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--primary-blue));
+            animation: float-blob 22s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate-reverse;
+        }
+        
+        .faq-blob-3 {
+            top: 20%;
+            left: -200px;
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+            animation: float-blob 28s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+        }
+        
+        .faq-blob-4 {
+            bottom: 30%;
+            right: -150px;
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(135deg, var(--muted-green), var(--primary-blue-light));
+            animation: float-blob 30s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate-reverse;
+        }
+        
+        @keyframes float-blob {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+            25% {
+                transform: translate(10px, 15px) rotate(2deg) scale(1.02);
+            }
+            50% {
+                transform: translate(20px, 20px) rotate(5deg) scale(1.05);
+            }
+            75% {
+                transform: translate(5px, 0px) rotate(0deg) scale(1);
+            }
+            100% {
+                transform: translate(-20px, 10px) rotate(-5deg) scale(0.95);
+            }
+        }
+        
+        .faq-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(var(--primary-blue) 1px, transparent 1px),
+                radial-gradient(var(--muted-green) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+            opacity: 0.05;
+            animation: particles-float 60s linear infinite;
+        }
+        
+        @keyframes particles-float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(10deg); }
+        }
+        
+        .faq-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.03;
+        }
 
-	.faq-tab::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: -100%;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-		transition: left 0.6s ease;
-		z-index: -1;
-	}
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        /* FAQ Wrapper */
+        .faq-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* Enhanced FAQ Tab Animations */
+        .faq-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            position: relative;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 0.5rem;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-	.faq-tab:hover::before {
-		left: 100%;
-	}
+        .faq-tab {
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            z-index: 2;
+            overflow: hidden;
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
 
-	.faq-tab::after {
-		content: '';
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		width: 0;
-		height: 3px;
-		background: linear-gradient(90deg, var(--muted-orange), var(--primary-blue), var(--muted-green));
-		transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-		border-radius: 2px;
-	}
+        .faq-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+            transition: left 0.6s ease;
+            z-index: -1;
+        }
 
-	.faq-tab:hover::after {
-		width: 100%;
-	}
+        .faq-tab:hover::before {
+            left: 100%;
+        }
 
-	.faq-tab:hover:not(.active) {
-		color: var(--text-dark);
-		transform: translateY(-3px) scale(1.05);
-		text-shadow: 0 2px 8px rgba(70, 130, 180, 0.3);
-	}
+        .faq-tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-orange), var(--primary-blue), var(--muted-green));
+            transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 2px;
+        }
 
-	.faq-tab.active {
-		background: white;
-		color: var(--primary-blue);
-		transform: translateY(-2px) scale(1.02);
-		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-	}
+        .faq-tab:hover::after {
+            width: 100%;
+        }
 
-	.tab-indicator {
-		position: absolute;
-		height: calc(100% - 1rem);
-		background: white;
-		border-radius: 50px;
-		transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-		z-index: 1;
-	}
+        .faq-tab:hover:not(.active) {
+            color: var(--text-dark);
+            transform: translateY(-5px) scale(1.08);
+            text-shadow: 0 4px 12px rgba(70, 130, 180, 0.4);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+            background: rgba(255, 255, 255, 0.2);
+            letter-spacing: 0.5px;
+        }
 
-	/* FAQ Content Animations */
-	.faq-content-section {
-		display: none;
-		opacity: 0;
-		transform: translateY(30px);
-		transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-	}
+        .faq-tab.active {
+            background: white;
+            color: var(--primary-blue);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.2);
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
 
-	.faq-content-section.active {
-		display: block;
-		opacity: 1;
-		transform: translateY(0);
-		animation: content-fade-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-	}
+        .tab-indicator {
+            position: absolute;
+            height: calc(100% - 1rem);
+            background: linear-gradient(135deg, white, rgba(255, 255, 255, 0.9));
+            border-radius: 50px;
+            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
 
-	@keyframes content-fade-in {
-		0% {
-			opacity: 0;
-			transform: translateY(30px) scale(0.95);
-		}
-		100% {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-	}
+        /* FAQ Cards */
+        .faq-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+            transition: min-height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            will-change: min-height;
+            margin: 0 auto;
+            max-width: 1000px;
+        }
+        
+        .faq-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            opacity: 0;
+            transform: translateY(50px) rotateX(15deg);
+            transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            backface-visibility: hidden;
+        }
 
-	/* Enhanced Card Animations */
-	.faq-card {
-		opacity: 0;
-		transform: translateY(50px) rotateX(15deg);
-		transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-	}
+        .faq-card.visible {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+        }
 
-	.faq-content-section.active .faq-card {
-		opacity: 1;
-		transform: translateY(0) rotateX(0deg);
-	}
+        .faq-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: -1;
+        }
 
-	.faq-content-section.active .faq-card:nth-child(1) {
-		animation: card-slide-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
-	}
+        .faq-card:hover::before {
+            opacity: 1;
+        }
+        
+        .faq-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
 
-	.faq-content-section.active .faq-card:nth-child(2) {
-		animation: card-slide-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
-	}
+        .faq-card:hover .card-header {
+            background: linear-gradient(to bottom, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+        }
+        
+        .card-header {
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            gap: 1rem;
+            border-bottom: 1px solid var(--border);
+            transition: all var(--transition-normal) cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
 
-	.faq-content-section.active .faq-card:nth-child(3) {
-		animation: card-slide-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
-	}
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(to bottom, var(--primary-blue), var(--accent-purple));
+            transition: height 0.3s ease;
+        }
 
-	.faq-content-section.active .faq-card:nth-child(4) {
-		animation: card-slide-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards;
-	}
+        .faq-card:hover .card-header::before {
+            height: 100%;
+        }
+        
+        .card-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            color: white;
+            font-size: 1.25rem;
+            align-self: flex-start;
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
 
-	.faq-content-section.active .faq-card:nth-child(5) {
-		animation: card-slide-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
-	}
+        .card-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            z-index: 0;
+        }
 
-	@keyframes card-slide-in {
-		0% {
-			opacity: 0;
-			transform: translateY(50px) rotateX(15deg) scale(0.8);
-		}
-		50% {
-			opacity: 0.7;
-			transform: translateY(25px) rotateX(7deg) scale(0.9);
-		}
-		100% {
-			opacity: 1;
-			transform: translateY(0) rotateX(0deg) scale(1);
-		}
-	}
+        .card-icon i {
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            z-index: 1;
+        }
 
-	/* Tab Switch Animation */
-	.faq-tabs.switching .faq-tab {
-		animation: tab-shake 0.6s ease-in-out;
-	}
+        .faq-card:hover .card-icon::before {
+            opacity: 1;
+        }
 
-	@keyframes tab-shake {
-		0%, 100% { transform: translateX(0); }
-		25% { transform: translateX(-5px); }
-		75% { transform: translateX(5px); }
-	}
+        .faq-card:hover .card-icon i {
+            position: relative;
+            z-index: 1;
+            color: white;
+            transform: scale(1.2) rotate(0deg);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .faq-card:hover .card-icon {
+            transform: scale(1.15) rotate(10deg);
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.5);
+            animation: icon-pulse 2s ease-in-out infinite;
+        }
 
-	/* Enhanced Hover Effects */
-	.faq-card:hover {
-		transform: translateY(-12px) scale(1.03) rotateY(2deg);
-		box-shadow: 0 25px 60px rgba(70, 130, 180, 0.25), 
-					0 0 30px rgba(135, 206, 235, 0.3);
-		border-color: var(--primary-blue);
-		background: rgba(255, 255, 255, 0.95);
-		animation: card-hover-float 0.6s ease-in-out;
-	}
+        @keyframes icon-pulse {
+            0% { transform: scale(1.15) rotate(10deg); }
+            50% { transform: scale(1.2) rotate(15deg); }
+            100% { transform: scale(1.15) rotate(10deg); }
+        }
 
-	@keyframes card-hover-float {
-		0% { transform: translateY(-12px) scale(1.03) rotateY(2deg); }
-		50% { transform: translateY(-15px) scale(1.05) rotateY(3deg); }
-		100% { transform: translateY(-12px) scale(1.03) rotateY(2deg); }
-	}
+        .faq-card.active .card-icon {
+            transform: scale(1.15) rotate(0deg);
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
+        }
+        
+        .card-header h4 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+            line-height: 1.4;
+            transition: all var(--transition-normal);
+            position: relative;
+            padding-left: 5px;
+        }
 
-	/* Tab Content Transition Effects */
-	.faq-content-section.fade-out {
-		animation: content-fade-out 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-	}
+        .faq-card:hover .card-header h4 {
+            color: var(--primary-blue);
+            transform: translateX(5px);
+        }
 
-	@keyframes content-fade-out {
-		0% {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-		100% {
-			opacity: 0;
-			transform: translateY(-30px) scale(0.95);
-		}
-	}
+        .faq-card.active .card-header h4 {
+            color: var(--primary-blue);
+            font-weight: 700;
+            transform: translateX(5px);
+        }
+        
+        .card-toggle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            align-self: flex-end;
+            box-shadow: 0 2px 5px rgba(59, 130, 246, 0.1);
+        }
 
-	/* Loading Animation for Tab Switch */
-	.faq-tabs.loading::after {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(90deg, 
-			transparent, 
-			rgba(255, 255, 255, 0.3), 
-			transparent);
-		animation: loading-sweep 1s ease-in-out infinite;
-		z-index: 3;
-	}
+        .card-toggle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            z-index: 0;
+            border-radius: 50%;
+        }
 
-	@keyframes loading-sweep {
-		0% { transform: translateX(-100%); }
-		100% { transform: translateX(100%); }
-	}
+        .faq-card:hover .card-toggle::before {
+            opacity: 0.5;
+        }
 
-	/* FAQ Cards */
-	.faq-cards {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-		gap: 2rem;
-		position: relative;
-		z-index: 1;
-	}
-	
-	.faq-card {
-		background: rgba(255, 255, 255, 0.9);
-		border-radius: 20px;
-		overflow: hidden;
-		box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
-		transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-		position: relative;
-		border: 1px solid var(--border);
-		backdrop-filter: blur(10px);
-		-webkit-backdrop-filter: blur(10px);
-		transform-style: preserve-3d;
-		perspective: 1000px;
-	}
+        .faq-card:hover .card-toggle {
+            transform: scale(1.2);
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+        }
 
-	.faq-card::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
-		opacity: 0;
-		transition: opacity 0.5s ease;
-		z-index: -1;
-	}
+        .toggle-icon {
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
 
-	.faq-card:hover::before {
-		opacity: 1;
-	}
-	
-	.faq-card:hover {
-		transform: translateY(-8px) scale(1.01);
-		box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
-		border-color: rgba(59, 130, 246, 0.3);
-	}
+        .faq-card:hover .toggle-icon::before {
+            background: var(--primary-blue);
+        }
 
-	.faq-card:hover .card-header {
-		background: linear-gradient(to bottom, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
-	}
-	
-	.card-header {
-		display: flex;
-		flex-direction: column;
-		padding: 1.5rem;
-		gap: 1rem;
-		border-bottom: 1px solid var(--border);
-		transition: all var(--transition-normal) cubic-bezier(0.34, 1.56, 0.64, 1);
-		position: relative;
-		overflow: hidden;
-	}
+        .faq-card:hover .toggle-icon::after {
+            background: var(--primary-blue);
+            transform: rotate(90deg);
+        }
+        
+        .toggle-icon {
+            position: relative;
+            width: 12px;
+            height: 12px;
+            z-index: 1;
+        }
+        
+        .toggle-icon::before,
+        .toggle-icon::after {
+            content: '';
+            position: absolute;
+            background: var(--text-light);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            will-change: transform, opacity, background;
+        }
+        
+        .toggle-icon::before {
+            top: 5px;
+            left: 0;
+            width: 12px;
+            height: 2px;
+        }
+        
+        .toggle-icon::after {
+            top: 0;
+            left: 5px;
+            width: 2px;
+            height: 12px;
+        }
+        
+        .faq-card.active .toggle-icon::after {
+            transform: rotate(90deg);
+            opacity: 0;
+        }
 
-	.card-header::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 4px;
-		height: 0;
-		background: linear-gradient(to bottom, var(--primary-blue), var(--accent-purple));
-		transition: height 0.3s ease;
-	}
+        .faq-card.active .toggle-icon::before {
+            background: var(--primary-blue);
+        }
 
-	.faq-card:hover .card-header::before {
-		height: 100%;
-	}
-	
-	.card-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 50px;
-		height: 50px;
-		border-radius: 12px;
-		background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
-		color: white;
-		font-size: 1.25rem;
-		align-self: flex-start;
-		transition: all var(--transition-normal) cubic-bezier(0.34, 1.56, 0.64, 1);
-		box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
-		position: relative;
-		overflow: hidden;
-	}
+        .faq-card.active .card-toggle {
+            background: var(--primary-blue-light);
+            border-color: var(--primary-blue);
+            transform: scale(1.3) rotate(225deg);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
 
-	.card-icon::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
-		opacity: 0;
-		transition: opacity 0.3s ease;
-		z-index: 0;
-	}
+        .faq-card:hover .card-toggle {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+        }
+        
+        .card-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            will-change: max-height, padding;
+            opacity: 0;
+            transform: translateY(-20px);
+            filter: blur(5px);
+        }
+        
+        .faq-card.active .card-content {
+            padding: 1.5rem;
+            max-height: 500px;
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+            transition-delay: 0.1s;
+        }
+        
+        .card-content p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .feature-tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.25rem 0.75rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+        }
 
-	.faq-card:hover .card-icon::before {
-		opacity: 0.1;
-	}
+        .feature-tag::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                rgba(59, 130, 246, 0), 
+                rgba(59, 130, 246, 0.2), 
+                rgba(59, 130, 246, 0));
+            transition: all 0.5s ease;
+        }
 
-	.faq-card:hover .card-icon i {
-		position: relative;
-		z-index: 1;
-		color: var(--primary-blue-dark);
-	}
-	
-	.faq-card:hover .card-icon {
-		transform: scale(1.1) rotate(5deg);
-		background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
-		box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
-	}
+        .feature-tag:hover::before {
+            left: 100%;
+        }
+        
+        .feature-tag:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        .card-shine {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: translateX(-100%);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .faq-card:hover .card-shine {
+            transform: translateX(100%);
+        }
+        
+        /* FAQ CTA */
+        .faq-cta {
+            margin-top: 4rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            border-radius: 20px;
+            padding: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(59, 130, 246, 0.3);
+        }
+        
+        .faq-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.2;
+        }
+        
+        .cta-content {
+            flex-grow: 1;
+        }
+        
+        .cta-content h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        .cta-content p {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 0;
+        }
+        
+        .faq-cta .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.75rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .faq-cta .btn-primary {
+            background: white;
+            color: var(--primary-blue-dark);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .faq-cta .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .faq-cta .btn-primary:hover .btn-icon {
+            transform: translateX(3px);
+        }
+        
+        .btn-shine {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: btn-shine 3s infinite;
+            z-index: 0;
+        }
+        
+        @keyframes btn-shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+        
+        /* Responsive adjustments for FAQ */
+        @media (max-width: 992px) {
+            .section#faq {
+                padding: 6rem 0;
+            }
+            
+            .section-title {
+                font-size: 2.25rem;
+            }
+            
+            .faq-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .faq-cta {
+                padding: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .section#faq {
+                padding: 5rem 0;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .section-subtitle {
+                font-size: 1rem;
+            }
+            
+            .faq-tabs {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                padding: 0.5rem;
+            }
+            
+            .faq-tab {
+                padding: 0.5rem 1rem;
+                font-size: 0.75rem;
+            }
+            
+            .faq-cards {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
 
-	.faq-card.active .card-icon {
-		transform: scale(1.15) rotate(0deg);
-		background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
-		box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
-	}
-	
-	.card-header h4 {
-		font-size: 1.125rem;
-		font-weight: 700;
-		color: var(--text-dark);
-		margin: 0;
-		line-height: 1.4;
-		transition: all var(--transition-normal);
-		position: relative;
-		padding-left: 5px;
-	}
+            .faq-cta {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem;
+            }
+            
+            .cta-content {
+                margin-bottom: 1.5rem;
+            }
+            
+            .cta-content h3 {
+                font-size: 1.5rem;
+            }
+            
+            .cta-content p {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .section#faq {
+                padding: 4rem 0;
+            }
+            
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .card-header {
+                padding: 1.25rem;
+            }
+            
+            .card-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+            
+            .card-header h4 {
+                font-size: 1rem;
+            }
+            
+            .faq-card.active .card-content {
+                padding: 1.25rem;
+            }
+            
+            .card-content p {
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+            }
+            
+            .feature-tag {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.6rem;
+            }
+        }
 
-	.faq-card:hover .card-header h4 {
-		color: var(--primary-blue);
-		transform: translateX(5px);
-	}
+        /* Animation keyframes */
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes tab-ripple {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+        
+        /* Enhanced Tab switching animations */
+        .faq-tabs.switching .faq-tab {
+            animation: tab-bounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        @keyframes tab-bounce {
+            0% { transform: scale(1) translateY(0); }
+            25% { transform: scale(0.95) translateY(-2px); }
+            50% { transform: scale(1.05) translateY(-4px); }
+            75% { transform: scale(0.98) translateY(-2px); }
+            100% { transform: scale(1) translateY(0); }
+        }
+        
+        /* Smooth loading animation for tab switch */
+        .faq-tabs.loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.4), 
+                transparent);
+            animation: loading-sweep 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            z-index: 3;
+        }
+        
+        @keyframes loading-sweep {
+            0% { transform: translateX(-100%) scaleX(0.5); opacity: 0; }
+            50% { transform: translateX(0%) scaleX(1); opacity: 1; }
+            100% { transform: translateX(100%) scaleX(0.5); opacity: 0; }
+        }
+        
+        /* Smooth card transitions */
+        .faq-card.fade-in {
+            animation: card-fade-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        
+        @keyframes card-fade-in {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9) rotateX(10deg);
+            }
+            50% {
+                opacity: 0.7;
+                transform: translateY(15px) scale(0.95) rotateX(5deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1) rotateX(0deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="section" id="faq">
+        <div class="faq-decoration">
+            <div class="faq-blob faq-blob-1"></div>
+            <div class="faq-blob faq-blob-2"></div>
+            <div class="faq-blob faq-blob-3"></div>
+            <div class="faq-blob faq-blob-4"></div>
+            <div class="faq-particles"></div>
+            <div class="faq-grid"></div>
+        </div>
+        
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge">
+                    <span class="badge-text">FAQ</span>
+                    <span class="badge-shine"></span>
+                </div>
+                <h2 class="section-title">
+                    <span class="text-gradient">Pertanyaan</span> yang Sering Ditanyakan
+                </h2>
+                <p class="section-subtitle">Jawaban ringkas untuk pertanyaan yang sering diajukan oleh pengguna KomplekKita</p>
+            </div>
+            
+            <div class="faq-wrapper">
+                <div class="faq-tabs">
+                    <button class="faq-tab active" data-tab="all">Semua</button>
+                    <button class="faq-tab" data-tab="general">Umum</button>
+                    <button class="faq-tab" data-tab="technical">Teknis</button>
+                    <button class="faq-tab" data-tab="pricing">Harga</button>
+                    <div class="tab-indicator"></div>
+                </div>
+                
+                <div class="faq-cards">
+                    <div class="faq-card" data-category="general">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <h4>Apakah KomplekKita bisa untuk komplek kecil?</h4>
+                            <button class="card-toggle">
+                                <span class="toggle-icon"></span>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <p>Ya. Sistem kami skalabel untuk komplek kecil hingga besar, bisa disesuaikan kebutuhan. Bahkan untuk komplek dengan 10 rumah sekalipun, KomplekKita dapat membantu mengoptimalkan pengelolaan dan komunikasi.</p>
+                            <div class="card-features">
+                                <span class="feature-tag">Skalabel</span>
+                                <span class="feature-tag">Fleksibel</span>
+                                <span class="feature-tag">Kustomisasi</span>
+                            </div>
+                        </div>
+                        <div class="card-shine"></div>
+                    </div>
+                    
+                    <div class="faq-card" data-category="technical">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h4>Bagaimana dengan keamanan data?</h4>
+                            <button class="card-toggle">
+                                <span class="toggle-icon"></span>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <p>Data disimpan terenkripsi dengan backup otomatis dan kontrol akses yang ketat. Kami menggunakan enkripsi end-to-end dan server dengan sertifikasi ISO 27001 untuk menjamin keamanan data Anda.</p>
+                            <div class="card-features">
+                                <span class="feature-tag">Enkripsi</span>
+                                <span class="feature-tag">Backup Otomatis</span>
+                                <span class="feature-tag">ISO 27001</span>
+                            </div>
+                        </div>
+                        <div class="card-shine"></div>
+                    </div>
+                    
+                    <div class="faq-card" data-category="pricing">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <h4>Apakah ada trial?</h4>
+                            <button class="card-toggle">
+                                <span class="toggle-icon"></span>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <p>Ada. Paket Starter gratis agar Anda bisa mencoba sebelum upgrade. Trial berlaku selama 30 hari dengan akses ke semua fitur premium, sehingga Anda dapat merasakan manfaat penuh dari KomplekKita.</p>
+                            <div class="card-features">
+                                <span class="feature-tag">30 Hari</span>
+                                <span class="feature-tag">Fitur Lengkap</span>
+                                <span class="feature-tag">Tanpa CC</span>
+                            </div>
+                        </div>
+                        <div class="card-shine"></div>
+                    </div>
+                    
+                    <div class="faq-card" data-category="general">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <h4>Bagaimana proses implementasi?</h4>
+                            <button class="card-toggle">
+                                <span class="toggle-icon"></span>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <p>Tim kami bantu migrasi data, pelatihan, dan onboarding hingga siap jalan. Proses implementasi biasanya memakan waktu 1-3 hari tergantung kompleksitas dan ukuran komplek Anda.</p>
+                            <div class="card-features">
+                                <span class="feature-tag">Migrasi Data</span>
+                                <span class="feature-tag">Pelatihan</span>
+                                <span class="feature-tag">Onboarding</span>
+                            </div>
+                        </div>
+                        <div class="card-shine"></div>
+                    </div>
+                    
+                    <div class="faq-card" data-category="technical">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <h4>Bagaimana dengan dukungan teknis?</h4>
+                            <button class="card-toggle">
+                                <span class="toggle-icon"></span>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <p>Kami menyediakan dukungan teknis 24/7 melalui chat, email, dan telepon. Tim support kami siap membantu dengan respons cepat rata-rata kurang dari 15 menit untuk semua pertanyaan dan kendala teknis.</p>
+                            <div class="card-features">
+                                <span class="feature-tag">24/7</span>
+                                <span class="feature-tag">Multi-channel</span>
+                                <span class="feature-tag">Respons Cepat</span>
+                            </div>
+                        </div>
+                        <div class="card-shine"></div>
+                    </div>
+                    
+                    <div class="faq-card" data-category="technical">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <h4>Apakah ada aplikasi mobile?</h4>
+                            <button class="card-toggle">
+                                <span class="toggle-icon"></span>
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <p>Ya, tersedia untuk Android dan iOS dengan fitur lengkap seperti di web. Aplikasi mobile kami dirancang dengan UI/UX terbaik dan mendukung notifikasi push untuk informasi penting.</p>
+                            <div class="card-features">
+                                <span class="feature-tag">Android</span>
+                                <span class="feature-tag">iOS</span>
+                                <span class="feature-tag">Push Notification</span>
+                            </div>
+                        </div>
+                        <div class="card-shine"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-cta">
+                <div class="cta-content">
+                    <h3>Masih punya pertanyaan?</h3>
+                    <p>Tim kami siap membantu menjawab semua pertanyaan Anda tentang KomplekKita</p>
+                </div>
+                <a href="#kontak" class="btn btn-primary">
+                    <span class="btn-text">Hubungi Kami</span>
+                    <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+                    <span class="btn-shine"></span>
+                </a>
+            </div>
+        </div>
+    </section>
 
-	.faq-card.active .card-header h4 {
-		color: var(--primary-blue);
-		font-weight: 700;
-		transform: translateX(5px);
-	}
-	
-	.card-toggle {
-		width: 32px;
-		height: 32px;
-		border-radius: 50%;
-		background: var(--surface-2);
-		border: 1px solid var(--border);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-		transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-		position: relative;
-		align-self: flex-end;
-		box-shadow: 0 2px 5px rgba(59, 130, 246, 0.1);
-	}
+    <script>
+    // TypeScript declarations for external libraries
+    declare const gsap: any;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+            // Initialize FAQ Tab Functionality
+            initFAQTabs();
+            
+            // Initialize card animations
+            initCardAnimations();
+            
+            // Initialize card toggle functionality
+            initCardToggle();
+            
+            // Initialize 3D hover effects
+            init3DHoverEffects();
+            
+            // Initialize feature tag animations
+            initFeatureTagAnimations();
+            
+            // Initialize CTA button effects
+            initCTAButtonEffects();
+        });
 
-	.card-toggle::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
-		opacity: 0;
-		transition: opacity 0.3s ease;
-		z-index: 0;
-		border-radius: 50%;
-	}
+        // FAQ Tab Functionality
+        function initFAQTabs() {
+            const tabs = document.querySelectorAll('.faq-tab');
+            const tabIndicator = document.querySelector('.tab-indicator');
+            const tabContainer = document.querySelector('.faq-tabs');
+            const allCards = document.querySelectorAll('.faq-card');
+            
+            // Set initial active tab
+            updateTabIndicator(tabs[0], tabIndicator);
+            showContentForTab('all', allCards);
+            
+            tabs.forEach((tab, index) => {
+                tab.addEventListener('click', () => {
+                    const tabType = tab.getAttribute('data-tab');
+                    if (!tabType) return;
+                    
+                    // Add switching animation
+                    tabContainer.classList.add('switching');
+                    tabContainer.classList.add('loading');
+                    
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Animate tab indicator
+                    updateTabIndicator(tab, tabIndicator);
+                    
+                    // Switch content with smoother animation
+                    switchTabSmooth(tabType, allCards);
+                    
+                    // Add click animation to clicked tab
+                    animateTabClick(tab);
+                    
+                    // Remove switching classes after animation
+                    setTimeout(() => {
+                        tabContainer.classList.remove('switching');
+                        tabContainer.classList.remove('loading');
+                    }, 800);
+                });
+            });
+        }
 
-	.faq-card:hover .card-toggle::before {
-		opacity: 0.2;
-	}
-	
-	.toggle-icon {
-		position: relative;
-		width: 12px;
-		height: 12px;
-		z-index: 1;
-	}
-	
-	.toggle-icon::before,
-	.toggle-icon::after {
-		content: '';
-		position: absolute;
-		background: var(--text-light);
-		transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-		will-change: transform, opacity, background;
-	}
-	
-	.toggle-icon::before {
-		top: 5px;
-		left: 0;
-		width: 12px;
-		height: 2px;
-	}
-	
-	.toggle-icon::after {
-		top: 0;
-		left: 5px;
-		width: 2px;
-		height: 12px;
-	}
-	
-	.faq-card.active .toggle-icon::after {
-		transform: rotate(90deg);
-		opacity: 0;
-	}
+        function updateTabIndicator(activeTab: HTMLElement, indicator: HTMLElement) {
+            if (!indicator) return;
+            const tabRect = activeTab.getBoundingClientRect();
+            const containerRect = activeTab.parentElement?.getBoundingClientRect();
+            if (!containerRect) return;
+            const left = tabRect.left - containerRect.left;
+            const width = tabRect.width;
+            
+            if (typeof gsap !== 'undefined') {
+                gsap.to(indicator, { left, width, duration: 0.35, ease: 'power2.out' });
+            } else {
+                indicator.style.left = left + 'px';
+                indicator.style.width = width + 'px';
+            }
+            indicator.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
+        }
 
-	.faq-card.active .toggle-icon::before {
-		background: var(--primary-blue);
-	}
+        function showContentForTab(tabType: string, allCards: HTMLElement[]) {
+            const tabContentMap: Record<string, string> = {
+                'all': 'all',
+                'general': 'general',
+                'technical': 'technical',
+                'pricing': 'pricing'
+            };
+            const targetCategory = tabContentMap[tabType];
+            
+            allCards.forEach((card, index) => {
+                const cardCategory = card.getAttribute('data-category');
+                if (targetCategory === 'all' || cardCategory === targetCategory) {
+                    card.style.display = 'block';
+                    setTimeout(() => {
+                        card.classList.add('visible');
+                    }, index * 90);
+                } else {
+                    card.classList.remove('visible');
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                    }, 350);
+                }
+            });
+        }
 
-	.faq-card.active .card-toggle {
-		background: var(--primary-blue-light);
-		border-color: var(--primary-blue);
-		transform: scale(1.3) rotate(225deg);
-		box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
-	}
+        function switchTabSmooth(tabType: string, allCards: HTMLElement[]) {
+            const grid = document.querySelector('.faq-cards');
+            if (!grid) {
+                showContentForTab(tabType, allCards);
+                return;
+            }
+            
+            const map = { all: 'all', general: 'general', technical: 'technical', pricing: 'pricing' };
+            const target = map[tabType];
+            
+            const toShow = [];
+            const toHide = [];
+            allCards.forEach(card => {
+                const cat = card.getAttribute('data-category');
+                if (target === 'all' || cat === target) toShow.push(card); else toHide.push(card);
+            });
+            
+            // Lock current height
+            const oldHeight = grid.offsetHeight;
+            grid.style.minHeight = oldHeight + 'px';
+            
+            if (typeof gsap !== 'undefined') {
+                const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+                
+                tl.to(toHide, { 
+                    opacity: 0, 
+                    y: 20, 
+                    scale: 0.98, 
+                    filter: 'blur(2px)', 
+                    duration: 0.25, 
+                    stagger: 0.03, 
+                    onComplete: function() {
+                        toHide.forEach(c => c.style.display = 'none');
+                    } 
+                }, 0);
+                
+                tl.add(() => {
+                    toShow.forEach(c => {
+                        c.style.display = 'block';
+                        c.style.opacity = '0';
+                        c.style.transform = 'translateY(16px) scale(0.98)';
+                        c.style.filter = 'blur(2px)';
+                    });
+                    
+                    const newHeight = grid.offsetHeight;
+                    gsap.fromTo(grid, 
+                        { minHeight: oldHeight }, 
+                        { minHeight: newHeight, duration: 0.4, ease: 'power2.out' }
+                    );
+                });
+                
+                tl.to(toShow, { 
+                    opacity: 1, 
+                    y: 0, 
+                    scale: 1, 
+                    filter: 'blur(0px)', 
+                    duration: 0.45, 
+                    stagger: 0.06,
+                    onComplete: function() {
+                        toShow.forEach(c => {
+                            c.style.opacity = '';
+                            c.style.transform = '';
+                            c.style.filter = '';
+                        });
+                    }
+                }, '>-0.05');
+                
+                tl.add(() => {
+                    setTimeout(() => { grid.style.minHeight = ''; }, 120);
+                });
+            } else {
+                // Fallback
+                showContentForTab(tabType, allCards);
+                setTimeout(() => { grid.style.minHeight = ''; }, 400);
+            }
+        }
 
-	.faq-card:hover .card-toggle {
-		transform: scale(1.1);
-		box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
-	}
-	
-	.card-content {
-		padding: 0;
-		max-height: 0;
-		overflow: hidden;
-		transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-		will-change: max-height, padding;
-	}
-	
-	.faq-card.active .card-content {
-		padding: 1.5rem;
-		max-height: 500px;
-		transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-	
-	.card-content p {
-		font-size: 1rem;
-		line-height: 1.7;
-		color: var(--text-light);
-		margin-bottom: 1.5rem;
-	}
-	
-	.card-features {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
-	
-	.feature-tag {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.25rem 0.75rem;
-		background: rgba(59, 130, 246, 0.1);
-		border-radius: 50px;
-		font-size: 0.75rem;
-		font-weight: 600;
-		color: var(--primary-blue);
-		transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-		position: relative;
-		overflow: hidden;
-		border: 1px solid transparent;
-	}
+        function animateTabClick(tab) {
+            // Add click animation
+            tab.style.transform = 'scale(0.95) translateY(-2px)';
+            setTimeout(() => {
+                tab.style.transform = 'scale(1.02) translateY(-2px)';
+                setTimeout(() => {
+                    tab.style.transform = 'scale(1) translateY(-2px)';
+                }, 150);
+            }, 150);
+            
+            // Add ripple effect
+            addTabRippleEffect(tab);
+        }
 
-	.feature-tag::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: -100%;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(90deg, 
-			rgba(59, 130, 246, 0), 
-			rgba(59, 130, 246, 0.2), 
-			rgba(59, 130, 246, 0));
-		transition: all 0.5s ease;
-	}
+        function addTabRippleEffect(tab) {
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+                border-radius: 50px;
+                transform: scale(0);
+                animation: tab-ripple 0.6s ease-out;
+                pointer-events: none;
+                z-index: -1;
+            `;
+            
+            tab.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        }
 
-	.feature-tag:hover::before {
-		left: 100%;
-	}
-	
-	.feature-tag:hover {
-		background: var(--primary-blue);
-		color: white;
-		transform: translateY(-5px) scale(1.05);
-		box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
-		border-color: rgba(59, 130, 246, 0.3);
-	}
-	
-	.card-shine {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(
-			135deg,
-			rgba(255, 255, 255, 0) 0%,
-			rgba(255, 255, 255, 0.1) 50%,
-			rgba(255, 255, 255, 0) 100%
-		);
-		transform: translateX(-100%);
-		transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-		pointer-events: none;
-		z-index: 1;
-	}
-	
-	.faq-card:hover .card-shine {
-		transform: translateX(100%);
-	}
-	
-	/* FAQ CTA */
-	.faq-cta {
-		margin-top: 4rem;
-		background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
-		border-radius: 20px;
-		padding: 3rem;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 2rem;
-		position: relative;
-		overflow: hidden;
-		box-shadow: 0 20px 50px rgba(59, 130, 246, 0.3);
-	}
-	
-	.faq-cta::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
-		opacity: 0.2;
-	}
-	
-	.cta-content {
-		flex-grow: 1;
-	}
-	
-	.cta-content h3 {
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: white;
-		margin-bottom: 0.5rem;
-	}
-	
-	.cta-content p {
-		font-size: 1.125rem;
-		color: rgba(255, 255, 255, 0.9);
-		margin: 0;
-	}
-	
-	.faq-cta .btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.875rem 1.75rem;
-		border-radius: 10px;
-		font-weight: 600;
-		font-size: 1rem;
-		text-decoration: none;
-		transition: all var(--transition-normal);
-		position: relative;
-		overflow: hidden;
-		flex-shrink: 0;
-	}
-	
-	.faq-cta .btn-primary {
-		background: white;
-		color: var(--primary-blue-dark);
-		box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-	}
-	
-	.faq-cta .btn-primary:hover {
-		transform: translateY(-5px);
-		box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-	}
-	
-	.faq-cta .btn-primary:hover .btn-icon {
-		transform: translateX(3px);
-	}
-	
-	.btn-shine {
-		position: absolute;
-		top: 0;
-		left: -100%;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(
-			to right,
-			rgba(255, 255, 255, 0) 0%,
-			rgba(255, 255, 255, 0.3) 50%,
-			rgba(255, 255, 255, 0) 100%
-		);
-		animation: btn-shine 3s infinite;
-		z-index: 0;
-	}
-	
-	@keyframes btn-shine {
-		0% { left: -100%; }
-		20% { left: 100%; }
-		100% { left: 100%; }
-	}
-	
-	/* Responsive adjustments for FAQ */
-	@media (max-width: 992px) {
-		.section#faq {
-			padding: 6rem 0;
-		}
-		
-		.section-title {
-			font-size: 2.25rem;
-		}
-		
-		.faq-cards {
-			grid-template-columns: repeat(2, 1fr);
-		}
-		
-		.faq-cta {
-			padding: 2.5rem;
-		}
-	}
-	
-	@media (max-width: 768px) {
-		.section#faq {
-			padding: 5rem 0;
-		}
-		
-		.section-title {
-			font-size: 2rem;
-		}
-		
-		.section-subtitle {
-			font-size: 1rem;
-		}
-		
-		.faq-tabs {
-			flex-wrap: wrap;
-			gap: 0.5rem;
-			padding: 0.5rem;
-		}
-		
-		.faq-tab {
-			padding: 0.5rem 1rem;
-			font-size: 0.75rem;
-		}
-		
-		.faq-cards {
-			grid-template-columns: 1fr;
-			gap: 1.5rem;
-		}
+        // Card Animations
+        function initCardAnimations() {
+            const cards = document.querySelectorAll('.faq-card');
+            
+            // Initial animation for cards
+            setTimeout(() => {
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('visible');
+                    }, index * 150);
+                });
+            }, 300);
+        }
 
-		.faq-cta {
-			flex-direction: column;
-			text-align: center;
-			padding: 2rem;
-		}
-		
-		.cta-content {
-			margin-bottom: 1.5rem;
-		}
-		
-		.cta-content h3 {
-			font-size: 1.5rem;
-		}
-		
-		.cta-content p {
-			font-size: 1rem;
-		}
-	}
-	
-	@media (max-width: 480px) {
-		.section#faq {
-			padding: 4rem 0;
-		}
-		
-		.section-title {
-			font-size: 1.75rem;
-		}
-		
-		.card-header {
-			padding: 1.25rem;
-		}
-		
-		.card-icon {
-			width: 36px;
-			height: 36px;
-			font-size: 1rem;
-		}
-		
-		.card-header h4 {
-			font-size: 1rem;
-		}
-		
-		.faq-card.active .card-content {
-			padding: 1.25rem;
-		}
-		
-		.card-content p {
-			font-size: 0.9rem;
-			margin-bottom: 1rem;
-		}
-		
-		.feature-tag {
-			font-size: 0.7rem;
-			padding: 0.2rem 0.6rem;
-		}
-		}
-</style>
+        // Card Toggle Functionality
+        function initCardToggle() {
+            const faqCards = document.querySelectorAll('.faq-card');
+            
+            faqCards.forEach(card => {
+                const toggle = card.querySelector('.card-toggle');
+                if (!toggle) return;
+                
+                // Add click event to the entire card
+                card.addEventListener('click', (e) => {
+                    // Prevent click event when clicking on links or buttons inside the card content
+                    if (e.target.closest('a') || (e.target.closest('button') && !e.target.closest('.card-toggle'))) {
+                        return;
+                    }
+                    // Close all other cards with smooth animation
+                    faqCards.forEach(otherCard => {
+                        if (otherCard !== card && otherCard.classList.contains('active')) {
+                            const otherContent = otherCard.querySelector('.card-content');
+                            if (otherContent && typeof gsap !== 'undefined') {
+                                const tl = gsap.timeline();
+                                
+                                tl.to(otherContent, {
+                                    opacity: 0,
+                                    y: -10,
+                                    filter: 'blur(5px)',
+                                    duration: 0.3,
+                                    ease: 'power3.in'
+                                });
+                                
+                                tl.to(otherContent, {
+                                    maxHeight: 0,
+                                    padding: 0,
+                                    duration: 0.5,
+                                    ease: 'power3.out',
+                                    onComplete: () => {
+                                        otherCard.classList.remove('active');
+                                    }
+                                }, "-=0.1");
+                            } else {
+                                otherCard.classList.remove('active');
+                            }
+                        }
+                    });
+                    
+                    // Toggle current card with enhanced animation
+                    const isActive = card.classList.contains('active');
+                    const content = card.querySelector('.card-content');
+                    
+                    if (isActive && content && typeof gsap !== 'undefined') {
+                        // Closing animation
+                        const tl = gsap.timeline();
+                        
+                        tl.to(content, {
+                            opacity: 0,
+                            y: -10,
+                            filter: 'blur(5px)',
+                            duration: 0.3,
+                            ease: 'power3.in'
+                        });
+                        
+                        tl.to(content, {
+                            maxHeight: 0,
+                            padding: 0,
+                            duration: 0.5,
+                            ease: 'power3.out',
+                            onComplete: () => {
+                                card.classList.remove('active');
+                            }
+                        }, "-=0.1");
+                    } else {
+                        card.classList.add('active');
+                        if (content && typeof gsap !== 'undefined') {
+                            // Get content height
+                            content.style.display = 'block';
+                            const height = content.scrollHeight;
+                            content.style.display = '';
+                            
+                            // Opening animation
+                            const tl = gsap.timeline();
+                            
+                            tl.fromTo(content, 
+                                { maxHeight: 0, padding: 0, opacity: 0, y: -20, filter: 'blur(5px)' },
+                                { maxHeight: height, padding: '1.5rem', duration: 0.6, ease: 'power3.out' }
+                            );
+                            
+                            tl.to(content, {
+                                opacity: 1,
+                                y: 0,
+                                filter: 'blur(0)',
+                                duration: 0.4,
+                                ease: 'power2.out'
+                            }, "-=0.3");
+                        }
+                    }
+                    
+                    // Add enhanced ripple effect only if toggle was clicked
+                     if (e.target.closest('.card-toggle')) {
+                         const ripple = document.createElement('span');
+                         ripple.classList.add('ripple');
+                         ripple.style.position = 'absolute';
+                         ripple.style.borderRadius = '50%';
+                         ripple.style.transform = 'scale(0)';
+                         ripple.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
+                         ripple.style.pointerEvents = 'none';
+                         ripple.style.zIndex = '10';
+                         
+                         const rect = toggle.getBoundingClientRect();
+                         const size = Math.max(rect.width, rect.height) * 2.5;
+                         ripple.style.width = ripple.style.height = size + 'px';
+                         ripple.style.left = -size/2 + rect.width/2 + 'px';
+                         ripple.style.top = -size/2 + rect.height/2 + 'px';
+                         
+                         toggle.appendChild(ripple);
+                         
+                         if (typeof gsap !== 'undefined') {
+                             gsap.fromTo(ripple, 
+                                 { scale: 0, opacity: 0.8 },
+                                 { scale: 1, opacity: 0, duration: 0.8, ease: 'power2.out',
+                                   onComplete: () => ripple.remove() }
+                             );
+                         } else {
+                             // Fallback for browsers without GSAP
+                             ripple.style.animation = 'ripple 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                             setTimeout(() => ripple.remove(), 800);
+                         }
+                     }
+                });
+            });
+        }
 
-<script>
-	document.addEventListener('DOMContentLoaded', function() {
-		// Import GSAP if not already available
-		if (typeof gsap === 'undefined') {
-			const script = document.createElement('script');
-			script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js';
-			document.head.appendChild(script);
-		}
-		
-		// Initialize FAQ Tab Functionality
-		initFAQTabs();
-		
-		// FAQ Card Toggle with enhanced animations
-		const faqCards = document.querySelectorAll('.faq-card');
-		faqCards.forEach(card => {
-			const toggle = card.querySelector('.card-toggle');
-			if (!toggle) return;
-			toggle.addEventListener('click', () => {
-				// Close all other cards with smooth animation
-				faqCards.forEach(otherCard => {
-					if (otherCard !== card && otherCard.classList.contains('active')) {
-						const otherContent = otherCard.querySelector('.card-content');
-						if (otherContent && typeof gsap !== 'undefined') {
-							gsap.to(otherContent, {
-								maxHeight: 0,
-								padding: 0,
-								duration: 0.4,
-								ease: 'power2.out',
-								onComplete: () => {
-									otherCard.classList.remove('active');
-								}
-							});
-						} else {
-							otherCard.classList.remove('active');
-						}
-					}
-				});
-				
-				// Toggle current card with enhanced animation
-				const isActive = card.classList.contains('active');
-				const content = card.querySelector('.card-content');
-				
-				if (isActive && content && typeof gsap !== 'undefined') {
-					gsap.to(content, {
-						maxHeight: 0,
-						padding: 0,
-						duration: 0.4,
-						ease: 'power2.out',
-						onComplete: () => {
-							card.classList.remove('active');
-						}
-					});
-				} else {
-					card.classList.add('active');
-					if (content && typeof gsap !== 'undefined') {
-						// Get content height
-						content.style.display = 'block';
-						const height = content.scrollHeight;
-						content.style.display = '';
-						
-						gsap.fromTo(content, 
-							{ maxHeight: 0, padding: 0 },
-							{ maxHeight: height, padding: '1.5rem', duration: 0.6, ease: 'power2.out' }
-						);
-					}
-				}
-				
-				// Add enhanced ripple effect
-				const ripple = document.createElement('span');
-				ripple.classList.add('ripple');
-				ripple.style.position = 'absolute';
-				ripple.style.borderRadius = '50%';
-				ripple.style.transform = 'scale(0)';
-				ripple.style.animation = 'ripple 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
-				ripple.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
-				
-				const rect = toggle.getBoundingClientRect();
-				ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) * 2 + 'px';
-				ripple.style.left = -rect.width / 2 + 'px';
-				ripple.style.top = -rect.height / 2 + 'px';
-				
-				if (toggle) toggle.appendChild(ripple);
-						
-				setTimeout(() => {
-					ripple.remove();
-				}, 800);
-			});
-		});
-		
-		// Enhanced 3D Card Tilt Effect with GSAP
-		const cards = document.querySelectorAll('.faq-card');
-		cards.forEach(card => {
-			const cardElement = card;
-			cardElement.addEventListener('mousemove', (e) => {
-				const cardRect = cardElement.getBoundingClientRect();
-				const cardWidth = cardRect.width;
-				const cardHeight = cardRect.height;
-				const centerX = cardRect.left + cardWidth / 2;
-				const centerY = cardRect.top + cardHeight / 2;
-				const mouseX = e.clientX - centerX;
-				const mouseY = e.clientY - centerY;
-				const rotateX = (mouseY / (cardHeight / 2)) * -5;
-				const rotateY = (mouseX / (cardWidth / 2)) * 5;
-				
-				// Use GSAP for smoother animation
-				if (typeof gsap !== 'undefined') {
-					gsap.to(cardElement, {
-						rotationX: rotateX,
-						rotationY: rotateY,
-						z: 20,
-						duration: 0.3,
-						ease: 'power2.out',
-						transformPerspective: 1000,
-						transformOrigin: 'center'
-					});
-					
-					// Enhanced shine effect
-					const shine = cardElement.querySelector('.card-shine');
-					if (shine) {
-						const shineX = (mouseX / cardWidth) * 100 + 50;
-						const shineY = (mouseY / cardHeight) * 100 + 50;
-						gsap.to(shine, {
-							background: `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%)`,
-							opacity: 1,
-							duration: 0.3
-						});
-					}
-				} else {
-					cardElement.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
-					
-					const shine = cardElement.querySelector('.card-shine');
-					if (shine) {
-						const shineX = (mouseX / cardWidth) * 100 + 50;
-						const shineY = (mouseY / cardHeight) * 100 + 50;
-						shine.style.background = `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%)`;
-					}
-				}
-			});
-			
-			cardElement.addEventListener('mouseleave', () => {
-				// Use GSAP for smooth return animation
-				if (typeof gsap !== 'undefined') {
-					gsap.to(cardElement, {
-						rotationX: 0,
-						rotationY: 0,
-						z: 0,
-						scale: 1,
-						duration: 0.5,
-						ease: 'power3.out'
-					});
-					
-					const shine = cardElement.querySelector('.card-shine');
-					if (shine) {
-						gsap.to(shine, {
-							opacity: 0,
-							duration: 0.5,
-							ease: 'power2.out',
-							onComplete: () => {
-								shine.style.background = '';
-								shine.style.opacity = '';
-							}
-						});
-					}
-				} else {
-					cardElement.style.transform = '';
-					const shine = cardElement.querySelector('.card-shine');
-					if (shine) {
-						shine.style.background = '';
-					}
-				}
-			});
-		});
-		
-		// Enhanced animation for feature tags
-		const featureTags = document.querySelectorAll('.feature-tag');
-		featureTags.forEach((tag, index) => {
-			const tagElement = tag;
-			const delay = index * 50;
-			tagElement.style.transitionDelay = `${delay}ms`;
-			
-			tagElement.addEventListener('mouseenter', () => {
-				tagElement.style.transform = 'translateY(-5px) scale(1.05)';
-				
-				const parent = tagElement.parentElement;
-				if (parent) {
-					const siblings = parent.querySelectorAll('.feature-tag');
-					siblings.forEach(sibling => {
-						const siblingElement = sibling;
-						if (siblingElement !== tagElement) {
-							siblingElement.style.transform = 'translateY(-2px) scale(0.98)';
-							siblingElement.style.opacity = '0.7';
-						}
-					});
-				}
-			});
-			
-			tagElement.addEventListener('mouseleave', () => {
-				tagElement.style.transform = '';
-				
-				const parent = tagElement.parentElement;
-				if (parent) {
-					const siblings = parent.querySelectorAll('.feature-tag');
-					siblings.forEach(sibling => {
-						const siblingElement = sibling;
-						if (siblingElement !== tagElement) {
-							siblingElement.style.transform = '';
-							siblingElement.style.opacity = '';
-						}
-					});
-				}
-			});
-			
-			setTimeout(() => {
-				tagElement.style.transform = 'translateY(-5px) scale(1.05)';
-				setTimeout(() => {
-					tagElement.style.transform = '';
-				}, 300);
-			}, 1000 + delay);
-		});
-		
-		// Enhanced ripple effect for CTA button
-		const ctaButton = document.querySelector('.faq-cta .btn');
-		if (ctaButton) {
-			ctaButton.addEventListener('click', (e) => {
-				const rect = ctaButton.getBoundingClientRect();
-				const x = e.clientX - rect.left;
-				const y = e.clientY - rect.top;
-				
-				const existingRipples = ctaButton.querySelectorAll('.ripple');
-				existingRipples.forEach(r => r.remove());
-				
-				const ripple = document.createElement('span');
-				ripple.classList.add('ripple');
-				ripple.style.position = 'absolute';
-				ripple.style.borderRadius = '50%';
-				ripple.style.transform = 'scale(0)';
-				ripple.style.animation = 'ripple 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
-				ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-				ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) * 2.5 + 'px';
-				ripple.style.left = `${x - (Math.max(rect.width, rect.height) * 1.25)}px`;
-				ripple.style.top = `${y - (Math.max(rect.width, rect.height) * 1.25)}px`;
-				ripple.style.pointerEvents = 'none';
-				ripple.style.zIndex = '1';
-				
-				ctaButton.appendChild(ripple);
-				
-				ctaButton.style.transform = 'scale(0.98)';
-				setTimeout(() => {
-					ctaButton.style.transform = '';
-				}, 200);
-				
-				setTimeout(() => {
-					ripple.remove();
-				}, 800);
-			});
-			
-			ctaButton.addEventListener('mouseenter', () => {
-				const btnText = ctaButton.querySelector('.btn-text');
-				const btnIcon = ctaButton.querySelector('.btn-icon');
-				
-				if (btnText) btnText.style.transform = 'translateX(-3px)';
-				if (btnIcon) btnIcon.style.transform = 'translateX(3px)';
-			});
-			
-			ctaButton.addEventListener('mouseleave', () => {
-				const btnText = ctaButton.querySelector('.btn-text');
-				const btnIcon = ctaButton.querySelector('.btn-icon');
-				
-				if (btnText) btnText.style.transform = '';
-				if (btnIcon) btnIcon.style.transform = '';
-			});
-		}
-	});
+        // 3D Hover Effects
+        function init3DHoverEffects() {
+            const cards = document.querySelectorAll('.faq-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const cardRect = card.getBoundingClientRect();
+                    const cardWidth = cardRect.width;
+                    const cardHeight = cardRect.height;
+                    const centerX = cardRect.left + cardWidth / 2;
+                    const centerY = cardRect.top + cardHeight / 2;
+                    const mouseX = e.clientX - centerX;
+                    const mouseY = e.clientY - centerY;
+                    const rotateX = (mouseY / (cardHeight / 2)) * -5;
+                    const rotateY = (mouseX / (cardWidth / 2)) * 5;
+                    
+                    // Use GSAP for smoother animation
+                    if (typeof gsap !== 'undefined') {
+                        gsap.to(card, {
+                            rotationX: rotateX,
+                            rotationY: rotateY,
+                            z: 20,
+                            duration: 0.3,
+                            ease: 'power2.out',
+                            transformPerspective: 1000,
+                            transformOrigin: 'center'
+                        });
+                        
+                        // Enhanced shine effect
+                        const shine = card.querySelector('.card-shine');
+                        if (shine) {
+                            const shineX = (mouseX / cardWidth) * 100 + 50;
+                            const shineY = (mouseY / cardHeight) * 100 + 50;
+                            gsap.to(shine, {
+                                background: `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%)`,
+                                opacity: 1,
+                                duration: 0.3
+                            });
+                        }
+                    } else {
+                        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+                        
+                        const shine = card.querySelector('.card-shine');
+                        if (shine) {
+                            const shineX = (mouseX / cardWidth) * 100 + 50;
+                            const shineY = (mouseY / cardHeight) * 100 + 50;
+                            shine.style.background = `radial-gradient(circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%)`;
+                        }
+                    }
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    // Use GSAP for smooth return animation
+                    if (typeof gsap !== 'undefined') {
+                        gsap.to(card, {
+                            rotationX: 0,
+                            rotationY: 0,
+                            z: 0,
+                            scale: 1,
+                            duration: 0.5,
+                            ease: 'power3.out'
+                        });
+                        
+                        const shine = card.querySelector('.card-shine');
+                        if (shine) {
+                            gsap.to(shine, {
+                                opacity: 0,
+                                duration: 0.5,
+                                ease: 'power2.out',
+                                onComplete: () => {
+                                    shine.style.background = '';
+                                    shine.style.opacity = '';
+                                }
+                            });
+                        }
+                    } else {
+                        card.style.transform = '';
+                        const shine = card.querySelector('.card-shine');
+                        if (shine) {
+                            shine.style.background = '';
+                        }
+                    }
+                });
+            });
+        }
 
-	// FAQ Tab Functionality
-	function initFAQTabs() {
-		const tabs = document.querySelectorAll('.faq-tab');
-		const tabIndicator = document.querySelector('.tab-indicator');
-		const tabContainer = document.querySelector('.faq-tabs');
-		const allCards = document.querySelectorAll('.faq-card');
-		
-		// Set initial active tab
-		let activeTabIndex = 0;
-		updateTabIndicator(tabs[0], tabIndicator);
-		showContentForTab('all', allCards);
-		
-		tabs.forEach((tab, index) => {
-			tab.addEventListener('click', () => {
-				const tabType = tab.getAttribute('data-tab');
-				if (!tabType) return;
-				
-				// Add switching animation
-				tabContainer.classList.add('switching');
-				tabContainer.classList.add('loading');
-				
-				// Remove active class from all tabs
-				tabs.forEach(t => t.classList.remove('active'));
-				
-				// Add active class to clicked tab
-				tab.classList.add('active');
-				
-				// Animate tab indicator
-				updateTabIndicator(tab, tabIndicator);
-				
-				// Animate content transition
-				animateContentTransition(activeTabIndex, index, allCards);
-				
-				// Show content for selected tab
-				showContentForTab(tabType, allCards);
-				
-				// Update active tab index
-				activeTabIndex = index;
-				
-				// Add click animation to clicked tab
-				animateTabClick(tab);
-				
-				// Remove switching classes after animation
-				setTimeout(() => {
-					tabContainer.classList.remove('switching');
-					tabContainer.classList.remove('loading');
-				}, 800);
-			});
-		});
-	}
+        // Feature Tag Animations
+        function initFeatureTagAnimations() {
+            const featureTags = document.querySelectorAll('.feature-tag');
+            
+            featureTags.forEach((tag, index) => {
+                const delay = index * 50;
+                tag.style.transitionDelay = `${delay}ms`;
+                
+                tag.addEventListener('mouseenter', () => {
+                    tag.style.transform = 'translateY(-5px) scale(1.05)';
+                    
+                    const parent = tag.parentElement;
+                    if (parent) {
+                        const siblings = parent.querySelectorAll('.feature-tag');
+                        siblings.forEach(sibling => {
+                            if (sibling !== tag) {
+                                sibling.style.transform = 'translateY(-2px) scale(0.98)';
+                                sibling.style.opacity = '0.7';
+                            }
+                        });
+                    }
+                });
+                
+                tag.addEventListener('mouseleave', () => {
+                    tag.style.transform = '';
+                    
+                    const parent = tag.parentElement;
+                    if (parent) {
+                        const siblings = parent.querySelectorAll('.feature-tag');
+                        siblings.forEach(sibling => {
+                            if (sibling !== tag) {
+                                sibling.style.transform = '';
+                                sibling.style.opacity = '';
+                            }
+                        });
+                    }
+                });
+                
+                // Initial animation
+                setTimeout(() => {
+                    tag.style.transform = 'translateY(-5px) scale(1.05)';
+                    setTimeout(() => {
+                        tag.style.transform = '';
+                    }, 300);
+                }, 1000 + delay);
+            });
+        }
 
-	function updateTabIndicator(activeTab, indicator) {
-		if (!indicator) return;
-		
-		const tabRect = activeTab.getBoundingClientRect();
-		const containerRect = activeTab.parentElement.getBoundingClientRect();
-		
-		const left = tabRect.left - containerRect.left;
-		const width = tabRect.width;
-		
-		// Animate indicator movement
-		indicator.style.left = left + 'px';
-		indicator.style.width = width + 'px';
-		
-		// Add subtle shadow effect
-		indicator.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
-	}
-
-	function animateContentTransition(oldIndex, newIndex, allCards) {
-		// Smooth fade out all cards first
-		allCards.forEach(card => {
-			card.style.transition = 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
-			card.style.opacity = '0';
-			card.style.transform = 'translateY(20px) scale(0.95)';
-		});
-		
-		// Wait for fade out to complete before showing new content
-		setTimeout(() => {
-			// Reset transition for smooth entrance
-			allCards.forEach(card => {
-				card.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-			});
-		}, 300);
-	}
-
-	function showContentForTab(tabType, allCards) {
-		// Define which cards to show for each tab based on data-category
-		const tabContentMap = {
-			'all': 'all',           // Semua - show all cards
-			'general': 'general',   // Umum - show cards with general category
-			'technical': 'technical', // Teknis - show cards with technical category
-			'pricing': 'pricing'    // Harga - show cards with pricing category
-		};
-		
-		const targetCategory = tabContentMap[tabType];
-		
-		allCards.forEach((card, index) => {
-			const cardCategory = card.getAttribute('data-category');
-			
-			if (targetCategory === 'all' || cardCategory === targetCategory) {
-				// Show card with smooth staggered animation
-				card.style.display = 'block';
-				card.style.opacity = '0';
-				card.style.transform = 'translateY(30px) scale(0.9)';
-				
-				// Staggered entrance animation
-				setTimeout(() => {
-					card.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-					card.style.opacity = '1';
-					card.style.transform = 'translateY(0) scale(1)';
-				}, index * 120);
-			} else {
-				// Hide card with smooth fade out
-				card.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
-				card.style.opacity = '0';
-				card.style.transform = 'translateY(30px) scale(0.9)';
-				
-				// Hide after animation
-				setTimeout(() => {
-					card.style.display = 'none';
-				}, 400);
-			}
-		});
-	}
-
-	function animateTabClick(tab) {
-		// Add click animation
-		tab.style.transform = 'scale(0.95) translateY(-2px)';
-		setTimeout(() => {
-			tab.style.transform = 'scale(1.02) translateY(-2px)';
-			setTimeout(() => {
-				tab.style.transform = 'scale(1) translateY(-2px)';
-			}, 150);
-		}, 150);
-		
-		// Add ripple effect
-		addTabRippleEffect(tab);
-	}
-
-	function addTabRippleEffect(tab) {
-		const ripple = document.createElement('div');
-		ripple.style.cssText = `
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
-			border-radius: 50px;
-			transform: scale(0);
-			animation: tab-ripple 0.6s ease-out;
-			pointer-events: none;
-			z-index: -1;
-		`;
-		
-		tab.appendChild(ripple);
-		
-		setTimeout(() => ripple.remove(), 600);
-	}
-
-	// Add CSS animations for new elements
-	const style = document.createElement('style');
-	style.textContent = `
-		@keyframes ripple {
-			to {
-				transform: scale(4);
-				opacity: 0;
-			}
-		}
-		
-		@keyframes tab-ripple {
-			0% {
-				transform: scale(0);
-				opacity: 1;
-			}
-			100% {
-				transform: scale(2);
-				opacity: 0;
-			}
-		}
-		
-			/* Enhanced Tab switching animations */
-	.faq-tabs.switching .faq-tab {
-		animation: tab-bounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-	}
-	
-	@keyframes tab-bounce {
-		0% { transform: scale(1) translateY(0); }
-		25% { transform: scale(0.95) translateY(-2px); }
-		50% { transform: scale(1.05) translateY(-4px); }
-		75% { transform: scale(0.98) translateY(-2px); }
-		100% { transform: scale(1) translateY(0); }
-	}
-	
-	/* Smooth loading animation for tab switch */
-	.faq-tabs.loading::after {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(90deg, 
-			transparent, 
-			rgba(255, 255, 255, 0.4), 
-			transparent);
-		animation: loading-sweep 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-		z-index: 3;
-	}
-	
-	@keyframes loading-sweep {
-		0% { transform: translateX(-100%) scaleX(0.5); opacity: 0; }
-		50% { transform: translateX(0%) scaleX(1); opacity: 1; }
-		100% { transform: translateX(100%) scaleX(0.5); opacity: 0; }
-	}
-	
-	/* Smooth card transitions */
-	.faq-card {
-		transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-	}
-	
-	.faq-card.fade-in {
-		animation: card-fade-in 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-	}
-	
-	@keyframes card-fade-in {
-		0% {
-			opacity: 0;
-			transform: translateY(30px) scale(0.9) rotateX(10deg);
-		}
-		50% {
-			opacity: 0.7;
-			transform: translateY(15px) scale(0.95) rotateX(5deg);
-		}
-		100% {
-			opacity: 1;
-			transform: translateY(0) scale(1) rotateX(0deg);
-		}
-	}
-	`;
-	
-	document.head.appendChild(style);
-</script>
-
+        // CTA Button Effects
+        function initCTAButtonEffects() {
+            const ctaButton = document.querySelector('.faq-cta .btn');
+            if (ctaButton) {
+                ctaButton.addEventListener('click', (e) => {
+                    const rect = ctaButton.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const existingRipples = ctaButton.querySelectorAll('.ripple');
+                    existingRipples.forEach(r => r.remove());
+                    
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    ripple.style.position = 'absolute';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.transform = 'scale(0)';
+                    ripple.style.animation = 'ripple 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                    ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+                    ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) * 2.5 + 'px';
+                    ripple.style.left = `${x - (Math.max(rect.width, rect.height) * 1.25)}px`;
+                    ripple.style.top = `${y - (Math.max(rect.width, rect.height) * 1.25)}px`;
+                    ripple.style.pointerEvents = 'none';
+                    ripple.style.zIndex = '1';
+                    
+                    ctaButton.appendChild(ripple);
+                    
+                    ctaButton.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        ctaButton.style.transform = '';
+                    }, 200);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 800);
+                });
+                
+                ctaButton.addEventListener('mouseenter', () => {
+                    const btnText = ctaButton.querySelector('.btn-text');
+                    const btnIcon = ctaButton.querySelector('.btn-icon');
+                    
+                    if (btnText) btnText.style.transform = 'translateX(-3px)';
+                    if (btnIcon) btnIcon.style.transform = 'translateX(3px)';
+                });
+                
+                ctaButton.addEventListener('mouseleave', () => {
+                    const btnText = ctaButton.querySelector('.btn-text');
+                    const btnIcon = ctaButton.querySelector('.btn-icon');
+                    
+                    if (btnText) btnText.style.transform = '';
+                    if (btnIcon) btnIcon.style.transform = '';
+                });
+            }
+        }
+    </script>
+</body>
+</html>
