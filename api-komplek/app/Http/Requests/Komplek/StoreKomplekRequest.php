@@ -36,6 +36,22 @@ class StoreKomplekRequest extends FormRequest
         $validator->after(function (Validator $v) {
             $data = $this->all();
 
+            // Disallow animal names and profanity for nama, ketua, bendahara
+            $fieldsToCheck = [
+                'nama' => 'Nama komplek',
+                'ketua' => 'Nama Ketua RT',
+                'bendahara' => 'Nama Bendahara',
+            ];
+            foreach ($fieldsToCheck as $field => $label) {
+                $val = isset($data[$field]) ? (string) $data[$field] : '';
+                if ($val !== '') {
+                    $bad = $this->findBannedTerm($val);
+                    if ($bad !== null) {
+                        $v->errors()->add($field, $label.' tidak boleh mengandung nama hewan atau kata-kata tidak pantas (ditemukan: "'.$bad.'").');
+                    }
+                }
+            }
+
             // Ketua != Bendahara dalam satu Komplek
             if (!empty($data['ketua']) && !empty($data['bendahara']) && trim($data['ketua']) === trim($data['bendahara'])) {
                 $v->errors()->add('ketua', 'Ketua RT dan Bendahara tidak boleh orang yang sama.');
@@ -95,6 +111,29 @@ class StoreKomplekRequest extends FormRequest
                 }
             }
         });
+    }
+
+    /**
+     * Return matched banned term (lowercase) if found in input, otherwise null.
+     */
+    protected function findBannedTerm(string $input): ?string
+    {
+        $hay = mb_strtolower($input, 'UTF-8');
+        // Common Indonesian profanity and animal names
+        $banned = [
+            // profanity (keep it minimal but effective)
+            'anjing','asu','babi','bangsat','kampret','kontol','memek','peler','jembut','tai','goblok','tolol','bego','idiot','pepek','kenthu','ngentot','pukimak',
+            // animals
+            'kucing','anjing','ayam','kambing','sapi','monyet','kera','buaya','ular','banteng','babi','kodok','cicak','biawak','burung',
+        ];
+        foreach ($banned as $term) {
+            // word boundary match, unicode
+            $pattern = '/(?<!\p{L})'.preg_quote($term, '/').'(?!\p{L})/u';
+            if (preg_match($pattern, $hay)) {
+                return $term;
+            }
+        }
+        return null;
     }
 
     public function messages(): array
