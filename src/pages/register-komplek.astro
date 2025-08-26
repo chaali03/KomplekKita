@@ -504,14 +504,28 @@ import Footer from '../components/sections/Footer.astro';
   <div id="excelErrorModal" class="excel-modal-backdrop" style="display:none;">
     <div class="excel-modal" role="dialog" aria-modal="true" aria-labelledby="excelErrorTitle">
       <div class="excel-modal-header">
-        <h3 id="excelErrorTitle">Kesalahan Validasi Excel</h3>
-        <button type="button" class="excel-modal-close" id="excelErrorClose" aria-label="Tutup">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        <div class="excel-modal-title">
+          <span class="title-icon error"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></span>
+          <div class="title-texts">
+            <h3 id="excelErrorTitle">Kesalahan Validasi Excel</h3>
+            <p class="excel-modal-subtitle">Periksa dan perbaiki data yang bermasalah di bawah. Anda juga bisa mengunduh template resmi.</p>
+          </div>
+        </div>
+        <div class="excel-modal-actions">
+          <span id="excelErrorCount" class="badge badge-count">0 isu</span>
+          <button type="button" class="excel-modal-close" id="excelErrorClose" aria-label="Tutup">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
       </div>
       <div class="excel-modal-body">
-        <p id="excelErrorSummary">File Anda belum memenuhi format yang diwajibkan. Perbaiki isu di bawah atau gunakan template resmi.</p>
-        <ul id="excelErrorList" class="excel-error-list"></ul>
+        <div class="excel-alert">
+          <i class="fa-solid fa-circle-info"></i>
+          <p id="excelErrorSummary" class="excel-error-summary">File Anda belum memenuhi format yang diwajibkan. Perbaiki isu di bawah atau gunakan template resmi.</p>
+        </div>
+        <div class="excel-error-scroll">
+          <ul id="excelErrorList" class="excel-error-list"></ul>
+        </div>
       </div>
       <div class="excel-modal-footer">
         <button type="button" class="template-btn" id="excelErrorDownloadBtn">
@@ -530,6 +544,16 @@ import Footer from '../components/sections/Footer.astro';
 
 <script>
 // @ts-nocheck
+// Generic API fetch with fallback: try through Astro proxy first, then direct to Laravel if 404
+async function fetchWithFallback(path, options = {}) {
+  try {
+    const res = await fetch(path, options);
+    if (res.status !== 404) return res;
+  } catch (_) {}
+  // retry direct to Laravel dev server
+  const directUrl = path.startsWith('/api') ? `http://127.0.0.1:8000${path}` : path;
+  return fetch(directUrl, options);
+}
 document.addEventListener('DOMContentLoaded', function () {
   // Enhanced selectors and utilities
   const q = (sel) => document.querySelector(sel);
@@ -571,27 +595,48 @@ document.addEventListener('DOMContentLoaded', function () {
     const list = byId('excelErrorList');
     const downloadBtn = byId('excelErrorDownloadBtn');
     const summary = byId('excelErrorSummary');
+    const countBadge = byId('excelErrorCount');
     if (!backdrop || !title || !list || !downloadBtn) return;
 
     title.textContent = kind === 'warga' ? 'Kesalahan Validasi Data Warga' : 'Kesalahan Validasi Data Keuangan';
-    summary.textContent = 'File Anda belum memenuhi format yang diwajibkan. Perbaiki isu di bawah atau gunakan template resmi.';
+    summary.textContent = 'File Anda belum memenuhi format yang diwajibkan. Perbaiki isu berikut atau gunakan template resmi.';
 
+    // reset list
     list.innerHTML = '';
-    const maxItems = 20;
+
+    if (countBadge) {
+      const total = (errors || []).length;
+      countBadge.textContent = `${total} isu`;
+      countBadge.classList.toggle('ok', total === 0);
+    }
+
+    // show top N items only to keep dialog short; user can download template
+    const maxItems = 40;
     const items = (errors || []).slice(0, maxItems);
     if (!items.length) {
       const li = document.createElement('li');
-      li.textContent = 'Format header tidak sesuai atau data kosong.';
+      li.className = 'error-item';
+      li.innerHTML = `<span class="error-icon"><i class="fa-regular fa-circle"></i></span><span class="error-msg">Format header tidak sesuai atau data kosong.</span>`;
       list.appendChild(li);
     } else {
       items.forEach(err => {
+        const text = String(err || '');
+        const m = /^\s*Baris\s*(\d+)\s*:\s*(.*)$/i.exec(text);
+        const row = m ? m[1] : '';
+        const msg = m ? m[2] : text;
         const li = document.createElement('li');
-        li.textContent = String(err);
+        li.className = 'error-item';
+        li.innerHTML = `
+          <span class="error-icon"><i class="fa-solid fa-exclamation"></i></span>
+          ${row ? `<span class="row-badge">${row}</span>` : ''}
+          <span class="error-msg">${msg}</span>
+        `;
         list.appendChild(li);
       });
       if ((errors || []).length > maxItems) {
         const li = document.createElement('li');
-        li.textContent = `+ ${(errors.length - maxItems)} isu lainnya...`;
+        li.className = 'error-item more';
+        li.innerHTML = `<span class="error-icon"><i class="fa-regular fa-ellipsis"></i></span><span class="error-msg">+ ${(errors.length - maxItems)} isu lainnya...</span>`;
         list.appendChild(li);
       }
     }
@@ -1570,8 +1615,7 @@ document.addEventListener('DOMContentLoaded', function () {
       showToast('Mengunggah dan memvalidasi data warga...', 'info');
       const fd = new FormData();
       fd.append('file', file);
-      const id = 0; // gunakan 0 sebelum Komplek disimpan
-      const res = await fetch(`/api/komplek/${id}/import/warga`, {
+      const res = await fetchWithFallback(`/api/import/warga/preview`, {
         method: 'POST',
         body: fd,
         credentials: 'include',
@@ -1633,8 +1677,7 @@ document.addEventListener('DOMContentLoaded', function () {
       showToast('Mengunggah dan memvalidasi data keuangan...', 'info');
       const fd = new FormData();
       fd.append('file', file);
-      const id = 0; // gunakan 0 sebelum Komplek disimpan
-      const res = await fetch(`/api/komplek/${id}/import/keuangan`, {
+      const res = await fetchWithFallback(`/api/import/keuangan/preview`, {
         method: 'POST',
         body: fd,
         credentials: 'include',
@@ -1769,9 +1812,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   async function downloadWargaTemplate() {
     try {
-      const id = 0; // gunakan 0 selama Komplek belum dibuat
-      const url = `/api/komplek/${id}/templates/warga`;
-      const res = await fetch(url, { credentials: 'include' });
+      const url = `/api/templates/warga`;
+      const res = await fetchWithFallback(url, { credentials: 'include' });
       if (!res.ok) {
         const msg = (await res.text()) || 'Gagal mengunduh template warga';
         showToast(msg, 'error');
@@ -1780,7 +1822,10 @@ document.addEventListener('DOMContentLoaded', function () {
       const blob = await res.blob();
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = 'template-warga.xlsx';
+      const cd = res.headers.get('content-disposition') || '';
+      const m = cd.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
+      const serverName = m ? decodeURIComponent(m[1] || m[2]) : '';
+      link.download = serverName || 'template-warga.xls';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -1793,9 +1838,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   async function downloadKeuanganTemplate() {
     try {
-      const id = 0; // gunakan 0 selama Komplek belum dibuat
-      const url = `/api/komplek/${id}/templates/keuangan`;
-      const res = await fetch(url, { credentials: 'include' });
+      const url = `/api/templates/keuangan`;
+      const res = await fetchWithFallback(url, { credentials: 'include' });
       if (!res.ok) {
         const msg = (await res.text()) || 'Gagal mengunduh template keuangan';
         showToast(msg, 'error');
@@ -1804,7 +1848,10 @@ document.addEventListener('DOMContentLoaded', function () {
       const blob = await res.blob();
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = 'template-keuangan.xlsx';
+      const cd = res.headers.get('content-disposition') || '';
+      const m = cd.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
+      const serverName = m ? decodeURIComponent(m[1] || m[2]) : '';
+      link.download = serverName || 'template-keuangan.xls';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -3477,6 +3524,78 @@ body.loaded {
   background: rgba(0, 0, 0, 0.2);
   color: var(--text-primary);
   transform: scale(1.1);
+}
+
+.excel-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.65);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+}
+
+.excel-modal {
+  width: min(92vw, 860px);
+  max-height: 85vh;
+  background: #fff;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 25px 60px rgba(0,0,0,.25);
+  overflow: hidden;
+  transform: translateY(6px);
+}
+
+.excel-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.25rem 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(239,68,68,.06), rgba(251,191,36,.06));
+}
+
+.excel-modal-title { display: flex; gap: .9rem; align-items: center; }
+.title-icon { width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; background: #fff; box-shadow: var(--shadow-sm); }
+.title-icon.error i { color: #ef4444; }
+.title-texts h3 { margin: 0; font-size: 1.15rem; color: var(--text-primary); }
+.excel-modal-subtitle { margin: .15rem 0 0 0; color: var(--text-secondary); font-size: .95rem; }
+
+.excel-modal-actions { display: flex; align-items: center; gap: .75rem; }
+.badge {
+  display: inline-flex; align-items: center; gap: .35rem;
+  background: #f1f5f9; color: #0f172a; border: 1px solid var(--border);
+  padding: .4rem .6rem; border-radius: 999px; font-weight: 700; font-size: .85rem;
+}
+.badge.ok { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+.badge-count::before { content: '\f071'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: #f59e0b; }
+
+.excel-modal-close { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border); background: #fff; color: var(--text-secondary); cursor: pointer; display: grid; place-items: center; transition: .2s ease; }
+.excel-modal-close:hover { transform: scale(1.05); color: var(--text-primary); box-shadow: var(--shadow-sm); }
+
+.excel-modal-body { padding: 1rem 1.25rem; }
+.excel-alert { display: flex; gap: .6rem; align-items: flex-start; background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; border-radius: 12px; padding: .8rem 1rem; margin-bottom: .9rem; }
+.excel-alert i { color: #f59e0b; margin-top: .15rem; }
+
+.excel-error-scroll { max-height: 48vh; overflow: auto; border: 1px dashed var(--border); border-radius: 12px; padding: .25rem; background: #fafafa; }
+.excel-error-list { list-style: none; margin: 0; padding: .25rem; display: grid; grid-template-columns: 1fr 1fr; gap: .35rem .5rem; }
+
+.error-item { display: grid; grid-template-columns: 20px 48px 1fr; align-items: start; gap: .5rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: .55rem .65rem; box-shadow: 0 2px 6px rgba(0,0,0,.03); }
+.error-item .error-icon { color: #ef4444; display: inline-flex; align-items: center; justify-content: center; }
+.error-item .row-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; height: 26px; padding: 0 .5rem; border-radius: 999px; background: #eef2ff; color: #3730a3; font-weight: 800; font-size: .8rem; border: 1px solid #c7d2fe; }
+.error-item .error-msg { color: var(--text-primary); line-height: 1.35; }
+.error-item.more { opacity: .8; font-style: italic; grid-template-columns: 20px 1fr; }
+
+.excel-modal-footer { display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding: .95rem 1.25rem 1.15rem; border-top: 1px solid var(--border); background: linear-gradient(180deg, #fff, #fafafa); }
+.template-btn, .browse-btn { border: 1px solid var(--border); background: #fff; color: var(--text-primary); padding: .7rem 1rem; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: .5rem; transition: .2s ease; }
+.template-btn { background: linear-gradient(180deg, #ffffff, #f6f7fb); }
+.template-btn:hover, .browse-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.browse-btn { background: var(--primary-gradient); color: #fff; border-color: transparent; }
+
+@media (max-width: 768px) {
+  .excel-error-list { grid-template-columns: 1fr; }
+  .excel-modal { width: 95vw; }
 }
 
 .modal-body {

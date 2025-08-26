@@ -14,7 +14,13 @@ class UploadWargaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required','file','mimes:xlsx,xls','max:5120'], // 5MB
+            // Accept many CSV/XLS(X) MIME types from different browsers/editors
+            'file' => [
+                'required',
+                'file',
+                'max:5120', // 5MB
+                'mimetypes:text/csv,text/plain,application/csv,application/x-csv,text/x-csv,application/vnd.ms-excel,application/octet-stream,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            ],
         ];
     }
 }

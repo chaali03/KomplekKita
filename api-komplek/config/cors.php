@@ -19,7 +19,8 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
+    // Allow multiple frontend dev origins; set FRONTEND_URLS in .env as comma-separated list
+    'allowed_origins' => explode(',', env('FRONTEND_URLS', 'http://localhost:4321,http://127.0.0.1:4321,http://localhost:3000')),
 
     'allowed_origins_patterns' => [],
 
