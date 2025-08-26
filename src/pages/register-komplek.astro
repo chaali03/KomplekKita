@@ -1510,6 +1510,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function handleWargaDrop(e) {
+    preventDefaults(e);
     const dt = e.dataTransfer;
     const files = dt.files;
     
@@ -1523,6 +1524,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function handleKeuanganDrop(e) {
+    preventDefaults(e);
     const dt = e.dataTransfer;
     const files = dt.files;
     
@@ -1551,9 +1553,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!file) return;
 
     try {
-      // wait for XLSX to be ready
-      await waitForXLSX();
-
       if (!isExcelFile(file)) {
         showToast('File harus berformat .xlsx atau .xls', 'error');
         wargaDataValid = false;
@@ -1568,28 +1567,45 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      showToast('Memeriksa format dan isi file warga...', 'info');
-      const data = await file.arrayBuffer();
-      const workbook = XLSX.read(data, { type: 'array' });
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
-      const { valid, errors, data: normalized } = validateWargaData(jsonData);
-      wargaErrors = errors;
-      wargaDataValid = valid;
-      wargaData = normalized;
+      showToast('Mengunggah dan memvalidasi data warga...', 'info');
+      const fd = new FormData();
+      fd.append('file', file);
+      const id = 0; // gunakan 0 sebelum Komplek disimpan
+      const res = await fetch(`/api/komplek/${id}/import/warga`, {
+        method: 'POST',
+        body: fd,
+        credentials: 'include',
+      });
 
-      if (!valid) {
-        const sample = errors.slice(0, 3).join(' ');
-        showToast(`Validasi gagal: ${errors.length} isu. ${sample}`, 'error');
-        showExcelErrorModal('warga', errors);
-      } else {
-        renderWargaData(normalized);
-        showToast(`Berhasil memuat ${normalized.length} data warga`, 'success');
+      const payload = await res.json().catch(() => ({ message: 'Respons tidak valid' }));
+      if (!res.ok) {
+        const msg = payload?.message || 'Gagal memproses file';
+        showToast(msg, 'error');
+        wargaDataValid = false;
+        updateNextButtonState();
+        return;
+      }
+
+      const { status, data, errors, summary } = payload;
+      wargaErrors = errors || [];
+      wargaData = Array.isArray(data) ? data : [];
+      wargaDataValid = status === 'ok';
+
+      if (!wargaDataValid) {
+        const sample = (wargaErrors || []).slice(0, 3).join(' ');
+        showToast(`Validasi gagal: ${(wargaErrors || []).length} isu. ${sample}`, 'error');
+        showExcelErrorModal('warga', wargaErrors || []);
+      }
+      if (wargaData && wargaData.length) {
+        renderWargaData(wargaData);
+      }
+      if (summary) {
+        showToast(`Total: ${summary.total}, OK: ${summary.success}, Gagal: ${summary.failed}`, wargaDataValid ? 'success' : 'warning');
       }
       updateNextButtonState();
     } catch (error) {
-      showToast('Error saat memproses file Excel', 'error');
-      console.error('Excel processing error:', error);
+      showToast('Error saat mengunggah/validasi file', 'error');
+      console.error('Upload error:', error);
       wargaDataValid = false;
       updateNextButtonState();
     }
@@ -1600,9 +1616,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!file) return;
 
     try {
-      // wait for XLSX to be ready
-      await waitForXLSX();
-
       if (!isExcelFile(file)) {
         showToast('File harus berformat .xlsx atau .xls', 'error');
         keuanganDataValid = false;
@@ -1617,29 +1630,45 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      showToast('Memeriksa format dan isi file keuangan...', 'info');
-      const data = await file.arrayBuffer();
-      const workbook = XLSX.read(data, { type: 'array' });
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      showToast('Mengunggah dan memvalidasi data keuangan...', 'info');
+      const fd = new FormData();
+      fd.append('file', file);
+      const id = 0; // gunakan 0 sebelum Komplek disimpan
+      const res = await fetch(`/api/komplek/${id}/import/keuangan`, {
+        method: 'POST',
+        body: fd,
+        credentials: 'include',
+      });
 
-      const { valid, errors, data: normalized } = validateKeuanganData(jsonData);
-      keuanganErrors = errors;
-      keuanganDataValid = valid;
-      keuanganData = normalized;
+      const payload = await res.json().catch(() => ({ message: 'Respons tidak valid' }));
+      if (!res.ok) {
+        const msg = payload?.message || 'Gagal memproses file';
+        showToast(msg, 'error');
+        keuanganDataValid = false;
+        updateNextButtonState();
+        return;
+      }
 
-      if (!valid) {
-        const sample = errors.slice(0, 3).join(' ');
-        showToast(`Validasi gagal: ${errors.length} isu. ${sample}`, 'error');
-        showExcelErrorModal('keuangan', errors);
-      } else {
-        renderKeuanganData(normalized);
-        showToast(`Berhasil memuat ${normalized.length} transaksi`, 'success');
+      const { status, data, errors, summary } = payload;
+      keuanganErrors = errors || [];
+      keuanganData = Array.isArray(data) ? data : [];
+      keuanganDataValid = status === 'ok';
+
+      if (!keuanganDataValid) {
+        const sample = (keuanganErrors || []).slice(0, 3).join(' ');
+        showToast(`Validasi gagal: ${(keuanganErrors || []).length} isu. ${sample}`, 'error');
+        showExcelErrorModal('keuangan', keuanganErrors || []);
+      }
+      if (keuanganData && keuanganData.length) {
+        renderKeuanganData(keuanganData);
+      }
+      if (summary) {
+        showToast(`Total: ${summary.total}, OK: ${summary.success}, Gagal: ${summary.failed}`, keuanganDataValid ? 'success' : 'warning');
       }
       updateNextButtonState();
     } catch (error) {
-      showToast('Error saat memproses file Excel', 'error');
-      console.error('Excel processing error:', error);
+      showToast('Error saat mengunggah/validasi file', 'error');
+      console.error('Upload error:', error);
       keuanganDataValid = false;
       updateNextButtonState();
     }
@@ -1738,72 +1767,52 @@ document.addEventListener('DOMContentLoaded', function () {
     return new Intl.NumberFormat('id-ID').format(num);
   }
 
-  function downloadWargaTemplate() {
-    if (!window.XLSX) {
-      showToast('Gagal membuat template: library XLSX tidak tersedia', 'error');
-      return;
+  async function downloadWargaTemplate() {
+    try {
+      const id = 0; // gunakan 0 selama Komplek belum dibuat
+      const url = `/api/komplek/${id}/templates/warga`;
+      const res = await fetch(url, { credentials: 'include' });
+      if (!res.ok) {
+        const msg = (await res.text()) || 'Gagal mengunduh template warga';
+        showToast(msg, 'error');
+        return;
+      }
+      const blob = await res.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'template-warga.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Template warga diunduh', 'success');
+    } catch (e) {
+      console.error(e);
+      showToast('Gagal mengunduh template warga', 'error');
     }
-    const wb = XLSX.utils.book_new();
-    const sheet1Data = [
-      ['Nama', 'NIK', 'Telepon', 'Alamat', 'Blok', 'NoRumah'],
-      ['Andi Wijaya', '3201012345678901', '08123456789', 'Jl. Melati No.10', 'A', '01'],
-      ['Sari Dewi', '3201012345678902', '08123456790', 'Jl. Melati No.12', 'A', '02'],
-      ['Budi Santoso', '3201012345678903', '08123456791', 'Jl. Mawar No.05', 'B', '05']
-    ];
-    const wsData = XLSX.utils.aoa_to_sheet(sheet1Data);
-    wsData['!cols'] = [
-      { wch: 18 }, { wch: 18 }, { wch: 16 }, { wch: 28 }, { wch: 8 }, { wch: 10 }
-    ];
-    XLSX.utils.book_append_sheet(wb, wsData, 'DataWarga');
-
-    const instructions = [
-      ['Petunjuk Pengisian Data Warga'],
-      ['- Header harus persis: Nama, NIK, Telepon, Alamat, Blok, NoRumah'],
-      ['- NIK wajib 16 digit angka'],
-      ['- Semua kolom wajib diisi'],
-      ['- Simpan file sebagai .xlsx atau .xls']
-    ];
-    const wsInfo = XLSX.utils.aoa_to_sheet(instructions);
-    wsInfo['!cols'] = [{ wch: 80 }];
-    XLSX.utils.book_append_sheet(wb, wsInfo, 'Petunjuk');
-
-    XLSX.writeFile(wb, 'template_data_warga.xlsx');
-    showToast('Template Excel data warga berhasil diunduh', 'success');
   }
 
-  function downloadKeuanganTemplate() {
-    if (!window.XLSX) {
-      showToast('Gagal membuat template: library XLSX tidak tersedia', 'error');
-      return;
+  async function downloadKeuanganTemplate() {
+    try {
+      const id = 0; // gunakan 0 selama Komplek belum dibuat
+      const url = `/api/komplek/${id}/templates/keuangan`;
+      const res = await fetch(url, { credentials: 'include' });
+      if (!res.ok) {
+        const msg = (await res.text()) || 'Gagal mengunduh template keuangan';
+        showToast(msg, 'error');
+        return;
+      }
+      const blob = await res.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'template-keuangan.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Template keuangan diunduh', 'success');
+    } catch (e) {
+      console.error(e);
+      showToast('Gagal mengunduh template keuangan', 'error');
     }
-    const wb = XLSX.utils.book_new();
-    const sheet1Data = [
-      ['Tanggal', 'Keterangan', 'Kategori', 'Jumlah'],
-      ['2025-01-01', 'Iuran Keamanan Januari', 'Pemasukan', 5000000],
-      ['2025-01-05', 'Iuran Kebersihan Januari', 'Pemasukan', 2000000],
-      ['2025-01-10', 'Perbaikan Lampu Jalan', 'Pengeluaran', 1500000],
-      ['2025-01-15', 'Gaji Security', 'Pengeluaran', 3000000]
-    ];
-    const wsData = XLSX.utils.aoa_to_sheet(sheet1Data);
-    wsData['!cols'] = [
-      { wch: 12 }, { wch: 30 }, { wch: 14 }, { wch: 14 }
-    ];
-    XLSX.utils.book_append_sheet(wb, wsData, 'DataKeuangan');
-
-    const instructions = [
-      ['Petunjuk Pengisian Data Keuangan'],
-      ['- Header harus persis: Tanggal, Keterangan, Kategori, Jumlah'],
-      ['- Tanggal format valid (contoh: 2025-01-01)'],
-      ['- Kategori hanya: Pemasukan atau Pengeluaran'],
-      ['- Jumlah harus angka > 0'],
-      ['- Simpan file sebagai .xlsx atau .xls']
-    ];
-    const wsInfo = XLSX.utils.aoa_to_sheet(instructions);
-    wsInfo['!cols'] = [{ wch: 80 }];
-    XLSX.utils.book_append_sheet(wb, wsInfo, 'Petunjuk');
-
-    XLSX.writeFile(wb, 'template_data_keuangan.xlsx');
-    showToast('Template Excel data keuangan berhasil diunduh', 'success');
   }
 
   function downloadCSV(filename, data) {
