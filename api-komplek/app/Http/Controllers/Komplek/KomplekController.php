@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Http\Controllers\Komplek;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Komplek\StoreKomplekRequest;
+use App\Models\Komplek;
+use Illuminate\Http\Request;
+
+class KomplekController extends Controller
+{
+    public function store(StoreKomplekRequest $request)
+    {
+        $data = $request->validated();
+        $komplek = Komplek::create($data);
+        return response()->json([
+            'message' => 'Komplek created',
+            'data' => $komplek,
+        ], 201);
+    }
+
+    public function show($id)
+    {
+        $komplek = Komplek::findOrFail($id);
+        return response()->json($komplek);
+    }
+
+    public function checkAvailability(Request $request)
+    {
+        $request->validate([
+            'lat' => ['required','numeric'],
+            'lng' => ['required','numeric'],
+        ]);
+        $lat = (float) $request->lat;
+        $lng = (float) $request->lng;
+
+        // naive proximity check ~ within ~50m (approx for demo; for prod use PostGIS/haversine)
+        $delta = 0.0005; // ~55m near equator
+        $exists = Komplek::whereBetween('lat', [$lat - $delta, $lat + $delta])
+            ->whereBetween('lng', [$lng - $delta, $lng + $delta])
+            ->exists();
+
+        return response()->json([
+            'available' => !$exists,
+        ]);
+    }
+}

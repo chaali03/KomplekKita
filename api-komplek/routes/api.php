@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Komplek\KomplekController;
+use App\Http\Controllers\Komplek\WargaImportController;
+use App\Http\Controllers\Komplek\KeuanganImportController;
+use App\Http\Controllers\Komplek\TemplateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,15 +38,13 @@ Route::get('/version', function () {
 //     Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logout']);
 // });
 
-// TODO: Komplek endpoints (protected)
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::post('/komplek', [KomplekController::class, 'store']);
-//     Route::get('/komplek/{id}', [KomplekController::class, 'show']);
-//     Route::get('/komplek/check', [KomplekController::class, 'checkAvailability']);
-//     Route::post('/komplek/{id}/warga/upload', [WargaImportController::class, 'upload']);
-//     Route::post('/komplek/{id}/keuangan/upload', [KeuanganImportController::class, 'upload']);
-// });
+// Initial Komplek endpoints (temporarily public until auth wired)
+Route::post('/komplek', [KomplekController::class, 'store']);
+Route::get('/komplek/{id}', [KomplekController::class, 'show']);
+Route::get('/komplek/check', [KomplekController::class, 'checkAvailability']);
+Route::post('/komplek/{id}/warga/upload', [WargaImportController::class, 'upload']);
+Route::post('/komplek/{id}/keuangan/upload', [KeuanganImportController::class, 'upload']);
 
-// TODO: Template download endpoints
-// Route::get('/templates/warga', [TemplateController::class, 'downloadWarga']);
-// Route::get('/templates/keuangan', [TemplateController::class, 'downloadKeuangan']);
+// Template download endpoints
+Route::get('/templates/warga', [TemplateController::class, 'downloadWarga']);
+Route::get('/templates/keuangan', [TemplateController::class, 'downloadKeuangan']);
