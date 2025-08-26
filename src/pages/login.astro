@@ -8,11 +8,7 @@ import Footer from '../components/sections/Footer.astro';
         <!-- Background elements -->
         <div class="login-bg" aria-hidden="true">
             <!-- Animated waves -->
-            <div class="waves-container">
-                <div class="wave login-wave-1"></div>
-                <div class="wave login-wave-2"></div>
-                <div class="wave login-wave-3"></div>
-            </div>
+            <!-- Waves animation removed -->
 
             <!-- Geometric shapes -->
             <div class="shapes">
@@ -76,10 +72,6 @@ import Footer from '../components/sections/Footer.astro';
                 <div class="login-right" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="300">
                     <div class="login-form-container">
                         <div class="login-header">
-                            <a href="/" class="logo-link">
-                                <img src="/logo.svg" alt="KomplekKita Logo" class="logo" />
-                                <span class="logo-text">KomplekKita</span>
-                            </a>
                             <h2 class="form-title">Masuk ke Akun Anda</h2>
                             <p class="form-subtitle">Silakan masuk untuk mengakses akun Anda</p>
                         </div>
@@ -785,65 +777,7 @@ import Footer from '../components/sections/Footer.astro';
         width: 100%;
     }
 
-    /* Enhanced Waves Animation */
-    .waves-container {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 200px;
-        overflow: hidden;
-        filter: drop-shadow(0 -5px 10px rgba(74, 108, 247, 0.2));
-    }
-
-    .wave {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 200%;
-        height: 120px;
-        background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="%234a6cf7"/></svg>') repeat-x;
-        background-size: 1200px 120px;
-        animation: wave 15s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
-    }
-
-    .login-wave-1 {
-        opacity: 0.4;
-        animation-duration: 18s;
-        bottom: 0;
-        background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".4" fill="%234a6cf7"/></svg>');
-        animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    .login-wave-2 {
-        opacity: 0.3;
-        animation-duration: 12s;
-        animation-delay: -3s;
-        bottom: 15px;
-        background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".3" fill="%238b5cf6"/></svg>');
-        animation-timing-function: cubic-bezier(0.17, 0.67, 0.83, 0.67);
-    }
-
-    .login-wave-3 {
-        opacity: 0.2;
-        animation-duration: 9s;
-        animation-delay: -6s;
-        bottom: 30px;
-        background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".2" fill="%23f472b6"/></svg>');
-        animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
-    }
-
-    @keyframes wave {
-        0% {
-            transform: translateX(0) scaleY(1);
-        }
-        50% {
-            transform: translateX(-25%) scaleY(1.1);
-        }
-        100% {
-            transform: translateX(-50%) scaleY(1);
-        }
-    }
+    /* Waves animation removed */
 
     /* Shapes Animation */
     .shapes {
