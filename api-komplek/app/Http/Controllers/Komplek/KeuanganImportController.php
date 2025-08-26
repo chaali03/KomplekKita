@@ -17,7 +17,7 @@ class KeuanganImportController extends Controller
             return response()->json(['message' => 'File tidak ditemukan'], 422);
         }
 
-        $requiredHeaders = ['Tanggal', 'Keterangan', 'Kategori', 'Jumlah'];
+        $requiredHeaders = ['JenisTransaksi', 'Sumber', 'Tanggal', 'Keterangan', 'Jumlah', 'Bulan', 'Tahun', 'SaldoKasSekarang'];
         $errors = [];
         $rowsOut = [];
 
@@ -40,10 +40,16 @@ class KeuanganImportController extends Controller
                 $errors[] = 'Header wajib tidak lengkap: ' . implode(', ', $missing) . '.';
             }
 
-            // Map header indices
-            $idx = array_flip($headers);
+            // Map header indices (ignore non-required like '#')
+            $idx = [];
+            foreach ($headers as $i => $h) {
+                if (in_array($h, $requiredHeaders, true)) {
+                    $idx[$h] = $i;
+                }
+            }
 
             // Iterate data rows starting row 2
+            $bulanRef = null; $tahunRef = null; $saldoRef = null;
             for ($row = 2; $row <= $highestRow; $row++) {
                 // Skip completely empty rows
                 $isEmpty = true;
@@ -54,10 +60,14 @@ class KeuanganImportController extends Controller
                 if ($isEmpty) { continue; }
 
                 $record = [
+                    'JenisTransaksi' => self::getCell($sheet, $idx, 'JenisTransaksi', $row),
+                    'Sumber' => self::getCell($sheet, $idx, 'Sumber', $row),
                     'Tanggal' => self::getCell($sheet, $idx, 'Tanggal', $row),
                     'Keterangan' => self::getCell($sheet, $idx, 'Keterangan', $row),
-                    'Kategori' => self::getCell($sheet, $idx, 'Kategori', $row),
                     'Jumlah' => self::getCell($sheet, $idx, 'Jumlah', $row),
+                    'Bulan' => self::getCell($sheet, $idx, 'Bulan', $row),
+                    'Tahun' => self::getCell($sheet, $idx, 'Tahun', $row),
+                    'SaldoKasSekarang' => self::getCell($sheet, $idx, 'SaldoKasSekarang', $row),
                 ];
 
                 // Per-row validations
@@ -68,17 +78,24 @@ class KeuanganImportController extends Controller
                     }
                 }
 
+                // JenisTransaksi validation
+                $jenis = trim((string) ($record['JenisTransaksi'] ?? ''));
+                $allowedJenis = ['Pemasukan', 'Pengeluaran'];
+                if ($jenis !== '' && !in_array($jenis, $allowedJenis, true)) {
+                    $rowErrors[] = "Baris {$row}: JenisTransaksi harus 'Pemasukan' atau 'Pengeluaran'.";
+                }
+
+                // Sumber validation
+                $sumber = trim((string) ($record['Sumber'] ?? ''));
+                $allowedSumber = ['Kas', 'Iuran'];
+                if ($sumber !== '' && !in_array($sumber, $allowedSumber, true)) {
+                    $rowErrors[] = "Baris {$row}: Sumber harus 'Kas' atau 'Iuran'.";
+                }
+
                 // Tanggal validation (YYYY-MM-DD)
                 $date = (string) ($record['Tanggal'] ?? '');
                 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
                     $rowErrors[] = "Baris {$row}: Tanggal harus format YYYY-MM-DD.";
-                }
-
-                // Kategori validation (Pemasukan | Pengeluaran)
-                $kategori = trim((string) ($record['Kategori'] ?? ''));
-                $allowed = ['Pemasukan', 'Pengeluaran'];
-                if ($kategori !== '' && !in_array($kategori, $allowed, true)) {
-                    $rowErrors[] = "Baris {$row}: Kategori harus 'Pemasukan' atau 'Pengeluaran'.";
                 }
 
                 // Jumlah numeric > 0
@@ -87,8 +104,48 @@ class KeuanganImportController extends Controller
                 if ($jumlah === null || $jumlah <= 0) {
                     $rowErrors[] = "Baris {$row}: Jumlah harus angka > 0.";
                 } else {
-                    // normalize to number
                     $record['Jumlah'] = $jumlah;
+                }
+
+                // Bulan 1-12 integer
+                $bulanRaw = (string) ($record['Bulan'] ?? '');
+                $bulan = ctype_digit($bulanRaw) ? (int) $bulanRaw : null;
+                if ($bulan === null || $bulan < 1 || $bulan > 12) {
+                    $rowErrors[] = "Baris {$row}: Bulan harus 1-12.";
+                } else {
+                    $record['Bulan'] = $bulan;
+                }
+
+                // Tahun 4-digit
+                $tahunRaw = (string) ($record['Tahun'] ?? '');
+                $tahun = ctype_digit($tahunRaw) && strlen($tahunRaw) === 4 ? (int) $tahunRaw : null;
+                if ($tahun === null) {
+                    $rowErrors[] = "Baris {$row}: Tahun harus 4 digit (YYYY).";
+                } else {
+                    $record['Tahun'] = $tahun;
+                }
+
+                // SaldoKasSekarang numeric
+                $saldoRaw = (string) ($record['SaldoKasSekarang'] ?? '');
+                $saldo = is_numeric($saldoRaw) ? (float) $saldoRaw : null;
+                if ($saldo === null) {
+                    $rowErrors[] = "Baris {$row}: SaldoKasSekarang harus angka.";
+                } else {
+                    $record['SaldoKasSekarang'] = $saldo;
+                }
+
+                // Consistency checks across rows (bulan/tahun/saldo fixed per batch)
+                if ($bulanRef === null) { $bulanRef = $record['Bulan']; }
+                if ($tahunRef === null) { $tahunRef = $record['Tahun']; }
+                if ($saldoRef === null) { $saldoRef = $record['SaldoKasSekarang']; }
+                if ($bulanRef !== null && $record['Bulan'] !== $bulanRef) {
+                    $rowErrors[] = "Baris {$row}: Bulan harus sama untuk semua baris (".$bulanRef.").";
+                }
+                if ($tahunRef !== null && $record['Tahun'] !== $tahunRef) {
+                    $rowErrors[] = "Baris {$row}: Tahun harus sama untuk semua baris (".$tahunRef.").";
+                }
+                if ($saldoRef !== null && $record['SaldoKasSekarang'] !== $saldoRef) {
+                    $rowErrors[] = "Baris {$row}: SaldoKasSekarang harus sama untuk semua baris (".$saldoRef.").";
                 }
 
                 if (count($rowErrors)) {

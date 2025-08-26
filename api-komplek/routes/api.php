@@ -58,12 +58,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::get('/komplek/{id}', [KomplekController::class, 'show']);
 Route::get('/komplek/check-availability', [KomplekController::class, 'checkAvailability']);
 Route::get('/komplek/check', [KomplekController::class, 'checkAvailability']);
-Route::middleware('auth:sanctum')->post('/komplek', [KomplekController::class, 'store']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/komplek', [KomplekController::class, 'store']);
+    Route::put('/komplek/{id}', [KomplekController::class, 'update']);
+    Route::patch('/komplek/{id}', [KomplekController::class, 'update']);
+});
 
 // Komplek: Templates (download as XLSX)
 Route::get('/komplek/{id}/templates/warga', [TemplateController::class, 'downloadWarga']);
 Route::get('/komplek/{id}/templates/keuangan', [TemplateController::class, 'downloadKeuangan']);
+// Id-less template routes to allow download before Komplek exists
+Route::get('/templates/warga', [TemplateController::class, 'downloadWarga']);
+Route::get('/templates/keuangan', [TemplateController::class, 'downloadKeuangan']);
 
 // Komplek: Imports (Excel uploads)
 Route::post('/komplek/{id}/import/warga', [WargaImportController::class, 'upload']);
 Route::post('/komplek/{id}/import/keuangan', [KeuanganImportController::class, 'upload']);
+// Preview import routes (no Komplek ID required) — reuse same validators
+Route::post('/import/warga/preview', [WargaImportController::class, 'upload'])->defaults('id', 0);
+Route::post('/import/keuangan/preview', [KeuanganImportController::class, 'upload'])->defaults('id', 0);

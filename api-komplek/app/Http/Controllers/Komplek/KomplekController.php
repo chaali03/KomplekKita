@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Komplek;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Komplek\StoreKomplekRequest;
+use App\Http\Requests\Komplek\UpdateKomplekRequest;
 use App\Models\Komplek;
 use Illuminate\Http\Request;
 
@@ -23,6 +24,18 @@ class KomplekController extends Controller
     {
         $komplek = Komplek::findOrFail($id);
         return response()->json($komplek);
+    }
+
+    public function update(UpdateKomplekRequest $request, $id)
+    {
+        $komplek = Komplek::findOrFail($id);
+        $data = $request->validated();
+        $komplek->fill($data);
+        $komplek->save();
+        return response()->json([
+            'message' => 'Komplek updated',
+            'data' => $komplek,
+        ]);
     }
 
     public function checkAvailability(Request $request)
