@@ -7,6 +7,12 @@ import Footer from '../components/sections/Footer.astro';
     <section class="register-page">
         <!-- Background elements -->
         <div class="register-bg" aria-hidden="true">
+            <!-- Animated waves -->
+            <div class="waves-container">
+                <div class="wave register-wave-1"></div>
+                <div class="wave register-wave-2"></div>
+                <div class="wave register-wave-3"></div>
+            </div>
 
             <!-- Geometric shapes -->
             <div class="shapes">
@@ -59,7 +65,10 @@ import Footer from '../components/sections/Footer.astro';
                 <div class="register-left" data-aos="fade-right" data-aos-duration="1000">
                     <div class="register-form-container">
                         <div class="register-header">
-                            <!-- logo removed -->
+                            <a href="/" class="logo-link">
+                                <img src="/logo.svg" alt="KomplekKita Logo" class="logo" />
+                                <span class="logo-text">KomplekKita</span>
+                            </a>
                             <h1 class="form-title">Buat Akun Baru</h1>
                             <p class="form-subtitle">Bergabunglah dengan komunitas KomplekKita dan nikmati semua fitur kami</p>
                         </div>
@@ -134,6 +143,7 @@ import Footer from '../components/sections/Footer.astro';
                                 <span class="button-text">Daftar Sekarang</span>
                                 <i class="fa-solid fa-user-plus"></i>
                             </button>
+
 
                             <div class="login-link">
                                 <p>Sudah punya akun? <a href="/login">Masuk sekarang</a></p>
@@ -796,6 +806,66 @@ import Footer from '../components/sections/Footer.astro';
         line-height: 1.5;
     }
 
+    /* Enhanced Waves Animation */
+    .waves-container {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        filter: drop-shadow(0 -5px 10px rgba(74, 108, 247, 0.2));
+    }
+
+    .wave {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 200%;
+        height: 120px;
+        background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="%234a6cf7"/></svg>') repeat-x;
+        background-size: 1200px 120px;
+        animation: wave 15s cubic-bezier(0.36, 0.45, 0.63, 0.53) infinite;
+    }
+
+    .register-wave-1 {
+        opacity: 0.4;
+        animation-duration: 18s;
+        bottom: 0;
+        background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".4" fill="%234a6cf7"/></svg>');
+        animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .register-wave-2 {
+        opacity: 0.3;
+        animation-duration: 12s;
+        animation-delay: -3s;
+        bottom: 15px;
+        background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".3" fill="%238b5cf6"/></svg>');
+        animation-timing-function: cubic-bezier(0.17, 0.67, 0.83, 0.67);
+    }
+
+    .register-wave-3 {
+        opacity: 0.2;
+        animation-duration: 9s;
+        animation-delay: -6s;
+        bottom: 30px;
+        background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".2" fill="%23f472b6"/></svg>');
+        animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    }
+
+    @keyframes wave {
+        0% {
+            transform: translateX(0) scaleY(1);
+        }
+        50% {
+            transform: translateX(-25%) scaleY(1.1);
+        }
+        100% {
+            transform: translateX(-50%) scaleY(1);
+        }
+    }
+
     /* Shapes Animation */
     .shapes {
         position: absolute;
@@ -1449,32 +1519,25 @@ import Footer from '../components/sections/Footer.astro';
 <script>
     // Initialize AOS Animation Library
     document.addEventListener('DOMContentLoaded', function() {
-        // Guarded AOS init
-        if (typeof (window as any).AOS !== 'undefined') {
-            (window as any).AOS.init({
-                duration: 1000,
-                once: true
-            });
-        }
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
 
         // Initialize Lottie Animation
-        const lottieLib = (window as any).lottie;
-        const lottieContainer = document.getElementById('lottie-register');
-        if (lottieLib && lottieContainer) {
-            lottieLib.loadAnimation({
-                container: lottieContainer,
-                renderer: 'svg',
-                loop: true,
-                autoplay: true,
-                path: '/animations/icon-morph.json'
-            });
-        }
+        const registerAnimation = lottie.loadAnimation({
+            container: document.getElementById('lottie-register'),
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: '/animations/icon-morph.json'
+        });
 
         // Toggle password visibility (eye open = masked, eye slash = visible)
-        const togglePasswordButtons = document.querySelectorAll<HTMLElement>('.toggle-password');
+        const togglePasswordButtons = document.querySelectorAll('.toggle-password');
         togglePasswordButtons.forEach((button) => {
             const container = button.closest('.input-container');
-            const input = container ? (container.querySelector('input.form-input') as HTMLInputElement | null) : null;
+            const input = container ? container.querySelector('input.form-input') : null;
             if (!input) return;
 
             // Initial state
@@ -1501,7 +1564,7 @@ import Footer from '../components/sections/Footer.astro';
             };
 
             button.addEventListener('click', toggle);
-            button.addEventListener('keydown', (e: KeyboardEvent) => {
+            button.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     toggle();
@@ -1510,12 +1573,12 @@ import Footer from '../components/sections/Footer.astro';
         });
 
         // Password strength meter (robust and reactive)
-        const passwordInput = document.getElementById('password') as HTMLInputElement | null;
-        const strengthProgress = document.querySelector('.strength-progress') as HTMLElement | null;
-        const strengthText = document.querySelector('.strength-text') as HTMLElement | null;
-        const strengthBar = document.querySelector('.strength-bar') as HTMLElement | null;
+        const passwordInput = document.getElementById('password');
+        const strengthProgress = document.querySelector('.strength-progress');
+        const strengthText = document.querySelector('.strength-text');
+        const strengthBar = document.querySelector('.strength-bar');
 
-        const calcStrength = (password: string): number => {
+        const calcStrength = (password) => {
             let score = 0;
             if (password.length >= 8) score += 1;
             if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
@@ -1524,18 +1587,17 @@ import Footer from '../components/sections/Footer.astro';
             return score;
         };
 
-        const updateStrengthUI = (score: number) => {
-            const map: Record<number, { color: string; label: string }> = {
+        const updateStrengthUI = (score) => {
+            const map = {
                 0: { color: '#ff6b6b', label: 'Lemah' },
                 1: { color: '#ff6b6b', label: 'Lemah' },
                 2: { color: '#ffbb33', label: 'Sedang' },
                 3: { color: '#00c851', label: 'Kuat' },
                 4: { color: '#007e33', label: 'Sangat Kuat' },
             };
-            const clamped = Math.max(0, Math.min(4, score));
-            const width = (clamped / 4) * 100;
-            const { color, label } = map[clamped];
-            if (strengthProgress instanceof HTMLElement) {
+            const width = (score / 4) * 100;
+            const { color, label } = map[score];
+            if (strengthProgress) {
                 strengthProgress.style.width = `${width}%`;
                 strengthProgress.style.background = color;
                 strengthProgress.setAttribute('aria-valuenow', String(width));
@@ -1551,20 +1613,19 @@ import Footer from '../components/sections/Footer.astro';
             strengthProgress.setAttribute('aria-valuemax', '100');
             updateStrengthUI(0);
             // ensure bar visible baseline
-            if (strengthBar instanceof HTMLElement) strengthBar.style.opacity = '1';
-            passwordInput.addEventListener('input', (e: Event) => {
-                const target = e.target as HTMLInputElement;
-                const score = calcStrength(target.value || '');
+            if (strengthBar) strengthBar.style.opacity = '1';
+            passwordInput.addEventListener('input', function() {
+                const score = calcStrength(this.value);
                 updateStrengthUI(score);
             });
         }
 
         // Form submission animation
-        const registerForm = document.querySelector('.register-form') as HTMLFormElement | null;
-        const registerButton = document.querySelector('.register-button') as HTMLButtonElement | null;
+        const registerForm = document.querySelector('.register-form');
+        const registerButton = document.querySelector('.register-button');
 
         // Disable register button until terms are accepted
-        const termsCheckbox = document.getElementById('terms') as HTMLInputElement | null;
+        const termsCheckbox = document.getElementById('terms');
         if (termsCheckbox && registerButton) {
             const syncRegisterButton = () => {
                 registerButton.disabled = !termsCheckbox.checked;
@@ -1574,7 +1635,7 @@ import Footer from '../components/sections/Footer.astro';
         }
 
         if (registerForm && registerButton) {
-            registerForm.addEventListener('submit', function(e: Event) {
+            registerForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
                 // Prevent submit if disabled for any reason
@@ -1590,39 +1651,36 @@ import Footer from '../components/sections/Footer.astro';
                     registerButton.classList.remove('loading');
                     registerButton.innerHTML = '<span class="button-text">Daftar Sekarang</span><i class="fa-solid fa-user-plus"></i>';
                     
-                    // Lanjutkan ke registrasi komplek
-                    window.location.href = '/register-komplek';
+                    // Redirect or show success message
+                    // window.location.href = '/dashboard';
                 }, 2000);
             });
         }
 
-        // GSAP Animations (guarded)
-        if (typeof (window as any).gsap !== 'undefined') {
-            const gs = (window as any).gsap;
-            gs.from('.register-form-container', {
-                y: 50,
-                opacity: 0,
-                duration: 1,
-                ease: 'power3.out'
-            });
+        // GSAP Animations
+        gsap.from('.register-form-container', {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out'
+        });
 
-            gs.from('.form-group', {
-                y: 20,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.2,
-                ease: 'power3.out',
-                delay: 0.5
-            });
+        gsap.from('.form-group', {
+            y: 20,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: 'power3.out',
+            delay: 0.5
+        });
 
-            gs.from('.feature-item', {
-                x: 50,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.2,
-                ease: 'power3.out',
-                delay: 1
-            });
-        }
+        gsap.from('.feature-item', {
+            x: 50,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: 'power3.out',
+            delay: 1
+        });
     });
 </script>
