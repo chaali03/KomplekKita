@@ -256,6 +256,21 @@ import Footer from '../components/sections/Footer.astro';
                     </div>
                   </div>
                   <div class="form-group">
+                    <label for="ketuaPhone" class="form-label">No. HP Ketua RT (opsional)</label>
+                    <div class="input-container">
+                      <i class="fa-solid fa-phone input-icon"></i>
+                      <input id="ketuaPhone" name="ketuaPhone" class="form-input" type="text" inputmode="tel" placeholder="Contoh: 0812 3456 7890 atau +62 812-3456-7890" />
+                      <div class="input-highlight"></div>
+                    </div>
+                    <div class="wa-inline">
+                      <a id="ketuaWaLink" class="wa-link" href="#" target="_blank" rel="noopener" style="display:none;">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>Chat WhatsApp</span>
+                      </a>
+                      <small class="wa-help">Tautan WhatsApp muncul otomatis jika nomor diisi</small>
+                    </div>
+                  </div>
+                  <div class="form-group">
                     <label for="fotoKetuaRT" class="form-label">Foto Ketua RT</label>
                     <div class="input-container file-input">
                       <i class="fa-solid fa-image input-icon"></i>
@@ -285,6 +300,21 @@ import Footer from '../components/sections/Footer.astro';
                       <i class="fa-solid fa-user input-icon"></i>
                       <input id="namaBendahara" name="namaBendahara" class="form-input" type="text" placeholder="Nama Bendahara" required />
                       <div class="input-highlight"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="bendaharaPhone" class="form-label">No. HP Bendahara (opsional)</label>
+                    <div class="input-container">
+                      <i class="fa-solid fa-phone input-icon"></i>
+                      <input id="bendaharaPhone" name="bendaharaPhone" class="form-input" type="text" inputmode="tel" placeholder="Contoh: 0812 9999 8888" />
+                      <div class="input-highlight"></div>
+                    </div>
+                    <div class="wa-inline">
+                      <a id="bendaharaWaLink" class="wa-link" href="#" target="_blank" rel="noopener" style="display:none;">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>Chat WhatsApp</span>
+                      </a>
+                      <small class="wa-help">Tautan WhatsApp muncul otomatis jika nomor diisi</small>
                     </div>
                   </div>
                   <div class="form-group">
@@ -1302,6 +1332,28 @@ document.addEventListener('DOMContentLoaded', function () {
           showToast('Mohon lengkapi nama pengurus', 'error');
           return false;
         }
+
+        // Optional phone validations
+        const ketuaP = byId('ketuaPhone')?.value?.trim();
+        const bendP = byId('bendaharaPhone')?.value?.trim();
+        if (ketuaP && !isValidPhone(ketuaP)) {
+          showToast('Format nomor HP Ketua RT tidak valid', 'error');
+          const el = byId('ketuaPhone');
+          el && el.focus();
+          return false;
+        }
+        if (bendP && !isValidPhone(bendP)) {
+          showToast('Format nomor HP Bendahara tidak valid', 'error');
+          const el = byId('bendaharaPhone');
+          el && el.focus();
+          return false;
+        }
+        if (ketuaP && bendP && normalizePhone(ketuaP) === normalizePhone(bendP)) {
+          showToast('Nomor HP Ketua RT dan Bendahara tidak boleh sama', 'error');
+          const el = byId('bendaharaPhone');
+          el && el.focus();
+          return false;
+        }
         break;
       case 3: // Warga step
         if (!wargaDataValid) {
@@ -1336,7 +1388,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (index > 0) {
         navContent.push(`
           <button type="button" class="nav-button secondary" data-action="prev">
-            <i class="fas fa-chevron-left"></i>
+            <i class="fa-solid fa-chevron-left"></i>
             <span>Sebelumnya</span>
           </button>
         `);
@@ -1347,7 +1399,7 @@ document.addEventListener('DOMContentLoaded', function () {
         navContent.push(`
           <button type="button" class="nav-button primary" data-action="next">
             <span>Selanjutnya</span>
-            <i class="fas fa-chevron-right"></i>
+            <i class="fa-solid fa-chevron-right"></i>
           </button>
         `);
       }
@@ -1894,6 +1946,55 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  // Phone helpers and live WhatsApp link handling
+  function normalizePhone(raw) {
+    if (!raw) return '';
+    let s = String(raw).trim();
+    // keep leading + if exists for detection, strip other non-digits
+    const hasPlus = s.startsWith('+');
+    s = s.replace(/[^\d+]/g, '');
+    if (hasPlus && s.startsWith('+')) s = s.slice(1);
+    // now s is digits, possibly starting with country code or 0
+    if (s.startsWith('0')) s = '62' + s.slice(1);
+    return s;
+  }
+
+  function isValidPhone(raw) {
+    if (!raw) return false;
+    const digits = normalizePhone(raw);
+    // basic length check for international numbers without +
+    return /^\d{9,15}$/.test(digits);
+  }
+
+  function updatePhoneLink(inputId, linkId) {
+    const input = byId(inputId);
+    const link = byId(linkId);
+    if (!input || !link) return;
+    const val = input.value;
+    const normalized = normalizePhone(val);
+    if (isValidPhone(val)) {
+      link.href = `https://wa.me/${normalized}`;
+      link.style.display = 'inline-flex';
+    } else {
+      link.removeAttribute('href');
+      link.style.display = 'none';
+    }
+  }
+
+  function setupPhoneInputs() {
+    const ketua = byId('ketuaPhone');
+    const bend = byId('bendaharaPhone');
+    if (ketua) {
+      ketua.addEventListener('input', () => updatePhoneLink('ketuaPhone', 'ketuaWaLink'));
+      // Initialize on load
+      updatePhoneLink('ketuaPhone', 'ketuaWaLink');
+    }
+    if (bend) {
+      bend.addEventListener('input', () => updatePhoneLink('bendaharaPhone', 'bendaharaWaLink'));
+      updatePhoneLink('bendaharaPhone', 'bendaharaWaLink');
+    }
+  }
+
   function saveDraft() {
     const draftData = {
       namaKomplek: byId('namaKomplek')?.value || '',
@@ -1904,6 +2005,8 @@ document.addEventListener('DOMContentLoaded', function () {
       lngKomplek: byId('lngKomplek')?.value || '',
       namaKetuaRT: byId('namaKetuaRT')?.value || '',
       namaBendahara: byId('namaBendahara')?.value || '',
+      ketuaPhone: byId('ketuaPhone')?.value || '',
+      bendaharaPhone: byId('bendaharaPhone')?.value || '',
       timestamp: new Date().toISOString()
     };
 
@@ -1926,6 +2029,10 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         }
       });
+
+      // refresh WA links if phones exist
+      updatePhoneLink('ketuaPhone', 'ketuaWaLink');
+      updatePhoneLink('bendaharaPhone', 'bendaharaWaLink');
 
       if (data.latKomplek && data.lngKomplek && map) {
         setTimeout(() => {
@@ -1987,6 +2094,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Initialize everything
+  setupPhoneInputs();
   function initialize() {
     createProgressBar();
     attachNavigation();
@@ -3405,7 +3513,7 @@ body.loaded {
 }
 
 /* Nav buttons (Sebelumnya/Lanjutkan) */
-.step-navigation {
+:global(.step-navigation) {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -3413,11 +3521,11 @@ body.loaded {
   margin-top: 1.5rem;
 }
 
-.nav-button {
+:global(.step-navigation .nav-button) {
   padding: 0.875rem 1.25rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  background: #fff;
+  background: #ffffff;
   color: var(--text-primary);
   font-weight: 700;
   display: inline-flex;
@@ -3425,22 +3533,46 @@ body.loaded {
   gap: 0.5rem;
   box-shadow: var(--shadow-sm);
   transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
 }
 
-.nav-button:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
-.nav-button:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
-.nav-button:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
+:global(.step-navigation .nav-button:hover) { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+:global(.step-navigation .nav-button:active) { transform: translateY(0); box-shadow: var(--shadow-sm); }
 
-.nav-button.primary {
-  background: var(--primary-gradient);
-  color: #fff;
-  border-color: transparent;
-  box-shadow: 0 6px 18px rgba(102,126,234,.28);
+/* Colored variants for navigation */
+:global(.step-navigation .nav-button.primary) {
+  background: linear-gradient(180deg, #6366f1, #4f46e5);
+  color: #ffffff;
+  border-color: #4f46e5;
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.32);
 }
 
-.nav-button.secondary {
-  background: linear-gradient(180deg, #ffffff, #f6f7fb);
+:global(.step-navigation .nav-button.primary:hover) { filter: brightness(1.03); }
+
+:global(.step-navigation .nav-button.secondary) {
+  background: #eef2ff; /* indigo-50 */
+  color: #3730a3;      /* indigo-800 */
+  border-color: #c7d2fe; /* indigo-200 */
 }
+
+:global(.step-navigation .nav-button.secondary:hover) { background: #e0e7ff; }
+
+:global(.step-navigation .nav-button:focus) {
+  outline: 2px solid #a5b4fc; /* indigo-300 */
+  outline-offset: 2px;
+}
+
+:global(.step-navigation .nav-button:disabled),
+:global(.step-navigation .nav-button[disabled]) {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(20%);
+}
+:global(.step-navigation .nav-button:disabled) { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* old generic nav-button variants removed to prevent specificity conflicts */
 
 .button-shine {
   position: absolute;

@@ -142,151 +142,175 @@ class TemplateController extends Controller
 
     public function downloadKeuangan()
     {
-        $headers = ['#', 'JenisTransaksi', 'Sumber', 'Tanggal', 'Keterangan', 'Jumlah', 'Bulan', 'Tahun', 'SaldoKasSekarang'];
-        // Blank template (no example rows)
+        // Structured multi-sheet template: Pemasukan, Pengeluaran, Kas Terkini, Ringkasan Bulanan
         try {
             if (!class_exists(\PhpOffice\PhpSpreadsheet\Spreadsheet::class)) {
                 throw new \RuntimeException('PhpSpreadsheet not installed');
             }
 
             $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
-            $sheet->setTitle('Data Keuangan');
 
-            // Set headers
-            $col = 'A';
-            foreach ($headers as $h) {
-                $sheet->setCellValue($col.'1', $h);
-                $col++;
-            }
+            // Helper to style header range
+            $styleHeader = function($sheet, string $range, string $startColor, string $endColor, string $tabColor) {
+                $sheet->getStyle($range)->getFont()->setBold(true);
+                $sheet->getStyle($range)->getFill()->setFillType(Fill::FILL_GRADIENT_LINEAR)
+                    ->getStartColor()->setARGB($startColor);
+                $sheet->getStyle($range)->getFill()->getEndColor()->setARGB($endColor);
+                $sheet->getStyle($range)->getFont()->getColor()->setRGB('FFFFFF');
+                $sheet->getStyle($range)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle($range)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('E5E7EB');
+                $sheet->getTabColor()->setRGB($tabColor);
+            };
 
-            // Header style (Keuangan: green gradient)
-            $headerRange = 'A1:I1';
-            $sheet->getStyle($headerRange)->getFont()->setBold(true);
-            // Gradient header fill and white text
-            $sheet->getStyle($headerRange)->getFill()->setFillType(Fill::FILL_GRADIENT_LINEAR)
-                ->getStartColor()->setARGB('FF059669');
-            $sheet->getStyle($headerRange)->getFill()->getEndColor()->setARGB('FF10B981');
-            $sheet->getStyle($headerRange)->getFont()->getColor()->setRGB('FFFFFF');
-            $sheet->getStyle($headerRange)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle($headerRange)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('C7D2FE');
-            // Tab color for Keuangan sheet
-            $sheet->getTabColor()->setRGB('10B981');
-
-            // Column widths
-            $widths = [6, 18, 12, 16, 32, 16, 10, 10, 20];
-            foreach (range('A', 'I') as $i => $c) {
-                $sheet->getColumnDimension($c)->setWidth($widths[$i]);
-            }
-
-            // Leave rows empty; styled header with grid-ready area
-            $rowIdx = 2;
-            // Freeze header row
-            $sheet->freezePane('A2');
-            // Limit painted area to first 500 rows for performance
+            // Sheet 1: Pemasukan
+            $in = $spreadsheet->getActiveSheet();
+            $in->setTitle('Pemasukan');
+            $inHeaders = ['#','Tanggal','Keterangan','Kategori','Sumber','Jumlah','Bulan','Tahun'];
+            $in->fromArray([$inHeaders], null, 'A1');
+            $styleHeader($in, 'A1:H1', 'FF059669', 'FF10B981', '10B981');
+            $inWidths = [6,16,36,18,14,16,10,10];
+            foreach (range('A','H') as $i => $c) { $in->getColumnDimension($c)->setWidth($inWidths[$i]); }
+            $in->freezePane('A2');
             $maxRows = 501; // header + 500 rows
-            // Auto-numbering in '#' column
-            for ($r = 2; $r <= $maxRows; $r++) {
-                $sheet->setCellValue('A'.$r, '=ROW()-1');
-            }
-            $sheet->getStyle('A2:A'.$maxRows)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-            // Set validations: JenisTransaksi (B) and Sumber (C)
-            $hasDV = class_exists(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::class);
-            if ($hasDV) {
+            for ($r = 2; $r <= $maxRows; $r++) { $in->setCellValue('A'.$r, '=ROW()-1'); }
+            $in->getStyle('A2:A'.$maxRows)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $in->getStyle('B2:B'.$maxRows)->getNumberFormat()->setFormatCode('yyyy-mm-dd');
+            $in->getStyle('F2:F'.$maxRows)->getNumberFormat()->setFormatCode('#,##0');
+            $in->getStyle('G2:H'.$maxRows)->getNumberFormat()->setFormatCode('0');
+            $in->getStyle('A1:H'.$maxRows)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('E5E7EB');
+            // Data validation for Sumber
+            if (class_exists(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::class)) {
                 for ($r = 2; $r <= $maxRows; $r++) {
-                    $dv1 = $sheet->getCell('B'.$r)->getDataValidation();
-                    $dv1->setType(DataValidation::TYPE_LIST)
+                    $dv = $in->getCell('E'.$r)->getDataValidation();
+                    $dv->setType(DataValidation::TYPE_LIST)
                         ->setErrorStyle(DataValidation::STYLE_STOP)
                         ->setAllowBlank(false)
-                        ->setShowInputMessage(true)
-                        ->setShowErrorMessage(true)
                         ->setShowDropDown(true)
-                        ->setErrorTitle('Input salah')
-                        ->setError('Pilih salah satu dari daftar')
-                        ->setPromptTitle('Jenis Transaksi')
-                        ->setPrompt('Pilih: Pemasukan atau Pengeluaran')
-                        ->setFormula1('"Pemasukan,Pengeluaran"');
-
-                    $dv2 = $sheet->getCell('C'.$r)->getDataValidation();
-                    $dv2->setType(DataValidation::TYPE_LIST)
-                        ->setErrorStyle(DataValidation::STYLE_STOP)
-                        ->setAllowBlank(false)
-                        ->setShowInputMessage(true)
-                        ->setShowErrorMessage(true)
-                        ->setShowDropDown(true)
-                        ->setErrorTitle('Input salah')
-                        ->setError('Pilih salah satu dari daftar')
                         ->setPromptTitle('Sumber')
                         ->setPrompt('Pilih: Kas atau Iuran')
                         ->setFormula1('"Kas,Iuran"');
                 }
             }
 
-            // Set date/number formats for input area (first 500 rows)
-            $sheet->getStyle('D2:D'.$maxRows)->getNumberFormat()->setFormatCode('yyyy-mm-dd');
-            $sheet->getStyle('F2:F'.$maxRows)->getNumberFormat()->setFormatCode('#,##0');
-            $sheet->getStyle('G2:H'.$maxRows)->getNumberFormat()->setFormatCode('0');
-            $sheet->getStyle('I2:I'.$maxRows)->getNumberFormat()->setFormatCode('#,##0');
+            // Sheet 2: Pengeluaran
+            $out = $spreadsheet->createSheet();
+            $out->setTitle('Pengeluaran');
+            $outHeaders = ['#','Tanggal','Keterangan','Kategori','Sumber','Jumlah','Bulan','Tahun'];
+            $out->fromArray([$outHeaders], null, 'A1');
+            $styleHeader($out, 'A1:H1', 'FFB91C1C', 'FFEF4444', 'EF4444');
+            foreach (range('A','H') as $i => $c) { $out->getColumnDimension($c)->setWidth($inWidths[$i]); }
+            $out->freezePane('A2');
+            for ($r = 2; $r <= $maxRows; $r++) { $out->setCellValue('A'.$r, '=ROW()-1'); }
+            $out->getStyle('A2:A'.$maxRows)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $out->getStyle('B2:B'.$maxRows)->getNumberFormat()->setFormatCode('yyyy-mm-dd');
+            $out->getStyle('F2:F'.$maxRows)->getNumberFormat()->setFormatCode('#,##0');
+            $out->getStyle('G2:H'.$maxRows)->getNumberFormat()->setFormatCode('0');
+            $out->getStyle('A1:H'.$maxRows)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('E5E7EB');
+            if (class_exists(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::class)) {
+                for ($r = 2; $r <= $maxRows; $r++) {
+                    $dv = $out->getCell('E'.$r)->getDataValidation();
+                    $dv->setType(DataValidation::TYPE_LIST)
+                        ->setErrorStyle(DataValidation::STYLE_STOP)
+                        ->setAllowBlank(false)
+                        ->setShowDropDown(true)
+                        ->setPromptTitle('Sumber')
+                        ->setPrompt('Pilih: Kas atau Iuran')
+                        ->setFormula1('"Kas,Iuran"');
+                }
+            }
 
-            // Clearer borders for first 500 rows (including header) and autofilter on header
-            $dataRange = 'A1:I'.$maxRows;
-            $sheet->getStyle($dataRange)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('E5E7EB');
-            $sheet->setAutoFilter('A1:I1');
+            // Sheet 3: Kas Terkini
+            $kas = $spreadsheet->createSheet();
+            $kas->setTitle('Kas Terkini');
+            $kasHeaders = ['Bulan','Tahun','TanggalUpdate','SaldoKas','Catatan'];
+            $kas->fromArray([$kasHeaders], null, 'A1');
+            $styleHeader($kas, 'A1:E1', 'FF0EA5E9', 'FF38BDF8', '0EA5E9');
+            $kasWidths = [10,10,16,18,40];
+            foreach (range('A','E') as $i => $c) { $kas->getColumnDimension($c)->setWidth($kasWidths[$i]); }
+            $kas->freezePane('A2');
+            $kas->getStyle('C2:C200')->getNumberFormat()->setFormatCode('yyyy-mm-dd');
+            $kas->getStyle('D2:D200')->getNumberFormat()->setFormatCode('#,##0');
+            $kas->getStyle('A1:E200')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('E5E7EB');
+            if (class_exists(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::class)) {
+                for ($r = 2; $r <= 200; $r++) {
+                    $dvB = $kas->getCell('A'.$r)->getDataValidation();
+                    $dvB->setType(DataValidation::TYPE_WHOLE)
+                        ->setOperator(DataValidation::OPERATOR_BETWEEN)
+                        ->setFormula1('1')->setFormula2('12')
+                        ->setAllowBlank(false)
+                        ->setErrorStyle(DataValidation::STYLE_STOP)
+                        ->setErrorTitle('Bulan salah')
+                        ->setError('Isi angka 1-12');
+                    $dvT = $kas->getCell('B'.$r)->getDataValidation();
+                    $dvT->setType(DataValidation::TYPE_WHOLE)
+                        ->setOperator(DataValidation::OPERATOR_BETWEEN)
+                        ->setFormula1('2000')->setFormula2('2100')
+                        ->setAllowBlank(false)
+                        ->setErrorStyle(DataValidation::STYLE_STOP)
+                        ->setErrorTitle('Tahun salah')
+                        ->setError('Isi tahun 4 digit');
+                }
+            }
+
+            // Sheet 4: Ringkasan Bulanan
+            $sum = $spreadsheet->createSheet();
+            $sum->setTitle('Ringkasan Bulanan');
+            // Tahun selector
+            $sum->setCellValue('A1', 'Tahun:');
+            $sum->setCellValue('B1', date('Y'));
+            $sum->getStyle('A1')->getFont()->setBold(true);
+            $sum->getColumnDimension('A')->setWidth(14);
+            $sum->getColumnDimension('B')->setWidth(10);
+            $sum->fromArray([
+                ['Bulan','Total Pemasukan','Total Pengeluaran','Saldo Bersih','Saldo Kas Terkini'],
+            ], null, 'A3');
+            $styleHeader($sum, 'A3:E3', 'FF111827', 'FF374151', '111827');
+            $sum->getColumnDimension('A')->setWidth(12);
+            $sum->getColumnDimension('B')->setWidth(20);
+            $sum->getColumnDimension('C')->setWidth(22);
+            $sum->getColumnDimension('D')->setWidth(18);
+            $sum->getColumnDimension('E')->setWidth(22);
+            // Fill months 1..12 and formulas using SUMIFS against sheets
+            for ($m = 1; $m <= 12; $m++) {
+                $row = 3 + $m; // rows 4..15
+                $sum->setCellValue('A'.$row, $m);
+                // Total Pemasukan by Bulan & Tahun
+                $sum->setCellValue('B'.$row, sprintf('=SUMIFS(Pemasukan!F:F,Pemasukan!G:G,A%d,Pemasukan!H:H,$B$1)', $row));
+                // Total Pengeluaran by Bulan & Tahun
+                $sum->setCellValue('C'.$row, sprintf('=SUMIFS(Pengeluaran!F:F,Pengeluaran!G:G,A%d,Pengeluaran!H:H,$B$1)', $row));
+                // Saldo Bersih
+                $sum->setCellValue('D'.$row, '=B'.$row.'-C'.$row);
+                // Saldo Kas Terkini for month (latest in Kas sheet for that month/year)
+                // Use LOOKUP with 2 to get the last matching SaldoKas in 'Kas Terkini' sheet
+                $sum->setCellValue('E'.$row, sprintf("=IFERROR(LOOKUP(2,1/('Kas Terkini'!A:A=A%d)/('Kas Terkini'!B:B=$B$1),'Kas Terkini'!D:D),\"\")", $row));
+            }
+            $sum->getStyle('B4:E15')->getNumberFormat()->setFormatCode('#,##0');
+            $sum->getStyle('A4:E15')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('E5E7EB');
 
             // Instruction sheet
-            $guide = $spreadsheet->createSheet(1);
+            $guide = $spreadsheet->createSheet();
             $guide->setTitle('Petunjuk');
-            $guide->setCellValue('A1', 'Petunjuk Pengisian Template Data Keuangan');
-            $guide->mergeCells('A1:D1');
+            $guide->setCellValue('A1', 'Petunjuk Pengisian Template Keuangan (Multi-Sheet)');
+            $guide->mergeCells('A1:E1');
             $guide->getStyle('A1')->getFont()->setBold(true)->setSize(14);
             $guide->fromArray([
-                ['Kolom', 'Wajib', 'Format', 'Catatan'],
-                ['JenisTransaksi', 'Ya', 'Pemasukan/Pengeluaran', 'Wajib pilih salah satu'],
-                ['Sumber', 'Ya', 'Kas/Iuran', 'Hanya Kas atau Iuran'],
-                ['Tanggal', 'Ya', 'yyyy-mm-dd', 'Contoh: 2025-01-01'],
-                ['Keterangan', 'Ya', 'Teks', 'Deskripsi singkat transaksi'],
-                ['Jumlah', 'Ya', 'Angka', 'Tanpa pemisah titik/koma'],
-                ['Bulan', 'Ya', '1-12', 'Semua baris harus sama'],
-                ['Tahun', 'Ya', 'YYYY', 'Semua baris harus sama'],
-                ['SaldoKasSekarang', 'Ya', 'Angka', 'Saldo kas saat ini; semua baris harus sama'],
+                ['Sheet','Kolom','Format','Catatan','Wajib'],
+                ['Pemasukan','Tanggal','yyyy-mm-dd','Tanggal transaksi','Ya'],
+                ['Pemasukan','Sumber','Kas/Iuran','Pilih dari dropdown','Ya'],
+                ['Pemasukan','Jumlah','Angka','# tanpa pemisah','Ya'],
+                ['Pengeluaran','Tanggal','yyyy-mm-dd','Tanggal transaksi','Ya'],
+                ['Pengeluaran','Sumber','Kas/Iuran','Pilih dari dropdown','Ya'],
+                ['Pengeluaran','Jumlah','Angka','# tanpa pemisah','Ya'],
+                ['Kas Terkini','Bulan/Tahun','1-12 / YYYY','Isi per periode','Ya'],
+                ['Kas Terkini','SaldoKas','Angka','Saldo kas per update','Ya'],
+                ['Ringkasan Bulanan','Tahun','Teks/Angka','Ubah sel B1 untuk tahun','-'],
             ], null, 'A3');
-            $guide->getColumnDimension('A')->setWidth(18);
-            $guide->getColumnDimension('B')->setWidth(12);
-            $guide->getColumnDimension('C')->setWidth(16);
-            $guide->getColumnDimension('D')->setWidth(60);
-            $guide->getStyle('A3:D3')->getFont()->setBold(true);
-            $guide->getStyle('A3:D11')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('E5E7EB');
+            foreach (range('A','E') as $c) { $guide->getColumnDimension($c)->setWidth(20); }
+            $guide->getStyle('A3:E3')->getFont()->setBold(true);
+            $guide->getStyle('A3:E20')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('E5E7EB');
 
-            // Vertical template sheet (kept but hidden)
-            $vertical = $spreadsheet->createSheet();
-            $vertical->setTitle('Template Vertikal');
-            $vertical->fromArray([
-                ['Field', 'Nilai'],
-                ['JenisTransaksi', 'Pemasukan/Pengeluaran'],
-                ['Sumber', 'Kas/Iuran'],
-                ['Tanggal', 'yyyy-mm-dd'],
-                ['Keterangan', ''],
-                ['Jumlah', ''],
-                ['Bulan', '1-12'],
-                ['Tahun', 'YYYY'],
-                ['SaldoKasSekarang', ''],
-            ], null, 'A1');
-            // Style vertical header and columns
-            $vertical->getStyle('A1:B1')->getFont()->setBold(true);
-            $vertical->getStyle('A1:B1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('EEF2FF');
-            $vertical->getStyle('A1:B1')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('C7D2FE');
-            $vertical->getColumnDimension('A')->setWidth(18);
-            $vertical->getColumnDimension('B')->setWidth(40);
-            // Light borders for form area
-            $vertical->getStyle('A1:B10')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_HAIR);
-            // Ensure horizontal active and vertical hidden
-            $dataSheet = $spreadsheet->getSheetByName('Data Keuangan');
-            if ($dataSheet) {
-                $dataSheet->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_VISIBLE);
-                $spreadsheet->setActiveSheetIndex($spreadsheet->getIndex($dataSheet));
-            }
-            $vertical->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
+            // Set active sheet to Pemasukan
+            $spreadsheet->setActiveSheetIndex($spreadsheet->getIndex($in));
 
             // Output
             $writer = new Xlsx($spreadsheet);
@@ -299,7 +323,8 @@ class TemplateController extends Controller
                 'Cache-Control' => 'max-age=0',
             ]);
         } catch (\Throwable $e) {
-            // Fallback to CSV template (headers only) to avoid 500
+            // Fallback to a simple CSV for Pemasukan
+            $headers = ['#','Tanggal','Keterangan','Kategori','Sumber','Jumlah','Bulan','Tahun'];
             $csv = implode(',', $headers)."\n";
             return response($csv, 200, [
                 'Content-Type' => 'text/csv; charset=UTF-8',

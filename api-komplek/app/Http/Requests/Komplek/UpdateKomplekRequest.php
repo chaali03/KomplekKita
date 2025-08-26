@@ -30,9 +30,17 @@ class UpdateKomplekRequest extends FormRequest
                 'nullable', 'string', 'max:255',
                 Rule::unique('komplek', 'ketua')->ignore($id)
             ],
+            'ketua_phone' => [
+                'nullable', 'string', 'max:20', 'regex:/^[0-9+\s()\-]+$/',
+                Rule::unique('komplek', 'ketua_phone')->ignore($id)
+            ],
             'bendahara' => [
                 'nullable', 'string', 'max:255',
                 Rule::unique('komplek', 'bendahara')->ignore($id)
+            ],
+            'bendahara_phone' => [
+                'nullable', 'string', 'max:20', 'regex:/^[0-9+\s()\-]+$/',
+                Rule::unique('komplek', 'bendahara_phone')->ignore($id)
             ],
             'banner_path' => ['nullable', 'string', 'max:255'],
             'logo_path' => ['nullable', 'string', 'max:255'],
@@ -69,6 +77,30 @@ class UpdateKomplekRequest extends FormRequest
                 }
             }
 
+            // Phone: normalize and ensure uniqueness/cross-role excluding current record
+            $norm = function ($p) { return $p !== null ? preg_replace('/[^0-9]/', '', (string) $p) : null; };
+            $ketuaPhoneNorm = isset($data['ketua_phone']) ? $norm($data['ketua_phone']) : null;
+            $bendaharaPhoneNorm = isset($data['bendahara_phone']) ? $norm($data['bendahara_phone']) : null;
+
+            if ($ketuaPhoneNorm && $bendaharaPhoneNorm && $ketuaPhoneNorm === $bendaharaPhoneNorm) {
+                $v->errors()->add('ketua_phone', 'Nomor HP Ketua RT dan Bendahara tidak boleh sama.');
+                $v->errors()->add('bendahara_phone', 'Nomor HP Ketua RT dan Bendahara tidak boleh sama.');
+            }
+            if ($ketuaPhoneNorm) {
+                $existsKetuaPhone = Komplek::where('id', '!=', $id)->where('ketua_phone', $ketuaPhoneNorm)->exists();
+                $existsAsBendaharaPhone = Komplek::where('id', '!=', $id)->where('bendahara_phone', $ketuaPhoneNorm)->exists();
+                if ($existsKetuaPhone || $existsAsBendaharaPhone) {
+                    $v->errors()->add('ketua_phone', 'Nomor HP Ketua RT sudah digunakan pada Komplek lain.');
+                }
+            }
+            if ($bendaharaPhoneNorm) {
+                $existsBendaharaPhone = Komplek::where('id', '!=', $id)->where('bendahara_phone', $bendaharaPhoneNorm)->exists();
+                $existsAsKetuaPhone = Komplek::where('id', '!=', $id)->where('ketua_phone', $bendaharaPhoneNorm)->exists();
+                if ($existsBendaharaPhone || $existsAsKetuaPhone) {
+                    $v->errors()->add('bendahara_phone', 'Nomor HP Bendahara sudah digunakan pada Komplek lain.');
+                }
+            }
+
             if (!empty($data['lat']) && !empty($data['lng'])) {
                 $lat = (float) $data['lat'];
                 $lng = (float) $data['lng'];
@@ -91,6 +123,10 @@ class UpdateKomplekRequest extends FormRequest
             'nama.unique' => 'Nama komplek sudah terdaftar, silakan gunakan nama lain.',
             'ketua.unique' => 'Nama Ketua RT sudah digunakan pada Komplek lain.',
             'bendahara.unique' => 'Nama Bendahara sudah digunakan pada Komplek lain.',
+            'ketua_phone.unique' => 'Nomor HP Ketua RT sudah digunakan pada Komplek lain.',
+            'bendahara_phone.unique' => 'Nomor HP Bendahara sudah digunakan pada Komplek lain.',
+            'ketua_phone.regex' => 'Format nomor HP Ketua RT tidak valid. Hanya angka, spasi, plus, kurung, dan tanda minus.',
+            'bendahara_phone.regex' => 'Format nomor HP Bendahara tidak valid. Hanya angka, spasi, plus, kurung, dan tanda minus.',
         ];
     }
 }
