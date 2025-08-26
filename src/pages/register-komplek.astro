@@ -1,0 +1,3888 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Footer from '../components/sections/Footer.astro';
+---
+
+<Layout>
+  <section class="register-page">
+    <!-- Enhanced Background Elements -->
+    <div class="register-bg" aria-hidden="true">
+      <div class="bg-gradient-enhanced"></div>
+      <div class="floating-elements">
+        <div class="float-element element-1"></div>
+        <div class="float-element element-2"></div>
+        <div class="float-element element-3"></div>
+        <div class="float-element element-4"></div>
+        <div class="float-element element-5"></div>
+        <div class="float-element element-6"></div>
+      </div>
+      <div class="animated-grid"></div>
+      <div class="color-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+      </div>
+    </div>
+
+    <!-- Back to Home Button -->
+    <div class="back-home-container">
+      <a href="/" class="back-home-btn" data-aos="fade-down" data-aos-delay="100">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Kembali ke Beranda</span>
+      </a>
+    </div>
+
+    <div class="container">
+      <div class="register-content">
+        <div class="register-form-container" data-aos="fade-up" data-aos-duration="1000">
+          <div class="register-header">
+            <div class="header-icon">
+              <i class="fas fa-city"></i>
+            </div>
+            <h1 class="form-title">Buat Profil Komplek Anda</h1>
+            <p class="form-subtitle">Daftarkan komplek Anda langkah demi langkah: mulai dari profil dan lokasi, lanjut ke pengurus, warga, hingga keuangan. Tenang, semua bisa disunting kembali setelah selesai.</p>
+          </div>
+
+          <!-- Stepper (Tahapan) -->
+          <nav class="stepper" aria-label="Tahapan Registrasi">
+            <div class="stepper-progress">
+              <div class="stepper-progress-bar" id="stepperProgress"></div>
+            </div>
+            <ul class="stepper-list" id="stepperList">
+              <li class="stepper-item active" data-step-target="info" aria-label="Info">
+                <div class="stepper-dot"><i class="fa-solid fa-city" aria-hidden="true"></i></div>
+              </li>
+              <li class="stepper-item" data-step-target="lokasi" aria-label="Lokasi">
+                <div class="stepper-dot"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i></div>
+              </li>
+              <li class="stepper-item" data-step-target="pengurus" aria-label="Pengurus">
+                <div class="stepper-dot"><i class="fa-solid fa-user-tie" aria-hidden="true"></i></div>
+              </li>
+              <li class="stepper-item" data-step-target="warga" aria-label="Warga">
+                <div class="stepper-dot"><i class="fa-solid fa-people-group" aria-hidden="true"></i></div>
+              </li>
+              <li class="stepper-item" data-step-target="keuangan" aria-label="Keuangan">
+                <div class="stepper-dot"><i class="fa-solid fa-wallet" aria-hidden="true"></i></div>
+              </li>
+            </ul>
+          </nav>
+
+          <form id="komplekForm" class="register-form" novalidate>
+            <!-- SECTION: Komplek Info -->
+            <div class="section-card" data-step="info">
+              <div class="section-header">
+                <div class="section-icon">
+                  <i class="fa-solid fa-city"></i>
+                </div>
+                <div class="section-text">
+                  <h2>Informasi Komplek</h2>
+                  <p>Lengkapi identitas komplek agar terlihat profesional dan meyakinkan bagi warga.</p>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="namaKomplek" class="form-label">Nama Komplek</label>
+                <div class="input-container">
+                  <i class="fa-solid fa-font input-icon"></i>
+                  <input id="namaKomplek" name="namaKomplek" class="form-input" type="text" placeholder="Contoh: Griya Harmoni Blok A" required />
+                  <div class="input-highlight"></div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="deskripsiKomplek" class="form-label">Deskripsi Komplek</label>
+                <div class="input-container textarea">
+                  <i class="fa-solid fa-align-left input-icon"></i>
+                  <textarea id="deskripsiKomplek" name="deskripsiKomplek" class="form-input" rows="3" placeholder="Deskripsi singkat fasilitas, peraturan, suasana, dll." required></textarea>
+                  <div class="input-highlight"></div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="profilKomplek" class="form-label">Profil Komplek</label>
+                <div class="input-container textarea">
+                  <i class="fa-solid fa-file-lines input-icon"></i>
+                  <textarea id="profilKomplek" name="profilKomplek" class="form-input" rows="4" placeholder="Profil lebih lengkap (sejarah, jumlah blok, jumlah warga, dsb.)" required></textarea>
+                  <div class="input-highlight"></div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="bannerKomplek" class="form-label">Banner Komplek</label>
+                  <div class="input-container file-input">
+                    <i class="fa-solid fa-image input-icon"></i>
+                    <input id="bannerKomplek" name="bannerKomplek" class="form-input" type="file" accept="image/*" />
+                    <div class="file-label">
+                      <span class="file-text">Pilih gambar banner</span>
+                      <span class="file-button">Browse</span>
+                    </div>
+                  </div>
+                  <div class="preview-wrapper">
+                    <img id="bannerPreview" alt="Preview Banner" />
+                    <div class="preview-overlay">
+                      <i class="fas fa-eye"></i>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="fotoProfilKomplek" class="form-label">Foto Profil Komplek</label>
+                  <div class="input-container file-input">
+                    <i class="fa-solid fa-image input-icon"></i>
+                    <input id="fotoProfilKomplek" name="fotoProfilKomplek" class="form-input" type="file" accept="image/*" />
+                    <div class="file-label">
+                      <span class="file-text">Pilih foto profil</span>
+                      <span class="file-button">Browse</span>
+                    </div>
+                  </div>
+                  <div class="preview-wrapper">
+                    <img id="profilPreview" alt="Preview Profil" />
+                    <div class="preview-overlay">
+                      <i class="fas fa-eye"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION: Lokasi dengan Maps Interaktif -->
+            <div class="section-card" data-step="lokasi">
+              <div class="section-header">
+                <div class="section-icon">
+                  <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <div class="section-text">
+                  <h2>Lokasi Komplek</h2>
+                  <p>Tentukan lokasi komplek dengan precision tinggi menggunakan peta interaktif.</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="alamatKomplek" class="form-label">Alamat Lengkap</label>
+                <div class="input-container">
+                  <i class="fa-solid fa-map input-icon"></i>
+                  <input id="alamatKomplek" name="alamatKomplek" class="form-input" type="text" placeholder="Contoh: Jl. Melati No. 10, Kelurahan, Kecamatan, Kota, Provinsi" />
+                  <div class="input-highlight"></div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="latKomplek" class="form-label">Latitude</label>
+                  <div class="input-container">
+                    <i class="fa-solid fa-compass input-icon"></i>
+                    <input id="latKomplek" name="latKomplek" class="form-input" type="text" placeholder="-6.200000" readonly />
+                    <div class="input-highlight"></div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="lngKomplek" class="form-label">Longitude</label>
+                  <div class="input-container">
+                    <i class="fa-solid fa-compass input-icon"></i>
+                    <input id="lngKomplek" name="lngKomplek" class="form-input" type="text" placeholder="106.816666" readonly />
+                    <div class="input-highlight"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Enhanced Interactive Map Section -->
+              <div class="map-section">
+                <div class="map-toolbar">
+                  <div class="map-tools">
+                    <button type="button" id="searchLocationBtn" class="tool-btn">
+                      <i class="fas fa-search"></i>
+                      <span>Cari Lokasi</span>
+                    </button>
+                    <button type="button" id="myLocationBtn" class="tool-btn">
+                      <i class="fas fa-crosshairs"></i>
+                      <span>Lokasi Saya</span>
+                    </button>
+                    <button type="button" id="fullscreenMapBtn" class="tool-btn">
+                      <i class="fas fa-expand"></i>
+                      <span>Perbesar</span>
+                    </button>
+                    <button type="button" id="confirmLocationInline" class="tool-btn primary">
+                      <i class="fas fa-check"></i>
+                      <span>Konfirmasi Lokasi</span>
+                    </button>
+                  </div>
+                  <div class="coordinates-display">
+                    <span class="coord-label">Koordinat:</span>
+                    <span id="displayLat">-</span>, <span id="displayLng">-</span>
+                  </div>
+                </div>
+                
+                <div class="map-container">
+                  <div id="interactiveMap" class="interactive-map"></div>
+                  <div class="map-instructions">
+                    <div class="instruction-item">
+                      <i class="fas fa-mouse-pointer"></i>
+                      <span>Klik pada peta untuk menandai lokasi komplek</span>
+                    </div>
+                    <div class="instruction-item">
+                      <i class="fas fa-hand-rock"></i>
+                      <span>Drag marker untuk menyesuaikan posisi</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION: Pengurus -->
+            <div class="section-card" data-step="pengurus">
+              <div class="section-header">
+                <div class="section-icon">
+                  <i class="fa-solid fa-users"></i>
+                </div>
+                <div class="section-text">
+                  <h2>Pengurus Komplek</h2>
+                  <p>Kenalkan pengurus inti komplek untuk transparansi dan kemudahan komunikasi.</p>
+                </div>
+              </div>
+
+              <div class="pengurus-grid">
+                <div class="pengurus-card">
+                  <div class="pengurus-header">
+                    <i class="fas fa-user-tie"></i>
+                    <h3>Ketua RT</h3>
+                  </div>
+                  <div class="form-group">
+                    <label for="namaKetuaRT" class="form-label">Nama Lengkap</label>
+                    <div class="input-container">
+                      <i class="fa-solid fa-user-tie input-icon"></i>
+                      <input id="namaKetuaRT" name="namaKetuaRT" class="form-input" type="text" placeholder="Nama Ketua RT" required />
+                      <div class="input-highlight"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="fotoKetuaRT" class="form-label">Foto Ketua RT</label>
+                    <div class="input-container file-input">
+                      <i class="fa-solid fa-image input-icon"></i>
+                      <input id="fotoKetuaRT" name="fotoKetuaRT" class="form-input" type="file" accept="image/*" />
+                      <div class="file-label">
+                        <span class="file-text">Upload foto</span>
+                        <span class="file-button">Browse</span>
+                      </div>
+                    </div>
+                    <div class="preview-wrapper circular">
+                      <img id="ketuaPreview" alt="Preview Ketua RT" />
+                      <div class="preview-overlay">
+                        <i class="fas fa-camera"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pengurus-card">
+                  <div class="pengurus-header">
+                    <i class="fas fa-wallet"></i>
+                    <h3>Bendahara</h3>
+                  </div>
+                  <div class="form-group">
+                    <label for="namaBendahara" class="form-label">Nama Lengkap</label>
+                    <div class="input-container">
+                      <i class="fa-solid fa-user input-icon"></i>
+                      <input id="namaBendahara" name="namaBendahara" class="form-input" type="text" placeholder="Nama Bendahara" required />
+                      <div class="input-highlight"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="fotoBendahara" class="form-label">Foto Bendahara</label>
+                    <div class="input-container file-input">
+                      <i class="fa-solid fa-image input-icon"></i>
+                      <input id="fotoBendahara" name="fotoBendahara" class="form-input" type="file" accept="image/*" />
+                      <div class="file-label">
+                        <span class="file-text">Upload foto</span>
+                        <span class="file-button">Browse</span>
+                      </div>
+                    </div>
+                    <div class="preview-wrapper circular">
+                      <img id="bendaharaPreview" alt="Preview Bendahara" />
+                      <div class="preview-overlay">
+                        <i class="fas fa-camera"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION: Import Data Warga -->
+            <div class="section-card" data-step="warga">
+              <div class="section-header">
+                <div class="section-icon">
+                  <i class="fa-solid fa-file-excel"></i>
+                </div>
+                <div class="section-text">
+                  <h2>Import Data Warga</h2>
+                  <p>Upload file Excel dengan format: <strong>Nama, NIK, Telepon, Alamat, Blok, NoRumah</strong></p>
+                </div>
+              </div>
+
+              <div class="import-section">
+                <div class="import-area" id="wargaDropArea">
+                  <div class="import-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                  </div>
+                  <div class="import-text">
+                    <h3>Drop file Excel di sini</h3>
+                    <p>atau klik untuk browse file</p>
+                    <input type="file" id="excelWarga" accept=".xlsx,.xls" hidden />
+                  </div>
+                  <div class="import-actions">
+                    <button type="button" class="browse-btn">
+                      <i class="fas fa-folder-open"></i>
+                      Pilih File
+                    </button>
+                    <button type="button" id="downloadTemplateWarga" class="template-btn">
+                      <i class="fas fa-download"></i>
+                      Download Template
+                    </button>
+                  </div>
+                </div>
+
+                <div class="data-preview" id="wargaPreview" style="display: none;">
+                  <div class="preview-header">
+                    <h3>Preview Data Warga</h3>
+                    <span class="data-count" id="wargaCount">0 data</span>
+                  </div>
+                  <div class="table-container">
+                    <table class="data-table modern" id="wargaTable">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Nama</th>
+                          <th>NIK</th>
+                          <th>Telepon</th>
+                          <th>Alamat</th>
+                          <th>Blok</th>
+                          <th>No Rumah</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION: Import Keuangan -->
+            <div class="section-card" data-step="keuangan">
+              <div class="section-header">
+                <div class="section-icon">
+                  <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div class="section-text">
+                  <h2>Import Data Keuangan</h2>
+                  <p>Upload file Excel dengan format: <strong>Tanggal, Keterangan, Kategori, Jumlah</strong></p>
+                </div>
+              </div>
+
+              <div class="import-section">
+                <div class="import-area" id="keuanganDropArea">
+                  <div class="import-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                  </div>
+                  <div class="import-text">
+                    <h3>Drop file Excel di sini</h3>
+                    <p>atau klik untuk browse file</p>
+                    <input type="file" id="excelKeuangan" accept=".xlsx,.xls" hidden />
+                  </div>
+                  <div class="import-actions">
+                    <button type="button" class="browse-btn">
+                      <i class="fas fa-folder-open"></i>
+                      Pilih File
+                    </button>
+                    <button type="button" id="downloadTemplateKeuangan" class="template-btn">
+                      <i class="fas fa-download"></i>
+                      Download Template
+                    </button>
+                  </div>
+                </div>
+
+                <div class="data-preview" id="keuanganPreview" style="display: none;">
+                  <div class="preview-header">
+                    <h3>Preview Data Keuangan</h3>
+                    <span class="data-count" id="keuanganCount">0 transaksi</span>
+                  </div>
+                  
+                  <div class="summary-cards">
+                    <div class="summary-card income">
+                      <div class="summary-icon">
+                        <i class="fas fa-arrow-up"></i>
+                      </div>
+                      <div class="summary-content">
+                        <span class="summary-label">Total Pemasukan</span>
+                        <span class="summary-value" id="totalPemasukan">Rp 0</span>
+                      </div>
+                    </div>
+                    
+                    <div class="summary-card expense">
+                      <div class="summary-icon">
+                        <i class="fas fa-arrow-down"></i>
+                      </div>
+                      <div class="summary-content">
+                        <span class="summary-label">Total Pengeluaran</span>
+                        <span class="summary-value" id="totalPengeluaran">Rp 0</span>
+                      </div>
+                    </div>
+                    
+                    <div class="summary-card balance">
+                      <div class="summary-icon">
+                        <i class="fas fa-balance-scale"></i>
+                      </div>
+                      <div class="summary-content">
+                        <span class="summary-label">Saldo Akhir</span>
+                        <span class="summary-value" id="saldoAkhir">Rp 0</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="table-container">
+                    <table class="data-table modern" id="keuanganTable">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Tanggal</th>
+                          <th>Keterangan</th>
+                          <th>Kategori</th>
+                          <th>Jumlah</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION: Actions -->
+            <div class="section-actions">
+              <button type="button" id="saveDraftBtn" class="action-button draft">
+                <i class="fa-regular fa-floppy-disk"></i>
+                <span>Simpan Draft</span>
+              </button>
+              <button type="submit" class="action-button primary">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Selesaikan Registrasi</span>
+                <div class="button-shine"></div>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Map Fullscreen Modal -->
+  <div class="map-modal" id="mapModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Pilih Lokasi Komplek</h3>
+        <button type="button" class="modal-close" id="closeMapModal">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="fullscreenMap" class="fullscreen-map"></div>
+        <div class="modal-coordinates">
+          <div class="coord-info">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Lat: <strong id="modalLat">-</strong>, Lng: <strong id="modalLng">-</strong></span>
+          </div>
+          <button type="button" class="confirm-location" id="confirmLocation">
+            <i class="fas fa-check"></i>
+            Konfirmasi Lokasi
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Excel Error Details -->
+  <div id="excelErrorModal" class="excel-modal-backdrop" style="display:none;">
+    <div class="excel-modal" role="dialog" aria-modal="true" aria-labelledby="excelErrorTitle">
+      <div class="excel-modal-header">
+        <h3 id="excelErrorTitle">Kesalahan Validasi Excel</h3>
+        <button type="button" class="excel-modal-close" id="excelErrorClose" aria-label="Tutup">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="excel-modal-body">
+        <p id="excelErrorSummary">File Anda belum memenuhi format yang diwajibkan. Perbaiki isu di bawah atau gunakan template resmi.</p>
+        <ul id="excelErrorList" class="excel-error-list"></ul>
+      </div>
+      <div class="excel-modal-footer">
+        <button type="button" class="template-btn" id="excelErrorDownloadBtn">
+          <i class="fas fa-download"></i>
+          Download Template
+        </button>
+        <button type="button" class="browse-btn" id="excelErrorOkBtn">
+          Mengerti
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <Footer />
+</Layout>
+
+<script>
+// @ts-nocheck
+document.addEventListener('DOMContentLoaded', function () {
+  // Enhanced selectors and utilities
+  const q = (sel) => document.querySelector(sel);
+  const qAll = (sel) => document.querySelectorAll(sel);
+  const byId = (id) => document.getElementById(id);
+
+  // Stepper logic (non-destructive: only highlights and scrolls)
+  const stepOrder = ['info', 'lokasi', 'pengurus', 'warga', 'keuangan'];
+  const stepItems = Array.from(qAll('.stepper-item'));
+  const progressEl = byId('stepperProgress');
+  const stepSections = stepOrder
+    .map(key => q(`.section-card[data-step="${key}"]`))
+    .filter(Boolean);
+
+  // assign ids to sections for scroll targets (if missing)
+  stepSections.forEach(sec => {
+    const key = sec.getAttribute('data-step');
+    if (key && !sec.id) sec.id = `step-${key}`;
+  });
+
+  function setActiveStep(key) {
+    const idx = Math.max(0, stepOrder.indexOf(key));
+    stepItems.forEach((li, i) => {
+      li.classList.toggle('active', i === idx);
+      li.classList.toggle('completed', i < idx);
+    });
+    if (progressEl) {
+      const pct = (idx / (stepOrder.length - 1)) * 100;
+      progressEl.style.width = `${pct}%`;
+    }
+  }
+
+  // Excel Error Modal helpers
+  let excelModalKind = 'warga';
+  function showExcelErrorModal(kind, errors = []) {
+    excelModalKind = kind;
+    const backdrop = byId('excelErrorModal');
+    const title = byId('excelErrorTitle');
+    const list = byId('excelErrorList');
+    const downloadBtn = byId('excelErrorDownloadBtn');
+    const summary = byId('excelErrorSummary');
+    if (!backdrop || !title || !list || !downloadBtn) return;
+
+    title.textContent = kind === 'warga' ? 'Kesalahan Validasi Data Warga' : 'Kesalahan Validasi Data Keuangan';
+    summary.textContent = 'File Anda belum memenuhi format yang diwajibkan. Perbaiki isu di bawah atau gunakan template resmi.';
+
+    list.innerHTML = '';
+    const maxItems = 20;
+    const items = (errors || []).slice(0, maxItems);
+    if (!items.length) {
+      const li = document.createElement('li');
+      li.textContent = 'Format header tidak sesuai atau data kosong.';
+      list.appendChild(li);
+    } else {
+      items.forEach(err => {
+        const li = document.createElement('li');
+        li.textContent = String(err);
+        list.appendChild(li);
+      });
+      if ((errors || []).length > maxItems) {
+        const li = document.createElement('li');
+        li.textContent = `+ ${(errors.length - maxItems)} isu lainnya...`;
+        list.appendChild(li);
+      }
+    }
+
+    downloadBtn.onclick = () => {
+      if (excelModalKind === 'warga') {
+        try { downloadWargaTemplate(); } catch (_) { showToast('Gagal menyiapkan template warga', 'error'); }
+      } else {
+        try { downloadKeuanganTemplate(); } catch (_) { showToast('Gagal menyiapkan template keuangan', 'error'); }
+      }
+    };
+
+    const closeBtn = byId('excelErrorClose');
+    const okBtn = byId('excelErrorOkBtn');
+    const close = () => { backdrop.style.display = 'none'; document.body.classList.remove('modal-open'); };
+    if (closeBtn) closeBtn.onclick = close;
+    if (okBtn) okBtn.onclick = close;
+    backdrop.addEventListener('click', (ev) => { if (ev.target === backdrop) close(); }, { once: true });
+    document.addEventListener('keydown', function onKey(ev){ if (ev.key === 'Escape') { close(); document.removeEventListener('keydown', onKey); } });
+
+    backdrop.style.display = 'flex';
+    document.body.classList.add('modal-open');
+  }
+
+  // stepper is display-only (non-clickable) per requirement
+
+  // observe which section is in view to update active step
+  if ('IntersectionObserver' in window && stepSections.length) {
+    const io = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter(e => e.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      const key = visible?.target?.getAttribute('data-step');
+      if (key) setActiveStep(key);
+    }, { rootMargin: '-30% 0px -60% 0px', threshold: [0.1, 0.25, 0.5] });
+    stepSections.forEach(sec => io.observe(sec));
+  }
+  // initial state
+  setActiveStep('info');
+
+  // Toast notification system
+  function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+      <div class="toast-content">
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+      </div>
+    `;
+    
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  // Enhanced image preview with animations
+  function bindImagePreview(inputId, imgId) {
+    const input = byId(inputId);
+    const img = byId(imgId);
+    if (!input || !img) return;
+    
+    const container = input.closest('.input-container');
+    const fileLabel = container?.querySelector('.file-label');
+    const fileText = fileLabel?.querySelector('.file-text');
+    
+    input.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file) {
+        img.src = '';
+        img.style.display = 'none';
+        if (fileText) fileText.textContent = input.id.includes('banner') ? 'Pilih gambar banner' : 'Pilih foto profil';
+        return;
+      }
+      
+      if (fileText) fileText.textContent = file.name;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.src = e.target.result;
+        img.style.display = 'block';
+        img.classList.add('fade-in');
+        setTimeout(() => img.classList.remove('fade-in'), 300);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Bind all image previews
+  bindImagePreview('bannerKomplek', 'bannerPreview');
+  bindImagePreview('fotoProfilKomplek', 'profilPreview');
+  bindImagePreview('fotoKetuaRT', 'ketuaPreview');
+  bindImagePreview('fotoBendahara', 'bendaharaPreview');
+
+  // Enhanced file input handling
+  qAll('.file-input').forEach(container => {
+    const input = container.querySelector('input[type="file"]');
+    const label = container.querySelector('.file-label');
+    
+    if (!input || !label) return;
+    
+    label.addEventListener('click', () => input.click());
+    
+    container.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      container.classList.add('drag-over');
+    });
+    
+    container.addEventListener('dragleave', () => {
+      container.classList.remove('drag-over');
+    });
+    
+    container.addEventListener('drop', (e) => {
+      e.preventDefault();
+      container.classList.remove('drag-over');
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        input.files = files;
+        input.dispatchEvent(new Event('change'));
+      }
+    });
+  });
+
+  // Enhanced Maps Integration
+  let map = null;
+  let marker = null;
+  let fullscreenMap = null;
+  let fullscreenMarker = null;
+
+  // Excel data validation state
+  let wargaDataValid = false;
+  let keuanganDataValid = false;
+  let wargaData = [];
+  let keuanganData = [];
+  let wargaErrors = [];
+  let keuanganErrors = [];
+
+  function initMap() {
+    const mapElement = byId('interactiveMap');
+    if (!mapElement || !window.L) return;
+
+    // Default to Jakarta coordinates
+    const defaultLat = -6.200000;
+    const defaultLng = 106.816666;
+
+    map = L.map('interactiveMap', {
+      center: [defaultLat, defaultLng],
+      zoom: 13,
+      zoomControl: true,
+      scrollWheelZoom: true
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(map);
+
+    // Custom map controls
+    const customControl = L.Control.extend({
+      onAdd: function() {
+        const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+        div.innerHTML = '<i class="fas fa-crosshairs"></i>';
+        div.style.backgroundColor = 'white';
+        div.style.width = '30px';
+        div.style.height = '30px';
+        div.style.display = 'flex';
+        div.style.alignItems = 'center';
+        div.style.justifyContent = 'center';
+        div.style.cursor = 'pointer';
+        div.title = 'Lokasi Saya';
+        
+        div.onclick = getCurrentLocation;
+        return div;
+      }
+    });
+
+    new customControl({ position: 'topleft' }).addTo(map);
+
+    // Map click handler
+    map.on('click', function(e) {
+      placeMarker(e.latlng.lat, e.latlng.lng);
+    });
+
+    setTimeout(() => map.invalidateSize(), 100);
+  }
+
+  function placeMarker(lat, lng) {
+    if (!map) return;
+
+    if (marker) {
+      map.removeLayer(marker);
+    }
+
+    // Custom marker icon
+    const customIcon = L.divIcon({
+      html: '<i class="fas fa-map-marker-alt"></i>',
+      iconSize: [20, 20],
+      className: 'custom-marker'
+    });
+
+    marker = L.marker([lat, lng], {
+      icon: customIcon,
+      draggable: true
+    }).addTo(map);
+
+    marker.on('dragend', function(e) {
+      const position = e.target.getLatLng();
+      updateCoordinates(position.lat, position.lng);
+    });
+
+    updateCoordinates(lat, lng);
+    map.setView([lat, lng], Math.max(map.getZoom(), 15));
+  }
+
+  function updateCoordinates(lat, lng) {
+    const latInput = byId('latKomplek');
+    const lngInput = byId('lngKomplek');
+    const displayLat = byId('displayLat');
+    const displayLng = byId('displayLng');
+    if (latInput) latInput.value = lat.toFixed(6);
+    if (lngInput) lngInput.value = lng.toFixed(6);
+    if (displayLat) displayLat.textContent = lat.toFixed(6);
+    if (displayLng) displayLng.textContent = lng.toFixed(6);
+    // After coordinates update, refresh Next button state so user can proceed
+    if (typeof updateNextButtonState === 'function') {
+      try { updateNextButtonState(); } catch (_) {}
+    }
+  }
+
+  function getCurrentLocation() {
+    if (!navigator.geolocation) {
+      showToast('Geolocation tidak didukung browser ini', 'error');
+      return;
+    }
+
+    showToast('Mencari lokasi Anda...', 'info');
+
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        placeMarker(lat, lng);
+        showToast('Lokasi Anda ditemukan!', 'success');
+      },
+      function(error) {
+        showToast('Gagal mendapatkan lokasi Anda', 'error');
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
+  }
+
+  // Search location functionality
+  async function searchLocation(query) {
+    if (!query?.trim()) return;
+
+    try {
+      showToast('Mencari lokasi...', 'info');
+      // Nominatim with jsonv2 and Indonesian language hint
+      const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&accept-language=id&q=${encodeURIComponent(query)}&limit=1`;
+      const response = await fetch(url, { method: 'GET' });
+      if (!response.ok) throw new Error('Network response was not ok');
+      const results = await response.json();
+      if (Array.isArray(results) && results.length > 0) {
+        const result = results[0];
+        const lat = parseFloat(result.lat);
+        const lng = parseFloat(result.lon);
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+          placeMarker(lat, lng);
+          // Ensure Next button becomes enabled
+          if (typeof updateNextButtonState === 'function') {
+            try { updateNextButtonState(); } catch (_) {}
+          }
+          showToast('Lokasi ditemukan!', 'success');
+          // Scroll map into view for confirmation
+          byId('interactiveMap')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          showToast('Koordinat hasil pencarian tidak valid', 'error');
+        }
+      } else {
+        showToast('Lokasi tidak ditemukan', 'error');
+      }
+    } catch (error) {
+      showToast('Error saat mencari lokasi', 'error');
+    }
+  }
+
+  // Map toolbar event handlers
+  const searchLocationBtn = byId('searchLocationBtn');
+  const myLocationBtn = byId('myLocationBtn');
+  const fullscreenMapBtn = byId('fullscreenMapBtn');
+
+  if (searchLocationBtn) {
+    searchLocationBtn.addEventListener('click', () => {
+      const alamat = byId('alamatKomplek')?.value?.trim();
+      if (alamat) {
+        searchLocation(alamat);
+      } else {
+        showToast('Masukkan alamat terlebih dahulu', 'error');
+        const el = byId('alamatKomplek');
+        if (el) {
+          el.focus();
+          const container = el.closest('.input-container');
+          container?.classList.add('shake');
+          setTimeout(() => container?.classList.remove('shake'), 500);
+        }
+      }
+    });
+  }
+
+  // Trigger search when pressing Enter in the address input
+  const alamatInputEl = byId('alamatKomplek');
+  if (alamatInputEl) {
+    alamatInputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const val = alamatInputEl.value?.trim();
+        if (val) {
+          searchLocation(val);
+        } else {
+          showToast('Masukkan alamat terlebih dahulu', 'error');
+        }
+      }
+    });
+  }
+
+  if (myLocationBtn) {
+    myLocationBtn.addEventListener('click', getCurrentLocation);
+  }
+
+  if (fullscreenMapBtn) {
+    fullscreenMapBtn.addEventListener('click', openFullscreenMap);
+  }
+
+  // Inline confirm location (without opening fullscreen)
+  const confirmLocationInline = byId('confirmLocationInline');
+  if (confirmLocationInline) {
+    confirmLocationInline.addEventListener('click', async () => {
+      const lat = parseFloat(byId('latKomplek')?.value);
+      const lng = parseFloat(byId('lngKomplek')?.value);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+        showToast('Tentukan lokasi pada peta terlebih dahulu', 'error');
+        return;
+      }
+      // Optional: check availability with backend before proceeding
+      const exists = await checkKomplekAvailability(lat, lng);
+      if (exists?.exists) {
+        showToast(`Komplek sudah terdaftar di area ini: ${exists.name || ''}`.trim(), 'error');
+        return;
+      }
+      // Already stored via updateCoordinates when placing marker
+      showToast('Lokasi dikonfirmasi. Lanjut ke langkah berikutnya.', 'success');
+      if (typeof updateNextButtonState === 'function') {
+        try { updateNextButtonState(); } catch (_) {}
+      }
+      // Auto-advance to next step if valid
+      tryAdvanceFromCurrentStep();
+    });
+  }
+
+  async function checkKomplekAvailability(lat, lng) {
+    try {
+      const res = await fetch(`/api/komplek/check?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`);
+      if (!res.ok) throw new Error('fail');
+      return await res.json(); // expected { exists: boolean, name?: string }
+    } catch (_) {
+      // If API not available, do not block flow; just warn in console
+      console.warn('Komplek availability API not reachable. Skipping check.');
+      return { exists: false };
+    }
+  }
+
+  function tryAdvanceFromCurrentStep() {
+    try {
+      if (typeof validateStep === 'function' && typeof showStep === 'function') {
+        if (validateStep(currentStep)) {
+          showStep(currentStep + 1);
+        }
+      }
+    } catch (_) {}
+  }
+
+  // Fullscreen map modal
+  function openFullscreenMap() {
+    const modal = byId('mapModal');
+    if (!modal) return;
+
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(() => {
+      initFullscreenMap();
+    }, 100);
+  }
+
+  function closeFullscreenMap() {
+    const modal = byId('mapModal');
+    if (!modal) return;
+
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  function initFullscreenMap() {
+    const mapElement = byId('fullscreenMap');
+    if (!mapElement || !window.L) return;
+
+    if (fullscreenMap) {
+      fullscreenMap.remove();
+    }
+
+    const currentLat = parseFloat(byId('latKomplek')?.value) || -6.200000;
+    const currentLng = parseFloat(byId('lngKomplek')?.value) || 106.816666;
+
+    fullscreenMap = L.map('fullscreenMap', {
+      center: [currentLat, currentLng],
+      zoom: 15,
+      zoomControl: true
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(fullscreenMap);
+
+    // Place existing marker if coordinates exist
+    if (currentLat && currentLng) {
+      placeFullscreenMarker(currentLat, currentLng);
+    }
+
+    fullscreenMap.on('click', function(e) {
+      placeFullscreenMarker(e.latlng.lat, e.latlng.lng);
+    });
+
+    setTimeout(() => fullscreenMap.invalidateSize(), 100);
+  }
+
+  function placeFullscreenMarker(lat, lng) {
+    if (!fullscreenMap) return;
+
+    if (fullscreenMarker) {
+      fullscreenMap.removeLayer(fullscreenMarker);
+    }
+
+    const customIcon = L.divIcon({
+      html: '<i class="fas fa-map-marker-alt"></i>',
+      iconSize: [25, 25],
+      className: 'custom-marker-large'
+    });
+
+    fullscreenMarker = L.marker([lat, lng], {
+      icon: customIcon,
+      draggable: true
+    }).addTo(fullscreenMap);
+
+    fullscreenMarker.on('dragend', function(e) {
+      const position = e.target.getLatLng();
+      updateModalCoordinates(position.lat, position.lng);
+    });
+
+    updateModalCoordinates(lat, lng);
+  }
+
+  function updateModalCoordinates(lat, lng) {
+    const modalLat = byId('modalLat');
+    const modalLng = byId('modalLng');
+
+    if (modalLat) modalLat.textContent = lat.toFixed(6);
+    if (modalLng) modalLng.textContent = lng.toFixed(6);
+  }
+
+  // Modal event handlers
+  const closeMapModal = byId('closeMapModal');
+  const confirmLocation = byId('confirmLocation');
+  const mapModal = byId('mapModal');
+
+  if (closeMapModal) {
+    closeMapModal.addEventListener('click', closeFullscreenMap);
+  }
+
+  if (confirmLocation) {
+    confirmLocation.addEventListener('click', () => {
+      const lat = parseFloat(byId('modalLat')?.textContent);
+      const lng = parseFloat(byId('modalLng')?.textContent);
+
+      if (lat && lng) {
+        updateCoordinates(lat, lng);
+        if (map) {
+          placeMarker(lat, lng);
+        }
+        // Ensure Next button is enabled after confirming location
+        if (typeof updateNextButtonState === 'function') {
+          try { updateNextButtonState(); } catch (_) {}
+        }
+        showToast('Lokasi berhasil dikonfirmasi!', 'success');
+        closeFullscreenMap();
+      }
+    });
+  }
+
+  if (mapModal) {
+    mapModal.addEventListener('click', (e) => {
+      if (e.target === mapModal) {
+        closeFullscreenMap();
+      }
+    });
+  }
+
+  // Wizard/Stepper System
+  const form = byId('komplekForm');
+  const sections = Array.from(qAll('.section-card'));
+  const actions = q('.section-actions');
+  let currentStep = 0;
+
+  function createProgressBar() {
+    const progressContainer = document.createElement('div');
+    progressContainer.className = 'wizard-progress';
+    progressContainer.innerHTML = `
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    `;
+
+    const header = q('.register-header');
+    if (header) {
+      header.insertAdjacentElement('afterend', progressContainer);
+    }
+  }
+
+  function updateProgress() {
+    const progressFill = byId('progressFill');
+    const progress = ((currentStep + 1) / sections.length) * 100;
+
+    if (progressFill) {
+      progressFill.style.width = progress + '%';
+    }
+  }
+
+  // Inline validation helpers
+  function markFieldValidity(input, valid, message = '') {
+    const container = input?.closest?.('.input-container') || input?.parentElement;
+    if (!container) return;
+    container.classList.toggle('invalid', !valid);
+    let help = container.querySelector('.input-help');
+    if (!help) {
+      help = document.createElement('div');
+      help.className = 'input-help';
+      container.appendChild(help);
+    }
+    help.textContent = valid ? '' : message;
+    help.style.display = valid ? 'none' : 'block';
+  }
+
+  function getStepInputs(step) {
+    switch (step) {
+      case 0:
+        return [
+          { el: byId('namaKomplek'), msg: 'Nama komplek wajib diisi' },
+          { el: byId('deskripsiKomplek'), msg: 'Deskripsi wajib diisi' },
+        ];
+      case 1:
+        return [
+          { el: byId('latKomplek'), msg: 'Tentukan lokasi pada peta' },
+          { el: byId('lngKomplek'), msg: 'Tentukan lokasi pada peta' },
+        ];
+      case 2:
+        return [
+          { el: byId('namaKetuaRT'), msg: 'Nama Ketua RT wajib diisi' },
+          { el: byId('namaBendahara'), msg: 'Nama Bendahara wajib diisi' },
+        ];
+      default:
+        return [];
+    }
+  }
+
+  function updateNextButtonState() {
+    const section = sections[currentStep];
+    const nextBtn = section?.querySelector('[data-action="next"]');
+    if (!nextBtn) return;
+
+    const inputs = getStepInputs(currentStep);
+    let allValid = true;
+    inputs.forEach(({ el, msg }) => {
+      const value = el?.value?.trim();
+      const valid = Boolean(value);
+      allValid = allValid && valid;
+      markFieldValidity(el, valid, msg);
+    });
+    // For Excel steps: require valid uploaded data
+    if (currentStep === 3) {
+      allValid = wargaDataValid;
+    } else if (currentStep === 4) {
+      allValid = keuanganDataValid;
+    }
+    nextBtn.disabled = !allValid;
+  }
+
+  function showStep(index) {
+    currentStep = Math.max(0, Math.min(index, sections.length - 1));
+
+    sections.forEach((section, i) => {
+      if (i === currentStep) {
+        section.style.display = 'block';
+        section.classList.add('slide-in');
+        setTimeout(() => section.classList.remove('slide-in'), 300);
+      } else {
+        section.style.display = 'none';
+      }
+    });
+
+    if (actions) {
+      actions.style.display = currentStep === sections.length - 1 ? 'flex' : 'none';
+    }
+
+    // Initialize map when showing location step
+    if (currentStep === 1 && !map) {
+      setTimeout(initMap, 100);
+    }
+
+    updateProgress();
+
+    // attach live validation listeners for current step
+    const inputs = getStepInputs(currentStep).map(i => i.el).filter(Boolean);
+    inputs.forEach((el) => {
+      el.removeEventListener('input', updateNextButtonState);
+      el.addEventListener('input', updateNextButtonState);
+      el.removeEventListener('blur', updateNextButtonState);
+      el.addEventListener('blur', updateNextButtonState);
+    });
+    // refresh button state on step change
+    setTimeout(updateNextButtonState, 0);
+  }
+
+  function validateStep(step) {
+    switch (step) {
+      case 0: // Info step
+        const nama = byId('namaKomplek')?.value?.trim();
+        const deskripsi = byId('deskripsiKomplek')?.value?.trim();
+        if (!nama || !deskripsi) {
+          showToast('Mohon lengkapi nama dan deskripsi komplek', 'error');
+          return false;
+        }
+        break;
+      case 1: // Location step
+        const lat = byId('latKomplek')?.value?.trim();
+        const lng = byId('lngKomplek')?.value?.trim();
+        if (!lat || !lng) {
+          showToast('Mohon tentukan lokasi komplek pada peta', 'error');
+          return false;
+        }
+        break;
+      case 2: // Pengurus step
+        const ketua = byId('namaKetuaRT')?.value?.trim();
+        const bendahara = byId('namaBendahara')?.value?.trim();
+        if (!ketua || !bendahara) {
+          showToast('Mohon lengkapi nama pengurus', 'error');
+          return false;
+        }
+        break;
+      case 3: // Warga step
+        if (!wargaDataValid) {
+          const msg = wargaErrors?.length
+            ? `Format/isi data warga belum valid. (${wargaErrors.length} isu). Perbaiki sesuai template.`
+            : 'Mohon upload file Excel data warga yang valid.';
+          showToast(msg, 'error');
+          return false;
+        }
+        break;
+      case 4: // Keuangan step
+        if (!keuanganDataValid) {
+          const msg = keuanganErrors?.length
+            ? `Format/isi data keuangan belum valid. (${keuanganErrors.length} isu). Perbaiki sesuai template.`
+            : 'Mohon upload file Excel data keuangan yang valid.';
+          showToast(msg, 'error');
+          return false;
+        }
+        break;
+    }
+    return true;
+  }
+
+  function attachNavigation() {
+    sections.forEach((section, index) => {
+      const navContainer = document.createElement('div');
+      navContainer.className = 'step-navigation';
+
+      const navContent = [];
+
+      // Back button for all steps except the first
+      if (index > 0) {
+        navContent.push(`
+          <button type="button" class="nav-button secondary" data-action="prev">
+            <i class="fas fa-chevron-left"></i>
+            <span>Sebelumnya</span>
+          </button>
+        `);
+      }
+
+      // Next button for all steps except the last
+      if (index < sections.length - 1) {
+        navContent.push(`
+          <button type="button" class="nav-button primary" data-action="next">
+            <span>Selanjutnya</span>
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        `);
+      }
+
+      // If there is at least one nav button, render the container
+      if (navContent.length > 0) {
+        navContainer.innerHTML = navContent.join('');
+        section.appendChild(navContainer);
+
+        // Attach event listeners
+        const prevBtn = navContainer.querySelector('[data-action="prev"]');
+        const nextBtn = navContainer.querySelector('[data-action="next"]');
+
+        if (prevBtn) {
+          prevBtn.addEventListener('click', () => showStep(currentStep - 1));
+        }
+
+        if (nextBtn) {
+          nextBtn.addEventListener('click', () => {
+            if (validateStep(currentStep)) {
+              showStep(currentStep + 1);
+            } else {
+              updateNextButtonState();
+            }
+          });
+        }
+      }
+    });
+  }
+
+  // Excel Import Functionality
+  function isExcelFile(file) {
+    const nameOk = /\.(xlsx|xls)$/i.test(file.name || '');
+    const typeOk = (
+      file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      file.type === 'application/vnd.ms-excel' ||
+      file.type === '' // some browsers don't set MIME type on drag-drop
+    );
+    return nameOk && typeOk;
+  }
+
+  function pickHeaders(obj) {
+    return Object.keys(obj || {});
+  }
+
+  function validateWargaData(rows) {
+    const required = ['Nama', 'NIK', 'Telepon', 'Alamat', 'Blok', 'NoRumah'];
+    const errors = [];
+    const normalized = [];
+
+    if (!Array.isArray(rows) || rows.length === 0) {
+      errors.push('File kosong atau tidak ada data pada sheet pertama.');
+      return { valid: false, errors, data: [] };
+    }
+
+    const headers = pickHeaders(rows[0]);
+    const missing = required.filter(h => !headers.includes(h));
+    if (missing.length) {
+      errors.push(`Header wajib tidak lengkap: ${missing.join(', ')}.`);
+    }
+
+    rows.forEach((row, idx) => {
+      const line = idx + 2; // assume header at line 1
+      const nama = String(row.Nama || '').trim();
+      const nik = String(row.NIK || '').replace(/\D/g, '');
+      const tel = String(row.Telepon || '').trim();
+      const alamat = String(row.Alamat || '').trim();
+      const blok = String(row.Blok || '').trim();
+      const noRumah = String(row.NoRumah || '').trim();
+
+      if (!nama) errors.push(`Baris ${line}: Nama wajib diisi.`);
+      if (!nik || nik.length !== 16) errors.push(`Baris ${line}: NIK harus 16 digit.`);
+      if (!tel) errors.push(`Baris ${line}: Telepon wajib diisi.`);
+      if (!alamat) errors.push(`Baris ${line}: Alamat wajib diisi.`);
+      if (!blok) errors.push(`Baris ${line}: Blok wajib diisi.`);
+      if (!noRumah) errors.push(`Baris ${line}: NoRumah wajib diisi.`);
+
+      normalized.push({ Nama: nama, NIK: nik, Telepon: tel, Alamat: alamat, Blok: blok, NoRumah: noRumah });
+    });
+
+    return { valid: errors.length === 0, errors, data: normalized };
+  }
+
+  function validateKeuanganData(rows) {
+    const required = ['Tanggal', 'Keterangan', 'Kategori', 'Jumlah'];
+    const errors = [];
+    const normalized = [];
+
+    if (!Array.isArray(rows) || rows.length === 0) {
+      errors.push('File kosong atau tidak ada data pada sheet pertama.');
+      return { valid: false, errors, data: [] };
+    }
+
+    const headers = pickHeaders(rows[0]);
+    const missing = required.filter(h => !headers.includes(h));
+    if (missing.length) {
+      errors.push(`Header wajib tidak lengkap: ${missing.join(', ')}.`);
+    }
+
+    rows.forEach((row, idx) => {
+      const line = idx + 2;
+      const tanggalRaw = String(row.Tanggal || '').trim();
+      const ket = String(row.Keterangan || '').trim();
+      const kat = String(row.Kategori || '').trim();
+      const jml = Number(row.Jumlah);
+
+      const tgl = new Date(tanggalRaw);
+      const isValidDate = !isNaN(tgl.getTime());
+      const kategoriNorm = kat.toLowerCase();
+      const isIncome = /(pemasuk|income|masuk)/.test(kategoriNorm);
+      const isExpense = /(pengelu|expense|keluar)/.test(kategoriNorm);
+
+      if (!tanggalRaw || !isValidDate) errors.push(`Baris ${line}: Tanggal tidak valid (format contoh: 2025-01-01).`);
+      if (!ket) errors.push(`Baris ${line}: Keterangan wajib diisi.`);
+      if (!kat || (!isIncome && !isExpense)) errors.push(`Baris ${line}: Kategori harus Pemasukan atau Pengeluaran.`);
+      if (!Number.isFinite(jml) || jml <= 0) errors.push(`Baris ${line}: Jumlah harus angka > 0.`);
+
+      normalized.push({
+        Tanggal: isValidDate ? tgl.toISOString().slice(0, 10) : tanggalRaw,
+        Keterangan: ket,
+        Kategori: isIncome ? 'Pemasukan' : (isExpense ? 'Pengeluaran' : kat),
+        Jumlah: jml
+      });
+    });
+
+    return { valid: errors.length === 0, errors, data: normalized };
+  }
+  function setupExcelImport() {
+    // Warga Excel Import
+    const wargaDropArea = byId('wargaDropArea');
+    const wargaInput = byId('excelWarga');
+    const wargaBrowseBtn = wargaDropArea?.querySelector('.browse-btn');
+    const wargaTemplateBtn = byId('downloadTemplateWarga');
+
+    if (wargaBrowseBtn && wargaInput) {
+      wargaBrowseBtn.addEventListener('click', (e) => { e.stopPropagation(); wargaInput.click(); });
+    }
+
+    if (wargaDropArea && wargaInput) {
+      wargaDropArea.addEventListener('click', () => wargaInput.click());
+      
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        wargaDropArea.addEventListener(eventName, preventDefaults, false);
+      });
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        wargaDropArea.addEventListener(eventName, () => wargaDropArea.classList.add('drag-active'), false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        wargaDropArea.addEventListener(eventName, () => wargaDropArea.classList.remove('drag-active'), false);
+      });
+
+      wargaDropArea.addEventListener('drop', handleWargaDrop, false);
+    }
+
+    if (wargaInput) {
+      wargaInput.addEventListener('change', handleWargaFile);
+    }
+
+    if (wargaTemplateBtn) {
+      wargaTemplateBtn.addEventListener('click', (e) => { e.stopPropagation(); downloadWargaTemplate(); });
+    }
+
+    // Keuangan Excel Import
+    const keuanganDropArea = byId('keuanganDropArea');
+    const keuanganInput = byId('excelKeuangan');
+    const keuanganBrowseBtn = keuanganDropArea?.querySelector('.browse-btn');
+    const keuanganTemplateBtn = byId('downloadTemplateKeuangan');
+
+    if (keuanganBrowseBtn && keuanganInput) {
+      keuanganBrowseBtn.addEventListener('click', (e) => { e.stopPropagation(); keuanganInput.click(); });
+    }
+
+    if (keuanganDropArea && keuanganInput) {
+      keuanganDropArea.addEventListener('click', () => keuanganInput.click());
+      
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        keuanganDropArea.addEventListener(eventName, preventDefaults, false);
+      });
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        keuanganDropArea.addEventListener(eventName, () => keuanganDropArea.classList.add('drag-active'), false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        keuanganDropArea.addEventListener(eventName, () => keuanganDropArea.classList.remove('drag-active'), false);
+      });
+
+      keuanganDropArea.addEventListener('drop', handleKeuanganDrop, false);
+    }
+
+    if (keuanganInput) {
+      keuanganInput.addEventListener('change', handleKeuanganFile);
+    }
+
+    if (keuanganTemplateBtn) {
+      keuanganTemplateBtn.addEventListener('click', (e) => { e.stopPropagation(); downloadKeuanganTemplate(); });
+    }
+  }
+
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  function handleWargaDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    
+    if (files.length > 0) {
+      const wargaInput = byId('excelWarga');
+      if (wargaInput) {
+        wargaInput.files = files;
+        handleWargaFile({ target: { files } });
+      }
+    }
+  }
+
+  function handleKeuanganDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    
+    if (files.length > 0) {
+      const keuanganInput = byId('excelKeuangan');
+      if (keuanganInput) {
+        keuanganInput.files = files;
+        handleKeuanganFile({ target: { files } });
+      }
+    }
+  }
+
+  // Ensure XLSX is available before any processing that uses it
+  async function waitForXLSX(timeout = 7000) {
+    const start = Date.now();
+    while (typeof window !== 'undefined' && !window.XLSX) {
+      if (Date.now() - start > timeout) {
+        throw new Error('XLSX library belum siap. Coba lagi dalam beberapa detik.');
+      }
+      await new Promise(r => setTimeout(r, 50));
+    }
+  }
+
+  async function handleWargaFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      // wait for XLSX to be ready
+      await waitForXLSX();
+
+      if (!isExcelFile(file)) {
+        showToast('File harus berformat .xlsx atau .xls', 'error');
+        wargaDataValid = false;
+        updateNextButtonState();
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Ukuran file maksimum 5MB', 'error');
+        wargaDataValid = false;
+        updateNextButtonState();
+        return;
+      }
+
+      showToast('Memeriksa format dan isi file warga...', 'info');
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data, { type: 'array' });
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+      const { valid, errors, data: normalized } = validateWargaData(jsonData);
+      wargaErrors = errors;
+      wargaDataValid = valid;
+      wargaData = normalized;
+
+      if (!valid) {
+        const sample = errors.slice(0, 3).join(' ');
+        showToast(`Validasi gagal: ${errors.length} isu. ${sample}`, 'error');
+        showExcelErrorModal('warga', errors);
+      } else {
+        renderWargaData(normalized);
+        showToast(`Berhasil memuat ${normalized.length} data warga`, 'success');
+      }
+      updateNextButtonState();
+    } catch (error) {
+      showToast('Error saat memproses file Excel', 'error');
+      console.error('Excel processing error:', error);
+      wargaDataValid = false;
+      updateNextButtonState();
+    }
+  }
+
+  async function handleKeuanganFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      // wait for XLSX to be ready
+      await waitForXLSX();
+
+      if (!isExcelFile(file)) {
+        showToast('File harus berformat .xlsx atau .xls', 'error');
+        keuanganDataValid = false;
+        updateNextButtonState();
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Ukuran file maksimum 5MB', 'error');
+        keuanganDataValid = false;
+        updateNextButtonState();
+        return;
+      }
+
+      showToast('Memeriksa format dan isi file keuangan...', 'info');
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data, { type: 'array' });
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+      const { valid, errors, data: normalized } = validateKeuanganData(jsonData);
+      keuanganErrors = errors;
+      keuanganDataValid = valid;
+      keuanganData = normalized;
+
+      if (!valid) {
+        const sample = errors.slice(0, 3).join(' ');
+        showToast(`Validasi gagal: ${errors.length} isu. ${sample}`, 'error');
+        showExcelErrorModal('keuangan', errors);
+      } else {
+        renderKeuanganData(normalized);
+        showToast(`Berhasil memuat ${normalized.length} transaksi`, 'success');
+      }
+      updateNextButtonState();
+    } catch (error) {
+      showToast('Error saat memproses file Excel', 'error');
+      console.error('Excel processing error:', error);
+      keuanganDataValid = false;
+      updateNextButtonState();
+    }
+  }
+
+  function renderWargaData(data) {
+    const tbody = q('#wargaTable tbody');
+    const preview = byId('wargaPreview');
+    const countElement = byId('wargaCount');
+    
+    if (!tbody || !preview) return;
+
+    tbody.innerHTML = '';
+    
+    data.forEach((row, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${row.Nama || ''}</td>
+        <td>${row.NIK || ''}</td>
+        <td>${row.Telepon || ''}</td>
+        <td>${row.Alamat || ''}</td>
+        <td>${row.Blok || ''}</td>
+        <td>${row.NoRumah || ''}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    if (countElement) {
+      countElement.textContent = `${data.length} data`;
+    }
+    
+    preview.style.display = 'block';
+    setTimeout(() => preview.classList.add('show'), 100);
+  }
+
+  function renderKeuanganData(data) {
+    const tbody = q('#keuanganTable tbody');
+    const preview = byId('keuanganPreview');
+    const countElement = byId('keuanganCount');
+    
+    if (!tbody || !preview) return;
+
+    tbody.innerHTML = '';
+    
+    let totalPemasukan = 0;
+    let totalPengeluaran = 0;
+
+    data.forEach((row, index) => {
+      const tr = document.createElement('tr');
+      const jumlah = parseFloat(row.Jumlah) || 0;
+      const kategori = (row.Kategori || '').toLowerCase();
+      
+      if (kategori.includes('masuk') || kategori.includes('income')) {
+        totalPemasukan += jumlah;
+      } else {
+        totalPengeluaran += jumlah;
+      }
+      
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${row.Tanggal || ''}</td>
+        <td>${row.Keterangan || ''}</td>
+        <td><span class="category-badge ${kategori.includes('masuk') ? 'income' : 'expense'}">${row.Kategori || ''}</span></td>
+        <td>Rp ${formatNumber(jumlah)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Update summary cards
+    updateSummaryCards(totalPemasukan, totalPengeluaran);
+
+    if (countElement) {
+      countElement.textContent = `${data.length} transaksi`;
+    }
+    
+    preview.style.display = 'block';
+    setTimeout(() => preview.classList.add('show'), 100);
+  }
+
+  function updateSummaryCards(pemasukan, pengeluaran) {
+    const totalPemasukanEl = byId('totalPemasukan');
+    const totalPengeluaranEl = byId('totalPengeluaran');
+    const saldoAkhirEl = byId('saldoAkhir');
+    
+    if (totalPemasukanEl) totalPemasukanEl.textContent = `Rp ${formatNumber(pemasukan)}`;
+    if (totalPengeluaranEl) totalPengeluaranEl.textContent = `Rp ${formatNumber(pengeluaran)}`;
+    if (saldoAkhirEl) {
+      const saldo = pemasukan - pengeluaran;
+      saldoAkhirEl.textContent = `Rp ${formatNumber(saldo)}`;
+      saldoAkhirEl.className = `summary-value ${saldo >= 0 ? 'positive' : 'negative'}`;
+    }
+  }
+
+  function formatNumber(num) {
+    return new Intl.NumberFormat('id-ID').format(num);
+  }
+
+  function downloadWargaTemplate() {
+    if (!window.XLSX) {
+      showToast('Gagal membuat template: library XLSX tidak tersedia', 'error');
+      return;
+    }
+    const wb = XLSX.utils.book_new();
+    const sheet1Data = [
+      ['Nama', 'NIK', 'Telepon', 'Alamat', 'Blok', 'NoRumah'],
+      ['Andi Wijaya', '3201012345678901', '08123456789', 'Jl. Melati No.10', 'A', '01'],
+      ['Sari Dewi', '3201012345678902', '08123456790', 'Jl. Melati No.12', 'A', '02'],
+      ['Budi Santoso', '3201012345678903', '08123456791', 'Jl. Mawar No.05', 'B', '05']
+    ];
+    const wsData = XLSX.utils.aoa_to_sheet(sheet1Data);
+    wsData['!cols'] = [
+      { wch: 18 }, { wch: 18 }, { wch: 16 }, { wch: 28 }, { wch: 8 }, { wch: 10 }
+    ];
+    XLSX.utils.book_append_sheet(wb, wsData, 'DataWarga');
+
+    const instructions = [
+      ['Petunjuk Pengisian Data Warga'],
+      ['- Header harus persis: Nama, NIK, Telepon, Alamat, Blok, NoRumah'],
+      ['- NIK wajib 16 digit angka'],
+      ['- Semua kolom wajib diisi'],
+      ['- Simpan file sebagai .xlsx atau .xls']
+    ];
+    const wsInfo = XLSX.utils.aoa_to_sheet(instructions);
+    wsInfo['!cols'] = [{ wch: 80 }];
+    XLSX.utils.book_append_sheet(wb, wsInfo, 'Petunjuk');
+
+    XLSX.writeFile(wb, 'template_data_warga.xlsx');
+    showToast('Template Excel data warga berhasil diunduh', 'success');
+  }
+
+  function downloadKeuanganTemplate() {
+    if (!window.XLSX) {
+      showToast('Gagal membuat template: library XLSX tidak tersedia', 'error');
+      return;
+    }
+    const wb = XLSX.utils.book_new();
+    const sheet1Data = [
+      ['Tanggal', 'Keterangan', 'Kategori', 'Jumlah'],
+      ['2025-01-01', 'Iuran Keamanan Januari', 'Pemasukan', 5000000],
+      ['2025-01-05', 'Iuran Kebersihan Januari', 'Pemasukan', 2000000],
+      ['2025-01-10', 'Perbaikan Lampu Jalan', 'Pengeluaran', 1500000],
+      ['2025-01-15', 'Gaji Security', 'Pengeluaran', 3000000]
+    ];
+    const wsData = XLSX.utils.aoa_to_sheet(sheet1Data);
+    wsData['!cols'] = [
+      { wch: 12 }, { wch: 30 }, { wch: 14 }, { wch: 14 }
+    ];
+    XLSX.utils.book_append_sheet(wb, wsData, 'DataKeuangan');
+
+    const instructions = [
+      ['Petunjuk Pengisian Data Keuangan'],
+      ['- Header harus persis: Tanggal, Keterangan, Kategori, Jumlah'],
+      ['- Tanggal format valid (contoh: 2025-01-01)'],
+      ['- Kategori hanya: Pemasukan atau Pengeluaran'],
+      ['- Jumlah harus angka > 0'],
+      ['- Simpan file sebagai .xlsx atau .xls']
+    ];
+    const wsInfo = XLSX.utils.aoa_to_sheet(instructions);
+    wsInfo['!cols'] = [{ wch: 80 }];
+    XLSX.utils.book_append_sheet(wb, wsInfo, 'Petunjuk');
+
+    XLSX.writeFile(wb, 'template_data_keuangan.xlsx');
+    showToast('Template Excel data keuangan berhasil diunduh', 'success');
+  }
+
+  function downloadCSV(filename, data) {
+    const csv = data.map(row => 
+      row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+    ).join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // Form submission and draft saving
+  function setupFormActions() {
+    const saveDraftBtn = byId('saveDraftBtn');
+    const form = byId('komplekForm');
+
+    if (saveDraftBtn) {
+      saveDraftBtn.addEventListener('click', saveDraft);
+    }
+
+    if (form) {
+      form.addEventListener('submit', handleSubmit);
+    }
+  }
+
+  function saveDraft() {
+    const draftData = {
+      namaKomplek: byId('namaKomplek')?.value || '',
+      deskripsiKomplek: byId('deskripsiKomplek')?.value || '',
+      profilKomplek: byId('profilKomplek')?.value || '',
+      alamatKomplek: byId('alamatKomplek')?.value || '',
+      latKomplek: byId('latKomplek')?.value || '',
+      lngKomplek: byId('lngKomplek')?.value || '',
+      namaKetuaRT: byId('namaKetuaRT')?.value || '',
+      namaBendahara: byId('namaBendahara')?.value || '',
+      timestamp: new Date().toISOString()
+    };
+
+    localStorage.setItem('komplek_registration_draft', JSON.stringify(draftData));
+    showToast('Draft berhasil disimpan', 'success');
+  }
+
+  function loadDraft() {
+    const draftData = localStorage.getItem('komplek_registration_draft');
+    if (!draftData) return;
+
+    try {
+      const data = JSON.parse(draftData);
+      
+      Object.keys(data).forEach(key => {
+        if (key !== 'timestamp') {
+          const element = byId(key);
+          if (element) {
+            element.value = data[key];
+          }
+        }
+      });
+
+      if (data.latKomplek && data.lngKomplek && map) {
+        setTimeout(() => {
+          placeMarker(parseFloat(data.latKomplek), parseFloat(data.lngKomplek));
+        }, 1000);
+      }
+
+      showToast('Draft berhasil dimuat', 'info');
+    } catch (error) {
+      console.error('Error loading draft:', error);
+    }
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalContent = submitBtn.innerHTML;
+    
+    // Validate final step
+    if (!validateStep(currentStep)) return;
+    
+    // Show loading state
+    submitBtn.classList.add('loading');
+    submitBtn.innerHTML = `
+      <i class="fas fa-spinner fa-spin"></i>
+      <span>Menyimpan Data...</span>
+    `;
+    submitBtn.disabled = true;
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Clear draft after successful submission
+      localStorage.removeItem('komplek_registration_draft');
+      
+      // Success state
+      submitBtn.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>Berhasil!</span>
+      `;
+      
+      showToast('Registrasi komplek berhasil!', 'success');
+      
+      // Redirect after delay
+      setTimeout(() => {
+        window.location.href = '/komplek';
+      }, 1500);
+      
+    } catch (error) {
+      // Error state
+      submitBtn.classList.remove('loading');
+      submitBtn.innerHTML = originalContent;
+      submitBtn.disabled = false;
+      
+      showToast('Gagal menyimpan data. Silakan coba lagi.', 'error');
+    }
+  }
+
+  // Initialize everything
+  function initialize() {
+    createProgressBar();
+    attachNavigation();
+    setupExcelImport();
+    setupFormActions();
+    showStep(0);
+    
+    // Load draft if exists
+    setTimeout(loadDraft, 500);
+    
+    // Add smooth transitions
+    document.body.classList.add('loaded');
+  }
+
+  // Start initialization
+  initialize();
+
+  // Enhanced input interactions
+  qAll('.form-input').forEach(input => {
+    input.addEventListener('focus', function() {
+      this.parentElement.classList.add('focused');
+    });
+    
+    input.addEventListener('blur', function() {
+      this.parentElement.classList.remove('focused');
+      if (this.value) {
+        this.parentElement.classList.add('has-value');
+      } else {
+        this.parentElement.classList.remove('has-value');
+      }
+    });
+    
+    // Check initial value
+    if (input.value) {
+      input.parentElement.classList.add('has-value');
+    }
+  });
+});
+</script>
+
+<style>
+/* Enhanced Color Scheme and Variables */
+:root {
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  --surface: rgba(255, 255, 255, 0.95);
+  --surface-hover: rgba(255, 255, 255, 0.98);
+  --text-primary: #2d3748;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+  --border: rgba(226, 232, 240, 0.8);
+  --border-hover: rgba(159, 122, 234, 0.5);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+/* Stepper (Tahapan) */
+.stepper { position: sticky; top: 8px; z-index: 5; margin: 0.25rem 0 2rem; padding-top: 0.25rem; backdrop-filter: saturate(120%) blur(2px); }
+
+.stepper-progress { position: absolute; top: 22px; left: 0; right: 0; height: 12px; background: rgba(102,126,234,0.12); border-radius: 999px; overflow: hidden; }
+
+.stepper-progress-bar { width: 0%; height: 100%; background: var(--primary-gradient); border-radius: 999px; box-shadow: 0 1px 6px rgba(102,126,234,0.25) inset; transition: width 360ms cubic-bezier(.22,.61,.36,1); position: relative; }
+.stepper-progress-bar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.35), rgba(255,255,255,0)); mix-blend-mode: screen; }
+/* faint segment guides behind the line */
+.stepper::before { content: ''; position: absolute; left: 0; right: 0; top: 22px; height: 12px; border-radius: 999px; background: repeating-linear-gradient(90deg, rgba(102,126,234,0), rgba(102,126,234,0) calc((100%/5) - 1px), rgba(102,126,234,0.08) calc((100%/5) - 1px), rgba(102,126,234,0.08) calc((100%/5))); pointer-events: none; }
+
+.stepper-list { list-style: none; display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.25rem; margin: 0; padding: 1.35rem 0 0; }
+
+.stepper-item { display: flex; flex-direction: column; align-items: center; gap: 0.55rem; color: var(--text-muted); cursor: default; user-select: none; pointer-events: none; }
+
+.stepper-item .stepper-dot { width: 64px; height: 64px; border-radius: 999px; background: rgba(102,126,234,0.06); box-shadow: inset 0 0 0 2px rgba(102,126,234,0.28); transition: transform 240ms ease, box-shadow 240ms ease, background 240ms ease; position: relative; }
+.stepper-item .stepper-dot { backdrop-filter: saturate(140%) blur(1.5px); }
+
+.stepper-item .stepper-dot::after { content: ''; position: absolute; inset: 10px; border-radius: 50%; background: rgba(102,126,234,0.12); }
+/* remove number markers; icons are used instead */
+.stepper-item .stepper-dot::before { display: none; }
+.stepper-item .stepper-dot i { position: relative; z-index: 1; font-size: 1.45rem; color: #6b7bd1; transition: color 220ms ease, transform 240ms ease; }
+
+.stepper-item .stepper-label { font-size: 0.98rem; letter-spacing: 0.1px; font-weight: 600; }
+
+.stepper-item.active .stepper-dot { background: var(--primary-gradient); transform: scale(1.08); box-shadow: 0 16px 30px rgba(118,75,162,0.34), 0 4px 12px rgba(102,126,234,0.22); }
+.stepper-item.active .stepper-dot i { color: #fff; transform: translateY(-1px); }
+
+.stepper-item.completed .stepper-dot { background: linear-gradient(135deg, #5a67d8, #6b46c1); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.25); }
+.stepper-item.completed .stepper-dot i { color: #eef0ff; }
+
+/* tooltips from aria-label */
+.stepper-item[aria-label] { position: relative; }
+.stepper-item[aria-label]::after { content: attr(aria-label); position: absolute; bottom: -36px; left: 50%; transform: translateX(-50%) translateY(4px); background: rgba(0,0,0,0.75); color: #fff; font-size: 0.78rem; padding: 6px 10px; border-radius: 8px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 200ms ease, transform 200ms ease; }
+.stepper-item:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.stepper-item.active .stepper-label { color: var(--text-primary); font-weight: 700; position: relative; }
+.stepper-item.active .stepper-label::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: -6px; width: 24px; height: 3px; border-radius: 3px; background: var(--primary-gradient); box-shadow: 0 2px 6px rgba(102,126,234,0.3); }
+.stepper-item.completed .stepper-label { color: var(--text-secondary); font-weight: 600; }
+
+.stepper-item:hover .stepper-dot { box-shadow: inset 0 0 0 2px rgba(102,126,234,0.45), 0 6px 16px rgba(102,126,234,0.18); }
+.stepper-item:hover .stepper-label { color: var(--text-primary); }
+
+@media (max-width: 640px) { .stepper-list { gap: 0.75rem; } .stepper-item .stepper-dot { width: 52px; height: 52px; } .stepper-item .stepper-dot i { font-size: 1.25rem; } .stepper { top: 0; } }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: #f7fafc;
+  overflow-x: hidden;
+}
+
+body.loaded {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Enhanced Background */
+.register-page {
+  position: relative;
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+.register-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.bg-gradient-enhanced {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(79, 172, 254, 0.1) 0%, transparent 50%);
+}
+
+.floating-elements {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.float-element {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.4;
+  animation: float 8s ease-in-out infinite;
+}
+
+.element-1 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  top: 10%;
+  left: -5%;
+  animation-delay: 0s;
+}
+
+.element-2 {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(45deg, #4facfe, #00f2fe);
+  top: 20%;
+  right: -3%;
+  animation-delay: 1s;
+}
+
+.element-3 {
+  width: 250px;
+  height: 250px;
+  background: linear-gradient(45deg, #fa709a, #fee140);
+  top: 60%;
+  left: -8%;
+  animation-delay: 2s;
+}
+
+.element-4 {
+  width: 180px;
+  height: 180px;
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  bottom: 20%;
+  right: -5%;
+  animation-delay: 3s;
+}
+
+.element-5 {
+  width: 220px;
+  height: 220px;
+  background: linear-gradient(45deg, #4facfe, #00f2fe);
+  top: 40%;
+  right: 20%;
+  animation-delay: 4s;
+}
+
+.element-6 {
+  width: 160px;
+  height: 160px;
+  background: linear-gradient(45deg, #fa709a, #fee140);
+  bottom: 40%;
+  left: 25%;
+  animation-delay: 5s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(180deg); }
+}
+
+.animated-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(102, 126, 234, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(102, 126, 234, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 50px); }
+}
+
+.color-orbs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.3;
+  animation: orbFloat 12s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.4), transparent);
+  top: -10%;
+  left: -10%;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(79, 172, 254, 0.4), transparent);
+  top: 50%;
+  right: -5%;
+  animation-delay: 4s;
+}
+
+.orb-3 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(250, 112, 154, 0.4), transparent);
+  bottom: -5%;
+  left: 30%;
+  animation-delay: 8s;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 30px) scale(0.9); }
+}
+
+/* Container and Layout */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.register-content {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.register-form-container {
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  max-width: 1000px;
+  position: relative;
+  overflow: hidden;
+}
+
+.register-form-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.5), transparent);
+}
+
+/* Header Styling */
+.register-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* Stepper (Premium) */
+.stepper {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 0.25rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0.55));
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+}
+
+.stepper-progress {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(102,126,234,0.10), rgba(118,75,162,0.10));
+  overflow: hidden;
+}
+
+/* segmented guides */
+.stepper-progress::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    to right,
+    rgba(0,0,0,0) calc((100%/5) - 1px),
+    rgba(0,0,0,0.08) calc((100%/5) - 1px),
+    rgba(0,0,0,0.08) calc((100%/5) + 1px),
+    rgba(0,0,0,0) calc((100%/5) + 1px)
+  );
+  background-size: calc(100%/4) 100%;
+  pointer-events: none;
+}
+
+.stepper-progress-bar {
+  position: absolute;
+  height: 100%;
+  width: 0%;
+  left: 0;
+  top: 0;
+  background: linear-gradient(90deg, #667eea, #6b46c1);
+  box-shadow: 0 4px 14px rgba(102, 126, 234, 0.35);
+  transition: width 420ms cubic-bezier(.22,.61,.36,1);
+}
+
+/* sheen */
+.stepper-progress-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.35), rgba(255,255,255,0));
+  mix-blend-mode: soft-light;
+}
+
+.stepper-list {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.stepper-item {
+  display: grid;
+  place-items: center;
+}
+
+.stepper-dot {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fff, #f6f7fb);
+  border: 1px solid rgba(102,126,234,0.25);
+  box-shadow: 0 6px 18px rgba(102, 126, 234, 0.18);
+  display: grid;
+  place-items: center;
+  position: relative;
+  transform: translateZ(0);
+}
+
+.stepper-item.completed .stepper-dot {
+  background: linear-gradient(180deg, #e9f7ef, #ffffff);
+  border-color: rgba(56, 161, 105, 0.45);
+  box-shadow: 0 6px 18px rgba(56, 161, 105, 0.2);
+}
+
+.stepper-item.active .stepper-dot {
+  background: linear-gradient(180deg, #eef2ff, #ffffff);
+  border-color: rgba(102,126,234,0.55);
+  transform: scale(1.02);
+}
+
+.stepper-dot i {
+  font-size: 1.45rem;
+  color: #4a5568;
+}
+
+.stepper-item.completed .stepper-dot i,
+.stepper-item.active .stepper-dot i {
+  color: #4c51bf;
+}
+
+/* tooltips on hover using aria-label */
+.stepper-item[aria-label]::after {
+  content: attr(aria-label);
+  position: absolute;
+  top: 70px;
+  white-space: nowrap;
+  background: rgba(17, 24, 39, 0.9);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: all .2s ease;
+}
+
+.stepper-item:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.header-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: var(--primary-gradient);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: white;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.form-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.form-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Progress Bar */
+.wizard-progress {
+  margin: 2rem 0;
+}
+
+.progress-track {
+  height: 8px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--primary-gradient);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.step-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.step-indicator.active {
+  opacity: 1;
+}
+
+.step-indicator.completed {
+  opacity: 1;
+}
+
+.step-indicator i {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.step-indicator.active i {
+  background: var(--primary-gradient);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+}
+
+.step-indicator.completed i {
+  background: var(--success-gradient);
+  color: white;
+}
+
+.step-indicator span {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Section Cards */
+.section-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: none;
+}
+
+.section-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.section-card.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.section-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-md);
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.section-text h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: var(--text-primary);
+}
+
+.section-text p {
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.input-container {
+  position: relative;
+}
+
+.input-container.focused {
+  z-index: 1;
+}
+
+.input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 1rem;
+  z-index: 2;
+  transition: color 0.3s ease;
+}
+
+.input-container.focused .input-icon {
+  color: #667eea;
+}
+
+.form-input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 2.8rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  background: white;
+  transition: all 0.3s ease;
+  outline: none;
+  position: relative;
+}
+
+.form-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-input:hover {
+  border-color: var(--border-hover);
+}
+
+/* Inline error styles */
+.input-container.invalid .form-input {
+  border-color: #e53e3e;
+  box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.08);
+}
+
+.input-help {
+  display: none;
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: #e53e3e;
+}
+
+.form-input[readonly] {
+  background: rgba(102, 126, 234, 0.05);
+  cursor: not-allowed;
+}
+
+.input-highlight {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary-gradient);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.input-container.focused .input-highlight {
+  transform: scaleX(1);
+}
+
+/* File Inputs */
+.file-input {
+  cursor: pointer;
+}
+
+.file-input input[type="file"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.file-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1rem 1rem 2.8rem;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: white;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.file-label:hover {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.02);
+}
+
+.file-input.drag-over .file-label {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+  transform: scale(1.02);
+}
+
+.file-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.file-button {
+  background: var(--primary-gradient);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Image Previews */
+.preview-wrapper {
+  margin-top: 1rem;
+  position: relative;
+  display: inline-block;
+}
+
+.preview-wrapper img {
+  display: none;
+  max-width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.preview-wrapper.circular img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.preview-wrapper img.fade-in {
+  animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.preview-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.preview-wrapper.circular .preview-overlay {
+  border-radius: 50%;
+}
+
+.preview-wrapper:hover .preview-overlay {
+  opacity: 1;
+}
+
+.preview-overlay i {
+  font-size: 1.5rem;
+}
+
+/* Map Section */
+.map-section {
+  margin-top: 1.5rem;
+}
+
+.map-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.map-tools {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tool-btn {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tool-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.tool-btn:active {
+  transform: translateY(0);
+}
+
+.coordinates-display {
+  background: rgba(102, 126, 234, 0.1);
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.coord-label {
+  color: var(--text-secondary);
+  margin-right: 0.5rem;
+}
+
+.map-container {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--border);
+}
+
+.interactive-map {
+  height: 400px;
+  width: 100%;
+}
+
+.map-instructions {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.instruction-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.instruction-item:last-child {
+  margin-bottom: 0;
+}
+
+.instruction-item i {
+  color: #667eea;
+  width: 16px;
+  text-align: center;
+}
+
+/* Custom Leaflet Markers */
+.custom-marker {
+  background: var(--primary-gradient);
+  color: white;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: var(--shadow-md);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  animation: markerBounce 0.5s ease-out;
+}
+
+.custom-marker-large {
+  background: var(--primary-gradient);
+  color: white;
+  border-radius: 50%;
+  border: 4px solid white;
+  box-shadow: var(--shadow-lg);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  animation: markerBounce 0.5s ease-out;
+}
+
+@keyframes markerBounce {
+  0% { transform: scale(0) translateY(0); }
+  50% { transform: scale(1.2) translateY(-10px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+/* Pengurus Cards */
+.pengurus-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.pengurus-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+  border: 2px solid rgba(102, 126, 234, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.pengurus-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.pengurus-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pengurus-header i {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.pengurus-header h3 {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Import Sections */
+.import-section {
+  background: rgba(102, 126, 234, 0.02);
+  border: 2px dashed rgba(102, 126, 234, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-top: 1rem;
+}
+
+.import-area {
+  text-align: center;
+  padding: 3rem 2rem;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  background: white;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.import-area:hover {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.02);
+  transform: translateY(-2px);
+}
+
+.import-area.drag-active {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+  transform: scale(1.02);
+}
+
+.import-icon {
+  font-size: 3rem;
+  color: #667eea;
+  margin-bottom: 1rem;
+}
+
+.import-text h3 {
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+}
+
+.import-text p {
+  color: var(--text-secondary);
+  margin: 0 0 1.5rem;
+}
+
+.import-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.browse-btn, .template-btn {
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.browse-btn {
+  background: var(--primary-gradient);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.browse-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.template-btn {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.template-btn:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Data Preview */
+.data-preview {
+  margin-top: 2rem;
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.data-preview.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.preview-header h3 {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.data-count {
+  background: var(--primary-gradient);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Summary Cards */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.summary-card.income {
+  border-color: #10b981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.02));
+}
+
+.summary-card.expense {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(239, 68, 68, 0.02));
+}
+
+.summary-card.balance {
+  border-color: #667eea;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(102, 126, 234, 0.02));
+}
+
+.summary-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.income .summary-icon {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.expense .summary-icon {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.balance .summary-icon {
+  background: var(--primary-gradient);
+}
+
+.summary-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.summary-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summary-value.positive {
+  color: #10b981;
+}
+
+.summary-value.negative {
+  color: #ef4444;
+}
+
+/* Data Tables */
+.table-container {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.data-table.modern th {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-weight: 600;
+  padding: 1rem 0.75rem;
+  text-align: left;
+  border: none;
+}
+
+.data-table.modern td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  background: white;
+  transition: background-color 0.2s ease;
+}
+
+.data-table.modern tbody tr:hover td {
+  background: rgba(102, 126, 234, 0.02);
+}
+
+.category-badge {
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.category-badge.income {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.category-badge.expense {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Navigation */
+.step-navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.nav-button {
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--radius-md);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.nav-button.primary {
+  background: var(--primary-gradient);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.nav-button.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.nav-button.secondary {
+  background: white;
+  color: var(--text-secondary);
+  border: 2px solid var(--border);
+}
+
+.nav-button.secondary:hover {
+  border-color: #667eea;
+  color: #667eea;
+  transform: translateY(-2px);
+}
+
+/* Action Buttons */
+.section-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--border);
+}
+
+.action-button {
+  padding: 1rem 2rem;
+  border-radius: var(--radius-lg);
+  border: none;
+  background: #f7f7fb;
+  color: #4a5568;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.action-button.primary {
+  background: var(--primary-gradient);
+  color: white;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+}
+
+.action-button.secondary {
+  background: linear-gradient(180deg, #ffffff, #f6f7fb);
+  color: #4a5568;
+  border: 1px solid var(--border);
+}
+
+.action-button.success {
+  background: var(--success-gradient);
+  color: white;
+  box-shadow: 0 6px 20px rgba(56, 161, 105, 0.35);
+}
+
+.action-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.action-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.action-button:disabled,
+.action-button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Nav buttons (Sebelumnya/Lanjutkan) */
+.step-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.nav-button {
+  padding: 0.875rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text-primary);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.nav-button:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.nav-button:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
+.nav-button:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.nav-button.primary {
+  background: var(--primary-gradient);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(102,126,234,.28);
+}
+
+.nav-button.secondary {
+  background: linear-gradient(180deg, #ffffff, #f6f7fb);
+}
+
+.button-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.action-button.primary:hover .button-shine {
+  left: 100%;
+}
+
+/* Map Modal */
+.map-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.map-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: white;
+  border-radius: var(--radius-xl);
+  width: min(95vw, 900px);
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.3s ease;
+}
+
+.map-modal.show .modal-content {
+  transform: translateY(0) scale(1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+}
+
+.modal-header h3 {
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modal-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+.modal-body {
+  position: relative;
+}
+
+.fullscreen-map {
+  height: 500px;
+  width: 100%;
+}
+
+.modal-coordinates {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.02), rgba(118, 75, 162, 0.02));
+  border-top: 1px solid var(--border);
+}
+
+.coord-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.coord-info i {
+  color: #667eea;
+  font-size: 1.1rem;
+}
+
+.confirm-location {
+  background: var(--success-gradient);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.confirm-location:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+}
+
+/* Back to Home Button */
+.back-home-container {
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+  z-index: 100;
+}
+
+.back-home-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 0.8rem 1.2rem;
+  border-radius: var(--radius-xl);
+  text-decoration: none;
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-lg);
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.back-home-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+  background: rgba(255, 255, 255, 1);
+}
+
+/* Toast Notifications */
+.toast {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.5rem;
+  box-shadow: var(--shadow-xl);
+  border-left: 4px solid;
+  max-width: 400px;
+  z-index: 2000;
+  transform: translateX(100%);
+  transition: all 0.3s ease;
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.toast-info {
+  border-color: #667eea;
+}
+
+.toast-info i {
+  color: #667eea;
+}
+
+.toast-success {
+  border-color: #10b981;
+}
+
+.toast-success i {
+  color: #10b981;
+}
+
+.toast-error {
+  border-color: #ef4444;
+}
+
+.toast-error i {
+  color: #ef4444;
+}
+
+.toast span {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .pengurus-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .register-form-container {
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+  }
+  
+  .form-title {
+    font-size: 2rem;
+  }
+  
+  .section-card {
+    padding: 1.5rem;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .progress-steps {
+    gap: 0.5rem;
+  }
+  
+  .step-indicator span {
+    display: none;
+  }
+  
+  .map-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .coordinates-display {
+    text-align: center;
+  }
+  
+  .interactive-map {
+    height: 300px;
+  }
+  
+  .section-actions {
+    flex-direction: column;
+  }
+  
+  .action-button.primary {
+    min-width: auto;
+  }
+  
+  .step-navigation {
+    flex-direction: column;
+  }
+  
+  .back-home-container {
+    top: 1rem;
+    left: 1rem;
+  }
+  
+  .back-home-btn span {
+    display: none;
+  }
+  
+  .toast {
+    top: 1rem;
+    right: 1rem;
+    left: 1rem;
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-page {
+    padding: 1rem 0;
+  }
+  
+  .register-form-container {
+    padding: 1rem;
+  }
+  
+  .form-title {
+    font-size: 1.5rem;
+  }
+  
+  .form-subtitle {
+    font-size: 1rem;
+  }
+  
+  .section-card {
+    padding: 1rem;
+  }
+  
+  .section-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+  
+  .form-input {
+    padding: 0.8rem 0.8rem 0.8rem 2.5rem;
+  }
+  
+  .import-area {
+    padding: 2rem 1rem;
+  }
+  
+  .import-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .data-table {
+    font-size: 0.8rem;
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: 0.5rem;
+  }
+  
+  .modal-content {
+    width: 95vw;
+    margin: 1rem;
+  }
+  
+  .fullscreen-map {
+    height: 300px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .register-bg,
+  .back-home-container,
+  .map-modal,
+  .toast {
+    display: none !important;
+  }
+  
+  .register-form-container {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  
+  .section-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+}
+
+/* Loading States */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus Styles for Keyboard Navigation */
+.tool-btn:focus,
+.nav-button:focus,
+.action-button:focus,
+.browse-btn:focus,
+.template-btn:focus,
+.confirm-location:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .form-input {
+    border-width: 2px;
+  }
+  
+  .section-card {
+    border-width: 2px;
+  }
+  
+  .action-button.primary {
+    background: #000;
+    color: #fff;
+  }
+}
+
+/* Dark Mode Support (if needed in future) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: rgba(45, 55, 72, 0.95);
+    --surface-hover: rgba(45, 55, 72, 0.98);
+    --text-primary: #f7fafc;
+    --text-secondary: #e2e8f0;
+    --text-muted: #a0aec0;
+    --border: rgba(74, 85, 104, 0.8);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-gradient);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a67d8, #6b46c1);
+}
+
+/* Selection Styling */
+::selection {
+  background: rgba(102, 126, 234, 0.3);
+  color: var(--text-primary);
+}
+
+::-moz-selection {
+  background: rgba(102, 126, 234, 0.3);
+  color: var(--text-primary);
+}
+
+/* Shake animation for invalid address prompt */
+.input-container.shake {
+  animation: kk-shake 0.45s ease;
+}
+
+@keyframes kk-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-6px); }
+  30% { transform: translateX(6px); }
+  45% { transform: translateX(-4px); }
+  60% { transform: translateX(4px); }
+  75% { transform: translateX(-2px); }
+  90% { transform: translateX(2px); }
+}
+</style>
