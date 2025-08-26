@@ -10,6 +10,13 @@ use Illuminate\Http\Request;
 
 class KomplekController extends Controller
 {
+    public function index(Request $request)
+    {
+        // For now return all records ordered by latest; can be paginated later
+        $komplek = Komplek::orderBy('created_at', 'desc')->get();
+        return response()->json($komplek);
+    }
+
     public function store(StoreKomplekRequest $request)
     {
         $data = $request->validated();

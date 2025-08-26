@@ -1391,7 +1391,7 @@ import Footer from '../components/sections/Footer.astro';
     const noResults = document.getElementById('noResults') as HTMLElement;
     const resultsCount = document.getElementById('resultsCount') as HTMLElement;
     const countText = document.getElementById('countText') as HTMLElement;
-    const komplekCards = document.querySelectorAll<HTMLElement>('.komplek-card');
+    // cards will be rendered dynamically; don't capture a static NodeList here
     const modalOverlay = document.getElementById('modalOverlay') as HTMLElement;
     const modalClose = document.getElementById('modalClose') as HTMLElement;
     const modalTitle = document.getElementById('modalTitle') as HTMLElement;
@@ -1416,7 +1416,8 @@ import Footer from '../components/sections/Footer.astro';
       const query = searchInput.value.toLowerCase().trim();
       let visibleCount = 0;
 
-      komplekCards.forEach(card => {
+      const cards = Array.from(document.querySelectorAll<HTMLElement>('.komplek-card'));
+      cards.forEach(card => {
         const name = card.getAttribute('data-name')?.toLowerCase() || '';
         const title = card.querySelector('.card-title')?.textContent?.toLowerCase() || '';
         const location = card.querySelector('.card-location')?.textContent?.toLowerCase() || '';
@@ -1643,17 +1644,98 @@ import Footer from '../components/sections/Footer.astro';
     
     // Initialize search
     performSearch();
-  });
 
-  // Add ripple animation keyframes
-  const style = document.createElement('style');
-  style.textContent = `
-    @keyframes ripple {
-      to {
-        transform: scale(4);
-        opacity: 0;
+    // Dynamically fetch komplek list from backend and render
+    async function fetchAndRenderKomplek() {
+      if (!komplekGrid) return;
+      try {
+        const res = await fetch('/api/komplek');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const items = await res.json();
+
+        if (Array.isArray(items) && items.length) {
+          // Clear existing demo cards if any
+          komplekGrid.innerHTML = '';
+          const placeholderPhoto = 'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=150&h=150&fit=crop&crop=face';
+
+          items.forEach((it: any, idx: number) => {
+            const name = it?.nama || 'Komplek';
+            const deskripsi = it?.deskripsi || (it?.profil || '');
+            const lat = it?.lat ? String(it.lat) : '';
+            const lng = it?.lng ? String(it.lng) : '';
+            const ketua = it?.ketua || '-';
+            const bendahara = it?.bendahara || '-';
+            const alamat = it?.alamat || ''; // backend may not provide alamat; leave blank
+
+            const card = document.createElement('div');
+            card.className = 'komplek-card';
+            card.setAttribute('data-aos', 'fade-up');
+            card.setAttribute('data-aos-delay', String(100 + (idx * 100)));
+            card.setAttribute('data-name', name.toLowerCase());
+            if (lat) card.setAttribute('data-lat', lat);
+            if (lng) card.setAttribute('data-lng', lng);
+            card.setAttribute('data-ketua-rt', ketua);
+            card.setAttribute('data-ketua-rt-foto', placeholderPhoto);
+            card.setAttribute('data-bendahara', bendahara);
+            card.setAttribute('data-bendahara-foto', placeholderPhoto);
+            if (alamat) card.setAttribute('data-alamat', alamat);
+
+            card.innerHTML = `
+              <div class="card-glow"></div>
+              <div class="card-bg"></div>
+              <div class="card-content">
+                <div class="card-header">
+                  <div class="card-icon">
+                    <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=100&h=100&fit=crop&crop=center" alt="${name}" class="complex-image">
+                    <div class="icon-pulse"></div>
+                  </div>
+                  <div class="card-info">
+                    <h3 class="card-title">${name}</h3>
+                    <p class="card-location">${lat && lng ? 'Lokasi tersedia' : 'Lokasi belum diatur'}</p>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <p class="card-description">${deskripsi || 'Tidak ada deskripsi.'}</p>
+                </div>
+                <div class="card-footer">
+                  <button class="demo-btn">
+                    <span class="btn-text">Lihat Detail</span>
+                    <div class="btn-icon"><i class="fas fa-arrow-right"></i></div>
+                    <div class="btn-ripple"></div>
+                  </button>
+                </div>
+              </div>
+            `;
+
+            komplekGrid.appendChild(card);
+          });
+
+          // Rebind demo buttons to open modal with current data attributes
+          document.querySelectorAll('.demo-btn').forEach(btn => {
+            btn.addEventListener('click', function(this: HTMLElement) {
+              const card = this.closest('.komplek-card') as HTMLElement;
+              if (!card) return;
+              const data = {
+                komplekName: card.querySelector('.card-title')?.textContent || 'Komplek',
+                lat: card.getAttribute('data-lat') || '',
+                lng: card.getAttribute('data-lng') || '',
+                alamat: card.getAttribute('data-alamat') || '-',
+                ketuaRT: card.getAttribute('data-ketua-rt') || '-',
+                ketuaRTFoto: card.getAttribute('data-ketua-rt-foto') || '',
+                bendahara: card.getAttribute('data-bendahara') || '-',
+                bendaharaFoto: card.getAttribute('data-bendahara-foto') || ''
+              };
+              openModal(data);
+            });
+          });
+
+          performSearch();
+        }
+      } catch (e) {
+        // Keep demo cards if fetch fails
+        console.warn('Gagal memuat data komplek:', e);
       }
     }
-  `;
-  if (document.head) document.head.appendChild(style);
+    fetchAndRenderKomplek();
+  });
 </script>

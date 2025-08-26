@@ -1,7 +1,11 @@
 <header class="main-header">
   <div class="header-content">
     <div class="login-button-container">
-      <div class="login-button">Admin</div>
+      <div class="login-button">
+        <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
+        <span>Admin</span>
+        <span class="plan-pill">Free</span>
+      </div>
     </div>
 
     <button class="burgir" aria-label="Toggle nav">
@@ -15,24 +19,6 @@
       <li><a href="/adminprogram">Program</a></li>
       <li><a href="/admininfo">Informasi</a></li>
     </ul>
-
-    <button class="exit">
-      <!--?xml version="1.0" encoding="utf-8" ?-->
-      <svg
-        class="icon"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        width="25"
-        height="25"
-        viewBox="0 0 125 125"
-      >
-        <path
-          d="M15.5778 0L72.7064 0C74.2739 0.878106 76.0003 1.43182 77.6043 2.24459C82.5367 4.74377 85.9778 8.75427 87.4884 14.1107C88.5933 18.029 89.2806 28.3859 87.2575 31.9726C86.7055 32.9513 85.8508 33.893 84.7298 34.1925C83.5082 34.519 82.0897 33.9999 81.0412 33.3811C80.3654 32.9823 79.8082 32.4464 79.2567 31.8943C77.7941 25.3517 80.7026 15.692 74.0997 11.5235C72.7615 10.6786 71.2244 10.2425 69.6598 10.0745C62.8105 9.33876 53.6133 9.83421 46.5012 9.83331L30.2892 9.84157C25.9733 9.84739 21.0907 9.52974 16.8705 10.4832C14.501 11.0186 12.5794 12.8829 11.3363 14.9032C10.3486 16.5083 10.1554 19.0071 10.0594 20.869C9.72805 27.2964 9.98874 33.8484 9.98777 40.2918L9.98816 77.2683L9.99467 96.493C9.99635 99.8434 9.52316 104.111 10.318 107.358C10.9846 110.081 12.514 112.316 14.9345 113.768C16.5889 114.759 18.2879 114.978 20.1801 115.136C27.2274 115.724 35.5672 115.264 42.7798 115.264L59.0582 115.257C62.8955 115.253 67.4467 115.684 71.1664 114.75C73.4861 114.167 75.7452 112.636 76.9785 110.572C80.3888 104.864 75.7616 92.9107 82.2357 91.2095C83.5152 90.8733 84.8971 91.02 86.0421 91.7004C87.0012 92.2702 87.7602 93.2237 88.033 94.3128C88.428 95.8899 88.3479 97.7372 88.3798 99.3628C88.4901 104.987 88.4635 110.696 85.4286 115.646C83.2482 119.202 80.0687 121.85 76.2364 123.443C75.2242 123.864 73.5535 124.317 72.7199 125L15.842 125C14.468 124.165 12.8717 123.656 11.4196 122.971C7.48407 121.115 4.1955 118.163 2.28092 114.213C1.36441 112.322 1.07832 110.121 0.0380345 108.302L0 108.237L0 16.8089C1.10563 15.0971 1.27129 13.0063 2.12578 11.18C3.97301 7.2839 7.07016 4.11743 10.9245 2.18443C12.4588 1.41239 14.0748 0.839894 15.5778 0Z"
-        ></path><path
-          d="M111.523 57.9966C109.015 54.9535 105.051 52.403 103.152 48.9875C102.487 47.7909 102.351 46.5907 102.744 45.2795C103.09 44.125 103.781 42.877 104.887 42.2997C105.939 41.7504 107.215 41.8245 108.318 42.1684C111.832 43.2638 120.507 52.626 122.922 55.8097C123.741 56.8906 124.373 58.0717 125 59.2709L125 66.2037C124.067 67.9099 123.132 69.4358 121.905 70.9421C119.701 73.6485 113.249 80.4027 110.409 82.3786C109.419 83.0675 108.349 83.6059 107.132 83.7215C106.141 83.8156 105.133 83.6041 104.358 82.9554C103.309 82.078 102.635 80.4452 102.517 79.1036C102.171 75.1384 108.974 70.4263 111.361 67.539C102.729 68.288 93.7178 67.8096 85.0511 67.8128C75.1868 67.8164 65.1587 68.206 55.3064 67.8282C53.044 67.7415 50.9177 67.6509 49.2771 65.8522C48.49 65.0009 48.0794 63.8681 48.1382 62.7102C48.1963 61.4419 48.7613 60.0543 49.7175 59.199C50.6302 58.3826 51.6999 58.0946 52.8911 57.9646C55.6542 57.663 58.5594 57.8104 61.3396 57.811L75.4388 57.8182C87.4264 57.8282 99.5554 57.4364 111.523 57.9966Z"
-        ></path>
-      </svg>
-    </button>
   </div>
 </header>
 
@@ -79,7 +65,7 @@
     display: flex;
     justify-content: center;
     gap: 2rem;
-    margin-right: 100px;
+    margin-right: 32px;
   }
 
   .links a{
@@ -88,12 +74,7 @@
     font-weight: 500;
   }
 
-  .links a:hover{
-    color: white;
-    padding: 10px;
-    border-radius: 10px;
-     background-color: rgb(30, 114, 232);
-  }
+  .links a:hover{ color: #2563eb; }
 
 
   @media (max-width: 768px) {
@@ -117,7 +98,7 @@
       left: 0;
       width: 100%;
       height: 100vh;
-      background: rgba(255, 255, 255, 1);
+      background: rgba(255, 255, 255, .95);
       z-index: 5;
       padding-top: 5rem;
     }
@@ -130,20 +111,15 @@
   }
 
   .main-header {
-    padding: 1rem 1rem 0 1rem;
-    font-family: sans-serif;
-    width: screen;
-    height: 64px;
-   background-color: #ffff;
+    position: sticky; top: 0; z-index: 50;
+    padding: 10px 16px;
+    backdrop-filter: saturate(180%) blur(8px);
+    background: rgba(255,255,255,.8);
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    transition: box-shadow .2s ease;
   }
 
-  .header-content {
-    display: flex;
-    justify-content: space-between;
-    max-width: screen;
-    margin: 0 auto;
-    flex-wrap: wrap;
-  }
+  .header-content { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; max-width: 1200px; margin: 0 auto; }
 
   .exit {
     cursor: pointer;
@@ -171,16 +147,13 @@
     font-weight: 500;
   }
 
-  .login-button {
-    text-decoration: none;
-    padding: 1rem 1.5rem;
-    border-radius: 20px;
-    font-size: 18px;
-    font-weight: bold;
-    color: #000;
-    cursor: default;
-  }
+  .login-button { display: inline-flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px; background: #fff; border: 1px solid #e5e7eb; box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+  .plan-pill { padding: 4px 8px; border-radius: 999px; background: rgba(34,211,238,.15); color: #22d3ee; font-weight: 700; font-size: .8rem; border: 1px solid rgba(34,211,238,.35); }
+  /* removed premium/upgrade buttons per request */
 
+  /* Locked/premium blur utility */
+  .locked { position: relative; filter: blur(2px); pointer-events: none; user-select: none; }
+  .locked::after { content: "Upgrade to Unlock"; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-weight: 700; letter-spacing: .3px; background: rgba(2,6,23,.45); border-radius: 12px; }
   /* here is the navigation */
 </style>
 
@@ -189,6 +162,7 @@
     const burgerMenu = document.querySelector(".burgir");
     const navLinks = document.querySelector(".links");
     const body = document.body;
+    const header = document.querySelector('.main-header');
 
     if (burgerMenu && navLinks) {
       burgerMenu.addEventListener("click", () => {
@@ -197,5 +171,15 @@
         body.classList.toggle("no-scroll");
       });
     }
+
+    // Shadow on scroll
+    window.addEventListener('scroll', () => {
+      if (!header) return;
+      if (window.scrollY > 4) {
+        header.style.boxShadow = '0 6px 18px rgba(2,6,23,.06)';
+      } else {
+        header.style.boxShadow = 'none';
+      }
+    });
   });
 </script>

@@ -3,21 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KomplekKita - Admin Site</title>
+    <title>KomplekKita - Admin</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
+  <div class="bg-animated">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+  </div>
+
+  <main class="admin-frame">
     <slot />
+  </main>
+
+  <div class="noise-overlay"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Reduce motion if user prefers
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReduced) {
+        document.documentElement.classList.add('reduce-motion');
+      }
+    });
+  </script>
+
+  <style>
+    :root {
+      --bg: #f7fafc;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --primary-600: #1d4ed8;
+      --accent: #22d3ee;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --radius: 16px;
+      --shadow: 0 10px 35px rgba(2, 6, 23, 0.06);
+      --shadow-soft: 0 8px 24px rgba(2, 6, 23, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+      overflow-x: hidden;
+    }
+
+    .admin-frame {
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px clamp(16px, 4vw, 32px) 64px;
+      min-height: 100dvh;
+    }
+
+    /* Animated background orbs */
+    .bg-animated { position: fixed; inset: 0; pointer-events: none; z-index: -2; }
+    .bg-orb { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .12; }
+    .orb-1 { width: 520px; height: 520px; left: -140px; top: -140px; background: radial-gradient(circle at 30% 30%, rgba(37,99,235,.25), transparent 60%); animation: floatA 18s ease-in-out infinite; }
+    .orb-2 { width: 420px; height: 420px; right: -120px; top: 10%; background: radial-gradient(circle at 60% 40%, rgba(34,211,238,.22), transparent 60%); animation: floatB 22s ease-in-out infinite; }
+    .orb-3 { width: 380px; height: 380px; left: 20%; bottom: -160px; background: radial-gradient(circle at 40% 60%, rgba(16,185,129,.22), transparent 60%); animation: floatC 24s ease-in-out infinite; }
+
+    @keyframes floatA { 0%,100% { transform: translateY(0) translateX(0); } 50% { transform: translateY(24px) translateX(16px); } }
+    @keyframes floatB { 0%,100% { transform: translateY(0) translateX(0); } 50% { transform: translateY(-20px) translateX(-20px); } }
+    @keyframes floatC { 0%,100% { transform: translateY(0) translateX(0); } 50% { transform: translateY(18px) translateX(12px); } }
+
+    .noise-overlay { position: fixed; inset: 0; pointer-events: none; background-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity=".015"/></svg>'); z-index: -1; }
+
+    /* Cards base */
+    .card {
+      background: var(--surface);
+      border: 1px solid #e5e7eb;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+    }
+  
+    /* Accessibility */
+    .reduce-motion .bg-orb { animation: none !important; }
+  </style>
 </body>
-
-<style>
-
- * {
-  font-family: sans-serif;
-  background-color: #f0f8ff;  
-  margin: 0;
-  padding: 0;
-}
-
-</style>
-
 </html>

@@ -1,18 +1,40 @@
-<section>
-    <div class="parent">
-        <div class="square total">
-            <h3>Total Kas</h3>
-            <p>Rp.</p>
-        </div>
-        <div class="square pemasukan">
-            <h3>Total Pemasukan</h3>
-            <p>Rp.</p>
-        </div>
-        <div class="square pengeluaran">
-            <h3>Total Pengeluaran</h3>
-            <p>Rp.</p>
-        </div>
+<header class="admin-hero card">
+  <div class="hero-content">
+    <div class="hero-text">
+      <h1 class="hero-title">Dashboard Komplek</h1>
+      <p class="hero-subtitle">Pantau kas, pemasukan, pengeluaran, dan data warga dengan tampilan yang lebih modern.</p>
     </div>
+    <div class="hero-actions">
+      <span class="plan-badge">Free Plan</span>
+      <a href="/admin/upgrade" class="upgrade-btn" aria-label="Upgrade Plan">Upgrade</a>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="parent">
+    <div class="square total card stat-card">
+      <div class="stat-icon stat-primary">
+        <i class="fas fa-wallet" aria-hidden="true"></i>
+      </div>
+      <h3>Total Kas</h3>
+      <p><span class="currency">Rp</span> <span id="statTotalKas" data-value="0">0</span></p>
+    </div>
+    <div class="square pemasukan card stat-card">
+      <div class="stat-icon stat-success">
+        <i class="fas fa-arrow-trend-up" aria-hidden="true"></i>
+      </div>
+      <h3>Total Pemasukan</h3>
+      <p><span class="currency">Rp</span> <span id="statPemasukan" data-value="0">0</span></p>
+    </div>
+    <div class="square pengeluaran card stat-card">
+      <div class="stat-icon stat-danger">
+        <i class="fas fa-arrow-trend-down" aria-hidden="true"></i>
+      </div>
+      <h3>Total Pengeluaran</h3>
+      <p><span class="currency">Rp</span> <span id="statPengeluaran" data-value="0">0</span></p>
+    </div>
+  </div>
 </section>
 
 <style>
@@ -29,7 +51,7 @@
         justify-content: center;
         color: #333;
         flex-shrink: 0;
-        transition: transform 0.3s ease-in-out;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     }
     .square:hover {
         transform: translateY(-5px);
@@ -63,14 +85,66 @@
     }
 
     .parent {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 20px;
         padding: 20px;
         box-sizing: border-box;
         width: 100%;
+        align-items: stretch;
     }
+
+    /* Hero */
+    .admin-hero {
+      padding: 20px clamp(16px, 3vw, 28px);
+      margin: 16px auto 0;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .hero-content { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; }
+    .hero-title { margin: 0; font-family: Poppins, Inter, sans-serif; font-weight: 700; letter-spacing: .3px; }
+    .hero-subtitle { margin: 6px 0 0 0; opacity: .8; font-size: .95rem; }
+    .hero-actions { display: flex; align-items: center; gap: 12px; }
+    .plan-badge { padding: 6px 12px; border-radius: 999px; background: rgba(34,211,238,.15); color: #22d3ee; font-weight: 600; font-size: .9rem; border: 1px solid rgba(34,211,238,.35); }
+    .upgrade-btn { padding: 10px 14px; border-radius: 10px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; text-decoration: none; font-weight: 600; box-shadow: 0 8px 20px rgba(37, 99, 235, .35); transition: transform .2s ease, box-shadow .2s ease; }
+    .upgrade-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(37, 99, 235, .45); }
+
+    /* Stat cards */
+    .stat-card { position: relative; overflow: hidden; }
+    .stat-icon { position: absolute; right: 16px; top: 16px; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; color: #fff; opacity: .95; }
+    .stat-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: 0 8px 16px rgba(37, 99, 235, .35); }
+    .stat-success { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 8px 16px rgba(16, 185, 129, .35); }
+    .stat-danger { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 8px 16px rgba(239, 68, 68, .35); }
+    .currency { color: #64748b; font-weight: 600; margin-right: 4px; }
+
+    /* Reveal animations */
+    .reveal { opacity: 0; transform: translateY(12px); transition: opacity .5s ease, transform .5s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* Charts */
+    .charts-wrap { padding: 8px 20px 0; }
+    .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; align-items: stretch; }
+    .chart-card { padding: 16px; }
+    .chart-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+    .chart-head h3 { margin: 0; font-weight: 700; font-family: Poppins, Inter, sans-serif; }
+    .muted { color: #64748b; font-size: .9rem; }
+    .legend-hint { color: #64748b; font-size: .85rem; margin: 8px 4px 0; }
+  .chart-card canvas { width: 100%; height: 280px; display: block; }
+
+    /* Polished card hover + smoother elevation */
+    .card { transition: box-shadow .25s ease, transform .25s ease; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(2,6,23,.10); }
+    .charts-grid { gap: 20px; }
+
+    /* Table row hover feedback */
+    .data-row:hover .data-cell { background: #f8fafc; }
+
+    /* Locked/premium blur utility (local) */
+    .locked { position: relative; filter: blur(1.5px); pointer-events: none; user-select: none; }
+    .locked::after { content: "Upgrade untuk membuka"; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-weight: 700; letter-spacing: .3px; background: rgba(2,6,23,.45); border-radius: 12px; }
 
     @media (max-width: 768px) {
         .parent {
@@ -84,8 +158,242 @@
             width: 130px;
 
         }
+        .hero-content { flex-direction: column; align-items: flex-start; }
+        .hero-actions { width: 100%; justify-content: space-between; }
+        .charts-grid { grid-template-columns: 1fr; }
     }
 </style>
+
+<!-- Charts Section -->
+<section class="charts-wrap">
+  <div class="charts-grid">
+    <div class="card chart-card">
+      <div class="chart-head">
+        <h3>Tren Kas</h3>
+        <span class="muted">12 bulan terakhir</span>
+      </div>
+      <canvas id="chartKas"></canvas>
+    </div>
+    <div class="card chart-card">
+      <div class="chart-head">
+        <h3>Komposisi Bulan Ini</h3>
+        <span class="muted">Pemasukan vs Pengeluaran</span>
+      </div>
+      <canvas id="chartPie"></canvas>
+    </div>
+  </div>
+  
+  <div class="legend-hint">Beberapa fitur grafik lanjutan tersedia di paket Premium.</div>
+</section>
+
+<!-- Premium previews (locked) -->
+<section class="charts-wrap">
+  <div class="charts-grid">
+    <div class="card chart-card locked reveal" style="position: relative;">
+      <div class="chart-head">
+        <h3>Export CSV</h3>
+        <span class="muted">Premium</span>
+      </div>
+      <p class="muted">Ekspor laporan pemasukan/pengeluaran ke CSV dengan sekali klik.</p>
+      <a href="/admin/upgrade" class="upgrade-btn" style="margin-top: 8px; display: inline-block;">Upgrade</a>
+    </div>
+    <div class="card chart-card locked reveal" style="position: relative;">
+      <div class="chart-head">
+        <h3>Reminder Iuran WhatsApp</h3>
+        <span class="muted">Premium</span>
+      </div>
+      <p class="muted">Kirim pengingat iuran otomatis via WhatsApp ke warga.</p>
+      <a href="/admin/upgrade" class="upgrade-btn" style="margin-top: 8px; display: inline-block;">Upgrade</a>
+    </div>
+  </div>
+</section>
+
+<!-- Upsell Section -->
+<section class="upsell card">
+  <div class="upsell-left">
+    <h2>Tingkatkan ke Premium</h2>
+    <p>Dapatkan grafik interaktif, ekspor laporan, multi admin, reminder iuran, dan prioritas support.</p>
+    <ul class="upsell-list">
+      <li>Grafik kas & tren pemasukan/pengeluaran</li>
+      <li>Import/Export CSV</li>
+      <li>Role & multi admin</li>
+      <li>Reminder WhatsApp iuran</li>
+    </ul>
+  </div>
+  <div class="upsell-right">
+    <a href="/admin/upgrade" class="upgrade-big">Lihat Paket</a>
+  </div>
+  <div class="sparkle"></div>
+  <div class="sparkle s2"></div>
+  <div class="sparkle s3"></div>
+  <div class="sparkle s4"></div>
+</section>
+
+<style>
+  .upsell { margin: 24px 20px 80px; padding: 24px; display: grid; grid-template-columns: 1fr auto; gap: 16px; position: relative; overflow: hidden; }
+  .upsell h2 { margin: 0 0 6px 0; font-family: Poppins, Inter, sans-serif; }
+  .upsell p { margin: 0 0 10px 0; opacity: .85; }
+  .upsell-list { margin: 0; padding-left: 18px; opacity: .95; }
+  .upsell-right { display: grid; place-items: center; }
+  .upgrade-big { padding: 12px 18px; border-radius: 12px; background: linear-gradient(135deg, #22d3ee, #2563eb); color: #fff; text-decoration: none; font-weight: 700; letter-spacing: .3px; box-shadow: 0 10px 24px rgba(34,211,238,.25); transition: transform .2s ease, box-shadow .2s ease; }
+  .upgrade-big:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(34,211,238,.35); }
+  .sparkle { position: absolute; width: 12px; height: 12px; background: radial-gradient(circle, #fff, rgba(255,255,255,.3)); border-radius: 50%; top: 10%; left: 10%; animation: twinkle 3s ease-in-out infinite; opacity: .6; }
+  .s2 { top: 70%; left: 20%; animation-delay: .6s; }
+  .s3 { top: 30%; left: 80%; animation-delay: 1.2s; }
+  .s4 { top: 85%; left: 90%; animation-delay: 1.8s; }
+  @keyframes twinkle { 0%,100% { transform: scale(0.7); opacity: .4; } 50% { transform: scale(1.2); opacity: .9; } }
+  @media (max-width: 768px) { .upsell { grid-template-columns: 1fr; } }
+</style>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha256-r1m0VgpbN0qWz4nFfbnUoighdxn3Y4j8y21Q71tq9iU=" crossorigin="anonymous"></script>
+
+  <script>
+    // @ts-check
+    document.addEventListener('DOMContentLoaded', () => {
+      /** @param {HTMLElement} el @param {number} end @param {number} [duration] */
+      function animateValue(el, end, duration = 900) {
+        const start = 0;
+        const startTs = performance.now();
+        const formatter = new Intl.NumberFormat('id-ID');
+        /** @param {number} now */
+        function frame(now) {
+          const p = Math.min((now - startTs) / duration, 1);
+          const val = Math.floor(start + (end - start) * p);
+          el.textContent = formatter.format(val);
+          if (p < 1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+
+      // Formatters for ID locale and Rupiah currency
+      const nfi = new Intl.NumberFormat('id-ID');
+      const rupiah = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+
+      // Tooltip / ticks helpers
+      /** @param {any} ctx */
+      function formatLineTooltip(ctx) {
+        const y = typeof ctx?.parsed?.y === 'number' ? ctx.parsed.y : 0;
+        return rupiah.format(y);
+      }
+      /** @param {any} value */
+      function formatYAxisTick(value) {
+        return 'Rp ' + nfi.format(Number(value));
+      }
+      /** @param {any} ctx */
+      function formatPieTooltip(ctx) {
+        const value = typeof ctx?.parsed === 'number' ? ctx.parsed : 0;
+        const data = ctx?.chart?.data?.datasets?.[0]?.data || [];
+        const total = (Array.isArray(data) ? data : []).reduce((a, b) => a + (Number(b) || 0), 0);
+        const pct = total ? Math.round((value / total) * 100) : 0;
+        return `${ctx?.label}: ${rupiah.format(value)} (${pct}%)`;
+      }
+
+      // Placeholder: values can be set from future API responses
+      const totalKas = document.getElementById('statTotalKas');
+      const pemasukan = document.getElementById('statPemasukan');
+      const pengeluaran = document.getElementById('statPengeluaran');
+      if (totalKas && pemasukan && pengeluaran) {
+        const v1 = Number(totalKas.getAttribute('data-value') || '0');
+        const v2 = Number(pemasukan.getAttribute('data-value') || '0');
+        const v3 = Number(pengeluaran.getAttribute('data-value') || '0');
+        animateValue(totalKas, v1);
+        animateValue(pemasukan, v2);
+        animateValue(pengeluaran, v3);
+      }
+
+    // Initialize charts with placeholder data (to be replaced with real API data)
+    // Line chart: Tren Kas 12 bulan
+    const canvasKas = document.getElementById('chartKas');
+    const canvasPie = document.getElementById('chartPie');
+    const ctxLine = (canvasKas instanceof HTMLCanvasElement) ? canvasKas.getContext('2d') : null;
+    const ctxPie = (canvasPie instanceof HTMLCanvasElement) ? canvasPie.getContext('2d') : null;
+
+    const monthLabels = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const kasData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    /** @type {any} */
+    const winAny = /** @type {any} */ (window);
+    // @ts-ignore Chart is attached by the CDN script at runtime
+    const ChartRef = winAny && winAny['Chart'];
+    if (ChartRef && ctxLine) {
+      // Gradient fill for line chart
+      const gradient = ctxLine.createLinearGradient(0, 0, 0, 280);
+      gradient.addColorStop(0, 'rgba(37, 99, 235, 0.35)');
+      gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
+      new ChartRef(ctxLine, {
+        type: 'line',
+        data: {
+          labels: monthLabels,
+          datasets: [{
+            label: 'Kas',
+            data: kasData,
+            borderColor: '#2563eb',
+            backgroundColor: gradient,
+            tension: 0.35,
+            fill: true,
+            pointRadius: 3,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: { label: formatLineTooltip }
+            }
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: {
+              grid: { color: 'rgba(100,116,139,.15)' },
+              ticks: { callback: formatYAxisTick }
+            }
+          }
+        }
+      });
+    }
+
+    // Doughnut chart: Pemasukan vs Pengeluaran bulan ini
+    if (ChartRef && ctxPie) {
+      const pemasukanBulanan = Number(pemasukan?.getAttribute('data-value') || '0');
+      const pengeluaranBulanan = Number(pengeluaran?.getAttribute('data-value') || '0');
+      new ChartRef(ctxPie, {
+        type: 'doughnut',
+        data: {
+          labels: ['Pemasukan', 'Pengeluaran'],
+          datasets: [{
+            data: [pemasukanBulanan, pengeluaranBulanan],
+            backgroundColor: ['#10b981', '#ef4444'],
+            borderColor: '#ffffff',
+            borderWidth: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: { callbacks: { label: formatPieTooltip } }
+          },
+          cutout: '62%'
+        }
+      });
+    }
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      })
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.card, .reveal').forEach(el => observer.observe(el));
+  });
+</script>
 
 <!-- Tabel informasi pengeluaran -->
 

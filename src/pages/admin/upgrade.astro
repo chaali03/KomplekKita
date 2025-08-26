@@ -1,0 +1,159 @@
+---
+import Layout from "~/layouts/admin-layout.astro";
+import Nav from "../../components/Admin-site/navbar.astro";
+---
+
+<Layout>
+  <Nav />
+
+  <section class="upgrade-hero">
+    <div class="hero-inner card">
+      <div>
+        <h1>Tingkatkan ke Premium</h1>
+        <p>Fitur profesional untuk pengurus: grafik interaktif, ekspor laporan, pengingat iuran, dan dukungan prioritas.</p>
+      </div>
+      <a href="/admin" class="ghost-btn" aria-label="Kembali ke Dashboard">Kembali ke Dashboard</a>
+    </div>
+  </section>
+
+  <section class="plans">
+    <div class="plans-grid">
+      <div class="plan-card card">
+        <div class="plan-head">
+          <h3>Premium</h3>
+          <div class="price">
+            <span class="val">Rp 99.000</span>
+            <span class="per">/bulan</span>
+          </div>
+        </div>
+        <ul class="features">
+          <li><i class="fas fa-check"></i> Semua fitur Gratis</li>
+          <li><i class="fas fa-check"></i> Grafik kas interaktif</li>
+          <li><i class="fas fa-check"></i> Download laporan (PDF/Excel)</li>
+          <li><i class="fas fa-check"></i> Reminder pembayaran iuran</li>
+          <li><i class="fas fa-check"></i> Tracking status surat</li>
+          <li><i class="fas fa-check"></i> Tandatangan digital</li>
+          <li><i class="fas fa-check"></i> Verifikasi dokumen (KTP/KK)</li>
+        </ul>
+        <div class="plan-cta">
+          <a class="btn primary" href="/kontak">Pilih Premium</a>
+        </div>
+      </div>
+
+      <div class="plan-card card featured">
+        <div class="badge">Diskon 20%</div>
+        <div class="plan-head">
+          <h3>Plus</h3>
+          <div class="price">
+            <span class="old">Rp 150.000</span>
+            <span class="val">Rp 119.000</span>
+            <span class="per">/bulan</span>
+          </div>
+        </div>
+        <ul class="features">
+          <li><i class="fas fa-plus"></i> Semua fitur Premium</li>
+          <li><i class="fas fa-plus"></i> Analitik keuangan lanjutan</li>
+          <li><i class="fas fa-plus"></i> Integrasi WhatsApp/Email</li>
+          <li><i class="fas fa-plus"></i> Dashboard analisa data warga</li>
+          <li><i class="fas fa-plus"></i> Dukungan prioritas 24/7</li>
+        </ul>
+        <div class="plan-cta">
+          <a class="btn outline" href="/kontak">Pilih Plus</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="comparison card">
+    <h3>Perbandingan singkat</h3>
+    <div class="table">
+      <div class="row head">
+        <div>Fitur</div>
+        <div>Gratis</div>
+        <div>Premium</div>
+        <div>Plus</div>
+      </div>
+      <div class="row">
+        <div>Grafik interaktif</div>
+        <div><i class="fas fa-times"></i></div>
+        <div><i class="fas fa-check"></i></div>
+        <div><i class="fas fa-check"></i></div>
+      </div>
+      <div class="row">
+        <div>Export Laporan</div>
+        <div><i class="fas fa-times"></i></div>
+        <div><i class="fas fa-check"></i></div>
+        <div><i class="fas fa-check"></i></div>
+      </div>
+      <div class="row">
+        <div>Reminder Iuran</div>
+        <div><i class="fas fa-times"></i></div>
+        <div><i class="fas fa-check"></i></div>
+        <div><i class="fas fa-check"></i></div>
+      </div>
+      <div class="row">
+        <div>Analitik Lanjutan</div>
+        <div><i class="fas fa-times"></i></div>
+        <div><i class="fas fa-times"></i></div>
+        <div><i class="fas fa-plus"></i></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta card">
+    <div>
+      <h3>Butuh penjelasan cepat?</h3>
+      <p>Kami bantu rekomendasikan paket terbaik sesuai kondisi RT/RW Anda.</p>
+    </div>
+    <div class="cta-actions">
+      <a href="/kontak" class="btn primary">Hubungi Kami</a>
+      <a href="/admin" class="btn ghost">Lihat Dashboard</a>
+    </div>
+  </section>
+
+  <style>
+    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+
+    .upgrade-hero { padding: 16px; }
+    .hero-inner { margin: 8px auto 0; padding: 20px clamp(16px, 3vw, 28px); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .ghost-btn { text-decoration: none; color: #2563eb; font-weight: 700; border: 1px solid #bfdbfe; padding: 10px 14px; border-radius: 10px; background: #f0f7ff; }
+
+    .plans { padding: 20px; }
+    .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; max-width: 1100px; margin: 0 auto; }
+    .plan-card { position: relative; padding: 18px; }
+    .plan-card .badge { position: absolute; top: 12px; right: 12px; background: #ea580c; color: #fff; padding: 4px 10px; border-radius: 999px; font-weight: 700; font-size: .8rem; }
+    .plan-card.featured { outline: 2px solid #f97316; }
+    .plan-head h3 { margin: 0 0 6px 0; font-weight: 800; }
+    .price { display: flex; align-items: baseline; gap: 8px; }
+    .price .val { font-weight: 800; font-size: 1.6rem; color: #2563eb; }
+    .price .per { color: #64748b; }
+    .price .old { color: #ef4444; text-decoration: line-through; font-weight: 700; margin-right: 4px; }
+    .features { list-style: none; padding: 0; margin: 14px 0; display: grid; gap: 8px; }
+    .features i { width: 22px; height: 22px; display: inline-grid; place-items: center; border-radius: 6px; margin-right: 8px; font-size: .85rem; }
+    .features .fa-check { color: #16a34a; background: #f0fdf4; }
+    .features .fa-plus { color: #2563eb; background: #f0f7ff; }
+    .features .fa-times { color: #6b7280; background: #f3f4f6; }
+    .plan-cta { margin-top: 10px; }
+
+    .btn { display: inline-block; text-decoration: none; font-weight: 700; border-radius: 10px; padding: 10px 16px; }
+    .btn.primary { color: #fff; background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: 0 10px 20px rgba(37,99,235,.25); }
+    .btn.outline { color: #2563eb; border: 2px solid #2563eb; background: #fff; }
+    .btn.ghost { color: #2563eb; background: #eef6ff; border: 1px solid #bfdbfe; }
+
+    .comparison { margin: 8px 20px; padding: 18px; }
+    .comparison h3 { margin: 0 0 10px 0; }
+    .table { display: grid; gap: 8px; }
+    .row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; padding: 10px; border-radius: 12px; border: 1px solid #e5e7eb; }
+    .row.head { font-weight: 800; background: #f8fafc; }
+    .row i { width: 22px; height: 22px; display: inline-grid; place-items: center; border-radius: 6px; font-size: .85rem; }
+
+    .cta { margin: 12px 20px 40px; padding: 18px; display: grid; align-items: center; grid-template-columns: 1fr auto; gap: 12px; }
+    .cta-actions { display: flex; align-items: center; gap: 8px; }
+
+    @media (max-width: 768px) {
+      .hero-inner { flex-direction: column; align-items: flex-start; }
+      .row { grid-template-columns: 1fr 1fr 1fr 1fr; }
+      .cta { grid-template-columns: 1fr; }
+    }
+  </style>
+</Layout>

@@ -2084,32 +2084,66 @@ document.addEventListener('DOMContentLoaded', function () {
     submitBtn.disabled = true;
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Clear draft after successful submission
-      localStorage.removeItem('komplek_registration_draft');
-      
-      // Success state
-      submitBtn.innerHTML = `
-        <i class="fas fa-check-circle"></i>
-        <span>Berhasil!</span>
-      `;
-      
-      showToast('Registrasi komplek berhasil!', 'success');
-      
-      // Redirect after delay
-      setTimeout(() => {
-        window.location.href = '/admin';
-      }, 1500);
-      
+      // Prepare payload mapping to backend fields
+      const body = {
+        nama: byId('namaKomplek')?.value?.trim() || '',
+        deskripsi: byId('deskripsiKomplek')?.value?.trim() || '',
+        profil: byId('profilKomplek')?.value?.trim() || '',
+        lat: byId('latKomplek')?.value ? parseFloat(byId('latKomplek').value) : null,
+        lng: byId('lngKomplek')?.value ? parseFloat(byId('lngKomplek').value) : null,
+        ketua: byId('namaKetuaRT')?.value?.trim() || null,
+        ketua_phone: normalizePhone(byId('ketuaPhone')?.value || '' ) || null,
+        bendahara: byId('namaBendahara')?.value?.trim() || null,
+        bendahara_phone: normalizePhone(byId('bendaharaPhone')?.value || '' ) || null,
+        banner_path: null,
+        logo_path: null,
+      };
+
+      // Get CSRF cookie for Sanctum (if using cookie-based auth)
+      try { await fetchWithFallback('/sanctum/csrf-cookie', { credentials: 'include' }); } catch (_) {}
+
+      const res = await fetchWithFallback('/api/komplek', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        credentials: 'include',
+      });
+
+      if (res.status === 201) {
+        // Success: clear draft and redirect
+        localStorage.removeItem('komplek_registration_draft');
+        submitBtn.innerHTML = `
+          <i class="fas fa-check-circle"></i>
+          <span>Berhasil!</span>
+        `;
+        showToast('Registrasi komplek berhasil!', 'success');
+        setTimeout(() => { window.location.href = '/admin'; }, 1200);
+        return;
+      }
+
+      if (res.status === 401) {
+        throw new Error('Anda perlu login untuk mendaftarkan komplek.');
+      }
+
+      if (res.status === 422) {
+        const data = await res.json().catch(() => ({}));
+        const errs = data?.errors || {};
+        // gather first messages
+        const messages = Object.keys(errs).map(k => Array.isArray(errs[k]) ? errs[k][0] : String(errs[k]));
+        const msg = messages.length ? messages[0] : (data?.message || 'Validasi gagal. Periksa input Anda.');
+        throw new Error(msg);
+      }
+
+      // Other errors
+      const text = await res.text().catch(() => '');
+      throw new Error(text || `Gagal menyimpan (status ${res.status}).`);
     } catch (error) {
       // Error state
       submitBtn.classList.remove('loading');
       submitBtn.innerHTML = originalContent;
       submitBtn.disabled = false;
       
-      showToast('Gagal menyimpan data. Silakan coba lagi.', 'error');
+      showToast(error?.message || 'Gagal menyimpan data. Silakan coba lagi.', 'error');
     }
   }
 
