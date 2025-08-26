@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Komplek;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -23,6 +24,21 @@ class TemplateController extends Controller
             }
 
             $spreadsheet = new Spreadsheet();
+
+            // Hidden reference sheet for dropdown lists
+            $ref = $spreadsheet->createSheet();
+            $ref->setTitle('Referensi');
+            $ref->fromArray([
+                ['Sumber','Kategori Pemasukan','Kategori Pengeluaran'],
+                ['Kas','Iuran','Operasional'],
+                ['Iuran','Donasi','Perawatan'],
+                ['Donasi','Sponsor','Kegiatan'],
+                ['Lainnya','Bunga Bank','Sumbangan'],
+                ['','','Lainnya'],
+            ], null, 'A1');
+            foreach (range('A','C') as $c) { $ref->getColumnDimension($c)->setWidth(22); }
+            // Hide reference sheet
+            $ref->setSheetState(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet::SHEETSTATE_HIDDEN);
             $sheet = $spreadsheet->getActiveSheet();
             $sheet->setTitle('Data Warga');
 
@@ -144,6 +160,11 @@ class TemplateController extends Controller
     {
         // Structured multi-sheet template: Pemasukan, Pengeluaran, Kas Terkini, Ringkasan Bulanan
         try {
+            // Preflight checks
+            if (!extension_loaded('zip')) {
+                Log::error('downloadKeuangan preflight failed: PHP ext-zip not enabled');
+                throw new \RuntimeException('PHP Zip extension (ext-zip) is not enabled');
+            }
             if (!class_exists(\PhpOffice\PhpSpreadsheet\Spreadsheet::class)) {
                 throw new \RuntimeException('PhpSpreadsheet not installed');
             }
@@ -162,6 +183,54 @@ class TemplateController extends Controller
                 $sheet->getTabColor()->setRGB($tabColor);
             };
 
+            // Fast path: lightweight 3-sheet template (default)
+            $advanced = request()->boolean('advanced', false);
+            if (!$advanced) {
+                // Sheet: Pemasukan
+                $in = $spreadsheet->getActiveSheet();
+                $in->setTitle('Pemasukan');
+                $inHeaders = ['#','Tanggal','Keterangan','Kategori','Sumber','Jumlah','Bulan','Tahun'];
+                $in->fromArray([$inHeaders], null, 'A1');
+                $styleHeader($in, 'A1:H1', 'FF059669', 'FF10B981', '10B981');
+                $inWidths = [6,16,36,18,14,16,10,10];
+                foreach (range('A','H') as $i => $c) { $in->getColumnDimension($c)->setWidth($inWidths[$i]); }
+                $in->freezePane('A2');
+                $in->setAutoFilter('A1:H1');
+
+                // Sheet: Pengeluaran
+                $out = $spreadsheet->createSheet();
+                $out->setTitle('Pengeluaran');
+                $outHeaders = ['#','Tanggal','Keterangan','Kategori','Sumber','Jumlah','Bulan','Tahun'];
+                $out->fromArray([$outHeaders], null, 'A1');
+                $styleHeader($out, 'A1:H1', 'FFB91C1C', 'FFEF4444', 'EF4444');
+                foreach (range('A','H') as $i => $c) { $out->getColumnDimension($c)->setWidth($inWidths[$i]); }
+                $out->freezePane('A2');
+                $out->setAutoFilter('A1:H1');
+
+                // Sheet: Kas Terkini
+                $kas = $spreadsheet->createSheet();
+                $kas->setTitle('Kas Terkini');
+                $kasHeaders = ['Bulan','Tahun','TanggalUpdate','SaldoKas','Catatan'];
+                $kas->fromArray([$kasHeaders], null, 'A1');
+                $styleHeader($kas, 'A1:E1', 'FF0EA5E9', 'FF38BDF8', '0EA5E9');
+                $kasWidths = [10,10,16,18,40];
+                foreach (range('A','E') as $i => $c) { $kas->getColumnDimension($c)->setWidth($kasWidths[$i]); }
+                $kas->freezePane('A2');
+
+                // Ensure first sheet active
+                $spreadsheet->setActiveSheetIndex($spreadsheet->getIndex($in));
+
+                // Output fast (streamed)
+                return response()->streamDownload(function () use ($spreadsheet) {
+                    $writer = new Xlsx($spreadsheet);
+                    $writer->setPreCalculateFormulas(false);
+                    $writer->save('php://output');
+                }, 'template-keuangan.xlsx', [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+                ]);
+            }
+
             // Sheet 1: Pemasukan
             $in = $spreadsheet->getActiveSheet();
             $in->setTitle('Pemasukan');
@@ -171,26 +240,58 @@ class TemplateController extends Controller
             $inWidths = [6,16,36,18,14,16,10,10];
             foreach (range('A','H') as $i => $c) { $in->getColumnDimension($c)->setWidth($inWidths[$i]); }
             $in->freezePane('A2');
+            $in->setAutoFilter('A1:H1');
             $maxRows = 501; // header + 500 rows
             for ($r = 2; $r <= $maxRows; $r++) { $in->setCellValue('A'.$r, '=ROW()-1'); }
             $in->getStyle('A2:A'.$maxRows)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $in->getStyle('B2:B'.$maxRows)->getNumberFormat()->setFormatCode('yyyy-mm-dd');
-            $in->getStyle('F2:F'.$maxRows)->getNumberFormat()->setFormatCode('#,##0');
+            $in->getStyle('F2:F'.$maxRows)->getNumberFormat()->setFormatCode('\"Rp\" #,##0');
             $in->getStyle('G2:H'.$maxRows)->getNumberFormat()->setFormatCode('0');
             $in->getStyle('A1:H'.$maxRows)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('E5E7EB');
+            // Zebra striping for readability (non-fatal)
+            try {
+                $inZebra = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $inZebra->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_EXPRESSION)
+                    ->addCondition('MOD(ROW(),2)=0');
+                $inZebra->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FAFAFA');
+                $inRange = 'A2:H'.$maxRows;
+                $inExistingConds = $in->getStyle($inRange)->getConditionalStyles();
+                $inExistingConds[] = $inZebra;
+                $in->getStyle($inRange)->setConditionalStyles($inExistingConds);
+            } catch (\Throwable $__) { /* ignore */ }
             // Data validation for Sumber
-            if (class_exists(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::class)) {
-                for ($r = 2; $r <= $maxRows; $r++) {
-                    $dv = $in->getCell('E'.$r)->getDataValidation();
-                    $dv->setType(DataValidation::TYPE_LIST)
-                        ->setErrorStyle(DataValidation::STYLE_STOP)
-                        ->setAllowBlank(false)
-                        ->setShowDropDown(true)
-                        ->setPromptTitle('Sumber')
-                        ->setPrompt('Pilih: Kas atau Iuran')
-                        ->setFormula1('"Kas,Iuran"');
+            try {
+                if (class_exists(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::class)) {
+                    for ($r = 2; $r <= $maxRows; $r++) {
+                        // Kategori (D)
+                        $dvK = $in->getCell('D'.$r)->getDataValidation();
+                        $dvK->setType(DataValidation::TYPE_LIST)
+                            ->setErrorStyle(DataValidation::STYLE_STOP)
+                            ->setAllowBlank(false)
+                            ->setShowDropDown(true)
+                            ->setPromptTitle('Kategori')
+                            ->setPrompt('Pilih kategori pemasukan')
+                            ->setFormula1("='Referensi'!$B$2:$B$100");
+                        // Sumber (E)
+                        $dv = $in->getCell('E'.$r)->getDataValidation();
+                        $dv->setType(DataValidation::TYPE_LIST)
+                            ->setErrorStyle(DataValidation::STYLE_STOP)
+                            ->setAllowBlank(false)
+                            ->setShowDropDown(true)
+                            ->setPromptTitle('Sumber')
+                            ->setPrompt('Pilih: Kas / Iuran / Donasi / Lainnya')
+                            ->setFormula1("='Referensi'!$A$2:$A$100");
+                    }
                 }
-            }
+            } catch (\Throwable $__) { /* ignore */ }
+            // Totals row for Pemasukan
+            $inTotalRow = $maxRows + 1;
+            $in->setCellValue('E'.$inTotalRow, 'TOTAL');
+            $in->setCellValue('F'.$inTotalRow, '=SUM(F2:F'.$maxRows.')');
+            $in->getStyle('E'.$inTotalRow.':F'.$inTotalRow)->getFont()->setBold(true);
+            $in->getStyle('A'.$inTotalRow.':H'.$inTotalRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('F8FAFC');
+            $in->getStyle('F'.$inTotalRow)->getNumberFormat()->setFormatCode('\"Rp\" #,##0');
+            $in->getStyle('A'.$inTotalRow.':H'.$inTotalRow)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('CBD5E1');
 
             // Sheet 2: Pengeluaran
             $out = $spreadsheet->createSheet();
@@ -200,24 +301,56 @@ class TemplateController extends Controller
             $styleHeader($out, 'A1:H1', 'FFB91C1C', 'FFEF4444', 'EF4444');
             foreach (range('A','H') as $i => $c) { $out->getColumnDimension($c)->setWidth($inWidths[$i]); }
             $out->freezePane('A2');
+            $out->setAutoFilter('A1:H1');
             for ($r = 2; $r <= $maxRows; $r++) { $out->setCellValue('A'.$r, '=ROW()-1'); }
             $out->getStyle('A2:A'.$maxRows)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $out->getStyle('B2:B'.$maxRows)->getNumberFormat()->setFormatCode('yyyy-mm-dd');
-            $out->getStyle('F2:F'.$maxRows)->getNumberFormat()->setFormatCode('#,##0');
+            $out->getStyle('F2:F'.$maxRows)->getNumberFormat()->setFormatCode('\"Rp\" #,##0');
             $out->getStyle('G2:H'.$maxRows)->getNumberFormat()->setFormatCode('0');
             $out->getStyle('A1:H'.$maxRows)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('E5E7EB');
-            if (class_exists(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::class)) {
-                for ($r = 2; $r <= $maxRows; $r++) {
-                    $dv = $out->getCell('E'.$r)->getDataValidation();
-                    $dv->setType(DataValidation::TYPE_LIST)
-                        ->setErrorStyle(DataValidation::STYLE_STOP)
-                        ->setAllowBlank(false)
-                        ->setShowDropDown(true)
-                        ->setPromptTitle('Sumber')
-                        ->setPrompt('Pilih: Kas atau Iuran')
-                        ->setFormula1('"Kas,Iuran"');
+            // Zebra striping for readability (non-fatal)
+            try {
+                $outZebra = new \PhpOffice\PhpSpreadsheet\Style\Conditional();
+                $outZebra->setConditionType(\PhpOffice\PhpSpreadsheet\Style\Conditional::CONDITION_EXPRESSION)
+                    ->addCondition('MOD(ROW(),2)=0');
+                $outZebra->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FEF2F2');
+                $outRange = 'A2:H'.$maxRows;
+                $outExistingConds = $out->getStyle($outRange)->getConditionalStyles();
+                $outExistingConds[] = $outZebra;
+                $out->getStyle($outRange)->setConditionalStyles($outExistingConds);
+            } catch (\Throwable $__) { /* ignore */ }
+            try {
+                if (class_exists(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::class)) {
+                    for ($r = 2; $r <= $maxRows; $r++) {
+                        // Kategori (D)
+                        $dvK = $out->getCell('D'.$r)->getDataValidation();
+                        $dvK->setType(DataValidation::TYPE_LIST)
+                            ->setErrorStyle(DataValidation::STYLE_STOP)
+                            ->setAllowBlank(false)
+                            ->setShowDropDown(true)
+                            ->setPromptTitle('Kategori')
+                            ->setPrompt('Pilih kategori pengeluaran')
+                            ->setFormula1("='Referensi'!$C$2:$C$100");
+                        // Sumber (E)
+                        $dv = $out->getCell('E'.$r)->getDataValidation();
+                        $dv->setType(DataValidation::TYPE_LIST)
+                            ->setErrorStyle(DataValidation::STYLE_STOP)
+                            ->setAllowBlank(false)
+                            ->setShowDropDown(true)
+                            ->setPromptTitle('Sumber')
+                            ->setPrompt('Pilih: Kas / Iuran / Donasi / Lainnya')
+                            ->setFormula1("='Referensi'!$A$2:$A$100");
+                    }
                 }
-            }
+            } catch (\Throwable $__) { /* ignore */ }
+            // Totals row for Pengeluaran
+            $outTotalRow = $maxRows + 1;
+            $out->setCellValue('E'.$outTotalRow, 'TOTAL');
+            $out->setCellValue('F'.$outTotalRow, '=SUM(F2:F'.$maxRows.')');
+            $out->getStyle('E'.$outTotalRow.':F'.$outTotalRow)->getFont()->setBold(true);
+            $out->getStyle('A'.$outTotalRow.':H'.$outTotalRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FEF2F2');
+            $out->getStyle('F'.$outTotalRow)->getNumberFormat()->setFormatCode('\"Rp\" #,##0');
+            $out->getStyle('A'.$outTotalRow.':H'.$outTotalRow)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('CBD5E1');
 
             // Sheet 3: Kas Terkini
             $kas = $spreadsheet->createSheet();
@@ -229,9 +362,10 @@ class TemplateController extends Controller
             foreach (range('A','E') as $i => $c) { $kas->getColumnDimension($c)->setWidth($kasWidths[$i]); }
             $kas->freezePane('A2');
             $kas->getStyle('C2:C200')->getNumberFormat()->setFormatCode('yyyy-mm-dd');
-            $kas->getStyle('D2:D200')->getNumberFormat()->setFormatCode('#,##0');
+            $kas->getStyle('D2:D200')->getNumberFormat()->setFormatCode('\"Rp\" #,##0');
             $kas->getStyle('A1:E200')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('E5E7EB');
-            if (class_exists(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::class)) {
+            try {
+                if (class_exists(\PhpOffice\PhpSpreadsheet\Cell\DataValidation::class)) {
                 for ($r = 2; $r <= 200; $r++) {
                     $dvB = $kas->getCell('A'.$r)->getDataValidation();
                     $dvB->setType(DataValidation::TYPE_WHOLE)
@@ -250,7 +384,8 @@ class TemplateController extends Controller
                         ->setErrorTitle('Tahun salah')
                         ->setError('Isi tahun 4 digit');
                 }
-            }
+                }
+            } catch (\Throwable $__) { /* ignore */ }
 
             // Sheet 4: Ringkasan Bulanan
             $sum = $spreadsheet->createSheet();
@@ -281,10 +416,13 @@ class TemplateController extends Controller
                 // Saldo Bersih
                 $sum->setCellValue('D'.$row, '=B'.$row.'-C'.$row);
                 // Saldo Kas Terkini for month (latest in Kas sheet for that month/year)
-                // Use LOOKUP with 2 to get the last matching SaldoKas in 'Kas Terkini' sheet
-                $sum->setCellValue('E'.$row, sprintf("=IFERROR(LOOKUP(2,1/('Kas Terkini'!A:A=A%d)/('Kas Terkini'!B:B=$B$1),'Kas Terkini'!D:D),\"\")", $row));
+                try {
+                    $sum->setCellValue('E'.$row, sprintf('=IFERROR(LOOKUP(2,1/(\'Kas Terkini\'!A:A=A%d)/(\'Kas Terkini\'!B:B=$B$1),\'Kas Terkini\'!D:D),"")', $row));
+                } catch (\Throwable $__) {
+                    $sum->setCellValue('E'.$row, '');
+                }
             }
-            $sum->getStyle('B4:E15')->getNumberFormat()->setFormatCode('#,##0');
+            $sum->getStyle('B4:E15')->getNumberFormat()->setFormatCode('"Rp" #,##0');
             $sum->getStyle('A4:E15')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('E5E7EB');
 
             // Instruction sheet
@@ -312,23 +450,29 @@ class TemplateController extends Controller
             // Set active sheet to Pemasukan
             $spreadsheet->setActiveSheetIndex($spreadsheet->getIndex($in));
 
-            // Output
-            $writer = new Xlsx($spreadsheet);
-            ob_start();
-            $writer->save('php://output');
-            $xlsxData = ob_get_clean();
-            return response($xlsxData, 200, [
+            // Output (streamed)
+            return response()->streamDownload(function () use ($spreadsheet) {
+                $writer = new Xlsx($spreadsheet);
+                $writer->setPreCalculateFormulas(false);
+                $writer->save('php://output');
+            }, 'template-keuangan.xlsx', [
                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'Content-Disposition' => 'attachment; filename="template-keuangan.xlsx"',
-                'Cache-Control' => 'max-age=0',
+                'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
             ]);
         } catch (\Throwable $e) {
+            // Log the exact error to help diagnose why XLSX failed
+            Log::error('downloadKeuangan XLSX generation failed', [
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
             // Fallback to a simple CSV for Pemasukan
             $headers = ['#','Tanggal','Keterangan','Kategori','Sumber','Jumlah','Bulan','Tahun'];
             $csv = implode(',', $headers)."\n";
             return response($csv, 200, [
                 'Content-Type' => 'text/csv; charset=UTF-8',
-                'Content-Disposition' => 'attachment; filename="template-keuangan.csv"',
+                'Content-Disposition' => 'attachment; filename="template-keuangan-error.csv"',
             ]);
         }
     }
