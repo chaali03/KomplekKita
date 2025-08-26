@@ -55,6 +55,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 // Komplek Endpoints
+Route::get('/komplek', [KomplekController::class, 'index']);
 Route::get('/komplek/{id}', [KomplekController::class, 'show']);
 Route::get('/komplek/check-availability', [KomplekController::class, 'checkAvailability']);
 Route::get('/komplek/check', [KomplekController::class, 'checkAvailability']);
