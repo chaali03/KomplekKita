@@ -1,4 +1,4 @@
-/* Admin Dashboard CSS - Modern UI/UX Design */
+   /* Admin Dashboard CSS - Modern UI/UX Design */
 
 :root {
   /* Primary Colors */
@@ -63,7 +63,7 @@
 
 /* Upgrade Page Styles */
 .upgrade-page {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 1.5rem;
 }
@@ -722,15 +722,16 @@
   }
   
   .admin-topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
     padding: 1rem;
   }
   
   .topbar-actions {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: nowrap;
   }
   
   .search-container {
@@ -876,6 +877,12 @@
   gap: 0.75rem;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .menu-toggle {
   width: 2.5rem;
   height: 2.5rem;
@@ -905,7 +912,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  max-width: 1280px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -1108,7 +1115,7 @@
   top: calc(100% + 0.9rem) !important;
 }
 
-.admin-topbar .user-dropdown { margin-top: -80px; }
+.admin-topbar .user-dropdown { margin-top: 0; }
 
 @media (max-width: 768px) {
   .admin-topbar .user-dropdown { margin-top: 0; }
@@ -1436,7 +1443,7 @@
   padding: 0.75rem 1rem;
   display: flex;
   gap: 0.75rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
   transition: background-color var(--transition);
   cursor: pointer;
 }
@@ -1789,7 +1796,7 @@
   width: 200px;
   background-color: var(--bg-card);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   box-shadow: var(--shadow-md);
   padding: 0.5rem 0;
   z-index: 50;
@@ -2007,9 +2014,9 @@
 
 @media (max-width: 768px) {
   .admin-topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
     padding: 1rem;
   }
   
@@ -2264,11 +2271,11 @@
   width: 200px;
   background-color: var(--bg-card);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   box-shadow: var(--shadow-md);
-  overflow: hidden;
-  z-index: 60;
+  padding: 0.5rem 0;
   display: none;
+  z-index: 60;
 }
 
 .dropdown-menu.show,
@@ -2623,4 +2630,5 @@
   width: 200px;
   background-color: var(--bg-card);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-
+  border: 1px solid var(--border);
+}

@@ -16,11 +16,14 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
       <div class="shape shape-4"></div>
     </div>
   <section class="upgrade-hero">
+    <a href="/admin" class="back-button">
+      <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+    </a>
     <div class="hero-inner">
       <div class="hero-content">
         <div class="hero-badge">Upgrade Sekarang</div>
         <h1>Tingkatkan Akun Anda</h1>
-        <p class="hero-description">Akses fitur-fitur premium untuk mengelola kompleks Anda dengan lebih efisien dan profesional. Pilih paket yang sesuai dengan kebutuhan Anda.</p>
+        <p class="hero-description">Kelola komplek lebih modern dengan fitur-fitur yang fokus pada Transparansi Keuangan, Proses Birokrasi Warga, dan Validasi Data Warga. Desain ramah pengguna, animasi halus, dan alur kerja yang simpel.</p>
         <div class="hero-actions">
           <a href="#plans" class="hero-button primary">
             <i class="fas fa-crown"></i> Lihat Paket Premium
@@ -33,9 +36,6 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
           <img src="/images/hero-app.png" alt="Premium Features" class="hero-img">
         </div>
       </div>
-      <a href="/admin" class="back-button">
-        <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
-      </a>
     </div>
   </section>
 
@@ -50,7 +50,6 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
       <div class="plan-card free">
         <div class="card-shine"></div>
         <div class="plan-header">
-          <div class="plan-badge">Saat Ini</div>
           <div class="plan-icon">
             <i class="fas fa-rocket"></i>
           </div>
@@ -63,12 +62,12 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
         <div class="plan-features">
           <ul>
             <li class="feature-item"><i class="fas fa-check"></i> Dashboard dasar</li>
-            <li class="feature-item"><i class="fas fa-check"></i> Pencatatan kas masuk & keluar</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Pencatatan pemasukan & pengeluaran</li>
             <li class="feature-item"><i class="fas fa-check"></i> Laporan keuangan bulanan</li>
-            <li class="feature-item"><i class="fas fa-check"></i> Manajemen program</li>
             <li class="feature-item"><i class="fas fa-check"></i> Informasi kompleks</li>
             <li class="feature-item disabled"><i class="fas fa-times"></i> Grafik interaktif</li>
-            <li class="feature-item disabled"><i class="fas fa-times"></i> Export laporan</li>
+            <li class="feature-item disabled"><i class="fas fa-times"></i> Download PDF/Excel</li>
+            <li class="feature-item disabled"><i class="fas fa-times"></i> Notifikasi & reminder</li>
           </ul>
         </div>
         <div class="plan-footer">
@@ -78,8 +77,8 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
 
       <div class="plan-card premium recommended">
         <div class="card-shine"></div>
+        <div class="ribbon">Terpopuler</div>
         <div class="plan-header">
-          <div class="plan-badge">Populer</div>
           <div class="plan-icon">
             <i class="fas fa-crown"></i>
           </div>
@@ -92,12 +91,12 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
         <div class="plan-features">
           <ul>
             <li class="feature-item highlight"><i class="fas fa-check"></i> Semua fitur Free</li>
-            <li class="feature-item"><i class="fas fa-check"></i> Grafik kas interaktif</li>
-            <li class="feature-item"><i class="fas fa-check"></i> Export laporan (PDF/Excel)</li>
-            <li class="feature-item"><i class="fas fa-check"></i> Reminder pembayaran iuran</li>
-            <li class="feature-item"><i class="fas fa-check"></i> Tracking status surat</li>
-            <li class="feature-item"><i class="fas fa-check"></i> Tandatangan digital</li>
-            <li class="feature-item"><i class="fas fa-check"></i> Verifikasi dokumen (KTP/KK)</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Transparansi Keuangan: daftar pemasukan & pengeluaran bulanan</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Laporan keuangan otomatis + grafik interaktif</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Download laporan (PDF/Excel)</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Reminder pembayaran iuran via notifikasi</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Notifikasi real-time transaksi baru</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Proses Birokrasi: request & tracking status surat</li>
           </ul>
         </div>
         <div class="plan-footer">
@@ -111,7 +110,6 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
         <div class="card-shine"></div>
         <div class="ribbon">Hemat 20%</div>
         <div class="plan-header">
-          <div class="plan-badge">Diskon 20%</div>
           <div class="plan-icon">
             <i class="fas fa-gem"></i>
           </div>
@@ -126,11 +124,15 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
           <ul>
             <li class="feature-item highlight"><i class="fas fa-check"></i> Semua fitur Premium</li>
             <li class="feature-item plus"><i class="fas fa-plus"></i> Analitik keuangan lanjutan</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Tandatangan digital pengurus</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Arsip surat otomatis & riwayat pengajuan</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Cetak surat langsung dari aplikasi</li>
             <li class="feature-item plus"><i class="fas fa-plus"></i> Integrasi WhatsApp/Email</li>
-            <li class="feature-item plus"><i class="fas fa-plus"></i> Dashboard analisa data warga</li>
-            <li class="feature-item plus"><i class="fas fa-plus"></i> Multi-user (hingga 5 pengguna)</li>
-            <li class="feature-item plus"><i class="fas fa-plus"></i> Dukungan prioritas 24/7</li>
-            <li class="feature-item plus"><i class="fas fa-plus"></i> Aplikasi mobile</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Validasi Data: verifikasi otomatis (KTP/KK)</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Update data rumah & anggota keluarga</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Riwayat perubahan & laporan demografi</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Export data warga ke Excel</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Dashboard pengurus untuk analisa data warga</li>
           </ul>
         </div>
         <div class="plan-footer">
@@ -162,100 +164,120 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
           </thead>
         <tbody>
           <tr class="category-row">
-            <td colspan="4"><span class="category-label">Dasar</span></td>
+            <td colspan="4"><span class="category-label">Transparansi Keuangan</span></td>
           </tr>
           <tr class="feature-row">
-            <td class="feature-name">Dashboard</td>
-            <td><span class="check-icon"><i class="fas fa-check"></i></span></td>
-            <td><span class="check-icon"><i class="fas fa-check"></i></span></td>
-            <td><span class="check-icon"><i class="fas fa-check"></i></span></td>
-          </tr>
-          <tr class="feature-row">
-            <td class="feature-name">Pencatatan Kas</td>
+            <td class="feature-name">Daftar pemasukan & pengeluaran bulanan</td>
             <td><span class="check-icon"><i class="fas fa-check"></i></span></td>
             <td><span class="check-icon"><i class="fas fa-check"></i></span></td>
             <td><span class="check-icon"><i class="fas fa-check"></i></span></td>
           </tr>
           <tr class="feature-row">
-            <td class="feature-name">Laporan Bulanan</td>
-            <td><span class="check-icon"><i class="fas fa-check"></i></span></td>
-            <td><span class="check-icon"><i class="fas fa-check"></i></span></td>
-            <td><span class="check-icon"><i class="fas fa-check"></i></span></td>
+            <td class="feature-name">Laporan keuangan otomatis + grafik interaktif</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
           </tr>
-          
+          <tr class="feature-row">
+            <td class="feature-name">Download laporan keuangan (PDF/Excel)</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Reminder pembayaran iuran via notifikasi</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Notifikasi real-time transaksi baru</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Analitik keuangan lanjutan</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+
           <tr class="category-row">
-            <td colspan="4"><span class="category-label">Visualisasi & Laporan</span></td>
+            <td colspan="4"><span class="category-label">Proses Birokrasi Warga</span></td>
           </tr>
           <tr class="feature-row">
-            <td class="feature-name">Grafik Interaktif</td>
+            <td class="feature-name">Request surat pindah/izin melalui sistem</td>
             <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
             <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
             <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
           </tr>
           <tr class="feature-row">
-            <td class="feature-name">Export Laporan (PDF/Excel)</td>
+            <td class="feature-name">Tracking status surat</td>
             <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
             <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
             <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
           </tr>
           <tr class="feature-row">
-            <td class="feature-name">Analitik Lanjutan</td>
+            <td class="feature-name">Tandatangan digital pengurus</td>
             <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
             <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
             <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
           </tr>
-          
+          <tr class="feature-row">
+            <td class="feature-name">Arsip surat otomatis & riwayat pengajuan</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Cetak surat langsung dari aplikasi</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Integrasi dengan WhatsApp/email</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+
           <tr class="category-row">
-            <td colspan="4"><span class="category-label">Fitur Tambahan</span></td>
+            <td colspan="4"><span class="category-label">Validasi Data Warga</span></td>
           </tr>
           <tr class="feature-row">
-            <td class="feature-name">Reminder Iuran</td>
-            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
-            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
-            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
-          </tr>
-          <tr class="feature-row">
-            <td class="feature-name">Tracking Status Surat</td>
-            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
-            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
-            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
-          </tr>
-          <tr class="feature-row">
-            <td class="feature-name">Tandatangan Digital</td>
-            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
-            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
-            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
-          </tr>
-          <tr class="feature-row">
-            <td class="feature-name">Integrasi WhatsApp/Email</td>
+            <td class="feature-name">Update data kepemilikan rumah & anggota keluarga</td>
             <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
             <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
             <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
           </tr>
           <tr class="feature-row">
-            <td class="feature-name">Multi-user</td>
+            <td class="feature-name">Verifikasi otomatis dengan dokumen (KTP/KK)</td>
             <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
             <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
             <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
           </tr>
           <tr class="feature-row">
-            <td class="feature-name">Aplikasi Mobile</td>
+            <td class="feature-name">Riwayat perubahan data</td>
             <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
             <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
             <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
           </tr>
-          
-          <tr class="category-row">
-            <td colspan="4"><span class="category-label">Dukungan</span></td>
-          </tr>
           <tr class="feature-row">
-            <td class="feature-name">Email Support</td>
-            <td><span class="check-icon"><i class="fas fa-check"></i></span></td>
-            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
+            <td class="feature-name">Laporan demografi warga</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
             <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
           </tr>
           <tr class="feature-row">
-            <td class="feature-name">Dukungan Prioritas</td>
+            <td class="feature-name">Export data warga ke Excel</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Dashboard pengurus untuk analisa data warga</td>
             <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
             <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
             <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
@@ -318,30 +340,6 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
   </section>
 </div>
 
-  <section class="cta-section">
-    <div class="cta-container">
-      <div class="cta-content">
-        <span class="cta-badge">Tingkatkan Sekarang</span>
-        <h2>Siap untuk meningkatkan?</h2>
-        <p>Pilih paket premium untuk fitur lengkap pengelolaan kompleks Anda.</p>
-        <div class="cta-actions">
-          <a href="#plans" class="cta-button primary">
-            <span class="button-text">Pilih Paket</span>
-            <span class="button-icon"><i class="fas fa-arrow-up"></i></span>
-          </a>
-          <a href="/admin" class="cta-button ghost">
-            <span class="button-text">Kembali ke Dashboard</span>
-            <span class="button-icon"><i class="fas fa-tachometer-alt"></i></span>
-          </a>
-        </div>
-      </div>
-      <div class="cta-image">
-        <img src="/images/hero-app.png" alt="Upgrade Illustration" class="floating-image">
-        <div class="image-glow"></div>
-      </div>
-    </div>
-  </section>
-  
   <!-- Scroll to top button sudah ditambahkan di bagian bawah halaman -->
 
   <style>
@@ -1281,6 +1279,22 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
       height: 100%;
       display: flex;
       flex-direction: column;
+      will-change: transform, box-shadow;
+    }
+    
+    .plan-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px; /* thickness */
+      background: linear-gradient(135deg, rgba(59,130,246,.35), rgba(139,92,246,.35));
+      -webkit-mask: 
+        linear-gradient(#000 0 0) content-box, 
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events: none;
     }
     
     .plan-card:hover {
@@ -1335,7 +1349,8 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
     }
 
     .upgrade-hero {
-      padding: 2rem 1rem; 
+      /* Tambah ruang di atas agar tombol back tidak menabrak CTA */
+      padding: 4.5rem 1rem 2rem; 
       position: relative;
       z-index: 1;
       margin-bottom: 3rem;
@@ -1424,6 +1439,7 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
       position: relative;
       overflow: hidden;
       letter-spacing: 0.5px;
+      will-change: transform, box-shadow;
     }
     
     .hero-button::before {
@@ -1440,7 +1456,6 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
         rgba(255, 255, 255, 0) 100%
       );
       transition: left 0.7s ease;
-      z-index: 1;
     }
     
     .hero-button:hover::before {
@@ -1519,7 +1534,7 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
     
     .back-button {
       position: absolute;
-      top: 1rem;
+      top: 0.75rem;
       left: 1rem;
       display: inline-flex;
       align-items: center;
@@ -1531,6 +1546,7 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
       font-weight: 500;
       box-shadow: var(--shadow-sm);
       transition: all var(--transition-fast);
+      z-index: 5;
     }
     
     .back-button:hover {
@@ -1802,6 +1818,61 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
       text-align: center;
       border-top: 1px solid rgba(229, 231, 235, 0.5);
       background: linear-gradient(0deg, rgba(249, 250, 251, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative; /* sit above shine overlay */
+      z-index: 2;
+    }
+
+    /* Scoped overrides to avoid touching other designs */
+    .plan-footer .upgrade-button {
+      width: auto;
+      max-width: 320px;
+      margin: 0 auto;
+      display: inline-flex;
+      gap: .35rem;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .plan-footer .upgrade-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0,0,0,.12);
+    }
+    .plan-footer .upgrade-button:active {
+      transform: translateY(-1px) scale(.985);
+      box-shadow: 0 6px 14px rgba(0,0,0,.10);
+    }
+
+    /* Disable shine in plan footer to avoid white-out effect */
+    .plan-footer .upgrade-button::before { content: none !important; display: none !important; }
+    .plan-footer .upgrade-button::after { content: none !important; display: none !important; }
+
+    /* Keep gradients — prevent any hover override to white in footer context */
+    .plan-footer .upgrade-button.premium-btn,
+    .plan-footer .upgrade-button.premium-btn:hover,
+    .plan-footer .upgrade-button.premium-btn:active,
+    .plan-footer .upgrade-button.plus-btn,
+    .plan-footer .upgrade-button.plus-btn:hover,
+    .plan-footer .upgrade-button.plus-btn:active {
+      background-color: transparent !important;
+      background-image: none !important;
+      color: #fff !important;
+      border: none !important;
+      mix-blend-mode: normal !important;
+      filter: none !important;
+      -webkit-filter: none !important;
+      background-clip: padding-box !important;
+    }
+    /* Apply explicit gradients separately to avoid being overridden by any shared rules */
+    .plan-footer .upgrade-button.premium-btn,
+    .plan-footer .upgrade-button.premium-btn:hover,
+    .plan-footer .upgrade-button.premium-btn:active { 
+      background-image: linear-gradient(135deg, #3b82f6, #1d4ed8) !important; 
+    }
+    .plan-footer .upgrade-button.plus-btn,
+    .plan-footer .upgrade-button.plus-btn:hover,
+    .plan-footer .upgrade-button.plus-btn:active { 
+      background-image: linear-gradient(135deg, #8b5cf6, #6d28d9) !important; 
     }
 
     .upgrade-button {
@@ -1816,6 +1887,7 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      will-change: transform, box-shadow;
     }
     
     .upgrade-button::before {
@@ -1907,6 +1979,19 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
       border-bottom: 1px solid rgba(229, 231, 235, 0.5);
       transition: background-color 0.2s ease;
     }
+
+    /* Sticky first column for easier reading */
+    .comparison-table th.feature-col {
+      position: sticky;
+      left: 0;
+      z-index: 11;
+    }
+    .comparison-table td.feature-name {
+      position: sticky;
+      left: 0;
+      z-index: 9;
+      background: #ffffff;
+    }
     
     .comparison-table tr:hover td:not(.category-row td) {
       background-color: rgba(243, 244, 246, 0.5);
@@ -1949,6 +2034,11 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
       font-weight: bold;
       color: var(--color-text-primary);
       padding: 1rem 1.5rem;
+    }
+
+    /* Zebra rows to improve scanability */
+    .comparison-table tbody tr:not(.category-row):nth-child(even) td {
+      background-color: rgba(248, 250, 252, 0.5);
     }
     
     .category-label {
@@ -2282,6 +2372,52 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
       .row { grid-template-columns: 1fr 1fr 1fr 1fr; }
       .cta { grid-template-columns: 1fr; }
     }
+
+    /* Force all backgrounds on upgrade page to white */
+    .upgrade-page { background: #fff !important; background-color: #fff !important; }
+    .upgrade-page .floating-shapes { display: none !important; }
+    .upgrade-page .hero-inner,
+    .upgrade-page .hero-inner::before,
+    .upgrade-page .plans-section,
+    .upgrade-page .plan-card,
+    .upgrade-page .plan-header,
+    .upgrade-page .plan-footer,
+    .upgrade-page .comparison-section,
+    .upgrade-page .comparison-table,
+    .upgrade-page .comparison-table th,
+    .upgrade-page .comparison-table td,
+    .upgrade-page .comparison-table tr:hover td,
+    .upgrade-page .category-row td,
+    .upgrade-page .table-container,
+    .upgrade-page .table-footer,
+    .upgrade-page .faq-section,
+    .upgrade-page .faq-item,
+    .upgrade-page .faq-question,
+    .upgrade-page .faq-answer,
+    .upgrade-page .cta-section,
+    .upgrade-page .cta-container,
+    .upgrade-page .cta-glow {
+      background: #fff !important;
+      background-color: #fff !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+    }
+    /* Keep buttons/labels readable while backgrounds are forced white */
+    .upgrade-page .hero-badge,
+    .upgrade-page .plan-badge,
+    .upgrade-page .category-label {
+      background: #fff !important;
+      background-color: #fff !important;
+      color: var(--color-text-primary) !important;
+      box-shadow: none !important;
+      border: 1px solid var(--color-border) !important;
+    }
+    /* Preserve pricing/button colors but remove their background fill to keep page white */
+    .upgrade-page .upgrade-button,
+    .upgrade-page .hero-button,
+    .upgrade-page .btn { background: #fff !important; background-color: #fff !important; color: var(--color-text-primary) !important; box-shadow: none !important; border: 1px solid var(--color-border) !important; }
+    .upgrade-page .upgrade-button::before,
+    .upgrade-page .hero-button::before { content: none !important; }
   </style>
   <!-- Scroll to Top Button -->
   <div class="scroll-top">
@@ -2289,6 +2425,17 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
   </div>
 
   <script>
+    // Global error handlers (dipasang sedini mungkin) untuk mencegah spam "Uncaught (in promise) Object"
+    // dari extension browser atau script pihak ketiga sebelum DOMContentLoaded
+    window.addEventListener('unhandledrejection', (event) => {
+      // Cegah error default di console
+      event.preventDefault();
+    });
+
+    window.addEventListener('error', () => {
+      // Biarkan UI halaman menangani notifikasi; hindari spam console dari pihak ketiga
+    });
+
     // Animasi scroll dan interaksi
     document.addEventListener('DOMContentLoaded', function() {
       // Fungsi untuk animasi scroll
@@ -2386,7 +2533,7 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
 
             const targetElement = document.querySelector(targetId);
 
-            if (targetElement) {
+            if (targetElement instanceof HTMLElement) {
               window.scrollTo({
                 top: targetElement.offsetTop - 80,
                 behavior: 'smooth'
@@ -2433,27 +2580,17 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
           if (!(self instanceof HTMLAnchorElement)) return;
           const url = self.getAttribute('href');
           if (!url) return;
-          
-          // Menambahkan penanganan promise rejection
-          fetch(url)
-            .then(response => {
-              if (response.ok) {
-                window.location.href = url;
-              } else if (response.status === 403) {
-                showErrorNotification('Akses ditolak. Silakan hubungi administrator.');
-              } else {
-                showErrorNotification('Terjadi kesalahan. Silakan coba lagi nanti.');
-              }
-            })
-            .catch(error => {
-              handleFetchError(error);
-              showErrorNotification('Terjadi kesalahan jaringan. Silakan coba lagi nanti.');
-            });
+          // Navigasi langsung tanpa fetch untuk menghindari CORS/promise rejection
+          try {
+            window.location.href = url;
+          } catch (err) {
+            showErrorNotification('Gagal membuka halaman. Silakan coba lagi.');
+          }
         });
       });
       
       // Fungsi untuk menampilkan notifikasi error
-      function showErrorNotification(message) {
+      function showErrorNotification(message: string) {
         const notification = document.createElement('div');
         notification.className = 'error-notification';
         notification.innerHTML = `
@@ -2490,20 +2627,11 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
           });
         }
       }
-      // Global error handlers to catch unhandled promise rejections and runtime errors
-      window.addEventListener('unhandledrejection', (event) => {
-        // Some extensions throw generic objects; we still prevent default and show a friendly message
-        event.preventDefault();
-        showErrorNotification('Terjadi kesalahan yang tidak tertangkap. Silakan coba lagi atau muat ulang halaman.');
-      });
-
-      window.addEventListener('error', () => {
-        showErrorNotification('Terjadi kesalahan pada halaman. Silakan coba lagi atau muat ulang.');
-      });
+      // (Opsional) Di tahap ini kita tidak menambah handler global lagi agar tidak duplikasi.
     });
     
     // Fungsi untuk menangani error 403
-    function handleFetchError(error) {
+    function handleFetchError(error: unknown) {
       console.error('Error:', error);
     }
   </script>
