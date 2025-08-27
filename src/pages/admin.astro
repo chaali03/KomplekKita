@@ -1,10 +1,12 @@
 ---
 import Layout from "~/layouts/admin-layout.astro";
-import Nav from '../components/Admin-site/navbar.astro';
-import Dash from '../components/Admin-site/adminlaporan.astro';
+import AdminSidebar from '../components/Admin-site/admin-sidebar.astro';
+import AdminTopbar from '../components/Admin-site/admin-topbar.astro';
+import AdminDashboard from '../components/Admin-site/admin-dashboard.astro';
 ---
 
 <Layout>
-<Nav />
-<Dash />
+  <AdminSidebar slot="sidebar" />
+  <AdminTopbar slot="topbar" />
+  <AdminDashboard />
 </Layout>

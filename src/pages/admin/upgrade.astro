@@ -1,113 +1,280 @@
 ---
 import Layout from "~/layouts/admin-layout.astro";
-import Nav from "../../components/Admin-site/navbar.astro";
+import AdminSidebar from '../../components/Admin-site/admin-sidebar.astro';
+import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
 ---
 
 <Layout>
-  <Nav />
+  <AdminSidebar slot="sidebar" />
+  <AdminTopbar slot="topbar" />
 
+  <div class="upgrade-page">
   <section class="upgrade-hero">
-    <div class="hero-inner card">
-      <div>
-        <h1>Tingkatkan ke Premium</h1>
-        <p>Fitur profesional untuk pengurus: grafik interaktif, ekspor laporan, pengingat iuran, dan dukungan prioritas.</p>
+    <div class="hero-inner">
+      <div class="hero-content">
+        <h1>Tingkatkan Akun Anda</h1>
+        <p>Akses fitur-fitur premium untuk mengelola kompleks Anda dengan lebih efisien dan profesional.</p>
       </div>
-      <a href="/admin" class="ghost-btn" aria-label="Kembali ke Dashboard">Kembali ke Dashboard</a>
+      <a href="/admin" class="back-button">
+        <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+      </a>
     </div>
   </section>
 
-  <section class="plans">
+  <section class="plans-section">
+    <div class="section-header">
+      <h2>Pilih Paket yang Sesuai</h2>
+      <p>Bandingkan paket dan pilih yang terbaik untuk kebutuhan kompleks Anda</p>
+    </div>
+    
     <div class="plans-grid">
-      <div class="plan-card card">
-        <div class="plan-head">
+      <div class="plan-card free">
+        <div class="plan-header">
+          <div class="plan-badge">Saat Ini</div>
+          <h3>Free</h3>
+          <div class="plan-price">
+            <span class="price">Rp 0</span>
+            <span class="period">/bulan</span>
+          </div>
+        </div>
+        <div class="plan-features">
+          <ul>
+            <li><i class="fas fa-check"></i> Dashboard dasar</li>
+            <li><i class="fas fa-check"></i> Pencatatan kas masuk & keluar</li>
+            <li><i class="fas fa-check"></i> Laporan keuangan bulanan</li>
+            <li><i class="fas fa-check"></i> Manajemen program</li>
+            <li><i class="fas fa-check"></i> Informasi kompleks</li>
+            <li class="disabled"><i class="fas fa-times"></i> Grafik interaktif</li>
+            <li class="disabled"><i class="fas fa-times"></i> Export laporan</li>
+          </ul>
+        </div>
+        <div class="plan-footer">
+          <span class="current-plan">Paket Anda Saat Ini</span>
+        </div>
+      </div>
+
+      <div class="plan-card premium">
+        <div class="plan-header">
+          <div class="plan-badge">Populer</div>
           <h3>Premium</h3>
-          <div class="price">
-            <span class="val">Rp 99.000</span>
-            <span class="per">/bulan</span>
+          <div class="plan-price">
+            <span class="price">Rp 99.000</span>
+            <span class="period">/bulan</span>
           </div>
         </div>
-        <ul class="features">
-          <li><i class="fas fa-check"></i> Semua fitur Gratis</li>
-          <li><i class="fas fa-check"></i> Grafik kas interaktif</li>
-          <li><i class="fas fa-check"></i> Download laporan (PDF/Excel)</li>
-          <li><i class="fas fa-check"></i> Reminder pembayaran iuran</li>
-          <li><i class="fas fa-check"></i> Tracking status surat</li>
-          <li><i class="fas fa-check"></i> Tandatangan digital</li>
-          <li><i class="fas fa-check"></i> Verifikasi dokumen (KTP/KK)</li>
-        </ul>
-        <div class="plan-cta">
-          <a class="btn primary" href="/kontak">Pilih Premium</a>
+        <div class="plan-features">
+          <ul>
+            <li><i class="fas fa-check"></i> Semua fitur Free</li>
+            <li><i class="fas fa-check"></i> Grafik kas interaktif</li>
+            <li><i class="fas fa-check"></i> Export laporan (PDF/Excel)</li>
+            <li><i class="fas fa-check"></i> Reminder pembayaran iuran</li>
+            <li><i class="fas fa-check"></i> Tracking status surat</li>
+            <li><i class="fas fa-check"></i> Tandatangan digital</li>
+            <li><i class="fas fa-check"></i> Verifikasi dokumen (KTP/KK)</li>
+          </ul>
+        </div>
+        <div class="plan-footer">
+          <a href="/kontak" class="upgrade-button premium-btn">
+            <i class="fas fa-arrow-up"></i> Upgrade ke Premium
+          </a>
         </div>
       </div>
 
-      <div class="plan-card card featured">
-        <div class="badge">Diskon 20%</div>
-        <div class="plan-head">
+      <div class="plan-card plus">
+        <div class="plan-header">
+          <div class="plan-badge">Diskon 20%</div>
           <h3>Plus</h3>
-          <div class="price">
-            <span class="old">Rp 150.000</span>
-            <span class="val">Rp 119.000</span>
-            <span class="per">/bulan</span>
+          <div class="plan-price">
+            <span class="old-price">Rp 150.000</span>
+            <span class="price">Rp 119.000</span>
+            <span class="period">/bulan</span>
           </div>
         </div>
-        <ul class="features">
-          <li><i class="fas fa-plus"></i> Semua fitur Premium</li>
-          <li><i class="fas fa-plus"></i> Analitik keuangan lanjutan</li>
-          <li><i class="fas fa-plus"></i> Integrasi WhatsApp/Email</li>
-          <li><i class="fas fa-plus"></i> Dashboard analisa data warga</li>
-          <li><i class="fas fa-plus"></i> Dukungan prioritas 24/7</li>
-        </ul>
-        <div class="plan-cta">
-          <a class="btn outline" href="/kontak">Pilih Plus</a>
+        <div class="plan-features">
+          <ul>
+            <li><i class="fas fa-check"></i> Semua fitur Premium</li>
+            <li><i class="fas fa-plus"></i> Analitik keuangan lanjutan</li>
+            <li><i class="fas fa-plus"></i> Integrasi WhatsApp/Email</li>
+            <li><i class="fas fa-plus"></i> Dashboard analisa data warga</li>
+            <li><i class="fas fa-plus"></i> Multi-user (hingga 5 pengguna)</li>
+            <li><i class="fas fa-plus"></i> Dukungan prioritas 24/7</li>
+            <li><i class="fas fa-plus"></i> Aplikasi mobile</li>
+          </ul>
+        </div>
+        <div class="plan-footer">
+          <a href="/kontak" class="upgrade-button plus-btn">
+            <i class="fas fa-arrow-up"></i> Upgrade ke Plus
+          </a>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="comparison card">
-    <h3>Perbandingan singkat</h3>
-    <div class="table">
-      <div class="row head">
-        <div>Fitur</div>
-        <div>Gratis</div>
-        <div>Premium</div>
-        <div>Plus</div>
+  <section class="comparison-section">
+    <div class="section-header">
+      <h2>Perbandingan Fitur</h2>
+      <p>Lihat perbedaan detail antara paket Free, Premium, dan Plus</p>
+    </div>
+    
+    <div class="comparison-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Fitur</th>
+            <th>Free</th>
+            <th>Premium</th>
+            <th>Plus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="category-row">
+            <td colspan="4">Dasar</td>
+          </tr>
+          <tr>
+            <td>Dashboard</td>
+            <td><i class="fas fa-check"></i></td>
+            <td><i class="fas fa-check"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+          <tr>
+            <td>Pencatatan Kas</td>
+            <td><i class="fas fa-check"></i></td>
+            <td><i class="fas fa-check"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+          <tr>
+            <td>Laporan Bulanan</td>
+            <td><i class="fas fa-check"></i></td>
+            <td><i class="fas fa-check"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+          
+          <tr class="category-row">
+            <td colspan="4">Visualisasi & Laporan</td>
+          </tr>
+          <tr>
+            <td>Grafik Interaktif</td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-check"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+          <tr>
+            <td>Export Laporan (PDF/Excel)</td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-check"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+          <tr>
+            <td>Analitik Lanjutan</td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+          
+          <tr class="category-row">
+            <td colspan="4">Fitur Tambahan</td>
+          </tr>
+          <tr>
+            <td>Reminder Iuran</td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-check"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+          <tr>
+            <td>Tracking Status Surat</td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-check"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+          <tr>
+            <td>Tandatangan Digital</td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-check"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+          <tr>
+            <td>Integrasi WhatsApp/Email</td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+          <tr>
+            <td>Multi-user</td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+          <tr>
+            <td>Aplikasi Mobile</td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+          
+          <tr class="category-row">
+            <td colspan="4">Dukungan</td>
+          </tr>
+          <tr>
+            <td>Email Support</td>
+            <td><i class="fas fa-check"></i></td>
+            <td><i class="fas fa-check"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+          <tr>
+            <td>Dukungan Prioritas</td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-times"></i></td>
+            <td><i class="fas fa-check"></i></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  
+  <section class="faq-section">
+    <div class="section-header">
+      <h2>Pertanyaan Umum</h2>
+      <p>Jawaban untuk pertanyaan yang sering diajukan</p>
+    </div>
+    
+    <div class="faq-grid">
+      <div class="faq-item">
+        <h4>Bagaimana cara upgrade ke Premium?</h4>
+        <p>Klik tombol "Upgrade ke Premium" dan isi formulir kontak. Tim kami akan menghubungi Anda untuk proses pembayaran dan aktivasi.</p>
       </div>
-      <div class="row">
-        <div>Grafik interaktif</div>
-        <div><i class="fas fa-times"></i></div>
-        <div><i class="fas fa-check"></i></div>
-        <div><i class="fas fa-check"></i></div>
+      
+      <div class="faq-item">
+        <h4>Apakah saya bisa downgrade ke Free?</h4>
+        <p>Ya, Anda dapat downgrade kapan saja. Fitur premium akan tetap aktif sampai akhir periode berlangganan Anda.</p>
       </div>
-      <div class="row">
-        <div>Export Laporan</div>
-        <div><i class="fas fa-times"></i></div>
-        <div><i class="fas fa-check"></i></div>
-        <div><i class="fas fa-check"></i></div>
+      
+      <div class="faq-item">
+        <h4>Apakah ada kontrak jangka panjang?</h4>
+        <p>Tidak, semua paket berbasis langganan bulanan dan dapat dibatalkan kapan saja.</p>
       </div>
-      <div class="row">
-        <div>Reminder Iuran</div>
-        <div><i class="fas fa-times"></i></div>
-        <div><i class="fas fa-check"></i></div>
-        <div><i class="fas fa-check"></i></div>
-      </div>
-      <div class="row">
-        <div>Analitik Lanjutan</div>
-        <div><i class="fas fa-times"></i></div>
-        <div><i class="fas fa-times"></i></div>
-        <div><i class="fas fa-plus"></i></div>
+      
+      <div class="faq-item">
+        <h4>Metode pembayaran apa yang tersedia?</h4>
+        <p>Kami menerima transfer bank, kartu kredit, dan e-wallet (GoPay, OVO, DANA).</p>
       </div>
     </div>
   </section>
+</div>
 
-  <section class="cta card">
-    <div>
-      <h3>Butuh penjelasan cepat?</h3>
-      <p>Kami bantu rekomendasikan paket terbaik sesuai kondisi RT/RW Anda.</p>
-    </div>
-    <div class="cta-actions">
-      <a href="/kontak" class="btn primary">Hubungi Kami</a>
-      <a href="/admin" class="btn ghost">Lihat Dashboard</a>
+  <section class="cta-section">
+    <div class="cta-container">
+      <div class="cta-content">
+        <h2>Butuh penjelasan cepat?</h2>
+        <p>Kami bantu rekomendasikan paket terbaik sesuai kondisi RT/RW Anda.</p>
+        <div class="cta-actions">
+          <a href="/kontak" class="cta-button primary">
+            <i class="fas fa-headset"></i> Hubungi Kami
+          </a>
+          <a href="/admin" class="cta-button ghost">
+            <i class="fas fa-tachometer-alt"></i> Lihat Dashboard
+          </a>
+        </div>
+      </div>
     </div>
   </section>
 
