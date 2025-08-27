@@ -1,0 +1,220 @@
+---
+// Admin Sidebar Component
+// Modern UI/UX Design with enhanced navigation and visual indicators
+---
+
+<div class="admin-sidebar">
+  <div class="sidebar-content">
+    <div class="sidebar-header">
+      <a href="/admin" class="logo">
+        <img src="/logo.svg" alt="KomplekKita Logo" class="logo-icon" />
+        <span class="logo-text">KomplekKita</span>
+      </a>
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+    </div>
+    
+    <div class="sidebar-nav">
+      <div class="nav-section">
+        <h4 class="nav-title">Menu Utama</h4>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="/admin" class="sidebar-link active">
+              <div class="link-icon"><i class="fas fa-tachometer-alt"></i></div>
+              <span class="link-text">Dashboard</span>
+              <span class="link-badge new">Baru</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/program" class="sidebar-link">
+              <div class="link-icon"><i class="fas fa-project-diagram"></i></div>
+              <span class="link-text">Program</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/informasi" class="sidebar-link">
+              <div class="link-icon"><i class="fas fa-info-circle"></i></div>
+              <span class="link-text">Informasi</span>
+              <span class="link-badge count">5</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="nav-section">
+        <button class="section-toggle" aria-expanded="true" aria-controls="keuangan-menu">
+          <h4 class="nav-title">Keuangan</h4>
+          <i class="fas fa-chevron-down toggle-icon"></i>
+        </button>
+        <ul class="nav-list" id="keuangan-menu">
+          <li class="nav-item">
+            <a href="/admin/transaksi" class="sidebar-link">
+              <div class="link-icon"><i class="fas fa-exchange-alt"></i></div>
+              <span class="link-text">Transaksi</span>
+              <span class="link-badge status success"></span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/laporan" class="sidebar-link">
+              <div class="link-icon"><i class="fas fa-chart-bar"></i></div>
+              <span class="link-text">Laporan</span>
+            </a>
+          </li>
+          <li class="nav-item premium-feature" data-required-plan="premium">
+            <a href="/admin/anggaran" class="sidebar-link">
+              <div class="link-icon"><i class="fas fa-wallet"></i></div>
+              <span class="link-text">Anggaran</span>
+              <div class="premium-indicator">
+                <i class="fas fa-crown"></i>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="nav-section">
+        <button class="section-toggle" aria-expanded="true" aria-controls="pengguna-menu">
+          <h4 class="nav-title">Pengguna</h4>
+          <i class="fas fa-chevron-down toggle-icon"></i>
+        </button>
+        <ul class="nav-list" id="pengguna-menu">
+          <li class="nav-item">
+            <a href="/admin/profil" class="sidebar-link">
+              <div class="link-icon"><i class="fas fa-user"></i></div>
+              <span class="link-text">Profil</span>
+            </a>
+          </li>
+          <li class="nav-item premium-feature" data-required-plan="plus">
+            <a href="/admin/pengguna" class="sidebar-link">
+              <div class="link-icon"><i class="fas fa-users"></i></div>
+              <span class="link-text">Kelola Pengguna</span>
+              <div class="premium-indicator">
+                <i class="fas fa-star"></i>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="nav-section">
+        <button class="section-toggle" aria-expanded="true" aria-controls="pengaturan-menu">
+          <h4 class="nav-title">Pengaturan</h4>
+          <i class="fas fa-chevron-down toggle-icon"></i>
+        </button>
+        <ul class="nav-list" id="pengaturan-menu">
+          <li class="nav-item">
+            <a href="/admin/pengaturan" class="sidebar-link">
+              <div class="link-icon"><i class="fas fa-cog"></i></div>
+              <span class="link-text">Pengaturan</span>
+            </a>
+          </li>
+          <li class="nav-item premium-feature" data-required-plan="premium">
+            <a href="/admin/notifikasi" class="sidebar-link">
+              <div class="link-icon"><i class="fas fa-bell"></i></div>
+              <span class="link-text">Notifikasi</span>
+              <div class="premium-indicator">
+                <i class="fas fa-crown"></i>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">
+          <img src="https://ui-avatars.com/api/?name=Admin&background=4f46e5&color=fff" alt="User Avatar" />
+          <span class="status-indicator online" title="Online"></span>
+        </div>
+        <div class="user-details">
+          <div class="user-name">Admin</div>
+          <div class="user-role">Administrator</div>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <a href="/admin/upgrade" class="upgrade-button" data-tooltip="Upgrade Akun">
+          <i class="fas fa-crown"></i>
+        </a>
+        <a href="/logout" class="logout-button" data-tooltip="Keluar">
+          <i class="fas fa-sign-out-alt"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Initialize sidebar functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    // Sidebar toggle
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const adminSidebar = document.querySelector('.admin-sidebar');
+    const adminFrame = document.querySelector('.admin-frame');
+    
+    if (sidebarToggle && adminSidebar && adminFrame) {
+      sidebarToggle.addEventListener('click', function() {
+        adminSidebar.classList.toggle('collapsed');
+        adminFrame.classList.toggle('expanded');
+        
+        // Change icon based on state
+        const icon = sidebarToggle.querySelector('i');
+        if (adminSidebar.classList.contains('collapsed')) {
+          icon.classList.remove('fa-chevron-left');
+          icon.classList.add('fa-chevron-right');
+        } else {
+          icon.classList.remove('fa-chevron-right');
+          icon.classList.add('fa-chevron-left');
+        }
+      });
+    }
+    
+    // Section toggles
+    const sectionToggles = document.querySelectorAll('.section-toggle');
+    sectionToggles.forEach(toggle => {
+      toggle.addEventListener('click', function() {
+        const expanded = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', !expanded);
+        
+        const targetId = this.getAttribute('aria-controls');
+        const targetList = document.getElementById(targetId);
+        
+        if (targetList) {
+          if (expanded) {
+            targetList.style.maxHeight = '0';
+            targetList.classList.add('collapsed');
+          } else {
+            targetList.style.maxHeight = targetList.scrollHeight + 'px';
+            targetList.classList.remove('collapsed');
+          }
+        }
+        
+        // Rotate icon
+        const icon = this.querySelector('.toggle-icon');
+        icon.style.transform = expanded ? 'rotate(-90deg)' : 'rotate(0)';
+      });
+    });
+    
+    // Active link highlighting
+    const currentPath = window.location.pathname;
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    
+    sidebarLinks.forEach(link => {
+      if (link.getAttribute('href') === currentPath) {
+        link.classList.add('active');
+        
+        // Expand parent section if collapsed
+        const parentList = link.closest('.nav-list');
+        if (parentList && parentList.classList.contains('collapsed')) {
+          const sectionToggle = parentList.previousElementSibling;
+          if (sectionToggle && sectionToggle.classList.contains('section-toggle')) {
+            sectionToggle.click();
+          }
+        }
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  });
+</script>

@@ -1,0 +1,546 @@
+---
+// Admin Dashboard Component
+// Modern UI/UX Design
+---
+
+<div class="admin-dashboard">
+  <!-- Dashboard Hero Section -->
+  <div class="dashboard-hero">
+    <div class="hero-content">
+      <h1><i class="fas fa-chart-line"></i> Dashboard Admin</h1>
+      <p>Selamat datang kembali! Berikut adalah ringkasan keuangan kompleks Anda.</p>
+    </div>
+    <div class="plan-info">
+      <span class="plan-badge free">Free</span>
+      <a href="/admin/upgrade" class="upgrade-link">
+        <i class="fas fa-crown"></i> Upgrade
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon primary">
+        <i class="fas fa-wallet"></i>
+      </div>
+      <div class="stat-content">
+        <h3>Total Kas</h3>
+        <div class="stat-value" data-value="3200000">0</div>
+        <div class="stat-trend up">
+          <i class="fas fa-arrow-up"></i> 12% dari bulan lalu
+        </div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon success">
+        <i class="fas fa-arrow-down"></i>
+      </div>
+      <div class="stat-content">
+        <h3>Pemasukan</h3>
+        <div class="stat-value" data-value="2200000">0</div>
+        <div class="stat-trend up">
+          <i class="fas fa-arrow-up"></i> 8% dari bulan lalu
+        </div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon danger">
+        <i class="fas fa-arrow-up"></i>
+      </div>
+      <div class="stat-content">
+        <h3>Pengeluaran</h3>
+        <div class="stat-value" data-value="1100000">0</div>
+        <div class="stat-trend down">
+          <i class="fas fa-arrow-up"></i> 5% dari bulan lalu
+        </div>
+      </div>
+    </div>
+    
+    <div class="stat-card premium-feature" data-required-plan="premium">
+      <div class="stat-icon warning">
+        <i class="fas fa-clock"></i>
+      </div>
+      <div class="stat-content">
+        <h3>Tertunda</h3>
+        <div class="stat-value" data-value="800000">0</div>
+        <div class="stat-trend neutral">
+          <i class="fas fa-minus"></i> Sama dengan bulan lalu
+        </div>
+      </div>
+      <div class="premium-overlay">
+        <div class="premium-message">
+          <i class="fas fa-lock"></i>
+          <span>Fitur Premium</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-grid">
+    <!-- Cash Flow Trend Chart -->
+    <div class="chart-card">
+      <div class="card-header">
+        <h3><i class="fas fa-chart-line"></i> Tren Kas</h3>
+        <div class="card-actions">
+          <button class="action-button" data-tooltip="Unduh Data">
+            <i class="fas fa-download"></i>
+          </button>
+          <button class="action-button" data-tooltip="Lihat Detail">
+            <i class="fas fa-expand"></i>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <canvas id="chartKas" height="250"></canvas>
+      </div>
+    </div>
+    
+    <!-- Composition Pie Chart -->
+    <div class="chart-card">
+      <div class="card-header">
+        <h3><i class="fas fa-chart-pie"></i> Komposisi Bulan Ini</h3>
+        <div class="card-actions">
+          <button class="action-button" data-tooltip="Unduh Data">
+            <i class="fas fa-download"></i>
+          </button>
+          <button class="action-button" data-tooltip="Lihat Detail">
+            <i class="fas fa-expand"></i>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <canvas id="chartPie" height="250"></canvas>
+      </div>
+    </div>
+    
+    <!-- Expense Categories Chart (Premium Feature) -->
+    <div class="chart-card premium-feature" data-required-plan="premium">
+      <div class="card-header">
+        <h3><i class="fas fa-tags"></i> Kategori Pengeluaran</h3>
+        <div class="card-actions">
+          <button class="action-button" data-tooltip="Unduh Data">
+            <i class="fas fa-download"></i>
+          </button>
+          <button class="action-button" data-tooltip="Lihat Detail">
+            <i class="fas fa-expand"></i>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <canvas id="chartExpenseCategories" height="250"></canvas>
+      </div>
+      <div class="premium-overlay">
+        <div class="premium-message">
+          <i class="fas fa-lock"></i>
+          <span>Fitur Premium</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Monthly Comparison Chart (Plus Feature) -->
+    <div class="chart-card premium-feature" data-required-plan="plus">
+      <div class="card-header">
+        <h3><i class="fas fa-calendar-alt"></i> Perbandingan Bulanan</h3>
+        <div class="card-actions">
+          <button class="action-button" data-tooltip="Unduh Data">
+            <i class="fas fa-download"></i>
+          </button>
+          <button class="action-button" data-tooltip="Lihat Detail">
+            <i class="fas fa-expand"></i>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <canvas id="chartMonthlyComparison" height="250"></canvas>
+      </div>
+      <div class="premium-overlay">
+        <div class="premium-message">
+          <i class="fas fa-lock"></i>
+          <span>Fitur Plus</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Transactions Table -->
+  <div class="table-section">
+    <div class="section-header">
+      <h3><i class="fas fa-exchange-alt"></i> Transaksi Terbaru</h3>
+      <div class="section-actions">
+        <div class="search-container">
+          <input type="text" placeholder="Cari transaksi..." class="search-input">
+          <i class="fas fa-search search-icon"></i>
+        </div>
+        <button class="action-button primary" data-tooltip="Tambah Transaksi">
+          <i class="fas fa-plus"></i> Tambah
+        </button>
+        <button class="action-button" data-tooltip="Unduh Data">
+          <i class="fas fa-download"></i>
+        </button>
+      </div>
+    </div>
+    
+    <div class="table-container paginated" data-rows-per-page="5">
+      <table class="data-table sortable">
+        <thead>
+          <tr>
+            <th class="sortable">Tanggal <i class="fas fa-sort"></i></th>
+            <th class="sortable">Deskripsi <i class="fas fa-sort"></i></th>
+            <th class="sortable">Kategori <i class="fas fa-sort"></i></th>
+            <th class="sortable">Jumlah <i class="fas fa-sort"></i></th>
+            <th class="sortable">Status <i class="fas fa-sort"></i></th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>15 Jun 2023</td>
+            <td>Pembayaran Iuran Bulanan</td>
+            <td><span class="category-badge income">Pemasukan</span></td>
+            <td class="amount positive">Rp 500.000</td>
+            <td><span class="status-badge success">Selesai</span></td>
+            <td>
+              <div class="action-buttons">
+                <button class="icon-button" data-tooltip="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="icon-button" data-tooltip="Hapus">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>12 Jun 2023</td>
+            <td>Pembayaran Keamanan</td>
+            <td><span class="category-badge expense">Pengeluaran</span></td>
+            <td class="amount negative">Rp 200.000</td>
+            <td><span class="status-badge success">Selesai</span></td>
+            <td>
+              <div class="action-buttons">
+                <button class="icon-button" data-tooltip="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="icon-button" data-tooltip="Hapus">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>10 Jun 2023</td>
+            <td>Perbaikan Taman</td>
+            <td><span class="category-badge expense">Pengeluaran</span></td>
+            <td class="amount negative">Rp 350.000</td>
+            <td><span class="status-badge success">Selesai</span></td>
+            <td>
+              <div class="action-buttons">
+                <button class="icon-button" data-tooltip="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="icon-button" data-tooltip="Hapus">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>5 Jun 2023</td>
+            <td>Pembayaran Iuran Bulanan</td>
+            <td><span class="category-badge income">Pemasukan</span></td>
+            <td class="amount positive">Rp 500.000</td>
+            <td><span class="status-badge pending">Tertunda</span></td>
+            <td>
+              <div class="action-buttons">
+                <button class="icon-button" data-tooltip="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="icon-button" data-tooltip="Hapus">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>1 Jun 2023</td>
+            <td>Pembayaran Listrik</td>
+            <td><span class="category-badge expense">Pengeluaran</span></td>
+            <td class="amount negative">Rp 450.000</td>
+            <td><span class="status-badge success">Selesai</span></td>
+            <td>
+              <div class="action-buttons">
+                <button class="icon-button" data-tooltip="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="icon-button" data-tooltip="Hapus">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div class="pagination">
+        <button class="pagination-button" disabled>
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="pagination-button active">1</button>
+        <button class="pagination-button">2</button>
+        <button class="pagination-button">3</button>
+        <button class="pagination-button">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Section -->
+  <div class="quick-actions-section">
+    <div class="section-header">
+      <h2><i class="fas fa-bolt"></i> Aksi Cepat</h2>
+    </div>
+    <div class="quick-actions-grid">
+      <div class="quick-action-card">
+        <div class="quick-action-icon primary">
+          <i class="fas fa-plus-circle"></i>
+        </div>
+        <div class="quick-action-content">
+          <h3>Tambah Transaksi</h3>
+          <p>Catat pemasukan atau pengeluaran baru</p>
+        </div>
+        <a href="/admin/transactions/new" class="card-link"></a>
+      </div>
+      
+      <div class="quick-action-card">
+        <div class="quick-action-icon success">
+          <i class="fas fa-file-invoice"></i>
+        </div>
+        <div class="quick-action-content">
+          <h3>Buat Laporan</h3>
+          <p>Generate laporan keuangan bulanan</p>
+        </div>
+        <a href="/admin/reports/new" class="card-link"></a>
+      </div>
+      
+      <div class="quick-action-card">
+        <div class="quick-action-icon warning">
+          <i class="fas fa-bell"></i>
+        </div>
+        <div class="quick-action-content">
+          <h3>Pengumuman</h3>
+          <p>Buat pengumuman untuk warga</p>
+        </div>
+        <a href="/admin/announcements/new" class="card-link"></a>
+      </div>
+      
+      <div class="quick-action-card">
+        <div class="quick-action-icon info">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="quick-action-content">
+          <h3>Kelola Warga</h3>
+          <p>Tambah atau edit data warga</p>
+        </div>
+        <a href="/admin/residents" class="card-link"></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fitur Baru: Widget Notifikasi -->
+  <div class="notifications-widget">
+    <div class="section-header">
+      <h2><i class="fas fa-bell"></i> Notifikasi Terbaru</h2>
+      <a href="/admin/notifications" class="view-all">Lihat Semua <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="notifications-list">
+      <div class="notification-item unread">
+        <div class="notification-icon warning">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="notification-content">
+          <h4>Pembayaran Tertunda</h4>
+          <p>5 warga belum melakukan pembayaran iuran bulan ini</p>
+          <span class="notification-time">2 jam yang lalu</span>
+        </div>
+        <div class="notification-actions">
+          <button class="btn-icon" data-tooltip="Tandai Dibaca">
+            <i class="fas fa-check"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="notification-item">
+        <div class="notification-icon success">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="notification-content">
+          <h4>Laporan Bulanan Selesai</h4>
+          <p>Laporan keuangan bulan Juli telah selesai dibuat</p>
+          <span class="notification-time">Kemarin, 15:30</span>
+        </div>
+        <div class="notification-actions">
+          <button class="btn-icon" data-tooltip="Tandai Dibaca">
+            <i class="fas fa-check"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="notification-item">
+        <div class="notification-icon info">
+          <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="notification-content">
+          <h4>Warga Baru</h4>
+          <p>2 keluarga baru telah terdaftar di sistem</p>
+          <span class="notification-time">2 hari yang lalu</span>
+        </div>
+        <div class="notification-actions">
+          <button class="btn-icon" data-tooltip="Tandai Dibaca">
+            <i class="fas fa-check"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fitur Baru: Widget Cuaca dan Informasi -->
+  <div class="weather-widget">
+    <div class="section-header">
+      <h2><i class="fas fa-cloud-sun"></i> Info Cuaca & Lingkungan</h2>
+    </div>
+    <div class="weather-content">
+      <div class="current-weather">
+        <div class="weather-icon">
+          <i class="fas fa-sun"></i>
+        </div>
+        <div class="weather-details">
+          <h3>Jakarta</h3>
+          <div class="weather-temp">32°C</div>
+          <div class="weather-desc">Cerah Berawan</div>
+        </div>
+      </div>
+      <div class="weather-forecast">
+        <div class="forecast-day">
+          <div class="day-name">Sen</div>
+          <div class="day-icon"><i class="fas fa-cloud-sun"></i></div>
+          <div class="day-temp">31°C</div>
+        </div>
+        <div class="forecast-day">
+          <div class="day-name">Sel</div>
+          <div class="day-icon"><i class="fas fa-cloud-rain"></i></div>
+          <div class="day-temp">29°C</div>
+        </div>
+        <div class="forecast-day">
+          <div class="day-name">Rab</div>
+          <div class="day-icon"><i class="fas fa-cloud"></i></div>
+          <div class="day-temp">30°C</div>
+        </div>
+        <div class="forecast-day">
+          <div class="day-name">Kam</div>
+          <div class="day-icon"><i class="fas fa-sun"></i></div>
+          <div class="day-temp">33°C</div>
+        </div>
+      </div>
+    </div>
+    <div class="environment-info">
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fas fa-water"></i>
+        </div>
+        <div class="info-content">
+          <h4>Kualitas Air</h4>
+          <div class="info-value good">Baik</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fas fa-wind"></i>
+        </div>
+        <div class="info-content">
+          <h4>Kualitas Udara</h4>
+          <div class="info-value moderate">Sedang</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity Feed -->
+  <div class="activity-section">
+    <div class="section-header">
+      <h3><i class="fas fa-history"></i> Aktivitas Terbaru</h3>
+      <a href="#" class="view-all-link">Lihat Semua <i class="fas fa-arrow-right"></i></a>
+    </div>
+    
+    <div class="activity-feed">
+      <div class="activity-item">
+        <div class="activity-icon">
+          <i class="fas fa-plus-circle"></i>
+        </div>
+        <div class="activity-content">
+          <p class="activity-text"><strong>Admin</strong> menambahkan transaksi baru</p>
+          <p class="activity-time">Baru saja</p>
+        </div>
+      </div>
+      
+      <div class="activity-item">
+        <div class="activity-icon">
+          <i class="fas fa-edit"></i>
+        </div>
+        <div class="activity-content">
+          <p class="activity-text"><strong>Admin</strong> mengubah status pembayaran</p>
+          <p class="activity-time">30 menit yang lalu</p>
+        </div>
+      </div>
+      
+      <div class="activity-item">
+        <div class="activity-icon">
+          <i class="fas fa-file-invoice"></i>
+        </div>
+        <div class="activity-content">
+          <p class="activity-text"><strong>Sistem</strong> membuat laporan bulanan</p>
+          <p class="activity-time">2 jam yang lalu</p>
+        </div>
+      </div>
+      
+      <div class="activity-item">
+        <div class="activity-icon">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <div class="activity-content">
+          <p class="activity-text"><strong>Admin</strong> menambahkan pengguna baru</p>
+          <p class="activity-time">Kemarin, 14:30</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Initialize counters with animation
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if Chart.js is already loaded
+    if (typeof Chart === 'undefined') {
+      // Load Chart.js first
+      const script = document.createElement('script');
+      script.id = 'chartjs-script';
+      script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js';
+      script.onload = function() {
+        // Load dashboard JS after Chart.js is loaded
+        const dashboardScript = document.createElement('script');
+        dashboardScript.src = '/js/admin-dashboard.js';
+        document.body.appendChild(dashboardScript);
+      };
+      document.body.appendChild(script);
+    } else {
+      // If Chart.js is already loaded, just load dashboard JS
+      const dashboardScript = document.createElement('script');
+      dashboardScript.src = '/js/admin-dashboard.js';
+      document.body.appendChild(dashboardScript);
+    }
+  });
+</script>
