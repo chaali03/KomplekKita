@@ -5,67 +5,96 @@
 
 <div class="admin-dashboard">
   <!-- Dashboard Hero Section -->
-  <div class="dashboard-hero">
+  <div class="dashboard-hero pre-animation">
     <div class="hero-content">
-      <h1><i class="fas fa-chart-line"></i> Dashboard Admin</h1>
-      <p>Selamat datang kembali! Berikut adalah ringkasan keuangan kompleks Anda.</p>
+      <h1 class="hero-title">
+        <span class="hero-icon"><i class="fas fa-chart-line"></i></span>
+        Dashboard Admin
+      </h1>
+      <p class="hero-subtitle">Selamat datang kembali. Kelola keuangan dengan tampilan yang bersih dan minimal.</p>
     </div>
     <div class="plan-info">
-      <span class="plan-badge free">Free</span>
-      <a href="/admin/upgrade" class="upgrade-link">
-        <i class="fas fa-crown"></i> Upgrade
+      <span class="plan-badge free" title="Akun Gratis">Gratis</span>
+      <a href="/admin/upgrade" class="upgrade-chip" aria-label="Upgrade akun">
+        <i class="fas fa-crown"></i>
+        <span>Upgrade</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Upgrade Banner: visible on Free plan -->
+  <div class="upgrade-banner pre-animation">
+    <div class="upgrade-banner-left">
+      <div class="badge crown"><i class="fas fa-crown"></i></div>
+      <div class="upgrade-text">
+        <h3>Tingkatkan ke Premium</h3>
+        <p>Akun Anda saat ini <strong>Gratis</strong>. Buka fitur lanjutan seperti laporan detail, ekspor data, dan automasi.</p>
+      </div>
+    </div>
+    <div class="upgrade-actions">
+      <a href="/admin/upgrade" class="btn-upgrade" data-tooltip="Lihat paket">
+        Lihat Paket
       </a>
     </div>
   </div>
 
   <!-- Stats Cards -->
   <div class="stats-grid">
-    <div class="stat-card">
+    <div class="stat-card pre-animation">
       <div class="stat-icon primary">
         <i class="fas fa-wallet"></i>
       </div>
       <div class="stat-content">
         <h3>Total Kas</h3>
-        <div class="stat-value" data-value="3200000">0</div>
+        <div class="stat-value" data-target="3200000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
         <div class="stat-trend up">
           <i class="fas fa-arrow-up"></i> 12% dari bulan lalu
         </div>
       </div>
+      <div class="mt-2">
+        <canvas class="sparkline" data-values="12,14,13,16,18,21,20,22,24,26,28,32" height="30"></canvas>
+      </div>
     </div>
     
-    <div class="stat-card">
+    <div class="stat-card pre-animation">
       <div class="stat-icon success">
         <i class="fas fa-arrow-down"></i>
       </div>
       <div class="stat-content">
         <h3>Pemasukan</h3>
-        <div class="stat-value" data-value="2200000">0</div>
+        <div class="stat-value" data-target="2200000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
         <div class="stat-trend up">
           <i class="fas fa-arrow-up"></i> 8% dari bulan lalu
         </div>
       </div>
+      <div class="mt-2">
+        <canvas class="sparkline" data-values="9,10,11,12,14,15,16,17,18,19,21,22" height="30"></canvas>
+      </div>
     </div>
     
-    <div class="stat-card">
+    <div class="stat-card pre-animation">
       <div class="stat-icon danger">
         <i class="fas fa-arrow-up"></i>
       </div>
       <div class="stat-content">
         <h3>Pengeluaran</h3>
-        <div class="stat-value" data-value="1100000">0</div>
+        <div class="stat-value" data-target="1100000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
         <div class="stat-trend down">
           <i class="fas fa-arrow-up"></i> 5% dari bulan lalu
         </div>
       </div>
+      <div class="mt-2">
+        <canvas class="sparkline" data-values="5,6,6,7,8,9,9,10,9,11,10,11" height="30"></canvas>
+      </div>
     </div>
     
-    <div class="stat-card premium-feature" data-required-plan="premium">
+    <div class="stat-card premium-feature pre-animation" data-required-plan="premium">
       <div class="stat-icon warning">
         <i class="fas fa-clock"></i>
       </div>
       <div class="stat-content">
         <h3>Tertunda</h3>
-        <div class="stat-value" data-value="800000">0</div>
+        <div class="stat-value" data-target="800000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
         <div class="stat-trend neutral">
           <i class="fas fa-minus"></i> Sama dengan bulan lalu
         </div>
@@ -82,7 +111,7 @@
   <!-- Charts Section -->
   <div class="charts-grid">
     <!-- Cash Flow Trend Chart -->
-    <div class="chart-card">
+    <div class="chart-card pre-animation">
       <div class="card-header">
         <h3><i class="fas fa-chart-line"></i> Tren Kas</h3>
         <div class="card-actions">
@@ -100,7 +129,7 @@
     </div>
     
     <!-- Composition Pie Chart -->
-    <div class="chart-card">
+    <div class="chart-card pre-animation">
       <div class="card-header">
         <h3><i class="fas fa-chart-pie"></i> Komposisi Bulan Ini</h3>
         <div class="card-actions">
@@ -114,6 +143,48 @@
       </div>
       <div class="card-body">
         <canvas id="chartPie" height="250"></canvas>
+      </div>
+    </div>
+
+    <!-- New: Stacked Area Chart (Income vs Expense) -->
+    <div class="chart-card pre-animation">
+      <div class="card-header">
+        <h3><i class="fas fa-layer-group"></i> Pemasukan vs Pengeluaran</h3>
+        <div class="card-actions">
+          <button class="action-button" data-tooltip="Unduh Data"><i class="fas fa-download"></i></button>
+          <button class="action-button" data-tooltip="Lihat Detail"><i class="fas fa-expand"></i></button>
+        </div>
+      </div>
+      <div class="card-body">
+        <canvas id="chartIncomeExpenseArea" height="250"></canvas>
+      </div>
+    </div>
+
+    <!-- New: Radar Categories Chart -->
+    <div class="chart-card pre-animation">
+      <div class="card-header">
+        <h3><i class="fas fa-bullseye"></i> Radar Kepuasan</h3>
+        <div class="card-actions">
+          <button class="action-button" data-tooltip="Unduh Data"><i class="fas fa-download"></i></button>
+          <button class="action-button" data-tooltip="Lihat Detail"><i class="fas fa-expand"></i></button>
+        </div>
+      </div>
+      <div class="card-body">
+        <canvas id="chartRadarCategories" height="250"></canvas>
+      </div>
+    </div>
+
+    <!-- New: Top Contributors Horizontal Bar -->
+    <div class="chart-card pre-animation">
+      <div class="card-header">
+        <h3><i class="fas fa-star"></i> Kontributor Teratas</h3>
+        <div class="card-actions">
+          <button class="action-button" data-tooltip="Unduh Data"><i class="fas fa-download"></i></button>
+          <button class="action-button" data-tooltip="Lihat Detail"><i class="fas fa-expand"></i></button>
+        </div>
+      </div>
+      <div class="card-body">
+        <canvas id="chartTopContributors" height="250"></canvas>
       </div>
     </div>
     
@@ -167,7 +238,7 @@
   </div>
 
   <!-- Recent Transactions Table -->
-  <div class="table-section">
+  <div class="table-section pre-animation">
     <div class="section-header">
       <h3><i class="fas fa-exchange-alt"></i> Transaksi Terbaru</h3>
       <div class="section-actions">

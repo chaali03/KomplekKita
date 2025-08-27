@@ -10,7 +10,22 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initialize charts if Chart.js is available
   if (typeof Chart !== 'undefined') {
     initCharts();
+    initSparklines();
   }
+
+/**
+ * Elevate topbar when scrolling
+ */
+function initTopbarElevation() {
+  const topbar = document.querySelector('.admin-topbar');
+  if (!topbar) return;
+  const handler = () => {
+    if (window.scrollY > 2) topbar.classList.add('elevated');
+    else topbar.classList.remove('elevated');
+  };
+  handler();
+  window.addEventListener('scroll', handler, { passive: true });
+}
   
   // Initialize data tables
   initDataTables();
@@ -32,6 +47,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initialize dropdown menus
   initDropdowns();
+
+  // Elevate topbar on scroll
+  initTopbarElevation();
 });
 
 /**
@@ -39,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function initAnimations() {
   // Add entrance animations to cards
-  const cards = document.querySelectorAll('.stat-card, .chart-card, .quick-action-card, .table-section');
+  const cards = document.querySelectorAll('.admin-topbar, .stat-card, .chart-card, .quick-action-card, .table-section');
   
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
@@ -73,197 +91,51 @@ function initAnimations() {
 }
 
 /**
- * Initialize search functionality
- */
-function initSearch() {
-  const searchInput = document.querySelector('.search-input');
-  const searchableItems = document.querySelectorAll('.searchable');
-  
-  if (searchInput && searchableItems.length > 0) {
-    searchInput.addEventListener('input', function() {
-      const query = this.value.toLowerCase().trim();
-      
-      if (query.length > 1) {
-        searchableItems.forEach(item => {
-          const text = item.textContent.toLowerCase();
-          if (text.includes(query)) {
-            item.style.display = '';
-            // Highlight matching text
-            highlightMatches(item, query);
-          } else {
-            item.style.display = 'none';
-          }
-        });
-      } else {
-        // Reset display and remove highlights
-        searchableItems.forEach(item => {
-          item.style.display = '';
-          removeHighlights(item);
-        });
-      }
-    });
-  }
-}
-
-/**
- * Highlight matching text in search results
- */
-function highlightMatches(element, query) {
-  // First remove any existing highlights
-  removeHighlights(element);
-  
-  // Don't process element children that have form controls
-  if (element.querySelector('input, select, textarea')) {
-    return;
-  }
-  
-  // Create a function to replace text with highlighted version
-  const highlightText = (node) => {
-    if (node.nodeType === 3) { // Text node
-      const text = node.nodeValue;
-      const lowerText = text.toLowerCase();
-      const index = lowerText.indexOf(query);
-      
-      if (index >= 0) {
-        const span = document.createElement('span');
-        span.className = 'search-highlight';
-        
-        const before = document.createTextNode(text.substring(0, index));
-        const match = document.createTextNode(text.substring(index, index + query.length));
-        const after = document.createTextNode(text.substring(index + query.length));
-        
-        span.appendChild(match);
-        
-        const fragment = document.createDocumentFragment();
-        fragment.appendChild(before);
-        fragment.appendChild(span);
-        fragment.appendChild(after);
-        
-        node.parentNode.replaceChild(fragment, node);
-        return true;
-      }
-    } else if (node.nodeType === 1 && node.childNodes && !/(script|style)/i.test(node.tagName)) {
-      // Element node, process children
-      for (let i = 0; i < node.childNodes.length; i++) {
-        i += highlightText(node.childNodes[i]) ? 1 : 0;
-      }
-    }
-    return false;
-  };
-  
-  // Process the element
-  highlightText(element);
-}
-
-/**
- * Remove highlights from search results
- */
-function removeHighlights(element) {
-  const highlights = element.querySelectorAll('.search-highlight');
-  highlights.forEach(highlight => {
-    const parent = highlight.parentNode;
-    parent.replaceChild(document.createTextNode(highlight.textContent), highlight);
-    parent.normalize();
-  });
-}
-
-/**
- * Initialize dropdown menus
- */
-function initDropdowns() {
-  const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
-  
-  dropdownToggles.forEach(toggle => {
-    toggle.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      const dropdown = this.nextElementSibling;
-      if (dropdown && dropdown.classList.contains('dropdown-menu')) {
-        dropdown.classList.toggle('show');
-        
-        // Close other open dropdowns
-        document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
-          if (menu !== dropdown) {
-            menu.classList.remove('show');
-          }
-        });
-      }
-    });
-  });
-  
-  // Close dropdowns when clicking outside
-  document.addEventListener('click', function() {
-    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
-      menu.classList.remove('show');
-    });
-  });
-}
-
-/**
- * Initialize sidebar functionality
- */
-function initSidebar() {
-  const sidebarToggle = document.querySelector('.sidebar-toggle');
-  const sidebar = document.querySelector('.admin-sidebar');
-  const sidebarContent = document.querySelector('.sidebar-content');
-  
-  if (sidebarToggle && sidebar) {
-    sidebarToggle.addEventListener('click', function() {
-      sidebar.classList.toggle('collapsed');
-      
-      // For mobile
-      if (window.innerWidth < 768) {
-        sidebarContent.classList.toggle('mobile-open');
-      }
-    });
-    
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', function(event) {
-      if (window.innerWidth < 768 && 
-          !sidebar.contains(event.target) && 
-          !sidebarToggle.contains(event.target) &&
-          sidebarContent.classList.contains('mobile-open')) {
-        sidebarContent.classList.remove('mobile-open');
-      }
-    });
-  }
-  
-  // Set active link based on current page
-  const currentPath = window.location.pathname;
-  const navLinks = document.querySelectorAll('.sidebar-link');
-  
-  navLinks.forEach(link => {
-    if (link.getAttribute('href') === currentPath) {
-      link.classList.add('active');
-      
-      // Expand parent section if in a collapsible section
-      const parentSection = link.closest('.collapsible-section');
-      if (parentSection) {
-        parentSection.classList.add('expanded');
-      }
-    }
-  });
-
-  // Initialize collapsible sections
-  const collapsibleToggles = document.querySelectorAll('.collapsible-toggle');
-  collapsibleToggles.forEach(toggle => {
-    toggle.addEventListener('click', function() {
-      const section = this.closest('.collapsible-section');
-      if (section) {
-        section.classList.toggle('expanded');
-      }
-    });
-  });
-}
-
-/**
  * Initialize charts
  */
 function initCharts() {
+  // Theme helpers
+  const palette = {
+    primary: '#4361ee',
+    primarySoft: 'rgba(67, 97, 238, 0.1)',
+    green: '#06d6a0',
+    red: '#ef476f',
+    yellow: '#f9c74f',
+    cyan: '#4cc9f0',
+    grayTick: '#6b7280',
+    grid: 'rgba(229, 231, 235, 0.5)'
+  };
+
+  const formatIDRCurrency = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val);
+
+  const makeGradient = (ctx, color, alpha = 0.15) => {
+    const height = (ctx && ctx.canvas && ctx.canvas.height) ? ctx.canvas.height : 200;
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    const toRGBA = (c, a) => {
+      if (!c) return `rgba(67, 97, 238, ${a})`;
+      if (c.startsWith('#')) {
+        const r = parseInt(c.substr(1, 2), 16);
+        const g = parseInt(c.substr(3, 2), 16);
+        const b = parseInt(c.substr(5, 2), 16);
+        return `rgba(${r}, ${g}, ${b}, ${a})`;
+      }
+      if (c.startsWith('rgba(')) {
+        return c.replace(/rgba\(([^,]+),\s*([^,]+),\s*([^,]+),\s*[^)]+\)/, `rgba($1, $2, $3, ${a})`);
+      }
+      if (c.startsWith('rgb(')) {
+        return c.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
+      }
+      return `rgba(67, 97, 238, ${a})`;
+    };
+    gradient.addColorStop(0, toRGBA(color, alpha));
+    gradient.addColorStop(1, toRGBA(color, 0));
+    return gradient;
+  };
+
   // Cash Flow Trend Chart
   const cashFlowCtx = document.getElementById('chartKas');
   if (cashFlowCtx) {
+    const ctx = cashFlowCtx.getContext ? cashFlowCtx.getContext('2d') : null;
     const cashFlowChart = new Chart(cashFlowCtx, {
       type: 'line',
       data: {
@@ -271,13 +143,13 @@ function initCharts() {
         datasets: [{
           label: 'Total Kas',
           data: [1000000, 1200000, 1350000, 1500000, 1800000, 2000000, 2200000, 2400000, 2600000, 2800000, 3000000, 3200000],
-          borderColor: '#4361ee',
-          backgroundColor: 'rgba(67, 97, 238, 0.1)',
+          borderColor: palette.primary,
+          backgroundColor: ctx ? makeGradient(ctx, palette.primary) : palette.primarySoft,
           borderWidth: 2,
           tension: 0.4,
           fill: true,
           pointBackgroundColor: '#ffffff',
-          pointBorderColor: '#4361ee',
+          pointBorderColor: palette.primary,
           pointBorderWidth: 2,
           pointRadius: 4,
           pointHoverRadius: 6
@@ -311,7 +183,7 @@ function initCharts() {
                   label += ': ';
                 }
                 if (context.parsed.y !== null) {
-                  label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(context.parsed.y);
+                  label += formatIDRCurrency(context.parsed.y);
                 }
                 return label;
               }
@@ -324,16 +196,16 @@ function initCharts() {
               display: false
             },
             ticks: {
-              color: '#6b7280'
+              color: palette.grayTick
             }
           },
           y: {
             beginAtZero: true,
             grid: {
-              color: 'rgba(229, 231, 235, 0.5)'
+              color: palette.grid
             },
             ticks: {
-              color: '#6b7280',
+              color: palette.grayTick,
               callback: function(value) {
                 return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumSignificantDigits: 3 }).format(value);
               }
@@ -343,7 +215,7 @@ function initCharts() {
       }
     });
   }
-  
+
   // Composition Pie Chart
   const compositionCtx = document.getElementById('chartPie');
   if (compositionCtx) {
@@ -353,8 +225,8 @@ function initCharts() {
         labels: ['Pemasukan', 'Pengeluaran'],
         datasets: [{
           data: [65, 35],
-          backgroundColor: ['#06d6a0', '#ef476f'],
-          borderColor: ['#06d6a0', '#ef476f'],
+          backgroundColor: [palette.green, palette.red],
+          borderColor: [palette.green, palette.red],
           borderWidth: 1
         }]
       },
@@ -399,7 +271,7 @@ function initCharts() {
       }
     });
   }
-  
+
   // Expense Categories Chart (Premium Feature)
   const expenseCategoriesCtx = document.getElementById('chartExpenseCategories');
   if (expenseCategoriesCtx) {
@@ -451,7 +323,7 @@ function initCharts() {
                   label += ': ';
                 }
                 if (context.parsed.y !== null) {
-                  label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(context.parsed.y);
+                  label += formatIDRCurrency(context.parsed.y);
                 }
                 return label;
               }
@@ -464,16 +336,16 @@ function initCharts() {
               display: false
             },
             ticks: {
-              color: '#6b7280'
+              color: palette.grayTick
             }
           },
           y: {
             beginAtZero: true,
             grid: {
-              color: 'rgba(229, 231, 235, 0.5)'
+              color: palette.grid
             },
             ticks: {
-              color: '#6b7280',
+              color: palette.grayTick,
               callback: function(value) {
                 return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumSignificantDigits: 3 }).format(value);
               }
@@ -546,7 +418,7 @@ function initCharts() {
                   label += ': ';
                 }
                 if (context.parsed.y !== null) {
-                  label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(context.parsed.y);
+                  label += formatIDRCurrency(context.parsed.y);
                 }
                 return label;
               }
@@ -559,16 +431,16 @@ function initCharts() {
               display: false
             },
             ticks: {
-              color: '#6b7280'
+              color: palette.grayTick
             }
           },
           y: {
             beginAtZero: true,
             grid: {
-              color: 'rgba(229, 231, 235, 0.5)'
+              color: palette.grid
             },
             ticks: {
-              color: '#6b7280',
+              color: palette.grayTick,
               callback: function(value) {
                 return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumSignificantDigits: 3 }).format(value);
               }
@@ -578,6 +450,138 @@ function initCharts() {
       }
     });
   }
+
+  // Optional: Stacked Area Chart (Pemasukan vs Pengeluaran)
+  const areaCtx = document.getElementById('chartIncomeExpenseArea');
+  if (areaCtx) {
+    const ctx = areaCtx.getContext ? areaCtx.getContext('2d') : null;
+    new Chart(areaCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+        datasets: [
+          {
+            label: 'Pemasukan',
+            data: [900000, 950000, 1200000, 1150000, 1400000, 1500000, 1600000, 1700000],
+            borderColor: palette.green,
+            backgroundColor: ctx ? makeGradient(ctx, palette.green) : 'rgba(6, 214, 160, 0.15)',
+            fill: true,
+            tension: 0.35,
+            borderWidth: 2
+          },
+          {
+            label: 'Pengeluaran',
+            data: [600000, 500000, 700000, 650000, 800000, 900000, 850000, 950000],
+            borderColor: palette.red,
+            backgroundColor: ctx ? makeGradient(ctx, palette.red) : 'rgba(239, 71, 111, 0.15)',
+            fill: true,
+            tension: 0.35,
+            borderWidth: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `${ctx.dataset.label}: ${formatIDRCurrency(ctx.parsed.y)}`
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: palette.grayTick } },
+          y: { grid: { color: palette.grid }, ticks: { color: palette.grayTick } }
+        }
+      }
+    });
+  }
+
+  // Optional: Radar Chart for Category Performance
+  const radarCtx = document.getElementById('chartRadarCategories');
+  if (radarCtx) {
+    new Chart(radarCtx, {
+      type: 'radar',
+      data: {
+        labels: ['Keamanan', 'Kebersihan', 'Fasilitas', 'Kegiatan', 'Pelayanan', 'Transparansi'],
+        datasets: [
+          {
+            label: 'Kepuasan',
+            data: [80, 70, 75, 65, 85, 78],
+            backgroundColor: 'rgba(67, 97, 238, 0.2)',
+            borderColor: palette.primary,
+            pointBackgroundColor: palette.primary
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' } },
+        scales: {
+          r: {
+            angleLines: { color: 'rgba(229, 231, 235, 0.5)' },
+            grid: { color: 'rgba(229, 231, 235, 0.5)' },
+            pointLabels: { color: palette.grayTick },
+            ticks: { display: false }
+          }
+        }
+      }
+    });
+  }
+
+  // Optional: Horizontal Bar for Top Contributors
+  const topContribCtx = document.getElementById('chartTopContributors');
+  if (topContribCtx) {
+    new Chart(topContribCtx, {
+      type: 'bar',
+      data: {
+        labels: ['RT 01', 'RT 02', 'RT 03', 'RT 04', 'RT 05'],
+        datasets: [{
+          label: 'Iuran Terkumpul',
+          data: [3200000, 2900000, 2600000, 2400000, 2000000],
+          backgroundColor: palette.primary,
+          borderRadius: 8,
+          barThickness: 18
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: (ctx) => formatIDRCurrency(ctx.parsed.x) } }
+        },
+        scales: {
+          x: { grid: { color: palette.grid }, ticks: { color: palette.grayTick } },
+          y: { grid: { display: false }, ticks: { color: palette.grayTick } }
+        }
+      }
+    });
+  }
+}
+
+/**
+ * Initialize sparkline mini charts for any canvas.sparkline[data-values]
+ */
+function initSparklines() {
+  if (typeof Chart === 'undefined') return;
+  const canvases = document.querySelectorAll('canvas.sparkline');
+  canvases.forEach(cv => {
+    const valuesAttr = cv.getAttribute('data-values');
+    if (!valuesAttr) return;
+    const values = valuesAttr.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v));
+    if (!values.length) return;
+    new Chart(cv, {
+      type: 'line',
+      data: { labels: values.map((_, i) => i + 1), datasets: [{ data: values, borderColor: '#4cc9f0', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.35 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } } }
+    });
+  });
 }
 
 /**
