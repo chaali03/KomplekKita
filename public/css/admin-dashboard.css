@@ -1020,6 +1020,15 @@
   max-width: 1440px;
   margin: 0 auto;
   padding: 0 1rem;
+  /* Fill the available content height so page doesn't look too short */
+  min-height: calc(100dvh - 64px); /* 64px = sticky topbar height */
+}
+
+/* Add comfy bottom breathing space so page feels longer and avoids clipped shadows */
+.admin-dashboard::after {
+  content: "";
+  display: block;
+  height: 140px;
 }
 
 .dashboard-hero {
