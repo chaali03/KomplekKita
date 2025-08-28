@@ -183,9 +183,10 @@ function initChartCardActions() {
       downloadBtn.addEventListener('click', () => {
         try {
           const chart = window.dashboardCharts ? window.dashboardCharts.get(canvas.id) : null;
-          if (chart && chart.canvas) {
+          const targetCanvas = (chart && chart.canvas) ? chart.canvas : canvas; // fallback when chart not registered
+          if (targetCanvas && targetCanvas.toDataURL) {
             const link = document.createElement('a');
-            link.href = chart.canvas.toDataURL('image/png');
+            link.href = targetCanvas.toDataURL('image/png');
             link.download = `${canvas.id || 'chart'}.png`;
             document.body.appendChild(link);
             link.click();
