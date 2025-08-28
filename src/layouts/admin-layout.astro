@@ -71,6 +71,13 @@
       overflow-x: hidden;
     }
 
+    /* Ensure admin layout fills viewport height */
+    .admin-layout { display: flex; min-height: 100dvh; }
+    /* Ensure main column itself spans full viewport height */
+    .admin-main { display: flex; flex-direction: column; flex: 1; min-width: 0; min-height: 100dvh; }
+    /* Let content area fill remaining column; using 100% ensures scroll beyond the sticky topbar */
+    .admin-content { flex: 1; display: flex; flex-direction: column; min-height: 100%; padding: 16px 16px 140px; }
+
     .admin-frame {
       position: relative;
       max-width: 1200px;
