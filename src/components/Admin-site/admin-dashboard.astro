@@ -1567,10 +1567,10 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
       }
     });
   }, { threshold: 0.15 });
-  Array.from(root.querySelectorAll('.pre-animation')).forEach((el) => io.observe(el));
+  (root.querySelectorAll('.pre-animation') as NodeListOf<HTMLElement>).forEach((el) => io.observe(el));
 
   // Counter animation for .stat-value
-  const counters = Array.from(root.querySelectorAll('.stat-value[data-target]')) as HTMLElement[];
+  const counters = (root.querySelectorAll('.stat-value[data-target]') as NodeListOf<HTMLElement>);
   const nfCache = new Map<string, Intl.NumberFormat>();
 
   function getFormatter(opts: Intl.NumberFormatOptions): Intl.NumberFormat {
@@ -1583,7 +1583,7 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
     return fmt;
   }
 
-  function animateCounter(el) {
+  function animateCounter(el: HTMLElement) {
     const target = Number(el.dataset.target || 0);
     const format = (el.dataset.format || 'number');
     let opts = {};
@@ -1597,7 +1597,7 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
 
     const duration = 900;
     const start = performance.now();
-    function tick(now) {
+    function tick(now: number) {
       const p = Math.min(1, (now - start) / duration);
       const eased = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p; // ease in-out quad
       const val = Math.floor(eased * target);
@@ -1612,7 +1612,7 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
   const co = new IntersectionObserver((entries) => {
     entries.forEach((en) => {
       if (en.isIntersecting) {
-        animateCounter(en.target);
+        animateCounter(en.target as HTMLElement);
         co.unobserve(en.target);
       }
     });
@@ -1620,11 +1620,11 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
   counters.forEach((el) => co.observe(el));
 
   // Draw minimal sparklines (flat line/area)
-  function drawSparkline(canvas) {
+  function drawSparkline(canvas: HTMLCanvasElement) {
     const str = canvas.dataset.values || '';
     const values = str.split(',')
-      .map((v) => Number((v || '').trim()))
-      .filter((v) => !Number.isNaN(v));
+      .map((v: string) => Number((v || '').trim()))
+      .filter((v: number) => !Number.isNaN(v));
     if (!values.length) return;
 
     const dpr = Math.max(1, window.devicePixelRatio || 1);
@@ -1647,7 +1647,7 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
     const range = Math.max(1, max - min);
     const stepX = values.length > 1 ? (w - pad * 2) / (values.length - 1) : 0;
 
-    const points = values.map((v, i) => {
+    const points = values.map((v: number, i: number) => {
       const x = pad + i * stepX;
       const y = h - pad - ((v - min) / range) * (h - pad * 2);
       return [x, y] as [number, number];
@@ -1656,7 +1656,7 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
     // Area fill
     ctx.beginPath();
     ctx.moveTo(points[0][0], h - pad);
-    points.forEach(([x, y]) => ctx.lineTo(x, y));
+    points.forEach(([x, y]: [number, number]) => ctx.lineTo(x, y));
     ctx.lineTo(points[points.length - 1][0], h - pad);
     ctx.closePath();
     ctx.fillStyle = 'rgba(8, 88, 149, 0.10)';
@@ -1664,7 +1664,7 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
 
     // Stroke line
     ctx.beginPath();
-    points.forEach(([x, y], idx) => {
+    points.forEach(([x, y]: [number, number], idx: number) => {
       if (idx === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     });
@@ -1675,36 +1675,36 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
     ctx.stroke();
   }
 
-  (root.querySelectorAll('canvas.sparkline')).forEach((c) => drawSparkline(c));
+  (root.querySelectorAll('canvas.sparkline') as NodeListOf<HTMLCanvasElement>).forEach((c) => drawSparkline(c));
   window.addEventListener('resize', () => {
-    (root.querySelectorAll('canvas.sparkline')).forEach((c) => drawSparkline(c));
+    (root.querySelectorAll('canvas.sparkline') as NodeListOf<HTMLCanvasElement>).forEach((c) => drawSparkline(c));
   });
 
   // Tooltips removed
 
   // Table: sorting, search, pagination (client-side)
-  const container = root.querySelector('.table-container.paginated');
+  const container = root.querySelector('.table-container.paginated') as HTMLElement | null;
   if (container) {
-    const table = container.querySelector('table.data-table');
-    const tbody = table?.querySelector('tbody');
+    const table = container.querySelector('table.data-table') as HTMLTableElement | null;
+    const tbody = table?.querySelector('tbody') as HTMLTableSectionElement | null;
     const rowsOriginal = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
-    const searchInput = root.querySelector('.search-input');
-    const pagination = container.querySelector('.pagination');
-    const pagesWrap = pagination?.querySelector('.pagination-pages');
-    const prevBtn = pagination?.querySelector('.pagination-button:first-child');
-    const nextBtn = pagination?.querySelector('.pagination-button:last-child');
+    const searchInput = root.querySelector('.search-input') as HTMLInputElement | null;
+    const pagination = container.querySelector('.pagination') as HTMLElement | null;
+    const pagesWrap = pagination?.querySelector('.pagination-pages') as HTMLElement | null;
+    const prevBtn = pagination?.querySelector('.pagination-button:first-child') as HTMLButtonElement | null;
+    const nextBtn = pagination?.querySelector('.pagination-button:last-child') as HTMLButtonElement | null;
     const rowsPerPageAttr = container.getAttribute('data-rows-per-page');
     const rowsPerPage = rowsPerPageAttr ? parseInt(rowsPerPageAttr, 10) : 5;
 
     let filtered = rowsOriginal.slice();
     let currentPage = 1;
     let currentSortIdx = -1;
-    let currentSortDir = 'none';
+    let currentSortDir: 'asc' | 'desc' | 'none' = 'none';
 
-    function parseAmount(text) {
+    function parseAmount(text: string): number {
       return Number(text.replace(/[^\d-]+/g, '')) || 0;
     }
-    function parseDateID(text) {
+    function parseDateID(text: string): number {
       try {
         const [d, mon, y] = text.split(' ');
         const idx = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'].indexOf(mon);
@@ -1712,7 +1712,7 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
         return new Date(Number(y), month, Number(d)).getTime();
       } catch { return 0; }
     }
-    function updateHeadSort(th, dir) {
+    function updateHeadSort(th: HTMLTableCellElement | null, dir: 'asc' | 'desc' | 'none') {
       table?.querySelectorAll('th.sortable').forEach((h) => h.setAttribute('aria-sort','none'));
       if (th) th.setAttribute('aria-sort', dir === 'asc' ? 'ascending' : dir === 'desc' ? 'descending' : 'none');
     }
@@ -1745,15 +1745,15 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
       currentPage = 1;
       render();
     }
-    function sortBy(colIdx, type) {
+    function sortBy(colIdx: number, type: 'text' | 'amount' | 'date') {
       if (currentSortIdx === colIdx) {
         currentSortDir = currentSortDir === 'asc' ? 'desc' : currentSortDir === 'desc' ? 'none' : 'asc';
       } else {
         currentSortIdx = colIdx;
         currentSortDir = 'asc';
       }
-      const th = table?.querySelectorAll('thead th')[colIdx];
-      updateHeadSort(th || null, currentSortDir);
+      const th = table?.querySelectorAll('thead th')[colIdx] as HTMLTableCellElement | undefined;
+      updateHeadSort(th ?? null, currentSortDir);
 
       if (currentSortDir === 'none') {
         filtered = rowsOriginal.filter((tr) => filtered.includes(tr));
@@ -1773,17 +1773,17 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
     }
 
     // Bind sort
-    table?.querySelectorAll('thead th.sortable').forEach((thEl) => {
+    (table?.querySelectorAll('thead th.sortable') as NodeListOf<HTMLTableCellElement>).forEach((thEl) => {
       const th = thEl;
       th.setAttribute('aria-sort','none');
       th.addEventListener('click', () => {
         const type = (th.getAttribute('data-type') || 'text');
         const colIdx = Array.prototype.indexOf.call(th.parentElement?.children, th);
-        sortBy(colIdx, type);
+        sortBy(colIdx, type as 'text' | 'amount' | 'date');
       });
       th.tabIndex = 0;
-      th.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); th.click(); }
+      th.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); (th as HTMLElement).click(); }
       });
     });
 
@@ -1803,16 +1803,17 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
   }
 
   // Notifications: mark as read
-  root.addEventListener('click', (e) => {
-    const btn = (e.target)?.closest('.notification-item .btn-icon');
+  root.addEventListener('click', (e: MouseEvent) => {
+    const target = e.target as HTMLElement | null;
+    const btn = target?.closest('.notification-item .btn-icon');
     if (!btn) return;
     const item = btn.closest('.notification-item');
     if (item) item.classList.remove('unread');
   });
 
   // Make buttons "pressable" (no hover)
-  root.querySelectorAll('button, .upgrade-chip, .btn-upgrade, .icon-button, .action-button, .pagination-button, .card-link').forEach((el) => {
-    (el).classList.add('pressable');
+  (root.querySelectorAll('button, .upgrade-chip, .btn-upgrade, .icon-button, .action-button, .pagination-button, .card-link') as NodeListOf<HTMLElement>).forEach((el) => {
+    el.classList.add('pressable');
   });
 })();
 </script>
