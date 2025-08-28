@@ -1,0 +1,1899 @@
+---
+import Layout from "../../layouts/admin-layout.astro";
+import AdminSidebar from "../../components/Admin-site/admin-sidebar.astro";
+import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
+---
+
+<Layout>
+  <AdminSidebar slot="sidebar" />
+  <AdminTopbar slot="topbar" />
+
+  <!-- Header -->
+  <section class="section-header-card pre-anim">
+    <div class="section-header-left">
+      <div class="section-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4"/>
+          <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+        </svg>
+      </div>
+      <div class="section-title">
+        <h1>Manajemen Anggaran</h1>
+        <p class="subtitle">Pemantauan anggaran Rencana vs Realisasi — semua fitur aktif.</p>
+      </div>
+    </div>
+    <div class="section-actions">
+      <button class="btn secondary" id="btn-print" aria-label="Cetak">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6,9 6,2 18,2 18,9"/>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+          <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        <span>Cetak</span>
+      </button>
+      <button class="btn secondary" id="btn-export" aria-label="Ekspor CSV">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14,2 14,8 20,8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10,9 9,9 8,9"/>
+        </svg>
+        <span>Ekspor CSV</span>
+      </button>
+      <button class="btn primary" id="btn-open-drawer" aria-label="Buat Rencana">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="16"/>
+          <line x1="8" y1="12" x2="16" y2="12"/>
+        </svg>
+        <span>Buat Rencana</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Toolbar -->
+  <section class="toolbar-section pre-anim" role="region" aria-label="Filter dan kontrol anggaran">
+    <div class="toolbar">
+      <div class="toolbar-group">
+        <div class="field">
+          <label>Periode Cepat</label>
+          <div class="chip-group" role="tablist" aria-label="Preset periode">
+            <button class="chip active" data-preset="bulan-ini" role="tab" aria-selected="true">Bulan Ini</button>
+            <button class="chip" data-preset="bulan-lalu" role="tab">Bulan Lalu</button>
+            <button class="chip" data-preset="qtd" role="tab">QTD</button>
+            <button class="chip" data-preset="ytd" role="tab">YTD</button>
+            <button class="chip" data-preset="semua" role="tab">Semua</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="filter-start">Dari</label>
+          <input type="date" id="filter-start" />
+        </div>
+
+        <div class="field">
+          <label for="filter-end">Sampai</label>
+          <input type="date" id="filter-end" />
+        </div>
+
+        <div class="field">
+          <label for="filter-cat">Kategori</label>
+          <select id="filter-cat">
+            <option value="Semua">Semua</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="filter-q">Cari</label>
+          <div class="input-wrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" id="filter-q" placeholder="Ketik kegiatan/kategori..." autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="filter-min">Min Rencana</label>
+          <input type="number" id="filter-min" placeholder="0" min="0" step="1000" />
+        </div>
+
+        <div class="field">
+          <label for="filter-max">Maks Rencana</label>
+          <input type="number" id="filter-max" placeholder="—" min="0" step="1000" />
+        </div>
+      </div>
+
+      <div class="toolbar-actions">
+        <button id="btn-reset" class="btn secondary" aria-label="Atur ulang filter">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10"/>
+            <polyline points="23 20 23 14 17 14"/>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+          </svg>
+          <span>Atur Ulang</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- KPI Cards -->
+  <section class="kpi-grid pre-anim" aria-label="Summary">
+    <div class="kpi-card blue">
+      <div class="kpi-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-label">Total Rencana</div>
+        <div class="kpi-value" id="sum-plan" aria-live="polite">Rp0</div>
+      </div>
+    </div>
+    
+    <div class="kpi-card green">
+      <div class="kpi-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-label">Total Realisasi</div>
+        <div class="kpi-value" id="sum-real" aria-live="polite">Rp0</div>
+      </div>
+    </div>
+    
+    <div class="kpi-card slate">
+      <div class="kpi-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4"/>
+          <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+        </svg>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-label">Sisa</div>
+        <div class="kpi-value" id="sum-remain" aria-live="polite">Rp0</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Charts -->
+  <section class="charts-grid pre-anim">
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          Rencana vs Realisasi
+        </h3>
+      </div>
+      <div class="chart-body">
+        <div class="skeleton" id="sk-b1"></div>
+        <canvas id="bud-plan-real" aria-label="Plan vs actual chart" role="img"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+            <path d="M22 12A10 10 0 0 0 12 2v10z"/>
+          </svg>
+          Komposisi Anggaran
+        </h3>
+      </div>
+      <div class="chart-body">
+        <div class="skeleton" id="sk-b2"></div>
+        <canvas id="bud-pie" aria-label="Budget composition chart" role="img"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="20" x2="12" y2="10"/>
+            <line x1="18" y1="20" x2="18" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="16"/>
+          </svg>
+          Progres per Kategori
+        </h3>
+      </div>
+      <div class="chart-body">
+        <div class="skeleton" id="sk-b3"></div>
+        <canvas id="bud-progress" aria-label="Progress by category chart" role="img"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- Analysis & Plans -->
+  <section class="analysis-grid pre-anim">
+    <div class="content-card">
+      <div class="content-header">
+        <h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+          Deteksi Pemborosan
+        </h3>
+      </div>
+      <div class="content-body">
+        <ul class="anomaly-list" id="overspend-list" aria-live="polite">
+          <li class="loading-state">Menganalisis rencana aktif...</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="content-header">
+        <h3>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z"/>
+          </svg>
+          Daftar Rencana
+        </h3>
+      </div>
+      <div class="content-body">
+        <div class="table-container">
+          <table class="modern-table" aria-label="Daftar rencana anggaran tersimpan">
+            <thead>
+              <tr>
+                <th>Judul</th>
+                <th>Periode</th>
+                <th class="text-right">Rencana</th>
+                <th class="text-right">Realisasi</th>
+                <th class="text-right">Sisa</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="plan-tbody">
+              <tr class="empty-row">
+                <td colspan="6" class="empty-state">
+                  <div class="empty-content">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    </svg>
+                    <p>Belum ada rencana anggaran.</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="note" id="active-plan-note"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Budget Detail -->
+  <div class="content-card pre-anim">
+    <div class="content-header">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+          <path d="m9 16 2 2 4-4"/>
+        </svg>
+        Detail Anggaran
+      </h3>
+    </div>
+    <div class="content-body">
+      <div class="table-container">
+        <table class="modern-table" aria-label="Active plan detail">
+          <thead>
+            <tr>
+              <th>Kegiatan</th>
+              <th>Kategori</th>
+              <th class="text-right">Rencana</th>
+              <th class="text-right">Realisasi</th>
+              <th class="text-right">Sisa</th>
+              <th class="text-right">% Realisasi</th>
+            </tr>
+          </thead>
+          <tbody id="budget-tbody">
+            <tr class="empty-row">
+              <td colspan="6" class="empty-state">
+                <div class="empty-content">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  </svg>
+                  <p>Tidak ada rencana aktif.</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawer: Create Budget Plan -->
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        Buat Rencana Anggaran
+      </h3>
+      <button class="btn secondary" id="btn-close-drawer" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        <span>Close</span>
+      </button>
+    </div>
+    <form id="form-plan" class="drawer-body" novalidate>
+      <div class="field">
+        <label for="plan-title">Judul Rencana</label>
+        <input id="plan-title" type="text" placeholder="Contoh: Anggaran Agustus 2025" required />
+        <div class="error" id="err-title" aria-live="polite"></div>
+      </div>
+      
+      <div class="grid-2">
+        <div class="field">
+          <label for="plan-start">Periode Dari</label>
+          <input id="plan-start" type="date" required />
+          <div class="error" id="err-start" aria-live="polite"></div>
+        </div>
+        <div class="field">
+          <label for="plan-end">Periode Sampai</label>
+          <input id="plan-end" type="date" required />
+          <div class="error" id="err-end" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="plan-owner">Penanggung Jawab</label>
+          <input id="plan-owner" type="text" placeholder="Nama penanggung jawab" />
+        </div>
+        <div class="field">
+          <label for="plan-tags">Tag</label>
+          <input id="plan-tags" type="text" placeholder="Pisahkan dengan koma, contoh: rutin, 2025-Q1" />
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="plan-cont-pct">Cadangan (%)</label>
+          <input id="plan-cont-pct" type="number" min="0" max="50" step="1" placeholder="0" />
+          <div class="hint">Opsional. Jika diisi, nilai rupiah dihitung otomatis dari persentase ini.</div>
+        </div>
+        <div class="field">
+          <label for="plan-cont-amt">Cadangan (Rp)</label>
+          <input id="plan-cont-amt" type="number" min="0" step="1000" placeholder="0" />
+          <div class="hint">Opsional. Isi salah satu: persentase atau nominal rupiah langsung.</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="plan-note">Catatan</label>
+        <textarea id="plan-note" rows="3" placeholder="Tambahkan catatan kebijakan atau asumsi..."></textarea>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-header">
+        <h4>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="8" y1="6" x2="21" y2="6"/>
+            <line x1="8" y1="12" x2="21" y2="12"/>
+            <line x1="8" y1="18" x2="21" y2="18"/>
+            <line x1="3" y1="6" x2="3.01" y2="6"/>
+            <line x1="3" y1="12" x2="3.01" y2="12"/>
+            <line x1="3" y1="18" x2="3.01" y2="18"/>
+          </svg>
+          Item Anggaran
+        </h4>
+        <div class="section-actions">
+          <button type="button" class="btn secondary" id="btn-add-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="16"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            <span>Tambah Item</span>
+          </button>
+          <button type="button" class="btn secondary" id="btn-add-preset">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            <span>Contoh Preset</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="item-list" class="item-list">
+        <!-- item rows injected -->
+      </div>
+
+      <div id="plan-preview" class="preview-box">
+        <div class="preview-header">
+          <strong>Ringkasan:</strong>
+        </div>
+        <div class="preview-content">
+          <div class="preview-row">
+            <span>Total Item Rencana:</span>
+            <span id="pv-plan-items">Rp0</span>
+          </div>
+          <div class="preview-row">
+            <span>Cadangan:</span>
+            <span id="pv-cont">Rp0</span>
+          </div>
+          <div class="preview-row total">
+            <span>Total Rencana + Cadangan:</span>
+            <span id="pv-plan-total">Rp0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="drawer-actions">
+        <button type="submit" class="btn primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+          <span>Simpan Rencana</span>
+        </button>
+      </div>
+    </form>
+  </aside>
+
+  <div class="drawer-backdrop" id="drawer-backdrop" aria-hidden="true"></div>
+
+  <style>
+    :root {
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --surface-3: #f1f5f9;
+      --outline: #e2e8f0;
+      --outline-2: #cbd5e1;
+      --text: #0f172a;
+      --text-subtle: #64748b;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --primary-light: #dbeafe;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --blue: #3b82f6;
+      --green: #10b981;
+      --slate: #64748b;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --spacing: 1rem;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+
+    /* Layout & Structure */
+    .section-header-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .section-header-left {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .section-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 3rem;
+      height: 3rem;
+      border-radius: var(--radius);
+      background: var(--surface-3);
+      color: var(--primary);
+      border: 1px solid var(--outline);
+    }
+
+    .section-title h1 {
+      margin: 0;
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: var(--text-subtle);
+      font-weight: 500;
+      margin: 0.25rem 0 0 0;
+      font-size: 0.875rem;
+    }
+
+    .section-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Toolbar */
+    .toolbar-section {
+      background: var(--surface);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-group {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 1rem;
+      align-items: end;
+      flex: 1;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* Form Elements */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .field label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input[type="date"],
+    input[type="number"],
+    input[type="text"],
+    textarea,
+    select {
+      background: var(--surface);
+      border: 1px solid var(--outline);
+      color: var(--text);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+    }
+
+    input[type="date"]:focus,
+    input[type="number"]:focus,
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .input-wrap:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .input-wrap svg {
+      color: var(--text-subtle);
+      flex-shrink: 0;
+    }
+
+    .input-wrap input {
+      background: transparent;
+      border: none;
+      padding: 0;
+      outline: none;
+      flex: 1;
+    }
+
+    .input-wrap input:focus {
+      box-shadow: none;
+      border-color: transparent;
+    }
+
+    /* Chips */
+    .chip-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      background: var(--surface-2);
+      border: 1px solid var(--outline);
+      color: var(--text);
+      border-radius: 2rem;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      font-size: 0.75rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      outline: none;
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+
+    .btn.primary {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .btn.primary:focus {
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .btn.secondary {
+      background: var(--surface-2);
+      color: var(--text);
+      border-color: var(--outline);
+    }
+
+    .btn.secondary:focus {
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .btn svg {
+      flex-shrink: 0;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .kpi-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      min-height: 120px;
+    }
+
+    .kpi-card.blue .kpi-icon {
+      background: var(--blue);
+    }
+
+    .kpi-card.green .kpi-icon {
+      background: var(--green);
+    }
+
+    .kpi-card.slate .kpi-icon {
+      background: var(--slate);
+    }
+
+    .kpi-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .kpi-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .kpi-label {
+      color: var(--text-subtle);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-value {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    /* Charts Grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--outline);
+      background: var(--surface-2);
+    }
+
+    .chart-header h3 {
+      margin: 0;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      font-weight: 700;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .chart-body {
+      height: 320px;
+      display: flex;
+      position: relative;
+      padding: 1rem;
+    }
+
+    .chart-body canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .skeleton {
+      position: absolute;
+      inset: 1rem;
+      border-radius: var(--radius);
+      background: var(--surface-3);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Analysis Grid */
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Content Cards */
+    .content-card {
+      background: var(--surface);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .content-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--outline);
+      background: var(--surface-2);
+    }
+
+    .content-header h3 {
+      margin: 0;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      font-weight: 700;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .content-body {
+      padding: 1.5rem;
+    }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--outline);
+      border-radius: var(--radius);
+      margin: -1.5rem;
+      margin-top: 0;
+    }
+
+    .modern-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    .modern-table th,
+    .modern-table td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid var(--outline);
+    }
+
+    .modern-table th {
+      background: var(--surface-3);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .modern-table .text-right {
+      text-align: right;
+    }
+
+    .modern-table tbody tr:nth-child(even) {
+      background: var(--surface-2);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+
+    .empty-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-subtle);
+    }
+
+    .empty-content svg {
+      opacity: 0.5;
+    }
+
+    .empty-content p {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    /* Anomaly List */
+    .anomaly-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .anomaly-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border: 1px solid var(--outline);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+    }
+
+    .loading-state {
+      color: var(--text-subtle);
+      font-style: italic;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 2rem;
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge.warn {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .badge.crit {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .note {
+      font-size: 0.875rem;
+      color: var(--text-subtle);
+      font-weight: 500;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--outline);
+    }
+
+    /* Drawer */
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: -600px;
+      width: 600px;
+      max-width: 100vw;
+      height: 100vh;
+      background: var(--surface);
+      border-left: 1px solid var(--outline);
+      box-shadow: var(--shadow-xl);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.3s ease;
+    }
+
+    .drawer.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--outline);
+      background: var(--surface-2);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .drawer-header h3 {
+      margin: 0;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      font-weight: 700;
+      color: var(--text);
+      font-size: 1.125rem;
+    }
+
+    .drawer-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .drawer-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--outline);
+      margin-top: 1.5rem;
+    }
+
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 40;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .drawer-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Form Layout */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--outline);
+      margin: 0.5rem 0;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0.5rem 0;
+    }
+
+    .section-header h4 {
+      margin: 0;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      font-weight: 700;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .section-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--text-subtle);
+      font-weight: 500;
+      margin-top: 0.25rem;
+      line-height: 1.4;
+    }
+
+    .error {
+      color: var(--error);
+      font-size: 0.75rem;
+      font-weight: 600;
+      min-height: 1rem;
+    }
+
+    /* Item List */
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .item-row {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr auto;
+      gap: 1rem;
+      align-items: end;
+      padding: 1.25rem;
+      border: 1px solid var(--outline);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+      border-left: 4px solid var(--accent, var(--slate));
+    }
+
+    .row-head {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .badge.cat {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 2rem;
+      font-weight: 700;
+      font-size: 0.75rem;
+      background: color-mix(in srgb, var(--accent, var(--slate)) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent, var(--slate)) 30%, transparent);
+      color: var(--text);
+    }
+
+    .badge.cat svg {
+      color: var(--accent, var(--slate));
+    }
+
+    .chip.prio {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 2rem;
+      font-weight: 700;
+      font-size: 0.75rem;
+      border: 1px solid var(--outline);
+    }
+
+    .chip.prio.high {
+      background: #fee2e2;
+      color: #b91c1c;
+      border-color: #fecaca;
+    }
+
+    .chip.prio.med {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+    }
+
+    .chip.prio.low {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #bbf7d0;
+    }
+
+    .item-row .del {
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .input-adorn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .input-adorn:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .input-adorn .prefix {
+      font-weight: 700;
+      color: var(--text-subtle);
+      font-size: 0.875rem;
+    }
+
+    .input-adorn input {
+      background: transparent;
+      border: 0;
+      outline: none;
+      color: var(--text);
+      flex: 1;
+      padding: 0;
+      font-weight: 600;
+    }
+
+    .input-adorn svg {
+      color: var(--text-subtle);
+      flex-shrink: 0;
+    }
+
+    /* Preview Box */
+    .preview-box {
+      border: 2px dashed var(--outline);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      background: var(--surface-2);
+    }
+
+    .preview-header {
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .preview-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .preview-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .preview-row.total {
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--outline);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    /* Category Pills */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      font-size: 0.75rem;
+      border: 1px solid var(--outline);
+      background: var(--surface-2);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .toolbar-group {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      
+      .charts-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .section-header-card {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+      }
+
+      .section-actions {
+        justify-content: center;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toolbar-group {
+        grid-template-columns: 1fr;
+      }
+
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .analysis-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .item-row {
+        grid-template-columns: 1fr 1fr auto;
+      }
+
+      .drawer {
+        width: 100vw;
+        right: -100vw;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .section-header-card,
+      .toolbar-section,
+      .content-card {
+        padding: 1rem;
+      }
+
+      .drawer-body {
+        padding: 1rem;
+      }
+
+      .kpi-card {
+        padding: 1rem;
+        min-height: auto;
+      }
+
+      .item-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .row-head {
+        margin-bottom: 0.75rem;
+      }
+    }
+
+    /* Animations */
+    .pre-anim {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    /* Print Styles */
+    @media print {
+      .section-actions,
+      .toolbar-section,
+      .drawer,
+      .drawer-backdrop {
+        display: none !important;
+      }
+
+      .content-card,
+      .chart-card {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      .modern-table th {
+        position: static;
+      }
+    }
+
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      .pre-anim,
+      .reveal {
+        transition: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+      }
+
+      .skeleton {
+        animation: none !important;
+      }
+
+      * {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  </style>
+
+  <script>
+    // Chart.js is provided by layout; we just wait for readiness via 'charts-ready'.
+
+    // Utilities
+    /** @type {(n: number) => string} */
+    const fmtIDR = (n: number) => new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      maximumFractionDigits: 0
+    }).format(Math.round(n || 0));
+
+    /** @type {(n: number) => string} */
+    const fmtNum = (n: number) => new Intl.NumberFormat('id-ID').format(Math.round(n || 0));
+    
+    /** @type {(iso: string) => string} */
+    const fmtDateID = (iso: string) => new Date(iso + 'T00:00:00').toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+    
+    /** @type {(d: Date) => string} */
+    const toISO = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
+    // Categories palette
+    const CAT_META = [
+      { name: 'Environment', color: '#22c55e' },
+      { name: 'Security', color: '#f97316' },
+      { name: 'Cleanliness', color: '#10b981' },
+      { name: 'Administration', color: '#64748b' },
+      { name: 'Facilities', color: '#8b5cf6' },
+      { name: 'Social', color: '#ef4444' },
+      { name: 'Events', color: '#60a5fa' },
+      { name: 'Donations', color: '#84cc16' }
+    ];
+    
+    /** @type {(c: string) => string} */
+    const catColor = (c: string) => (CAT_META.find(x => x.name === c)?.color) || '#64748b';
+
+    // State
+    /** NOTE: Using inline shapes instead of named typedefs to satisfy TS in .astro */
+    /**
+     * @typedef {{
+     *  plans: any[],
+     *  activePlanId: string | null,
+     *  filters: { start: string; end: string; q: string; cat: string; min: number; max: number; preset: string },
+     *  charts: { pr: any; pie: any; prog: any },
+     *  trx: any[]
+     * }} State
+     */
+    /** @type {State} */
+    const state = {
+      plans: /** @type {any[]} */ ([]),
+      activePlanId: null,
+      filters: { 
+        start: '', 
+        end: '', 
+        q: '', 
+        cat: 'Semua', 
+        min: 0, 
+        max: 0, 
+        preset: 'bulan-ini' 
+      },
+      charts: { pr: null as any, pie: null as any, prog: null as any },
+      trx: /** @type {any[]} */ ([])
+    };
+
+    // Load transactions master (optional)
+    function loadMasterTrx() {
+      try {
+        state.trx = JSON.parse(localStorage.getItem('lap_trx_master_v1') || '[]');
+      } catch (_) {
+        state.trx = [];
+      }
+      if (!Array.isArray(state.trx)) state.trx = [];
+    }
+    loadMasterTrx();
+
+    // Seed category filter
+    (function seedCatFilter() {
+      const sel = document.getElementById('filter-cat');
+      if (!sel) return;
+      CAT_META.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.name;
+        opt.textContent = c.name;
+        sel.appendChild(opt);
+      });
+    })();
+
+    // Plans storage
+    function loadPlans() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem('bud_plans_v1') || '[]');
+        const parsedPlans = (Array.isArray(parsed) ? parsed : []) as any[];
+        (state as any).plans = parsedPlans;
+      } catch (_) {
+        (state as any).plans = [] as any[];
+      }
+      if (!Array.isArray((state as any).plans)) (state as any).plans = [] as any[];
+      if (!(state as any).activePlanId && (state as any).plans[0]?.id) (state as any).activePlanId = (state as any).plans[0].id as string;
+    }
+
+    function savePlans() {
+      localStorage.setItem('bud_plans_v1', JSON.stringify((state as any).plans));
+    }
+    
+    loadPlans();
+
+    // ---------- Rendering Helpers ----------
+    /** @returns {any | null} */
+    function getActivePlan() {
+      const plans = (state as any).plans as any[];
+      if (!plans.length) return null;
+      const found = (state as any).activePlanId ? plans.find((p: any) => p.id === (state as any).activePlanId) : null;
+      return found || plans[0] || null;
+    }
+
+    /**
+     * @param {any} plan
+     * @returns {{ totalPlan: number; totalReal: number; remaining: number }}
+     */
+    function calcPlanSummary(plan: any) {
+      const items = Array.isArray(plan?.items) ? (plan.items as any[]) : ([] as any[]);
+      let totalPlan = 0;
+      let totalReal = 0;
+      for (const it of items) {
+        const p = Number(it?.plan ?? 0);
+        const a = Number(it?.actual ?? 0);
+        totalPlan += isFinite(p) ? p : 0;
+        totalReal += isFinite(a) ? a : 0;
+      }
+      return { totalPlan, totalReal, remaining: totalPlan - totalReal };
+    }
+
+    function renderKPIs() {
+      const plan = getActivePlan();
+      const elPlan = document.getElementById('sum-plan');
+      const elReal = document.getElementById('sum-real');
+      const elRemain = document.getElementById('sum-remain');
+      if (!elPlan || !elReal || !elRemain) return;
+      if (!plan) {
+        elPlan.textContent = 'Rp0';
+        elReal.textContent = 'Rp0';
+        elRemain.textContent = 'Rp0';
+        return;
+      }
+      const s = calcPlanSummary(plan);
+      elPlan.textContent = fmtIDR(s.totalPlan);
+      elReal.textContent = fmtIDR(s.totalReal);
+      elRemain.textContent = fmtIDR(s.remaining);
+    }
+
+    function renderPlanList() {
+      const tbody = document.getElementById('plan-tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      if (!(state as any).plans.length) {
+        const tr = document.createElement('tr');
+        tr.className = 'empty-row';
+        tr.innerHTML = `<td colspan="6" class="empty-state">
+          <div class="empty-content">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            </svg>
+            <p>Belum ada rencana anggaran.</p>
+          </div>
+        </td>`;
+        tbody.appendChild(tr);
+        return;
+      }
+      const active = getActivePlan();
+      ((state as any).plans || []).forEach((plan: any) => {
+        const isActive = !!(active && (active as any).id && (plan && plan.id) && ((active as any).id === plan.id));
+        const { totalPlan, totalReal, remaining } = calcPlanSummary(plan);
+        const tr = document.createElement('tr');
+        const period = (plan?.start && plan?.end) ? `${fmtDateID(plan.start)} - ${fmtDateID(plan.end)}` : '—';
+        tr.innerHTML = `
+          <td>${plan?.title || 'Tanpa Judul'}</td>
+          <td>${period}</td>
+          <td class="text-right">${fmtIDR(totalPlan)}</td>
+          <td class="text-right">${fmtIDR(totalReal)}</td>
+          <td class="text-right">${fmtIDR(remaining)}</td>
+          <td>
+            <div class="table-actions">
+              <button class="btn secondary btn-set-active" data-id="${plan.id}">${isActive ? 'Aktif' : 'Jadikan Aktif'}</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      // Bind set active buttons
+      tbody.querySelectorAll('.btn-set-active').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = e.currentTarget as HTMLElement;
+          const id = target ? target.getAttribute('data-id') : null;
+          if (!id) return;
+          (state as any).activePlanId = id as any;
+          renderAll();
+        });
+      });
+    }
+
+    function renderBudgetDetail() {
+      const tbody = document.getElementById('budget-tbody');
+      if (!tbody) return;
+      const plan = getActivePlan();
+      tbody.innerHTML = '';
+      if (!plan || !Array.isArray(plan.items) || !plan.items.length) {
+        const tr = document.createElement('tr');
+        tr.className = 'empty-row';
+        tr.innerHTML = `<td colspan="6" class="empty-state">
+          <div class="empty-content">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A 2 2 0 0 0 21 16z"/>
+            </svg>
+            <p>Tidak ada rencana aktif.</p>
+          </div>
+        </td>`;
+        tbody.appendChild(tr);
+        return;
+      }
+      const items = Array.isArray(plan.items) ? (plan.items as any[]) : ([] as any[]);
+      items.forEach((it: any) => {
+        const planAmt = Number(it?.plan || 0);
+        const actAmt = Number(it?.actual || 0);
+        const remain = planAmt - actAmt;
+        const pct = planAmt > 0 ? Math.round((actAmt / planAmt) * 100) : 0;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${it?.name || it?.activity || '-'}</td>
+          <td>${it?.category || '-'}</td>
+          <td class="text-right">${fmtIDR(planAmt)}</td>
+          <td class="text-right">${fmtIDR(actAmt)}</td>
+          <td class="text-right">${fmtIDR(remain)}</td>
+          <td class="text-right">${fmtNum(pct)}%</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderAll() {
+      renderKPIs();
+      renderPlanList();
+      renderBudgetDetail();
+      renderCharts();
+    }
+
+    function bindUI() {
+      const btnOpen = document.getElementById('btn-open-drawer');
+      const btnClose = document.getElementById('btn-close-drawer');
+      const drawer = document.getElementById('drawer');
+      const backdrop = document.getElementById('drawer-backdrop');
+      function openDrawer() {
+        drawer?.classList.add('open');
+        backdrop?.classList.add('open');
+      }
+      function closeDrawer() {
+        drawer?.classList.remove('open');
+        backdrop?.classList.remove('open');
+      }
+      btnOpen?.addEventListener('click', (e) => { e.preventDefault(); openDrawer(); });
+      btnClose?.addEventListener('click', (e) => { e.preventDefault(); closeDrawer(); });
+      backdrop?.addEventListener('click', closeDrawer);
+
+      window.addEventListener('storage', (ev) => {
+        if (ev.key === 'bud_plans_v1') {
+          loadPlans();
+          renderAll();
+        }
+      });
+    }
+
+    // Initialize after DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAll();
+      bindUI();
+      // Reveal sections that are initially hidden with .pre-anim
+      document.querySelectorAll('.pre-anim').forEach((el: Element) => (el as HTMLElement).classList.add('reveal'));
+    });
+
+    // -------------- Charts (Plan vs Actual, Pie Composition, Progress) --------------
+    // Color utilities
+    /** @param {string} hex @param {number} alpha */
+    function hexToRgba(hex: string, alpha: number = 1) {
+      const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '#64748b');
+      if (!m) return `rgba(100,116,139,${alpha})`;
+      const r = parseInt(m[1], 16), g = parseInt(m[2], 16), b = parseInt(m[3], 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+    // Bright categorical palette (stable across categories)
+    const PALETTE = [
+      '#4361EE', '#06D6A0', '#EF476F', '#F9C74F', '#4CC9F0',
+      '#FF7F50', '#8D99AE', '#8338EC', '#3A86FF', '#FB5607',
+      '#2EC4B6', '#E71D36', '#FFBE0B', '#118AB2', '#06A77D'
+    ];
+    /** simple hash for stable palette indexing */
+    function hashCode(str: string) {
+      let h = 0; const s = String(str || '');
+      for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
+      return Math.abs(h);
+    }
+    /** @param {string} name */
+    function colorFor(name: string) {
+      const found = CAT_META.find(x => x.name === name);
+      const base = found ? found.color : (PALETTE[hashCode(name) % PALETTE.length] || '#64748b');
+      return base;
+    }
+    /** Hide skeleton by id if exists */
+    function hideSkel(id: string) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    }
+
+    /** @returns {Record<string, {plan:number, actual:number}>} */
+    function aggregateByCategory() {
+      const plan = getActivePlan();
+      const agg: Record<string, {plan:number, actual:number}> = {};
+      if (!plan || !Array.isArray(plan.items)) return agg;
+      for (const it of plan.items) {
+        const cat = String(it?.category || 'Lainnya');
+        if (!agg[cat]) agg[cat] = { plan: 0, actual: 0 };
+        agg[cat].plan += Number(it?.plan || 0);
+        agg[cat].actual += Number(it?.actual || 0);
+      }
+      return agg;
+    }
+
+    function destroyCharts() {
+      try { state.charts.pr?.destroy?.(); } catch {}
+      try { state.charts.pie?.destroy?.(); } catch {}
+      try { state.charts.prog?.destroy?.(); } catch {}
+      state.charts.pr = null; state.charts.pie = null; state.charts.prog = null;
+    }
+
+    function renderCharts(_retry: number = 0) {
+      // Wait for Chart global (handles case when charts-ready already fired)
+      if (typeof window.Chart === 'undefined') {
+        const once = () => { window.removeEventListener('charts-ready', once); renderCharts(); };
+        window.addEventListener('charts-ready', once, { once: true });
+        if (_retry < 20) setTimeout(() => renderCharts(_retry + 1), 150); // also poll up to ~3s
+        return;
+      }
+      // Access Chart from window for TS
+      const Chart = (window as any).Chart as any;
+
+      const agg: Record<string, {plan:number, actual:number}> = aggregateByCategory() as Record<string, {plan:number, actual:number}>;
+      const cats = Object.keys(agg);
+      const planVals = cats.map(c => agg[c].plan);
+      const actualVals = cats.map(c => agg[c].actual);
+
+      // If no data, just destroy existing and keep skeletons visible
+      if (!cats.length) { destroyCharts(); return; }
+
+      // Common colors per category
+      const bgPlan = cats.map(c => colorFor(c));
+      const bgActual = cats.map(c => hexToRgba(colorFor(c), 0.6));
+
+      // Plan vs Actual (bar)
+      const elPR = document.getElementById('bud-plan-real') as HTMLCanvasElement | null;
+      if (elPR) {
+        hideSkel('sk-b1');
+        const ctx = elPR.getContext('2d');
+        if (ctx) {
+          try { state.charts.pr?.destroy?.(); } catch {}
+          state.charts.pr = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: cats,
+              datasets: [
+                { label: 'Rencana', data: planVals, backgroundColor: bgPlan, borderWidth: 0 },
+                { label: 'Realisasi', data: actualVals, backgroundColor: bgActual, borderWidth: 0 }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: { beginAtZero: true, ticks: { callback: (v: any) => fmtIDR(Number(v)) } }
+              },
+              plugins: {
+                legend: { position: 'top' },
+                tooltip: { callbacks: { label: (ctx: any) => `${ctx.dataset.label}: ${fmtIDR(Number(ctx.parsed.y))}` } }
+              }
+            }
+          });
+        }
+      }
+
+      // Pie composition (by plan amount)
+      const elPie = document.getElementById('bud-pie') as HTMLCanvasElement | null;
+      if (elPie) {
+        hideSkel('sk-b2');
+        const ctx = elPie.getContext('2d');
+        if (ctx) {
+          try { state.charts.pie?.destroy?.(); } catch {}
+          state.charts.pie = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+              labels: cats,
+              datasets: [{ data: planVals, backgroundColor: bgPlan, borderColor: '#ffffff', borderWidth: 1 }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { position: 'right' },
+                tooltip: { callbacks: { label: (ctx: any) => `${ctx.label}: ${fmtIDR(Number(ctx.parsed))}` } }
+              },
+              cutout: '60%'
+            }
+          });
+        }
+      }
+
+      // Progress per category (% actual vs plan)
+      const elProg = document.getElementById('bud-progress') as HTMLCanvasElement | null;
+      if (elProg) {
+        hideSkel('sk-b3');
+        const ctx = elProg.getContext('2d');
+        if (ctx) {
+          try { state.charts.prog?.destroy?.(); } catch {}
+          const pctVals = cats.map((c) => {
+            const p = agg[c].plan; const a = agg[c].actual; return p > 0 ? Math.round((a / p) * 100) : 0;
+          });
+          const allZero = pctVals.every(v => v === 0);
+          const plotVals = allZero ? pctVals.map(() => 0.1) : pctVals;
+          state.charts.prog = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: cats,
+              datasets: [{ label: '% Realisasi', data: plotVals, backgroundColor: cats.map(c => hexToRgba(colorFor(c), 0.85)), borderWidth: 0 }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: { beginAtZero: true, max: 100, ticks: { callback: (v: any) => `${Number(v)}%` } }
+              },
+              plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: (ctx: any) => {
+                  const idx = ctx.dataIndex ?? 0; const val = pctVals[idx] ?? 0; return `${ctx.dataset.label}: ${val}%`;
+                } } }
+              }
+            }
+          });
+        }
+      }
+    }
+
+    // Re-render charts when storage changes (plans updated in another tab)
+    window.addEventListener('storage', (ev) => {
+      if (ev.key === 'bud_plans_v1') {
+        // renderAll() is already called in storage handler; charts will be updated there
+        setTimeout(() => renderCharts(), 0);
+      }
+    });
+  </script>

@@ -1,8 +1,9 @@
 ---
-// Admin Dashboard Component
-// Modern UI/UX Design
+/*
+  Admin Dashboard Component (Astro)
+  Modern UI/UX — No gradient, No hover
+*/
 ---
-
 <div class="admin-dashboard">
   <!-- Dashboard Hero Section -->
   <div class="dashboard-hero pre-animation">
@@ -14,7 +15,7 @@
       <p class="hero-subtitle">Selamat datang kembali. Kelola keuangan dengan tampilan yang bersih dan minimal.</p>
     </div>
     <div class="plan-info">
-      <span class="plan-badge free" title="Akun Gratis">Gratis</span>
+      <span class="plan-badge free">Gratis</span>
       <a href="/admin/upgrade" class="upgrade-chip" aria-label="Upgrade akun">
         <i class="fas fa-crown"></i>
         <span>Upgrade</span>
@@ -22,21 +23,7 @@
     </div>
   </div>
 
-  <!-- Upgrade Banner: visible on Free plan -->
-  <div class="upgrade-banner pre-animation">
-    <div class="upgrade-banner-left">
-      <div class="badge crown"><i class="fas fa-crown"></i></div>
-      <div class="upgrade-text">
-        <h3>Tingkatkan ke Premium</h3>
-        <p>Akun Anda saat ini <strong>Gratis</strong>. Buka fitur lanjutan seperti laporan detail, ekspor data, dan automasi.</p>
-      </div>
-    </div>
-    <div class="upgrade-actions">
-      <a href="/admin/upgrade" class="btn-upgrade" data-tooltip="Lihat paket">
-        Lihat Paket
-      </a>
-    </div>
-  </div>
+  
 
   <!-- Stats Cards -->
   <div class="stats-grid">
@@ -51,9 +38,7 @@
           <i class="fas fa-arrow-up"></i> 12% dari bulan lalu
         </div>
       </div>
-      <div class="mt-2">
-        <canvas class="sparkline" data-values="12,14,13,16,18,21,20,22,24,26,28,32" height="30"></canvas>
-      </div>
+      
     </div>
     
     <div class="stat-card pre-animation">
@@ -67,9 +52,7 @@
           <i class="fas fa-arrow-up"></i> 8% dari bulan lalu
         </div>
       </div>
-      <div class="mt-2">
-        <canvas class="sparkline" data-values="9,10,11,12,14,15,16,17,18,19,21,22" height="30"></canvas>
-      </div>
+      
     </div>
     
     <div class="stat-card pre-animation">
@@ -83,12 +66,10 @@
           <i class="fas fa-arrow-up"></i> 5% dari bulan lalu
         </div>
       </div>
-      <div class="mt-2">
-        <canvas class="sparkline" data-values="5,6,6,7,8,9,9,10,9,11,10,11" height="30"></canvas>
-      </div>
+      
     </div>
     
-    <div class="stat-card premium-feature pre-animation" data-required-plan="premium">
+    <div class="stat-card pre-animation">
       <div class="stat-icon warning">
         <i class="fas fa-clock"></i>
       </div>
@@ -99,12 +80,7 @@
           <i class="fas fa-minus"></i> Sama dengan bulan lalu
         </div>
       </div>
-      <div class="premium-overlay">
-        <div class="premium-message">
-          <i class="fas fa-lock"></i>
-          <span>Fitur Premium</span>
-        </div>
-      </div>
+      
     </div>
   </div>
 
@@ -115,10 +91,10 @@
       <div class="card-header">
         <h3><i class="fas fa-chart-line"></i> Tren Kas</h3>
         <div class="card-actions">
-          <button class="action-button" data-tooltip="Unduh Data">
+          <button class="action-button">
             <i class="fas fa-download"></i>
           </button>
-          <button class="action-button" data-tooltip="Lihat Detail">
+          <button class="action-button">
             <i class="fas fa-expand"></i>
           </button>
         </div>
@@ -133,10 +109,10 @@
       <div class="card-header">
         <h3><i class="fas fa-chart-pie"></i> Komposisi Bulan Ini</h3>
         <div class="card-actions">
-          <button class="action-button" data-tooltip="Unduh Data">
+          <button class="action-button">
             <i class="fas fa-download"></i>
           </button>
-          <button class="action-button" data-tooltip="Lihat Detail">
+          <button class="action-button">
             <i class="fas fa-expand"></i>
           </button>
         </div>
@@ -151,8 +127,8 @@
       <div class="card-header">
         <h3><i class="fas fa-layer-group"></i> Pemasukan vs Pengeluaran</h3>
         <div class="card-actions">
-          <button class="action-button" data-tooltip="Unduh Data"><i class="fas fa-download"></i></button>
-          <button class="action-button" data-tooltip="Lihat Detail"><i class="fas fa-expand"></i></button>
+          <button class="action-button"><i class="fas fa-download"></i></button>
+          <button class="action-button"><i class="fas fa-expand"></i></button>
         </div>
       </div>
       <div class="card-body">
@@ -160,43 +136,17 @@
       </div>
     </div>
 
-    <!-- New: Radar Categories Chart -->
-    <div class="chart-card pre-animation">
-      <div class="card-header">
-        <h3><i class="fas fa-bullseye"></i> Radar Kepuasan</h3>
-        <div class="card-actions">
-          <button class="action-button" data-tooltip="Unduh Data"><i class="fas fa-download"></i></button>
-          <button class="action-button" data-tooltip="Lihat Detail"><i class="fas fa-expand"></i></button>
-        </div>
-      </div>
-      <div class="card-body">
-        <canvas id="chartRadarCategories" height="250"></canvas>
-      </div>
-    </div>
-
-    <!-- New: Top Contributors Horizontal Bar -->
-    <div class="chart-card pre-animation">
-      <div class="card-header">
-        <h3><i class="fas fa-star"></i> Kontributor Teratas</h3>
-        <div class="card-actions">
-          <button class="action-button" data-tooltip="Unduh Data"><i class="fas fa-download"></i></button>
-          <button class="action-button" data-tooltip="Lihat Detail"><i class="fas fa-expand"></i></button>
-        </div>
-      </div>
-      <div class="card-body">
-        <canvas id="chartTopContributors" height="250"></canvas>
-      </div>
-    </div>
+    
     
     <!-- Expense Categories Chart (Premium Feature) -->
-    <div class="chart-card premium-feature" data-required-plan="premium">
+    <div class="chart-card">
       <div class="card-header">
         <h3><i class="fas fa-tags"></i> Kategori Pengeluaran</h3>
         <div class="card-actions">
-          <button class="action-button" data-tooltip="Unduh Data">
+          <button class="action-button">
             <i class="fas fa-download"></i>
           </button>
-          <button class="action-button" data-tooltip="Lihat Detail">
+          <button class="action-button">
             <i class="fas fa-expand"></i>
           </button>
         </div>
@@ -204,23 +154,18 @@
       <div class="card-body">
         <canvas id="chartExpenseCategories" height="250"></canvas>
       </div>
-      <div class="premium-overlay">
-        <div class="premium-message">
-          <i class="fas fa-lock"></i>
-          <span>Fitur Premium</span>
-        </div>
-      </div>
+      
     </div>
     
     <!-- Monthly Comparison Chart (Plus Feature) -->
-    <div class="chart-card premium-feature" data-required-plan="plus">
+    <div class="chart-card">
       <div class="card-header">
         <h3><i class="fas fa-calendar-alt"></i> Perbandingan Bulanan</h3>
         <div class="card-actions">
-          <button class="action-button" data-tooltip="Unduh Data">
+          <button class="action-button">
             <i class="fas fa-download"></i>
           </button>
-          <button class="action-button" data-tooltip="Lihat Detail">
+          <button class="action-button">
             <i class="fas fa-expand"></i>
           </button>
         </div>
@@ -228,12 +173,7 @@
       <div class="card-body">
         <canvas id="chartMonthlyComparison" height="250"></canvas>
       </div>
-      <div class="premium-overlay">
-        <div class="premium-message">
-          <i class="fas fa-lock"></i>
-          <span>Fitur Plus</span>
-        </div>
-      </div>
+      
     </div>
   </div>
 
@@ -243,13 +183,13 @@
       <h3><i class="fas fa-exchange-alt"></i> Transaksi Terbaru</h3>
       <div class="section-actions">
         <div class="search-container">
-          <input type="text" placeholder="Cari transaksi..." class="search-input">
-          <i class="fas fa-search search-icon"></i>
+          <input type="text" placeholder="Cari transaksi..." class="search-input" aria-label="Cari transaksi">
+          <i class="fas fa-search search-icon" aria-hidden="true"></i>
         </div>
-        <button class="action-button primary" data-tooltip="Tambah Transaksi">
-          <i class="fas fa-plus"></i> Tambah
+        <button class="action-button primary icon" aria-label="Tambah transaksi">
+          <i class="fas fa-plus" aria-hidden="true"></i>
         </button>
-        <button class="action-button" data-tooltip="Unduh Data">
+        <button class="action-button icon" aria-label="Unduh data">
           <i class="fas fa-download"></i>
         </button>
       </div>
@@ -259,95 +199,95 @@
       <table class="data-table sortable">
         <thead>
           <tr>
-            <th class="sortable">Tanggal <i class="fas fa-sort"></i></th>
-            <th class="sortable">Deskripsi <i class="fas fa-sort"></i></th>
-            <th class="sortable">Kategori <i class="fas fa-sort"></i></th>
-            <th class="sortable">Jumlah <i class="fas fa-sort"></i></th>
-            <th class="sortable">Status <i class="fas fa-sort"></i></th>
+            <th class="sortable" data-type="date">Tanggal <i class="fas fa-sort" aria-hidden="true"></i></th>
+            <th class="sortable" data-type="text">Deskripsi <i class="fas fa-sort" aria-hidden="true"></i></th>
+            <th class="sortable" data-type="text">Kategori <i class="fas fa-sort" aria-hidden="true"></i></th>
+            <th class="sortable" data-type="amount">Jumlah <i class="fas fa-sort" aria-hidden="true"></i></th>
+            <th class="sortable" data-type="text">Status <i class="fas fa-sort" aria-hidden="true"></i></th>
             <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>15 Jun 2023</td>
-            <td>Pembayaran Iuran Bulanan</td>
-            <td><span class="category-badge income">Pemasukan</span></td>
-            <td class="amount positive">Rp 500.000</td>
-            <td><span class="status-badge success">Selesai</span></td>
-            <td>
+            <td data-th="Tanggal">15 Jun 2023</td>
+            <td data-th="Deskripsi">Pembayaran Iuran Bulanan</td>
+            <td data-th="Kategori"><span class="category-badge income">Pemasukan</span></td>
+            <td data-th="Jumlah" class="amount positive">Rp 500.000</td>
+            <td data-th="Status"><span class="status-badge success">Selesai</span></td>
+            <td data-th="Aksi">
               <div class="action-buttons">
-                <button class="icon-button" data-tooltip="Edit">
+                <button class="icon-button" aria-label="Edit transaksi">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button class="icon-button" data-tooltip="Hapus">
+                <button class="icon-button" aria-label="Hapus transaksi">
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
             </td>
           </tr>
           <tr>
-            <td>12 Jun 2023</td>
-            <td>Pembayaran Keamanan</td>
-            <td><span class="category-badge expense">Pengeluaran</span></td>
-            <td class="amount negative">Rp 200.000</td>
-            <td><span class="status-badge success">Selesai</span></td>
-            <td>
+            <td data-th="Tanggal">12 Jun 2023</td>
+            <td data-th="Deskripsi">Pembayaran Keamanan</td>
+            <td data-th="Kategori"><span class="category-badge expense">Pengeluaran</span></td>
+            <td data-th="Jumlah" class="amount negative">Rp 200.000</td>
+            <td data-th="Status"><span class="status-badge success">Selesai</span></td>
+            <td data-th="Aksi">
               <div class="action-buttons">
-                <button class="icon-button" data-tooltip="Edit">
+                <button class="icon-button" aria-label="Edit transaksi">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button class="icon-button" data-tooltip="Hapus">
+                <button class="icon-button" aria-label="Hapus transaksi">
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
             </td>
           </tr>
           <tr>
-            <td>10 Jun 2023</td>
-            <td>Perbaikan Taman</td>
-            <td><span class="category-badge expense">Pengeluaran</span></td>
-            <td class="amount negative">Rp 350.000</td>
-            <td><span class="status-badge success">Selesai</span></td>
-            <td>
+            <td data-th="Tanggal">10 Jun 2023</td>
+            <td data-th="Deskripsi">Perbaikan Taman</td>
+            <td data-th="Kategori"><span class="category-badge expense">Pengeluaran</span></td>
+            <td data-th="Jumlah" class="amount negative">Rp 350.000</td>
+            <td data-th="Status"><span class="status-badge success">Selesai</span></td>
+            <td data-th="Aksi">
               <div class="action-buttons">
-                <button class="icon-button" data-tooltip="Edit">
+                <button class="icon-button" aria-label="Edit transaksi">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button class="icon-button" data-tooltip="Hapus">
+                <button class="icon-button" aria-label="Hapus transaksi">
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
             </td>
           </tr>
           <tr>
-            <td>5 Jun 2023</td>
-            <td>Pembayaran Iuran Bulanan</td>
-            <td><span class="category-badge income">Pemasukan</span></td>
-            <td class="amount positive">Rp 500.000</td>
-            <td><span class="status-badge pending">Tertunda</span></td>
-            <td>
+            <td data-th="Tanggal">5 Jun 2023</td>
+            <td data-th="Deskripsi">Pembayaran Iuran Bulanan</td>
+            <td data-th="Kategori"><span class="category-badge income">Pemasukan</span></td>
+            <td data-th="Jumlah" class="amount positive">Rp 500.000</td>
+            <td data-th="Status"><span class="status-badge pending">Tertunda</span></td>
+            <td data-th="Aksi">
               <div class="action-buttons">
-                <button class="icon-button" data-tooltip="Edit">
+                <button class="icon-button" aria-label="Edit transaksi">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button class="icon-button" data-tooltip="Hapus">
+                <button class="icon-button" aria-label="Hapus transaksi">
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
             </td>
           </tr>
           <tr>
-            <td>1 Jun 2023</td>
-            <td>Pembayaran Listrik</td>
-            <td><span class="category-badge expense">Pengeluaran</span></td>
-            <td class="amount negative">Rp 450.000</td>
-            <td><span class="status-badge success">Selesai</span></td>
-            <td>
+            <td data-th="Tanggal">1 Jun 2023</td>
+            <td data-th="Deskripsi">Pembayaran Listrik</td>
+            <td data-th="Kategori"><span class="category-badge expense">Pengeluaran</span></td>
+            <td data-th="Jumlah" class="amount negative">Rp 450.000</td>
+            <td data-th="Status"><span class="status-badge success">Selesai</span></td>
+            <td data-th="Aksi">
               <div class="action-buttons">
-                <button class="icon-button" data-tooltip="Edit">
+                <button class="icon-button" data-tooltip="Edit" aria-label="Edit transaksi">
                   <i class="fas fa-edit"></i>
                 </button>
-                <button class="icon-button" data-tooltip="Hapus">
+                <button class="icon-button" data-tooltip="Hapus" aria-label="Hapus transaksi">
                   <i class="fas fa-trash"></i>
                 </button>
               </div>
@@ -356,14 +296,12 @@
         </tbody>
       </table>
       
-      <div class="pagination">
-        <button class="pagination-button" disabled>
+      <div class="pagination" role="navigation" aria-label="Pagination">
+        <button class="pagination-button" disabled aria-label="Halaman sebelumnya">
           <i class="fas fa-chevron-left"></i>
         </button>
-        <button class="pagination-button active">1</button>
-        <button class="pagination-button">2</button>
-        <button class="pagination-button">3</button>
-        <button class="pagination-button">
+        <div class="pagination-pages"></div>
+        <button class="pagination-button" aria-label="Halaman berikutnya">
           <i class="fas fa-chevron-right"></i>
         </button>
       </div>
@@ -371,7 +309,7 @@
   </div>
 
   <!-- Quick Actions Section -->
-  <div class="quick-actions-section">
+  <div class="quick-actions-section pre-animation">
     <div class="section-header">
       <h2><i class="fas fa-bolt"></i> Aksi Cepat</h2>
     </div>
@@ -384,7 +322,7 @@
           <h3>Tambah Transaksi</h3>
           <p>Catat pemasukan atau pengeluaran baru</p>
         </div>
-        <a href="/admin/transactions/new" class="card-link"></a>
+        <a href="/admin/transactions/new" class="card-link" aria-label="Tambah Transaksi"></a>
       </div>
       
       <div class="quick-action-card">
@@ -395,7 +333,7 @@
           <h3>Buat Laporan</h3>
           <p>Generate laporan keuangan bulanan</p>
         </div>
-        <a href="/admin/reports/new" class="card-link"></a>
+        <a href="/admin/reports/new" class="card-link" aria-label="Buat Laporan"></a>
       </div>
       
       <div class="quick-action-card">
@@ -406,7 +344,7 @@
           <h3>Pengumuman</h3>
           <p>Buat pengumuman untuk warga</p>
         </div>
-        <a href="/admin/announcements/new" class="card-link"></a>
+        <a href="/admin/announcements/new" class="card-link" aria-label="Pengumuman"></a>
       </div>
       
       <div class="quick-action-card">
@@ -417,16 +355,16 @@
           <h3>Kelola Warga</h3>
           <p>Tambah atau edit data warga</p>
         </div>
-        <a href="/admin/residents" class="card-link"></a>
+        <a href="/admin/residents" class="card-link" aria-label="Kelola Warga"></a>
       </div>
     </div>
   </div>
 
   <!-- Fitur Baru: Widget Notifikasi -->
-  <div class="notifications-widget">
+  <div class="notifications-widget pre-animation">
     <div class="section-header">
       <h2><i class="fas fa-bell"></i> Notifikasi Terbaru</h2>
-      <a href="/admin/notifications" class="view-all">Lihat Semua <i class="fas fa-arrow-right"></i></a>
+      <a href="/admin/notifikasi" class="view-all">Lihat Semua <i class="fas fa-arrow-right"></i></a>
     </div>
     <div class="notifications-list">
       <div class="notification-item unread">
@@ -439,7 +377,7 @@
           <span class="notification-time">2 jam yang lalu</span>
         </div>
         <div class="notification-actions">
-          <button class="btn-icon" data-tooltip="Tandai Dibaca">
+          <button class="btn-icon" aria-label="Tandai dibaca">
             <i class="fas fa-check"></i>
           </button>
         </div>
@@ -455,7 +393,7 @@
           <span class="notification-time">Kemarin, 15:30</span>
         </div>
         <div class="notification-actions">
-          <button class="btn-icon" data-tooltip="Tandai Dibaca">
+          <button class="btn-icon" aria-label="Tandai dibaca">
             <i class="fas fa-check"></i>
           </button>
         </div>
@@ -471,7 +409,7 @@
           <span class="notification-time">2 hari yang lalu</span>
         </div>
         <div class="notification-actions">
-          <button class="btn-icon" data-tooltip="Tandai Dibaca">
+          <button class="btn-icon" aria-label="Tandai dibaca">
             <i class="fas fa-check"></i>
           </button>
         </div>
@@ -480,7 +418,7 @@
   </div>
 
   <!-- Recent Activity Feed -->
-  <div class="activity-section">
+  <div class="activity-section pre-animation">
     <div class="section-header">
       <h3><i class="fas fa-history"></i> Aktivitas Terbaru</h3>
       <a href="#" class="view-all-link">Lihat Semua <i class="fas fa-arrow-right"></i></a>
@@ -530,27 +468,1351 @@
   </div>
 </div>
 
+<!-- Load Chart.js only for the dashboard -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+
 <script>
-  // Initialize counters with animation
+// @ts-nocheck
+/* global Chart, window, document, IntersectionObserver */
+/**
+ * Admin Dashboard JavaScript
+ * Modern UI/UX Dashboard functionality
+ */
+(function(){
   document.addEventListener('DOMContentLoaded', function() {
-    // Check if Chart.js is already loaded
-    if (typeof Chart === 'undefined') {
-      // Load Chart.js first
-      const script = document.createElement('script');
-      script.id = 'chartjs-script';
-      script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js';
-      script.onload = function() {
-        // Load dashboard JS after Chart.js is loaded
-        const dashboardScript = document.createElement('script');
-        dashboardScript.src = '/js/admin-dashboard.js';
-        document.body.appendChild(dashboardScript);
-      };
-      document.body.appendChild(script);
-    } else {
-      // If Chart.js is already loaded, just load dashboard JS
-      const dashboardScript = document.createElement('script');
-      dashboardScript.src = '/js/admin-dashboard.js';
-      document.body.appendChild(dashboardScript);
+    // Initialize sidebar toggle functionality
+    initSidebar();
+    // Initialize charts if Chart.js is available
+    if (typeof Chart !== 'undefined') {
+      initCharts();
+      initSparklines();
+      initChartCardActions();
     }
+    // Initialize other UI features
+    initTopbarElevation();
+    initAnimations();
+    initCounters();
+    initTooltips();
+    initDataTables();
+    initPremiumLocks();
   });
+
+  function initTopbarElevation() {
+    const topbar = document.querySelector('.admin-topbar');
+    if (!topbar) return;
+    const handler = () => {
+      if (window.scrollY > 2) topbar.classList.add('elevated');
+      else topbar.classList.remove('elevated');
+    };
+    handler();
+    window.addEventListener('scroll', handler, { passive: true });
+  }
+
+  function initSidebar() {
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const adminSidebar = document.querySelector('.admin-sidebar');
+    const adminFrame = document.querySelector('.admin-frame');
+    if (sidebarToggle && !sidebarToggle.dataset.bound) {
+      sidebarToggle.dataset.bound = '1';
+      sidebarToggle.addEventListener('click', () => {
+        if (adminSidebar) adminSidebar.classList.toggle('collapsed');
+        if (adminFrame) adminFrame.classList.toggle('expanded');
+        const icon = sidebarToggle.querySelector('i');
+        if (icon && adminSidebar) {
+          if (adminSidebar.classList.contains('collapsed')) {
+            icon.classList.remove('fa-chevron-left');
+            icon.classList.add('fa-chevron-right');
+          } else {
+            icon.classList.remove('fa-chevron-right');
+            icon.classList.add('fa-chevron-left');
+          }
+        }
+      });
+    }
+    const sectionToggles = document.querySelectorAll('.section-toggle');
+    sectionToggles.forEach((btn) => {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget;
+        const expanded = target.getAttribute('aria-expanded') === 'true';
+        target.setAttribute('aria-expanded', String(!expanded));
+        const targetId = target.getAttribute('aria-controls');
+        const targetList = targetId ? document.getElementById(targetId) : null;
+        if (targetList) {
+          if (expanded) {
+            targetList.style.maxHeight = '0';
+            targetList.classList.add('collapsed');
+          } else {
+            targetList.style.maxHeight = targetList.scrollHeight + 'px';
+            targetList.classList.remove('collapsed');
+          }
+        }
+        const icon = target.querySelector('.toggle-icon');
+        if (icon) {
+          const isExpanding = !expanded;
+          icon.classList.remove(isExpanding ? 'fa-chevron-down' : 'fa-chevron-up');
+          icon.classList.add(isExpanding ? 'fa-chevron-up' : 'fa-chevron-down');
+          (icon as HTMLElement).style.transform = '';
+        }
+      });
+    });
+    const currentPath = window.location.pathname;
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    sidebarLinks.forEach((link) => {
+      const href = link.getAttribute('href');
+      if (href === currentPath) {
+        link.classList.add('active');
+        const parentList = link.closest('.nav-list');
+        if (parentList && parentList.classList.contains('collapsed')) {
+          const sectionToggle = parentList.previousElementSibling;
+          if (sectionToggle && sectionToggle.classList.contains('section-toggle')) {
+            sectionToggle.dispatchEvent(new Event('click'));
+          }
+        }
+      }
+    });
+  }
+
+  function initAnimations() {
+    const cards = document.querySelectorAll('.admin-topbar, .stat-card, .chart-card, .quick-action-card, .table-section');
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-in');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      cards.forEach(card => {
+        card.classList.add('pre-animation');
+        observer.observe(card);
+      });
+    } else {
+      cards.forEach(card => card.classList.add('animate-in'));
+    }
+    const hoverElements = document.querySelectorAll('.stat-card, .quick-action-card');
+    hoverElements.forEach(el => {
+      el.addEventListener('mouseenter', function() { this.classList.add('hover-effect'); });
+      el.addEventListener('mouseleave', function() { this.classList.remove('hover-effect'); });
+    });
+  }
+
+  function initChartCardActions() {
+    const cards = document.querySelectorAll('.chart-card');
+    cards.forEach(card => {
+      const canvas = card.querySelector('canvas');
+      if (!canvas) return;
+      const buttons = card.querySelectorAll('.card-actions .action-button');
+      if (!buttons.length) return;
+      const downloadBtn = buttons[0];
+      if (downloadBtn && !downloadBtn.dataset.bound) {
+        downloadBtn.dataset.bound = '1';
+        downloadBtn.addEventListener('click', () => {
+          try {
+            const chart = window.dashboardCharts ? window.dashboardCharts.get(canvas.id) : null;
+            if (chart && chart.canvas) {
+              const link = document.createElement('a');
+              link.href = chart.canvas.toDataURL('image/png');
+              link.download = `${canvas.id || 'chart'}.png`;
+              document.body.appendChild(link);
+              link.click();
+              link.remove();
+            }
+          } catch (e) { console.error('Failed to download chart image', e); }
+        });
+      }
+      const zoomBtn = buttons[1];
+      if (zoomBtn && !zoomBtn.dataset.bound) {
+        zoomBtn.dataset.bound = '1';
+        zoomBtn.addEventListener('click', async () => {
+          try {
+            if (document.fullscreenElement) { await document.exitFullscreen(); return; }
+            if (card.requestFullscreen) { await card.requestFullscreen(); }
+            else if (card.webkitRequestFullscreen) { card.webkitRequestFullscreen(); }
+          } catch (e) { console.error('Fullscreen failed', e); }
+        });
+      }
+    });
+  }
+
+  function initCharts() {
+    if (!window.dashboardCharts) window.dashboardCharts = new Map();
+    const palette = { primary:'#4361ee', primarySoft:'rgba(67,97,238,0.1)', green:'#06d6a0', red:'#ef476f', yellow:'#f9c74f', cyan:'#4cc9f0', grayTick:'#6b7280', grid:'rgba(229,231,235,0.5)' };
+    const formatIDRCurrency = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val);
+    const makeGradient = (ctx, color, alpha = 0.15) => {
+      const height = (ctx && ctx.canvas && ctx.canvas.height) ? ctx.canvas.height : 200;
+      const gradient = ctx.createLinearGradient(0, 0, 0, height);
+      const toRGBA = (c, a) => {
+        if (!c) return `rgba(67, 97, 238, ${a})`;
+        if (c.startsWith('#')) { const r=parseInt(c.substr(1,2),16); const g=parseInt(c.substr(3,2),16); const b=parseInt(c.substr(5,2),16); return `rgba(${r}, ${g}, ${b}, ${a})`; }
+        if (c.startsWith('rgba(')) return c.replace(/rgba\(([^,]+),\s*([^,]+),\s*([^,]+),\s*[^)]+\)/, `rgba($1, $2, $3, ${a})`);
+        if (c.startsWith('rgb(')) return c.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
+        return `rgba(67, 97, 238, ${a})`;
+      };
+      gradient.addColorStop(0, toRGBA(color, alpha));
+      gradient.addColorStop(1, toRGBA(color, 0));
+      return gradient;
+    };
+    const cashFlowCtx = document.getElementById('chartKas');
+    if (cashFlowCtx) {
+      const ctx = cashFlowCtx.getContext ? cashFlowCtx.getContext('2d') : null;
+      const cashFlowChart = new Chart(cashFlowCtx, { type: 'line', data: { labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], datasets:[{ label:'Total Kas', data:[1000000,1200000,1350000,1500000,1800000,2000000,2200000,2400000,2600000,2800000,3000000,3200000], borderColor: palette.primary, backgroundColor: ctx ? makeGradient(ctx, palette.primary) : palette.primarySoft, borderWidth:2, tension:0.4, fill:true, pointBackgroundColor:'#ffffff', pointBorderColor: palette.primary, pointBorderWidth:2, pointRadius:4, pointHoverRadius:6 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ display:false }, tooltip:{ mode:'index', intersect:false, backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:function(context){ let label=context.dataset.label||''; if(label){label+=': ';} if(context.parsed.y!==null){ label+=formatIDRCurrency(context.parsed.y);} return label; } } } }, scales:{ x:{ grid:{ display:false }, ticks:{ color: palette.grayTick } }, y:{ beginAtZero:true, grid:{ color: palette.grid }, ticks:{ color: palette.grayTick, callback:function(value){ return new Intl.NumberFormat('id-ID',{ style:'currency', currency:'IDR', maximumSignificantDigits:3 }).format(value); } } } } } });
+      window.dashboardCharts.set('chartKas', cashFlowChart);
+    }
+    const compositionCtx = document.getElementById('chartPie');
+    if (compositionCtx) {
+      const compositionChart = new Chart(compositionCtx, { type:'doughnut', data:{ labels:['Pemasukan','Pengeluaran'], datasets:[{ data:[65,35], backgroundColor:[palette.green, palette.red], borderColor:[palette.green, palette.red], borderWidth:1 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ animateRotate:true, animateScale:true, duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ position:'bottom', labels:{ padding:20, usePointStyle:true, pointStyle:'circle' } }, tooltip:{ backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:function(context){ const label=context.label||''; const value=context.raw||0; const total=context.dataset.data.reduce((a,b)=>a+b,0); const percentage=Math.round((value/total)*100); return `${label}: ${percentage}%`; } } } }, cutout:'70%' } });
+      window.dashboardCharts.set('chartPie', compositionChart);
+    }
+    const expenseCategoriesCtx = document.getElementById('chartExpenseCategories');
+    if (expenseCategoriesCtx) {
+      const expenseCategoriesChart = new Chart(expenseCategoriesCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Operasional', 'Keamanan', 'Kebersihan', 'Perbaikan', 'Lainnya'],
+          datasets: [
+            {
+              label: 'Pengeluaran per Kategori',
+              data: [1200000, 800000, 600000, 400000, 200000],
+              backgroundColor: [
+                'rgba(67, 97, 238, 0.7)',
+                'rgba(76, 201, 240, 0.7)',
+                'rgba(6, 214, 160, 0.7)',
+                'rgba(249, 199, 79, 0.7)',
+                'rgba(239, 71, 111, 0.7)'
+              ],
+              borderWidth: 0,
+              borderRadius: 6,
+              maxBarThickness: 40
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            delay: function (context) { return context.dataIndex * 100; },
+            duration: 1000,
+            easing: 'easeOutQuart'
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(17, 24, 39, 0.8)',
+              titleColor: '#ffffff',
+              bodyColor: '#ffffff',
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+              borderWidth: 1,
+              padding: 10,
+              cornerRadius: 8,
+              callbacks: {
+                label: function (context) {
+                  let label = context.dataset.label || '';
+                  if (label) label += ': ';
+                  if (context.parsed.y !== null) label += formatIDRCurrency(context.parsed.y);
+                  return label;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: palette.grayTick } },
+            y: {
+              beginAtZero: true,
+              grid: { color: palette.grid },
+              ticks: {
+                color: palette.grayTick,
+                callback: function (value) {
+                  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumSignificantDigits: 3 }).format(value);
+                }
+              }
+            }
+          }
+        }
+      });
+      window.dashboardCharts.set('chartExpenseCategories', expenseCategoriesChart);
+    }
+    const monthlyComparisonCtx = document.getElementById('chartMonthlyComparison');
+    if (monthlyComparisonCtx) {
+      const monthlyComparisonChart = new Chart(monthlyComparisonCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          datasets: [
+            {
+              label: 'Pemasukan',
+              data: [800000, 900000, 1000000, 1100000, 1200000, 1300000],
+              backgroundColor: 'rgba(6, 214, 160, 0.7)',
+              borderColor: 'rgba(6, 214, 160, 1)',
+              borderWidth: 1,
+              borderRadius: 6,
+              maxBarThickness: 20
+            },
+            {
+              label: 'Pengeluaran',
+              data: [500000, 600000, 550000, 700000, 650000, 800000],
+              backgroundColor: 'rgba(239, 71, 111, 0.7)',
+              borderColor: 'rgba(239, 71, 111, 1)',
+              borderWidth: 1,
+              borderRadius: 6,
+              maxBarThickness: 20
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            delay: function (context) { return context.datasetIndex * 100 + context.dataIndex * 50; },
+            duration: 1000,
+            easing: 'easeOutQuart'
+          },
+          plugins: {
+            legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true, pointStyle: 'circle' } },
+            tooltip: {
+              backgroundColor: 'rgba(17, 24, 39, 0.8)',
+              titleColor: '#ffffff',
+              bodyColor: '#ffffff',
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+              borderWidth: 1,
+              padding: 10,
+              cornerRadius: 8,
+              callbacks: {
+                label: function (context) {
+                  let label = context.dataset.label || '';
+                  if (label) label += ': ';
+                  if (context.parsed.y !== null) label += formatIDRCurrency(context.parsed.y);
+                  return label;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: palette.grayTick } },
+            y: {
+              beginAtZero: true,
+              grid: { color: palette.grid },
+              ticks: {
+                color: palette.grayTick,
+                callback: function (value) {
+                  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumSignificantDigits: 3 }).format(value);
+                }
+              }
+            }
+          }
+        }
+      });
+      window.dashboardCharts.set('chartMonthlyComparison', monthlyComparisonChart);
+    }
+    const areaCtx = document.getElementById('chartIncomeExpenseArea');
+    if (areaCtx) {
+      const ctx = areaCtx.getContext ? areaCtx.getContext('2d') : null;
+      const areaChart = new Chart(areaCtx, {
+        type: 'line',
+        data: {
+          labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
+          datasets: [
+            {
+              label: 'Pemasukan',
+              data: [900000,950000,1200000,1150000,1400000,1500000,1600000,1700000],
+              borderColor: palette.green,
+              backgroundColor: ctx ? makeGradient(ctx, palette.green) : 'rgba(6, 214, 160, 0.15)',
+              fill: true,
+              tension: 0.35,
+              borderWidth: 2
+            },
+            {
+              label: 'Pengeluaran',
+              data: [600000,500000,700000,650000,800000,900000,850000,950000],
+              borderColor: palette.red,
+              backgroundColor: ctx ? makeGradient(ctx, palette.red) : 'rgba(239, 71, 111, 0.15)',
+              fill: true,
+              tension: 0.35,
+              borderWidth: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  const value = context.parsed && context.parsed.y != null ? context.parsed.y : 0;
+                  const label = context.dataset && context.dataset.label ? context.dataset.label : '';
+                  return `${label}: ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: palette.grayTick } },
+            y: {
+              grid: { color: palette.grid },
+              ticks: { color: palette.grayTick }
+            }
+          }
+        }
+      });
+      window.dashboardCharts.set('chartIncomeExpenseArea', areaChart);
+    }
+  }
+
+  function initSparklines() {
+    if (typeof Chart === 'undefined') return;
+    const canvases = document.querySelectorAll('canvas.sparkline');
+    canvases.forEach(cv => {
+      const valuesAttr = cv.getAttribute('data-values');
+      if (!valuesAttr) return;
+      const values = valuesAttr.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v));
+      if (!values.length) return;
+      const desiredHeight = parseInt(cv.getAttribute('data-height') || '48', 10);
+      if (!isNaN(desiredHeight) && desiredHeight > 0) {
+        cv.style.height = desiredHeight + 'px';
+        try { cv.height = desiredHeight; } catch (e) {}
+      }
+      const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#2563eb';
+      const fillColor = 'rgba(37, 99, 235, 0.12)';
+      const minVal = Math.min(...values);
+      const maxVal = Math.max(...values);
+      const range = Math.max(1, maxVal - minVal);
+      const pad = Math.max(0.5, range * 0.1);
+      new Chart(cv, {
+        type: 'line',
+        data: {
+          labels: values.map((_, i) => i + 1),
+          datasets: [
+            {
+              data: values,
+              borderColor: primary,
+              backgroundColor: fillColor,
+              borderWidth: 3,
+              borderCapStyle: 'round',
+              borderJoinStyle: 'round',
+              pointRadius: 0,
+              fill: true,
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: { padding: { left: 8, right: 10, top: 6, bottom: 6 } },
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: {
+            x: { display: false, offset: true },
+            y: { display: false, suggestedMin: minVal - pad, suggestedMax: maxVal + pad }
+          }
+        }
+      });
+    });
+  }
+
+  function initDataTables() {
+    const tables = document.querySelectorAll('.data-table');
+    tables.forEach(table => {
+      const tableHeader = table.querySelector('thead');
+      const tableBody = table.querySelector('tbody');
+      if (tableHeader && tableBody) {
+        const sortableHeaders = tableHeader.querySelectorAll('th.sortable');
+        sortableHeaders.forEach(header => {
+          header.addEventListener('click', function() {
+            const index = Array.from(this.parentNode.children).indexOf(this);
+            const isAscending = this.classList.contains('sort-asc');
+            sortableHeaders.forEach(h => { h.classList.remove('sort-asc', 'sort-desc'); });
+            this.classList.add(isAscending ? 'sort-desc' : 'sort-asc');
+            const rows = Array.from(tableBody.querySelectorAll('tr'));
+            rows.sort((a, b) => {
+              const cellA = a.children[index].textContent.trim();
+              const cellB = b.children[index].textContent.trim();
+              const numA = parseFloat(cellA.replace(/[^0-9.-]+/g, ''));
+              const numB = parseFloat(cellB.replace(/[^0-9.-]+/g, ''));
+              if (!isNaN(numA) && !isNaN(numB)) { return isAscending ? numA - numB : numB - numA; }
+              else { return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA); }
+            });
+            rows.forEach(row => { tableBody.appendChild(row); });
+          });
+        });
+        const paginationContainer = table.nextElementSibling;
+        if (paginationContainer && paginationContainer.classList.contains('pagination')) {
+          const rowsPerPage = 5;
+          const rows = Array.from(tableBody.querySelectorAll('tr'));
+          const pageCount = Math.ceil(rows.length / rowsPerPage);
+          if (pageCount > 1) {
+            const paginationButtons = paginationContainer.querySelectorAll('.pagination-button');
+            showPage(1);
+            paginationButtons.forEach(button => {
+              if (button.dataset.page) {
+                button.addEventListener('click', function() {
+                  const page = parseInt(this.dataset.page);
+                  showPage(page);
+                  paginationButtons.forEach(btn => { btn.classList.remove('active'); });
+                  this.classList.add('active');
+                });
+              }
+            });
+          }
+          function showPage(page) {
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            rows.forEach((row, index) => { row.style.display = (index >= start && index < end) ? '' : 'none'; });
+          }
+        }
+      }
+    });
+  }
+
+  function initCounters() {
+    const counters = document.querySelectorAll('.stat-value');
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const counter = entry.target;
+            const target = parseFloat(counter.getAttribute('data-target') || counter.innerText.replace(/[^0-9.-]+/g, ''));
+            const duration = 1500;
+            const step = Math.ceil(target / (duration / 16));
+            let current = 0;
+            const format = counter.getAttribute('data-format') || '';
+            const formatOptions = counter.getAttribute('data-format-options') ? JSON.parse(counter.getAttribute('data-format-options')) : {};
+            const timer = setInterval(() => {
+              current += step;
+              if (current >= target) { current = target; clearInterval(timer); }
+              if (format === 'currency') {
+                counter.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: formatOptions.currency || 'IDR', maximumFractionDigits: formatOptions.maximumFractionDigits || 0 }).format(current);
+              } else if (format === 'number') {
+                counter.textContent = new Intl.NumberFormat('id-ID', formatOptions).format(current);
+              } else if (format === 'percent') {
+                counter.textContent = `${current}%`;
+              } else {
+                counter.textContent = current;
+              }
+            }, 16);
+            observer.unobserve(counter);
+          }
+        });
+      }, { threshold: 0.1 });
+      counters.forEach(counter => { observer.observe(counter); });
+    }
+  }
+
+  function initTooltips() {
+    const tooltips = document.querySelectorAll('[data-tooltip]');
+    tooltips.forEach(tooltip => {
+      tooltip.addEventListener('mouseenter', function() {
+        const text = this.getAttribute('data-tooltip');
+        const tooltipEl = document.createElement('div');
+        tooltipEl.className = 'tooltip';
+        tooltipEl.textContent = text;
+        document.body.appendChild(tooltipEl);
+        const rect = this.getBoundingClientRect();
+        const tooltipRect = tooltipEl.getBoundingClientRect();
+        tooltipEl.style.top = `${rect.top - tooltipRect.height - 10 + window.scrollY}px`;
+        tooltipEl.style.left = `${rect.left + (rect.width / 2) - (tooltipRect.width / 2)}px`;
+        tooltipEl.style.opacity = '1';
+        this.addEventListener('mouseleave', function onMouseLeave() {
+          tooltipEl.remove();
+          this.removeEventListener('mouseleave', onMouseLeave);
+        });
+      });
+    });
+  }
+
+  function initPremiumLocks() {
+    // Disabled to unlock all premium features
+    return;
+  }
+})();
+</script>
+
+<style>
+  /* ============ THEME (Scoped to .admin-dashboard) ============ */
+  .admin-dashboard {
+  --primary: #085895;
+  --primary-600: #0a5ca8;
+  --primary-700: #074a7b;
+
+  --success: #16a34a;
+  --success-ink: #0c6b2f;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #0ea5e9;
+
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --surface-2: #f7f9fc;
+  --outline: #e6eaf0;
+  --outline-2: #d8dde5;
+
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-subtle: #7c8aa3;
+
+  --ring: #93c5fd;
+
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --frame-padding: 14px;
+
+  --shadow-sm: 0 2px 10px rgba(20, 40, 80, 0.06);
+  --shadow-md: 0 6px 18px rgba(20, 40, 80, 0.08);
+  --shadow-lg: 0 14px 34px rgba(20, 40, 80, 0.10);
+}
+
+/* Reset + container */
+.admin-dashboard * { box-sizing: border-box; }
+.admin-dashboard {
+  width: min(1300px, 94vw);
+  margin: 24px auto 64px;
+  display: grid;
+  gap: 24px;
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+}
+
+/* Utility */
+.mt-2 { margin-top: 8px; }
+
+/* Focus ring (no hover) */
+.admin-dashboard a,
+.admin-dashboard button,
+.admin-dashboard [tabindex],
+.admin-dashboard input {
+  outline: none;
+}
+.admin-dashboard a:focus-visible,
+.admin-dashboard button:focus-visible,
+.admin-dashboard [tabindex]:focus-visible,
+.admin-dashboard input:focus-visible {
+  box-shadow: 0 0 0 3px var(--ring);
+  border-radius: var(--radius-sm);
+}
+
+/* ============ HERO ============ */
+.dashboard-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+}
+.hero-content { display: grid; gap: 6px; }
+.hero-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: clamp(1rem, 2.4vw, 1.25rem); font-weight: 800; color: var(--text);
+  letter-spacing: .2px;
+}
+.hero-icon {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  background: #e8f0f8;
+  color: var(--primary);
+  border: 1px solid var(--outline);
+  border-radius: 10px;
+}
+.hero-subtitle {
+  margin: 0; color: var(--text-muted);
+  font-size: .95rem;
+}
+.plan-info { display: flex; align-items: center; gap: 10px; }
+.plan-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 28px; padding: 0 10px; font-weight: 700;
+  font-size: .8rem; letter-spacing: .3px;
+  border-radius: 999px; border: 1px solid var(--outline);
+  background: #eef4fb; color: var(--primary);
+}
+.plan-badge.free { background: #eef7ff; color: #0b5fad; border-color: #d8e7f6; }
+.upgrade-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 32px; padding: 0 12px;
+  background: var(--primary); color: #fff; font-weight: 700; text-decoration: none;
+  border-radius: 999px; box-shadow: var(--shadow-sm);
+}
+
+/* ============ UPGRADE BANNER ============ */
+.upgrade-banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-left: 5px solid var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px; box-shadow: var(--shadow-sm);
+}
+.upgrade-banner-left { display: flex; align-items: center; gap: 12px; }
+.badge.crown {
+  width: 36px; height: 36px; display: grid; place-items: center;
+  border-radius: 12px; background: #fff5cc; color: #b37400; border: 1px solid #f1e3b0;
+}
+.upgrade-text h3 { margin: 0; font-size: 1rem; font-weight: 800; color: var(--text); }
+.upgrade-text p { margin: 2px 0 0; color: var(--text-muted); }
+.btn-upgrade {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 36px; padding: 0 14px; border: 1px solid var(--outline); border-radius: 10px;
+  background: #0d66b3; color: #fff; font-weight: 700; text-decoration: none;
+}
+
+/* ============ STATS GRID ============ */
+.stats-grid {
+  display: grid; gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.stat-card {
+  display: grid; grid-template-columns: auto 1fr; gap: 14px;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  padding: 16px; box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.stat-icon {
+  width: 48px; height: 48px; display: grid; place-items: center;
+  border-radius: 14px; color: var(--primary);
+  background: #e8f0f8; border: 1px solid var(--outline);
+}
+.stat-icon.primary { color: var(--primary); background: #e8f0f8; }
+.stat-icon.success { color: var(--success-ink); background: #e8f6ee; border-color: #d7eadf; }
+.stat-icon.warning { color: #b87300; background: #fff4e0; border-color: #f3e1c0; }
+.stat-icon.danger  { color: #b4232a; background: #ffeaea; border-color: #f2d2d3; }
+
+.stat-content h3 { margin: 0; font-size: .95rem; color: var(--text-muted); font-weight: 700;}
+.stat-value {
+  font-family: ui-rounded, Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  font-size: clamp(1.2rem, 2.8vw, 1.6rem); font-weight: 900; letter-spacing: .2px; color: var(--text);
+}
+.stat-trend { margin-top: 2px; font-size: .85rem; font-weight: 700; }
+.stat-trend.up { color: var(--success); }
+.stat-trend.down { color: var(--danger); }
+.stat-trend.neutral { color: var(--text-muted); }
+
+/* Sparklines */
+.stat-card .mt-2 { padding: 0 6px; }
+.sparkline { width: 100%; display: block; }
+
+/* ============ CHART CARDS ============ */
+.charts-grid {
+  display: grid; gap: 18px 18px;
+  grid-template-columns: repeat(12, 1fr);
+}
+.chart-card {
+  grid-column: span 6;
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+@media (max-width: 1200px){ .chart-card { grid-column: 1 / -1; } }
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid var(--outline);
+}
+.card-header h3 { margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1rem; }
+.card-actions { display: flex; align-items: center; gap: 8px; }
+.action-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 36px; min-width: 36px; padding: 0 12px;
+  border: 1px solid var(--outline);
+  background: var(--surface-2);
+  border-radius: 10px; font-weight: 700; color: var(--text);
+}
+.action-button.icon {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+}
+.action-button.primary { background: var(--primary); color: #fff; border-color: #0a5699; }
+.card-body { padding: 12px; }
+/* Unify frame paddings via variable */
+.table-section .section-header,
+.notifications-widget .section-header,
+.quick-actions-section,
+.activity-section .section-header { padding: var(--frame-padding); }
+.table-section .card-body,
+.chart-card .card-body,
+.notifications-widget .card-body,
+.activity-section .activity-feed { padding: var(--frame-padding); }
+
+/* refine card spacing */
+.chart-card .card-body { padding: 14px; }
+
+/* Premium overlay */
+.premium-feature { position: relative; }
+.premium-overlay {
+  position: absolute; inset: 0;
+  background: rgba(255, 255, 255, .72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: grid; place-items: center;
+}
+.premium-message {
+  display: grid; grid-auto-flow: column; align-items: center; gap: 12px;
+  background: #ffffff; color: var(--text);
+  padding: 12px 16px; border-radius: 12px;
+  border: 1px solid var(--outline);
+  box-shadow: var(--shadow-sm);
+}
+.premium-message .lock {
+  width: 36px; height: 36px; display: grid; place-items: center;
+  border-radius: 10px; background: #eef4fb; color: var(--primary);
+  border: 1px solid var(--outline);
+}
+.premium-message .text { display: grid; gap: 2px; }
+.premium-message .text strong { font-weight: 900; }
+.premium-message .text span { color: var(--text-muted); font-weight: 600; font-size: .9rem; }
+.btn-upgrade-cta {
+  text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+  height: 34px; padding: 0 12px; border-radius: 999px;
+  background: var(--primary); color: #fff; font-weight: 800;
+  border: 1px solid #0a5699;
+}
+
+/* ============ TABLE ============ */
+.table-section {
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid var(--outline); gap: 10px; flex-wrap: wrap;
+}
+.section-header h2, .section-header h3 { margin: 0; font-weight: 800; }
+.section-actions { display: flex; align-items: center; gap: 10px; }
+.section-actions { flex-wrap: wrap; }
+
+.search-container {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 180px;
+}
+.search-input {
+  width: 100%; height: 36px;
+  border: 1px solid var(--outline);
+  border-radius: 999px;
+  background: var(--surface-2);
+  padding: 0 34px 0 12px; color: var(--text);
+}
+.search-icon {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted);
+}
+
+.table-container { width: 100%; overflow: auto; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table thead th {
+  position: sticky; top: 0; z-index: 2;
+  background: #fbfcff;
+  color: #334155;
+  font-weight: 900;
+  text-align: left;
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--outline);
+  white-space: nowrap;
+}
+.data-table tbody td {
+  padding: 12px 12px; border-bottom: 1px solid var(--outline);
+  color: var(--text);
+}
+.data-table tbody tr:nth-child(2n) td { background: #fcfeff; }
+.data-table tbody tr:focus-within td {
+  outline: none;
+  background: #eef6ff;
+}
+th.sortable { user-select: none; }
+th.sortable[aria-sort="ascending"]  { color: var(--primary); }
+th.sortable[aria-sort="descending"] { color: var(--primary); }
+
+.amount { font-weight: 800; white-space: nowrap; }
+.amount.positive { color: var(--success); }
+.amount.negative { color: var(--danger); }
+
+.category-badge, .status-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 26px; padding: 0 10px;
+  border-radius: 999px; font-weight: 800; letter-spacing: .2px;
+  border: 1px solid var(--outline);
+}
+.category-badge.income { background: #ecfdf5; color: #047857; border-color: #ccefe1; }
+.category-badge.expense { background: #fff1f2; color: #be123c; border-color: #f3c8d1; }
+.status-badge.success { background:#ecfdf5; color:#047857; border-color:#ccefe1; }
+.status-badge.pending { background:#fff7ed; color:#b45309; border-color:#f1d5b2; }
+
+.action-buttons { display: inline-flex; gap: 6px; }
+.icon-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border: 1px solid var(--outline);
+  border-radius: 8px; background: var(--surface-2);
+  color: var(--text);
+}
+
+.pagination {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px; border-top: 1px solid var(--outline);
+}
+.pagination-button {
+  height: 34px; min-width: 34px;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 10px; border-radius: 8px;
+  border: 1px solid var(--outline); background: var(--surface-2);
+  color: var(--text); font-weight: 700;
+}
+.pagination-button[disabled] { opacity: .5; cursor: not-allowed; }
+.pagination-pages { display: inline-flex; gap: 6px; }
+.pagination-pages .pagination-button.active {
+  background: var(--primary); border-color: #0a5699; color: #fff;
+}
+
+/* Mobile card table layout */
+@media (max-width: 560px){
+  .table-container { overflow: visible; }
+  .data-table thead { display: none; }
+  .data-table { border-collapse: separate; border-spacing: 0 10px; }
+  .data-table tbody tr {
+    display: grid; grid-template-columns: 1fr; gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--outline);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 12px; margin: 0 0 10px;
+  }
+  .data-table tbody td {
+    display: grid; grid-template-columns: 120px 1fr; align-items: center;
+    gap: 10px; padding: 0; border: 0; background: transparent !important;
+  }
+  .data-table tbody td::before{
+    content: attr(data-th);
+    font-weight: 800; color: var(--text-muted);
+  }
+  .data-table tbody td .action-buttons { justify-content: flex-end; }
+}
+
+/* Tablet and down: stack section headers and make actions full-width when needed */
+@media (max-width: 768px){
+  .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .section-actions { width: 100%; }
+  .section-actions .action-button, .section-actions .search-container { flex: 1 1 auto; }
+  .search-container { min-width: 0; }
+}
+
+/* Small laptops: slightly more breathing room */
+@media (max-width: 1024px){
+  .admin-dashboard { gap: 20px; }
+  .chart-card .card-body { padding: calc(var(--frame-padding) + 2px); }
+}
+
+/* ============ QUICK ACTIONS ============ */
+.quick-actions-section {
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+}
+.quick-actions-grid {
+  display: grid; gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.quick-action-card {
+  position: relative;
+  display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center;
+  background: var(--surface-2); border: 1px solid var(--outline);
+  border-radius: var(--radius-lg); padding: 14px;
+}
+.card-link { position: absolute; inset: 0; border-radius: inherit; }
+.quick-action-icon {
+  width: 44px; height: 44px; display: grid; place-items: center;
+  border-radius: 12px; border: 1px solid var(--outline); background: #fff;
+}
+.quick-action-icon.primary { color: var(--primary); background: #eef7ff; border-color: #d6e8f9; }
+.quick-action-icon.success { color: var(--success-ink); background: #e8f6ee; border-color:#d7eadf; }
+.quick-action-icon.warning { color: #b87300; background: #fff4e0; border-color:#f3e1c0; }
+.quick-action-icon.info    { color: #0a6791; background: #e9f6ff; border-color:#cfe8fb; }
+.quick-action-content h3 { margin: 0; font-weight: 800; }
+.quick-action-content p  { margin: 2px 0 0; color: var(--text-muted); }
+
+/* ============ NOTIFICATIONS ============ */
+.notifications-widget {
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.notifications-widget .section-header {
+  padding: 14px 16px; border-bottom: 1px solid var(--outline);
+}
+.notifications-widget .view-all {
+  text-decoration: none; color: var(--primary); font-weight: 800;
+}
+.notifications-list { display: grid; gap: 10px; padding: 12px; }
+.notification-item {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
+  background: var(--surface-2); border: 1px solid var(--outline); border-radius: var(--radius-md);
+  padding: 12px;
+}
+.notification-item.unread { border-left: 5px solid var(--primary); }
+.notification-icon {
+  width: 40px; height: 40px; display: grid; place-items: center;
+  border-radius: 10px; background: #fff; border: 1px solid var(--outline);
+}
+.notification-icon.warning { color:#b87300; background:#fff6e6; border-color:#f1e2c4; }
+.notification-icon.success { color:#0c6b2f; background:#e8f6ee; border-color:#d7eadf; }
+.notification-icon.info    { color:#0a6791; background:#e9f6ff; border-color:#cfe8fb; }
+
+.notification-content h4 { margin: 0; font-weight: 800; }
+.notification-content p { margin: 2px 0; color: var(--text-muted); }
+.notification-time { font-size: .85rem; color: var(--text-subtle); }
+
+.notification-actions .btn-icon {
+  width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--outline); border-radius: 8px; background: var(--surface);
+}
+
+/* ============ ACTIVITY FEED ============ */
+.activity-section {
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.activity-section .section-header {
+  padding: 14px 16px; border-bottom: 1px solid var(--outline);
+}
+.view-all-link { text-decoration: none; font-weight: 800; color: var(--primary); }
+.activity-feed { display: grid; gap: 10px; padding: 12px; }
+.activity-item {
+  display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center;
+  background: var(--surface-2); border: 1px solid var(--outline);
+  border-radius: var(--radius-md); padding: 12px;
+}
+.activity-icon {
+  width: 40px; height: 40px; display: grid; place-items: center;
+  border-radius: 10px; background: #eef4fb; color: var(--primary); border: 1px solid var(--outline);
+}
+.activity-text { margin: 0; font-weight: 700; }
+.activity-time { margin: 2px 0 0; color: var(--text-muted); }
+
+/* ============ ANIMATIONS (No hover, No gradient) ============ */
+.pre-animation { opacity: 0; transform: translateY(8px); }
+.animate-in { animation: fadeUp .5s cubic-bezier(.2,.7,.2,1) forwards; }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+.pressable:active { transform: scale(.98); }
+
+/* Tooltips removed */
+
+/* Responsive small tweaks */
+@media (max-width: 720px){
+  .dashboard-hero { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .plan-info { width: 100%; justify-content: space-between; }
+}
+
+/* Extra responsiveness */
+@media (max-width: 960px){
+  .section-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .section-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .section-actions .search-container { grid-column: 1 / -1; }
+  .card-header { flex-wrap: wrap; gap: 8px; }
+}
+@media (max-width: 640px){
+  .admin-dashboard { width: 96vw; gap: 16px; }
+  .search-input { height: 40px; }
+  .data-table thead th, .data-table tbody td { padding: 10px 10px; }
+  .pagination { flex-wrap: wrap; }
+  .notification-item { grid-template-columns: auto 1fr; }
+  .notification-actions { justify-self: end; }
+  .action-button, .icon-button, .pagination-button { height: 40px; min-width: 40px; }
+}
+@media (max-width: 480px){
+  .section-actions { grid-template-columns: 1fr; }
+  .action-button, .pagination-button { width: 100%; }
+  .data-table thead th, .data-table tbody td { font-size: 13px; }
+}
+
+/* Motion accessibility */
+@media (prefers-reduced-motion: reduce){
+  .animate-in { animation: none !important; }
+  .pre-animation { opacity: 1 !important; transform: none !important; }
+}
+</style>
+
+<script>
+/* ========== INTERACTIONS (No hover/gradient) — TS-safe ========== */
+(() => {
+  const root = document.querySelector('.admin-dashboard') as HTMLElement | null;
+  if (!root) return;
+
+  // Intersection Observer: animate elements with .pre-animation
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) {
+        (en.target as HTMLElement).classList.add('animate-in');
+        io.unobserve(en.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  Array.from(root.querySelectorAll('.pre-animation')).forEach((el) => io.observe(el));
+
+  // Counter animation for .stat-value
+  const counters = Array.from(root.querySelectorAll('.stat-value[data-target]')) as HTMLElement[];
+  const nfCache = new Map<string, Intl.NumberFormat>();
+
+  function getFormatter(opts: Intl.NumberFormatOptions): Intl.NumberFormat {
+    const key = JSON.stringify(opts || {});
+    let fmt = nfCache.get(key);
+    if (!fmt) {
+      fmt = new Intl.NumberFormat('id-ID', opts);
+      nfCache.set(key, fmt);
+    }
+    return fmt;
+  }
+
+  function animateCounter(el) {
+    const target = Number(el.dataset.target || 0);
+    const format = (el.dataset.format || 'number');
+    let opts = {};
+    try {
+      const raw = el.dataset.formatOptions || '{}';
+      opts = JSON.parse(raw);
+    } catch { /* ignore */ }
+    const formatter = (format === 'currency')
+      ? getFormatter({ ...opts, style: 'currency' })
+      : getFormatter(opts);
+
+    const duration = 900;
+    const start = performance.now();
+    function tick(now) {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p; // ease in-out quad
+      const val = Math.floor(eased * target);
+      el.textContent = formatter.format(val);
+      if (p < 1) requestAnimationFrame(tick);
+      else el.textContent = formatter.format(target);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // animate when in view
+  const co = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) {
+        animateCounter(en.target);
+        co.unobserve(en.target);
+      }
+    });
+  }, { threshold: 0.6 });
+  counters.forEach((el) => co.observe(el));
+
+  // Draw minimal sparklines (flat line/area)
+  function drawSparkline(canvas) {
+    const str = canvas.dataset.values || '';
+    const values = str.split(',')
+      .map((v) => Number((v || '').trim()))
+      .filter((v) => !Number.isNaN(v));
+    if (!values.length) return;
+
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const styleWidth = canvas.clientWidth || 140;
+    const styleHeightAttr = canvas.getAttribute('height');
+    const styleHeight = styleHeightAttr ? parseInt(styleHeightAttr, 10) : 30;
+
+    canvas.width = Math.floor(styleWidth * dpr);
+    canvas.height = Math.floor(styleHeight * dpr);
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const w = styleWidth;
+    const h = styleHeight;
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const pad = 2;
+    const range = Math.max(1, max - min);
+    const stepX = values.length > 1 ? (w - pad * 2) / (values.length - 1) : 0;
+
+    const points = values.map((v, i) => {
+      const x = pad + i * stepX;
+      const y = h - pad - ((v - min) / range) * (h - pad * 2);
+      return [x, y] as [number, number];
+    });
+
+    // Area fill
+    ctx.beginPath();
+    ctx.moveTo(points[0][0], h - pad);
+    points.forEach(([x, y]) => ctx.lineTo(x, y));
+    ctx.lineTo(points[points.length - 1][0], h - pad);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(8, 88, 149, 0.10)';
+    ctx.fill();
+
+    // Stroke line
+    ctx.beginPath();
+    points.forEach(([x, y], idx) => {
+      if (idx === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#085895';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  }
+
+  (root.querySelectorAll('canvas.sparkline')).forEach((c) => drawSparkline(c));
+  window.addEventListener('resize', () => {
+    (root.querySelectorAll('canvas.sparkline')).forEach((c) => drawSparkline(c));
+  });
+
+  // Tooltips removed
+
+  // Table: sorting, search, pagination (client-side)
+  const container = root.querySelector('.table-container.paginated');
+  if (container) {
+    const table = container.querySelector('table.data-table');
+    const tbody = table?.querySelector('tbody');
+    const rowsOriginal = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
+    const searchInput = root.querySelector('.search-input');
+    const pagination = container.querySelector('.pagination');
+    const pagesWrap = pagination?.querySelector('.pagination-pages');
+    const prevBtn = pagination?.querySelector('.pagination-button:first-child');
+    const nextBtn = pagination?.querySelector('.pagination-button:last-child');
+    const rowsPerPageAttr = container.getAttribute('data-rows-per-page');
+    const rowsPerPage = rowsPerPageAttr ? parseInt(rowsPerPageAttr, 10) : 5;
+
+    let filtered = rowsOriginal.slice();
+    let currentPage = 1;
+    let currentSortIdx = -1;
+    let currentSortDir = 'none';
+
+    function parseAmount(text) {
+      return Number(text.replace(/[^\d-]+/g, '')) || 0;
+    }
+    function parseDateID(text) {
+      try {
+        const [d, mon, y] = text.split(' ');
+        const idx = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'].indexOf(mon);
+        const month = idx !== -1 ? idx : new Date(Date.parse(`${mon} 1, 2020`)).getMonth();
+        return new Date(Number(y), month, Number(d)).getTime();
+      } catch { return 0; }
+    }
+    function updateHeadSort(th, dir) {
+      table?.querySelectorAll('th.sortable').forEach((h) => h.setAttribute('aria-sort','none'));
+      if (th) th.setAttribute('aria-sort', dir === 'asc' ? 'ascending' : dir === 'desc' ? 'descending' : 'none');
+    }
+    function rebuildPagination() {
+      if (!pagesWrap) return;
+      const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
+      pagesWrap.innerHTML = '';
+      for (let i = 1; i <= totalPages; i++) {
+        const b = document.createElement('button');
+        b.className = 'pagination-button' + (i === currentPage ? ' active' : '');
+        b.textContent = String(i);
+        b.setAttribute('aria-label', 'Halaman ' + i);
+        b.addEventListener('click', () => { currentPage = i; render(); });
+        pagesWrap.appendChild(b);
+      }
+      if (prevBtn) prevBtn.disabled = currentPage === 1;
+      if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+    }
+    function render() {
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      const start = (currentPage - 1) * rowsPerPage;
+      const slice = filtered.slice(start, start + rowsPerPage);
+      slice.forEach((tr) => tbody.appendChild(tr));
+      rebuildPagination();
+    }
+    function applySearch() {
+      const q = (searchInput?.value || '').toLowerCase().trim();
+      filtered = rowsOriginal.filter((tr) => (tr.textContent || '').toLowerCase().includes(q));
+      currentPage = 1;
+      render();
+    }
+    function sortBy(colIdx, type) {
+      if (currentSortIdx === colIdx) {
+        currentSortDir = currentSortDir === 'asc' ? 'desc' : currentSortDir === 'desc' ? 'none' : 'asc';
+      } else {
+        currentSortIdx = colIdx;
+        currentSortDir = 'asc';
+      }
+      const th = table?.querySelectorAll('thead th')[colIdx];
+      updateHeadSort(th || null, currentSortDir);
+
+      if (currentSortDir === 'none') {
+        filtered = rowsOriginal.filter((tr) => filtered.includes(tr));
+        applySearch();
+        return;
+      }
+      const multiplier = currentSortDir === 'asc' ? 1 : -1;
+      filtered.sort((a, b) => {
+        const A = (a.children[colIdx]).textContent?.trim() || '';
+        const B = (b.children[colIdx]).textContent?.trim() || '';
+        if (type === 'amount') return (parseAmount(A) - parseAmount(B)) * multiplier;
+        if (type === 'date') return (parseDateID(A) - parseDateID(B)) * multiplier;
+        return A.localeCompare(B, 'id') * multiplier;
+      });
+      currentPage = 1;
+      render();
+    }
+
+    // Bind sort
+    table?.querySelectorAll('thead th.sortable').forEach((thEl) => {
+      const th = thEl;
+      th.setAttribute('aria-sort','none');
+      th.addEventListener('click', () => {
+        const type = (th.getAttribute('data-type') || 'text');
+        const colIdx = Array.prototype.indexOf.call(th.parentElement?.children, th);
+        sortBy(colIdx, type);
+      });
+      th.tabIndex = 0;
+      th.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); th.click(); }
+      });
+    });
+
+    // Bind search
+    if (searchInput) {
+      searchInput.addEventListener('input', () => { applySearch(); });
+    }
+
+    // Pagination buttons
+    if (prevBtn) prevBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; render(); } });
+    if (nextBtn) nextBtn.addEventListener('click', () => {
+      const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
+      if (currentPage < totalPages) { currentPage++; render(); }
+    });
+
+    applySearch();
+  }
+
+  // Notifications: mark as read
+  root.addEventListener('click', (e) => {
+    const btn = (e.target)?.closest('.notification-item .btn-icon');
+    if (!btn) return;
+    const item = btn.closest('.notification-item');
+    if (item) item.classList.remove('unread');
+  });
+
+  // Make buttons "pressable" (no hover)
+  root.querySelectorAll('button, .upgrade-chip, .btn-upgrade, .icon-button, .action-button, .pagination-button, .card-link').forEach((el) => {
+    (el).classList.add('pressable');
+  });
+})();
 </script>

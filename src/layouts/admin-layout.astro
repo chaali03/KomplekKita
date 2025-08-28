@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/css/admin-dashboard.css">
 </head>
-<body>
+<body class="plan-plus">
   <div class="bg-animated">
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
@@ -29,6 +29,7 @@
   </div>
 
   <div class="noise-overlay"></div>
+  <div class="demo-watermark" aria-hidden="true">DEMO</div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -39,6 +40,7 @@
       }
     });
   </script>
+
 
   <style>
     :root {
@@ -90,6 +92,24 @@
 
     .noise-overlay { position: fixed; inset: 0; pointer-events: none; background-image: url('data:image/svg+xml;utf8,<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity=".015"/></svg>'); z-index: -1; }
 
+    /* Subtle DEMO watermark */
+    .demo-watermark {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      display: grid;
+      place-items: center;
+      font-family: Poppins, Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      font-weight: 700;
+      font-size: clamp(64px, 14vw, 160px);
+      letter-spacing: 12px;
+      color: #0f172a;
+      opacity: 0.045;
+      transform: rotate(-24deg);
+      user-select: none;
+    }
+
     /* Cards base */
     .card {
       background: var(--surface);
@@ -100,6 +120,46 @@
   
     /* Accessibility */
     .reduce-motion .bg-orb { animation: none !important; }
+
+    /* Global modern scrollbar (applies to all scrollable areas in admin) */
+    :root {
+      --scrollbar-size: 10px;
+      --scrollbar-bg: transparent;
+      --scrollbar-thumb: linear-gradient(180deg, #93c5fd 0%, #3b82f6 50%, #1d4ed8 100%);
+      --scrollbar-thumb-hover: linear-gradient(180deg, #bfdbfe 0%, #60a5fa 50%, #2563eb 100%);
+      --scrollbar-thumb-active: linear-gradient(180deg, #93c5fd 0%, #3b82f6 50%, #1d4ed8 100%);
+      --scrollbar-radius: 999px;
+    }
+
+    /* Firefox */
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: #60a5fa transparent;
+    }
+
+    /* WebKit/Chromium */
+    *::-webkit-scrollbar {
+      width: var(--scrollbar-size);
+      height: var(--scrollbar-size);
+    }
+    *::-webkit-scrollbar-track {
+      background: var(--scrollbar-bg);
+    }
+    *::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: var(--scrollbar-radius);
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    *::-webkit-scrollbar-thumb:hover {
+      background: var(--scrollbar-thumb-hover);
+    }
+    *::-webkit-scrollbar-thumb:active {
+      background: var(--scrollbar-thumb-active);
+    }
+    *::-webkit-scrollbar-corner {
+      background: transparent;
+    }
   </style>
 </body>
 </html>

@@ -1,0 +1,1879 @@
+---
+import Layout from "~/layouts/admin-layout.astro";
+import AdminSidebar from "../../components/Admin-site/admin-sidebar.astro";
+import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
+---
+
+<Layout>
+  <AdminSidebar slot="sidebar" />
+  <AdminTopbar slot="topbar" />
+
+  <div class="page">
+    <div class="container">
+      
+
+      <!-- Sticky Header / Action Bar -->
+      <div class="page-header" id="sticky-actions">
+        <div class="header-left">
+          <div class="title-wrap">
+            <h1 id="title" class="page-title">Kelola Warga</h1>
+            <div class="meta">
+              <span id="verified-chip" class="chip chip-warn">
+                <i class="fas fa-shield"></i> Belum Verifikasi
+              </span>
+              <span id="status-chip" class="chip chip-neutral">-</span>
+              <span id="dirty-chip" class="chip chip-muted hidden">
+                <i class="fas fa-asterisk"></i> Perubahan belum disimpan
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="btn-group">
+            <button id="btn-verify" class="btn btn-ghost">
+              <i class="fas fa-badge-check"></i>
+              <span id="verify-txt">Tandai Terverifikasi</span>
+            </button>
+            <button id="btn-delete" class="btn btn-danger">
+              <i class="fas fa-trash"></i>
+              <span>Hapus</span>
+            </button>
+            <button id="btn-save" class="btn btn-primary" disabled>
+              <i class="fas fa-save"></i>
+              <span>Simpan</span>
+              <kbd class="kbd">Ctrl/⌘ + S</kbd>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="grid grid-2">
+        <!-- Data Utama -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-id-card"></i> Data Utama</h3>
+          </div>
+          <div class="card-body">
+            <form id="form-main" class="form-grid" novalidate>
+              <!-- Left column -->
+              <div class="form-col">
+                <div class="form-field">
+                  <label for="nama">Nama</label>
+                  <input id="nama" name="nama" placeholder="Nama lengkap" required />
+                  <div class="hint">Isi nama lengkap sesuai identitas</div>
+                  <div class="error" data-err-for="nama"></div>
+                </div>
+
+                <div class="form-field">
+                  <label for="nik">NIK</label>
+                  <input
+                    id="nik"
+                    name="nik"
+                    inputmode="numeric"
+                    pattern="\\d{8,20}"
+                    maxlength="20"
+                    placeholder="Hanya angka, 8-20 digit"
+                    required
+                  />
+                  <div class="hint">Hanya angka. Minimal 8 digit, maksimal 20 digit</div>
+                  <div class="error" data-err-for="nik"></div>
+                </div>
+
+                <div class="form-field">
+                  <label for="kk">No. KK</label>
+                  <input
+                    id="kk"
+                    name="kk"
+                    inputmode="numeric"
+                    pattern="\\d{8,20}"
+                    maxlength="20"
+                    placeholder="Hanya angka, 8-20 digit"
+                    required
+                  />
+                  <div class="hint">Hanya angka. Minimal 8 digit, maksimal 20 digit</div>
+                  <div class="error" data-err-for="kk"></div>
+                </div>
+
+                <div class="form-field">
+                  <label for="alamat">Alamat</label>
+                  <input id="alamat" name="alamat" placeholder="Nama jalan, blok, dsb." required />
+                  <div class="error" data-err-for="alamat"></div>
+                </div>
+              </div>
+
+              <!-- Right column -->
+              <div class="form-col">
+                <div class="form-row-3">
+                  <div class="form-field">
+                    <label for="rt">RT</label>
+                    <input
+                      id="rt"
+                      name="rt"
+                      inputmode="numeric"
+                      pattern="\\d{1,3}"
+                      maxlength="3"
+                      placeholder="001"
+                      required
+                    />
+                    <div class="error" data-err-for="rt"></div>
+                  </div>
+                  <div class="form-field">
+                    <label for="rw">RW</label>
+                    <input
+                      id="rw"
+                      name="rw"
+                      inputmode="numeric"
+                      pattern="\\d{1,3}"
+                      maxlength="3"
+                      placeholder="001"
+                      required
+                    />
+                    <div class="error" data-err-for="rw"></div>
+                  </div>
+                  <div class="form-field">
+                    <label for="no_rumah">No. Rumah</label>
+                    <input id="no_rumah" name="no_rumah" placeholder="Contoh: A-12" />
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <label for="telepon">Telepon</label>
+                  <input
+                    id="telepon"
+                    name="telepon"
+                    inputmode="numeric"
+                    pattern="\\d{6,20}"
+                    maxlength="20"
+                    placeholder="08xxxxxxxxxx"
+                  />
+                  <div class="hint">Hanya angka</div>
+                  <div class="error" data-err-for="telepon"></div>
+                </div>
+
+                <div class="form-field">
+                  <label for="email">Email</label>
+                  <input id="email" type="email" name="email" placeholder="email@contoh.com" />
+                  <div class="error" data-err-for="email"></div>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-field">
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                      <option value="aktif">Aktif</option>
+                      <option value="pindah">Pindah</option>
+                      <option value="nonaktif">Nonaktif</option>
+                    </select>
+                  </div>
+                  <div class="form-field">
+                    <label for="tanggal_masuk">Tanggal Masuk</label>
+                    <input id="tanggal_masuk" type="date" name="tanggal_masuk" />
+                  </div>
+                </div>
+
+                <div class="form-field">
+                  <label for="tanggal_keluar">Tanggal Keluar</label>
+                  <input id="tanggal_keluar" type="date" name="tanggal_keluar" />
+                  <div class="hint">Opsional. Harus setelah Tanggal Masuk</div>
+                  <div class="error" data-err-for="tanggal_keluar"></div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Status & Riwayat -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-clipboard-list"></i> Status & Riwayat</h3>
+          </div>
+          <div class="card-body">
+            <div class="status-row">
+              <div class="status-item">
+                <div class="muted">Verifikasi</div>
+                <div id="verified-badge" class="badge badge-warn">
+                  <i class="fas fa-shield"></i> Belum Verifikasi
+                </div>
+              </div>
+              <div class="status-item">
+                <div class="muted">Terakhir diubah</div>
+                <div id="last-updated" class="badge badge-neutral">-</div>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="history">
+              <div class="muted">Riwayat Perubahan</div>
+              <ul id="history" class="timeline"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <!-- Anggota Keluarga -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-users"></i> Anggota Keluarga</h3>
+            <div class="card-tools">
+              <button id="btn-add-member" class="btn btn-soft btn-sm">
+                <i class="fas fa-user-plus"></i> Tambah Anggota
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-modern" id="tbl-members">
+                <thead>
+                  <tr>
+                    <th>Nama</th>
+                    <th>NIK</th>
+                    <th>Relasi</th>
+                    <th class="text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+              <div id="members-empty" class="empty hidden">
+                <i class="fas fa-user-friends"></i>
+                <div>Belum ada anggota keluarga</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dokumen -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-file-alt"></i> Dokumen</h3>
+          </div>
+          <div class="card-body">
+            <div id="dropzone" class="dropzone" aria-label="Upload dokumen">
+              <input id="file-input" type="file" multiple class="file-input" />
+              <div class="dz-inner">
+                <i class="fas fa-cloud-upload-alt dz-icon"></i>
+                <div class="dz-text">
+                  <strong>Tarik & letakkan</strong> file ke sini atau
+                  <button type="button" id="btn-browse" class="link">pilih file</button>
+                </div>
+                <div class="dz-hint">Mendukung: PDF, JPG, PNG, DOCX (disimpan metadata saja)</div>
+              </div>
+            </div>
+
+            <ul id="docs" class="doc-list"></ul>
+            <div id="docs-empty" class="empty hidden">
+              <i class="fas fa-folder-open"></i>
+              <div>Belum ada dokumen</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Member Modal -->
+      <div id="modal-member" class="modal" aria-hidden="true">
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="member-title">
+          <div class="modal-header">
+            <h3 id="member-title"><i class="fas fa-user-edit"></i> Anggota Keluarga</h3>
+            <button class="btn btn-icon btn-ghost" data-close-modal>
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="form-member" class="form-grid single" novalidate>
+              <div class="form-field">
+                <label for="m-nama">Nama</label>
+                <input id="m-nama" name="nama" placeholder="Nama lengkap" required />
+                <div class="error" data-err-for="m-nama"></div>
+              </div>
+              <div class="form-field">
+                <label for="m-nik">NIK</label>
+                <input
+                  id="m-nik"
+                  name="nik"
+                  inputmode="numeric"
+                  pattern="\\d{8,20}"
+                  maxlength="20"
+                  placeholder="Hanya angka, 8-20 digit"
+                  required
+                />
+                <div class="error" data-err-for="m-nik"></div>
+              </div>
+              <div class="form-field">
+                <label for="m-relasi">Relasi</label>
+                <select id="m-relasi" name="relasi" required>
+                  <option value="">Pilih relasi</option>
+                  <option value="Kepala Keluarga">Kepala Keluarga</option>
+                  <option value="Istri">Istri</option>
+                  <option value="Anak">Anak</option>
+                  <option value="Ayah">Ayah</option>
+                  <option value="Ibu">Ibu</option>
+                  <option value="Saudara">Saudara</option>
+                  <option value="Lainnya">Lainnya</option>
+                </select>
+                <div class="error" data-err-for="m-relasi"></div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-ghost" data-close-modal>Batal</button>
+            <button id="btn-save-member" class="btn btn-primary">Simpan</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirm Modal -->
+      <div id="modal-confirm" class="modal" aria-hidden="true">
+        <div class="modal-dialog small" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+          <div class="modal-header">
+            <h3 id="confirm-title"><i class="fas fa-exclamation-triangle"></i> Konfirmasi</h3>
+            <button class="btn btn-icon btn-ghost" data-close-modal>
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p id="confirm-message">Apakah Anda yakin?</p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-ghost" data-close-modal>Batal</button>
+            <button id="btn-confirm-yes" class="btn btn-danger">Ya, hapus</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toasts -->
+      <div id="toast-container" class="toasts"></div>
+    </div>
+  </div>
+
+  <style>
+    :root {
+      --brand-50: #eef2ff;
+      --brand-100: #e0e7ff;
+      --brand-200: #c7d2fe;
+      --brand-300: #a5b4fc;
+      --brand-400: #818cf8;
+      --brand-500: #6366f1;
+      --brand-600: #4f46e5;
+      --brand-700: #4338ca;
+      --brand-800: #3730a3;
+      --brand-900: #312e81;
+      --accent-500: #06b6d4;
+      --accent-600: #0891b2;
+      --success-50: #ecfdf5;
+      --success-500: #10b981;
+      --success-600: #059669;
+      --warn-50: #fff7ed;
+      --warn-500: #f59e0b;
+      --warn-600: #d97706;
+      --danger-50: #fef2f2;
+      --danger-500: #ef4444;
+      --danger-600: #dc2626;
+
+      --bg: #0b1220;
+      --bg-elev: #0f172a;
+      --surface: #0f172a;
+      --surface-2: #111827;
+      --muted: #94a3b8;
+      --text: #e2e8f0;
+      --text-strong: #f8fafc;
+      --border: #1f2937;
+      --ring-1: rgba(99, 102, 241, 0.45);
+      --ring-2: rgba(99, 102, 241, 0.2);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 20px;
+
+      --sp-0: 0;
+      --sp-1: 4px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-5: 20px;
+      --sp-6: 24px;
+      --sp-7: 32px;
+      --sp-8: 40px;
+      --sp-9: 48px;
+      --sp-10: 64px;
+
+      --grad-1: linear-gradient(135deg, var(--brand-600), var(--accent-600));
+      --grad-2: linear-gradient(135deg, #1f2937, #0b1220);
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f6f7fb;
+        --bg-elev: #f8fafc;
+        --surface: #ffffff;
+        --surface-2: #ffffff;
+        --muted: #6b7280;
+        --text: #111827;
+        --text-strong: #0b1220;
+        --border: #e5e7eb;
+        --ring-1: rgba(99, 102, 241, 0.5);
+        --ring-2: rgba(6, 182, 212, 0.35);
+        --shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+    html,
+    body {
+      height: 100%;
+    }
+    body {
+      color: var(--text);
+      background: var(--bg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans,
+        "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      line-height: 1.5;
+    }
+
+    .page .container {
+      padding: var(--sp-6);
+    }
+    @media (max-width: 768px) {
+      .page .container {
+        padding: var(--sp-4);
+      }
+    }
+
+    .breadcrumbs {
+      margin-bottom: var(--sp-4);
+    }
+
+    .page-header {
+      position: static; /* was sticky; allow normal scrolling */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--sp-4);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: saturate(1.2) blur(6px);
+      margin-bottom: var(--sp-6);
+    }
+
+    .title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+    }
+    .page-title {
+      margin: 0;
+      letter-spacing: 0.2px;
+      font-size: 22px;
+      font-weight: 700;
+      background: var(--grad-1);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+    }
+    .btn-group {
+      display: flex;
+      gap: var(--sp-2);
+      align-items: center;
+    }
+    .btn,
+    .btn-sm,
+    .btn-icon {
+      --btn-bg: var(--surface-2);
+      --btn-bd: var(--border);
+      --btn-fg: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--btn-bd);
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      padding: 10px 14px;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .btn .kbd {
+      margin-left: 6px;
+      opacity: 0.7;
+      font-weight: 500;
+      font-size: 12px;
+      padding: 2px 6px;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    }
+    .btn:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--ring-1), 0 0 0 6px var(--ring-2);
+    }
+    .btn-primary {
+      --btn-bg: var(--grad-1);
+      --btn-bd: transparent;
+      color: white;
+    }
+    .btn-ghost {
+      --btn-bg: transparent;
+    }
+    .btn-soft {
+      --btn-bg: rgba(99, 102, 241, 0.08);
+      --btn-bd: rgba(99, 102, 241, 0.25);
+      color: var(--brand-600);
+    }
+    .btn-danger {
+      --btn-bg: rgba(239, 68, 68, 0.1);
+      --btn-bd: rgba(239, 68, 68, 0.35);
+      color: var(--danger-600);
+    }
+    .btn-sm {
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+    .btn-icon {
+      padding: 8px;
+      width: 36px;
+      height: 36px;
+      justify-content: center;
+    }
+    .link {
+      border: none;
+      padding: 0;
+      background: none;
+      color: var(--brand-500);
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+    .text-right {
+      text-align: right;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .chip-ok {
+      background: var(--success-50);
+      color: var(--success-600);
+      border-color: rgba(16, 185, 129, 0.25);
+    }
+    .chip-warn {
+      background: var(--warn-50);
+      color: var(--warn-600);
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+    .chip-neutral {
+      background: rgba(99, 102, 241, 0.1);
+      color: var(--brand-600);
+      border-color: rgba(99, 102, 241, 0.25);
+    }
+    .chip-muted {
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+    }
+    .badge-warn {
+      background: var(--warn-50);
+      color: var(--warn-600);
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+    .badge-neutral {
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      gap: var(--sp-6); /* increase spacing between cards inside grids */
+    }
+    .grid-2 {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+    /* add spacing between grid sections */
+    .grid + .grid {
+      margin-top: var(--sp-6);
+    }
+    @media (max-width: 1024px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: clip;
+      box-shadow: var(--shadow);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--sp-4) var(--sp-5);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
+      border-bottom: 1px solid var(--border);
+    }
+    .card-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-body {
+      padding: var(--sp-5);
+    }
+    .card-tools {
+      display: flex;
+      gap: var(--sp-2);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-6);
+    }
+    .form-grid.single {
+      grid-template-columns: 1fr;
+    }
+    .form-col {
+      display: grid;
+      gap: var(--sp-4);
+    }
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-4);
+    }
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-4);
+    }
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-row-2,
+      .form-row-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    input,
+    select,
+    textarea {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    input::placeholder,
+    textarea::placeholder {
+      color: #94a3b8aa;
+    }
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: transparent;
+      box-shadow: 0 0 0 3px var(--ring-1), 0 0 0 6px var(--ring-2);
+      transform: translateY(-1px);
+    }
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .error {
+      font-size: 12px;
+      color: var(--danger-600);
+      min-height: 16px;
+    }
+    .invalid input,
+    .invalid select,
+    .invalid textarea {
+      border-color: rgba(239, 68, 68, 0.45) !important;
+      background: linear-gradient(0deg, rgba(239, 68, 68, 0.06), rgba(239, 68, 68, 0.06)), var(--surface-2);
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-6);
+    }
+    .status-item .muted {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: var(--sp-5) 0;
+    }
+    .timeline {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 280px;
+      overflow: auto;
+    }
+    .timeline li {
+      position: relative;
+      padding-left: 24px;
+      margin: 10px 0;
+      color: var(--text);
+      font-size: 13px;
+    }
+    .timeline li::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--brand-500);
+      position: absolute;
+      left: 4px;
+      top: 6px;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow: auto;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .table th,
+    .table td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px dashed var(--border);
+    }
+    .table thead th {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      z-index: 1;
+    }
+    .table-modern tbody tr:hover {
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    /* Mobile card rows for members */
+    @media (max-width: 720px) {
+      #tbl-members thead {
+        display: none;
+      }
+      #tbl-members tbody tr {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 6px;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin-bottom: 10px;
+      }
+      #tbl-members tbody td {
+        border: none;
+        padding: 2px 0;
+      }
+      #tbl-members tbody td[data-label]::before {
+        content: attr(data-label) " ";
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        display: block;
+      }
+      #tbl-members tbody td.actions {
+        margin-top: 6px;
+      }
+    }
+
+    .doc-list {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0 0;
+      display: grid;
+      gap: 10px;
+    }
+    .doc-item {
+      display: grid;
+      grid-template-columns: 32px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface-2);
+    }
+    .doc-icon {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: rgba(99, 102, 241, 0.12);
+      color: var(--brand-600);
+    }
+    .doc-meta {
+      display: flex;
+      flex-direction: column;
+    }
+    .doc-name {
+      font-weight: 700;
+    }
+    .doc-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .empty {
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      color: var(--muted);
+      text-align: center;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+    }
+    .empty i {
+      font-size: 20px;
+      margin-bottom: 8px;
+      opacity: 0.6;
+    }
+
+    .dropzone {
+      position: relative;
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      background: linear-gradient(180deg, rgba(99, 102, 241, 0.06), rgba(99, 102, 241, 0.02));
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .dropzone.dragover {
+      border-color: var(--brand-500);
+      background: linear-gradient(180deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.04));
+    }
+    .dz-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .dz-icon {
+      font-size: 24px;
+      color: var(--brand-500);
+    }
+    .dz-text {
+      color: var(--text);
+    }
+    .dz-hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .file-input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(2, 6, 23, 0.55);
+      z-index: 100;
+      backdrop-filter: blur(4px);
+    }
+    .modal[aria-hidden="false"] {
+      display: grid;
+    }
+    .modal-dialog {
+      width: min(560px, 92vw);
+      max-height: 86vh;
+      overflow: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .modal-dialog.small {
+      width: min(420px, 92vw);
+    }
+    .modal-header,
+    .modal-footer {
+      padding: var(--sp-4) var(--sp-5);
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-footer {
+      border-top: 1px solid var(--border);
+      border-bottom: none;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .modal-body {
+      padding: var(--sp-5);
+    }
+    .modal-header h3 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Toasts */
+    .toasts {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      display: grid;
+      gap: 10px;
+      z-index: 200;
+    }
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 260px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      animation: slideIn 0.2s ease-out;
+      font-weight: 600;
+    }
+    .toast.success {
+      border-color: rgba(16, 185, 129, 0.35);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.07), transparent);
+      color: var(--success-600);
+    }
+    .toast.info {
+      border-color: rgba(99, 102, 241, 0.35);
+      background: linear-gradient(180deg, rgba(99, 102, 241, 0.07), transparent);
+      color: var(--brand-600);
+    }
+    .toast.warn {
+      border-color: rgba(245, 158, 11, 0.35);
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.07), transparent);
+      color: var(--warn-600);
+    }
+    .toast.danger {
+      border-color: rgba(239, 68, 68, 0.35);
+      background: linear-gradient(180deg, rgba(239, 68, 68, 0.07), transparent);
+      color: var(--danger-600);
+    }
+    @keyframes slideIn {
+      from {
+        transform: translateY(8px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+
+  <script type="module">
+    import '/src/scripts/kelola-warga.ts';
+  </script>
+  
+  <!-- <script lang="ts">
+    type WargaMember = { nama: string; nik: string; relasi: string };
+    type DocumentMeta = { name: string; type: string; size: number; time: number };
+    type HistoryAction =
+      | "verify"
+      | "unverify"
+      | "update-main"
+      | "add-member"
+      | "edit-member"
+      | "delete-member"
+      | "add-doc"
+      | "delete-doc"
+      | "delete-row";
+    type HistoryEntry = { time: number; action: HistoryAction; by?: string; detail?: string };
+    interface WargaRow {
+      id: string;
+      nama: string;
+      nik: string;
+      kk: string;
+      alamat: string;
+      rt: string;
+      rw: string;
+      no_rumah?: string;
+      telepon?: string;
+      email?: string;
+      status: string;
+      tanggal_masuk?: string;
+      tanggal_keluar?: string;
+      verified?: boolean;
+      updated_at?: number;
+      anggota_keluarga: WargaMember[];
+      documents: DocumentMeta[];
+      history: HistoryEntry[];
+    }
+
+    // Storage & State
+    const STORAGE_KEY = "warga_data_v1";
+    const url = new URL(location.href);
+    const id = url.searchParams.get("id") ?? "";
+
+    let warga: WargaRow[] = [];
+    let row: WargaRow | null = null;
+    let draft: Partial<WargaRow> | null = null;
+    let dirty = false;
+
+    // -------------------- Utils --------------------
+    function $<T extends Element = HTMLElement>(
+      sel: string,
+      ctx: Document | HTMLElement = document
+    ): T {
+      return ctx.querySelector(sel) as T;
+    }
+    function $$<T extends Element = HTMLElement>(
+      sel: string,
+      ctx: Document | HTMLElement = document
+    ): T[] {
+      return Array.from(ctx.querySelectorAll(sel)) as T[];
+    }
+    function on<E extends Event>(
+      el: HTMLElement | Document | Window,
+      evt: string,
+      handler: (ev: E) => void
+    ): void {
+      el.addEventListener(evt, handler as EventListener);
+    }
+    function onDelegated<E extends Event>(
+      el: HTMLElement | Document,
+      evt: string,
+      selector: string,
+      handler: (ev: E) => void
+    ): void {
+      el.addEventListener(evt, (e) => {
+        const target = e.target as HTMLElement | null;
+        if (target && target.closest(selector)) handler(e as E);
+      });
+    }
+    const fmtDateTime = (ts?: number | null): string => {
+      if (!ts) return "-";
+      const d = new Date(ts);
+      return d.toLocaleString();
+    };
+    const deepClone = <T>(obj: T): T => {
+      if (typeof (window as any).structuredClone === "function") {
+        return (window as any).structuredClone(obj);
+      }
+      return JSON.parse(JSON.stringify(obj)) as T;
+    };
+    const onlyDigits = (v?: string | null): string => (v ?? "").replace(/\D+/g, "");
+    const iconForFile = (type?: string | null): string => {
+      const t = (type ?? "").toLowerCase();
+      if (t.includes("pdf")) return "fa-file-pdf";
+      if (t.includes("image")) return "fa-file-image";
+      if (t.includes("word") || t.includes("doc")) return "fa-file-word";
+      if (t.includes("sheet") || t.includes("excel") || t.includes("xls")) return "fa-file-excel";
+      return "fa-file";
+    };
+
+    // -------------------- Storage --------------------
+    function load(): void {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+        warga = Array.isArray(parsed) ? (parsed as WargaRow[]) : [];
+      } catch {
+        warga = [];
+      }
+    }
+    function saveAll(): void {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(warga));
+    }
+    function persistRow(): void {
+      if (!row) return;
+      const idx = warga.findIndex((x) => x.id === row!.id);
+      if (idx > -1) {
+        warga[idx] = row!;
+        saveAll();
+      }
+    }
+
+    // -------------------- Rendering --------------------
+    function renderHeader(): void {
+      const titleEl = $("#title") as HTMLElement;
+      const btnSave = $("#btn-save") as HTMLButtonElement;
+      const verifiedChip = $("#verified-chip") as HTMLElement;
+      const dirtyChip = $("#dirty-chip") as HTMLElement;
+      const lastUpdated = $("#last-updated") as HTMLElement;
+      const verifyTxt = $("#verify-txt") as HTMLElement;
+
+      if (!row) {
+        titleEl.textContent = "Warga tidak ditemukan";
+        verifyTxt.textContent = "Tandai Terverifikasi";
+        btnSave.disabled = true;
+        verifiedChip.className = "chip chip-warn";
+        verifiedChip.innerHTML = '<i class="fas fa-shield"></i> Belum Verifikasi';
+        dirtyChip.classList.add("hidden");
+        return;
+      }
+
+      titleEl.textContent = `Kelola: ${row.nama || "-"}`;
+
+      if (row.verified) {
+        verifiedChip.className = "chip chip-ok";
+        verifiedChip.innerHTML = '<i class="fas fa-shield-alt"></i> Terverifikasi';
+        verifyTxt.textContent = "Batalkan Verifikasi";
+      } else {
+        verifiedChip.className = "chip chip-warn";
+        verifiedChip.innerHTML = '<i class="fas fa-shield"></i> Belum Verifikasi';
+        verifyTxt.textContent = "Tandai Terverifikasi";
+      }
+
+      const status = (draft?.status ?? row.status ?? "-") as string;
+      const statusChip = $("#status-chip") as HTMLElement;
+      statusChip.className = "chip chip-neutral";
+      const stLabel = status ? status[0].toUpperCase() + status.slice(1) : "-";
+      statusChip.textContent = `Status: ${stLabel}`;
+
+      dirtyChip.classList.toggle("hidden", !dirty);
+      lastUpdated.textContent = row.updated_at ? fmtDateTime(row.updated_at) : "-";
+
+      btnSave.disabled = !dirty || !validateForm(false);
+    }
+
+    function renderForm(): void {
+      const form = $("#form-main") as HTMLFormElement;
+      const src = (draft ?? row ?? {}) as Partial<WargaRow>;
+
+      const fields: (keyof WargaRow)[] = [
+        "nama",
+        "nik",
+        "kk",
+        "alamat",
+        "rt",
+        "rw",
+        "no_rumah",
+        "telepon",
+        "email",
+        "status",
+        "tanggal_masuk",
+        "tanggal_keluar",
+      ];
+
+      // Ensure defaults
+      for (const k of fields) {
+        if (!(k in src)) (src as any)[k] = "";
+      }
+
+      const setVal = (name: string, val: string): void => {
+        const el = form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
+        if (el) el.value = val ?? "";
+      };
+
+      setVal("nama", (src.nama as string) || "");
+      setVal("nik", (src.nik as string) || "");
+      setVal("kk", (src.kk as string) || "");
+      setVal("alamat", (src.alamat as string) || "");
+      setVal("rt", (src.rt as string) || "");
+      setVal("rw", (src.rw as string) || "");
+      setVal("no_rumah", (src.no_rumah as string) || "");
+      setVal("telepon", (src.telepon as string) || "");
+      setVal("email", (src.email as string) || "");
+      setVal("status", (src.status as string) || "aktif");
+      setVal("tanggal_masuk", (src.tanggal_masuk as string) || "");
+      setVal("tanggal_keluar", (src.tanggal_keluar as string) || "");
+
+      const statusChip = $("#status-chip") as HTMLElement;
+      const st = (src.status as string) || "-";
+      statusChip.textContent = `Status: ${st[0]?.toUpperCase() + st.slice(1)}`;
+    }
+
+    function renderHistory(): void {
+      if (!row) return;
+      const ul = $("#history") as HTMLUListElement;
+      ul.innerHTML = "";
+
+      const actionMap: Record<HistoryAction, string> = {
+        verify: "Verifikasi",
+        unverify: "Batalkan verifikasi",
+        "update-main": "Perbarui data utama",
+        "add-member": "Tambah anggota",
+        "edit-member": "Ubah anggota",
+        "delete-member": "Hapus anggota",
+        "add-doc": "Tambah dokumen",
+        "delete-doc": "Hapus dokumen",
+        "delete-row": "Hapus data warga",
+      };
+
+      (row.history ?? [])
+        .slice()
+        .reverse()
+        .forEach((h: HistoryEntry) => {
+          const li = document.createElement("li");
+          const who = h.by || "admin";
+          const detail = h.detail ? ` (${h.detail})` : "";
+          li.textContent = `${fmtDateTime(h.time)} • ${actionMap[h.action]}${detail} • ${who}`;
+          ul.appendChild(li);
+        });
+    }
+
+    function renderMembers(): void {
+      if (!row) return;
+      const tbody = $("#tbl-members tbody") as HTMLTableSectionElement;
+      const empty = $("#members-empty") as HTMLElement;
+      tbody.innerHTML = "";
+
+      const members = (row.anggota_keluarga ?? []) as WargaMember[];
+      empty.classList.toggle("hidden", members.length > 0);
+
+      members.forEach((m: WargaMember, idx: number) => {
+        const tr = document.createElement("tr");
+
+        const tdNama = document.createElement("td");
+        tdNama.dataset.label = "Nama";
+        tdNama.textContent = m.nama || "-";
+
+        const tdNik = document.createElement("td");
+        tdNik.dataset.label = "NIK";
+        tdNik.textContent = m.nik || "-";
+
+        const tdRel = document.createElement("td");
+        tdRel.dataset.label = "Relasi";
+        tdRel.textContent = m.relasi || "-";
+
+        const tdAct = document.createElement("td");
+        tdAct.className = "actions text-right";
+        tdAct.innerHTML = `
+          <div class="btn-group">
+            <button class="btn btn-sm btn-soft" data-edit="${idx}">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn btn-sm btn-danger" data-del="${idx}">
+              <i class="fas fa-trash"></i> Hapus
+            </button>
+          </div>
+        `;
+
+        tr.appendChild(tdNama);
+        tr.appendChild(tdNik);
+        tr.appendChild(tdRel);
+        tr.appendChild(tdAct);
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderDocs(): void {
+      if (!row) return;
+      const ul = $("#docs") as HTMLUListElement;
+      ul.innerHTML = "";
+
+      const docs = (row.documents ?? []) as DocumentMeta[];
+      const empty = $("#docs-empty") as HTMLElement;
+      empty.classList.toggle("hidden", docs.length > 0);
+
+      docs.forEach((d: DocumentMeta, i: number) => {
+        const li = document.createElement("li");
+        li.className = "doc-item";
+        li.innerHTML = `
+          <div class="doc-icon"><i class="fas ${iconForFile(d.type)}"></i></div>
+          <div class="doc-meta">
+            <div class="doc-name">${d.name || "Dokumen"}</div>
+            <div class="doc-sub">${d.type || "file"} • ${d.size ? Math.round(d.size / 1024) + " KB" : ""} ${
+          d.time ? "• " + new Date(d.time).toLocaleDateString() : ""
+        }</div>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-danger" data-doc-del="${i}">
+              <i class="fas fa-times"></i> Hapus
+            </button>
+          </div>
+        `;
+        ul.appendChild(li);
+      });
+    }
+
+    function renderAll(): void {
+      renderHeader();
+      renderForm();
+      renderHistory();
+      renderMembers();
+      renderDocs();
+    }
+
+    // -------------------- Validation --------------------
+    function setError(name: string, msg: string): void {
+      const errEl = document.querySelector<HTMLElement>(`[data-err-for="${name}"]`);
+      const inputEl = document.getElementById(name);
+      const wrapper = inputEl ? (inputEl.closest(".form-field") as HTMLElement | null) : null;
+      if (!errEl || !wrapper) return;
+      errEl.textContent = msg || "";
+      if (msg) wrapper.classList.add("invalid");
+      else wrapper.classList.remove("invalid");
+    }
+
+    function validateForm(showErrors = true): boolean {
+      const d = (draft ?? {}) as Partial<WargaRow>;
+      let valid = true;
+
+      const req: (keyof WargaRow)[] = ["nama", "nik", "kk", "alamat", "rt", "rw"];
+      req.forEach((k) => {
+        const v = (d[k] ?? "").toString().trim();
+        if (!v) {
+          valid = false;
+          if (showErrors) setError(k as string, "Wajib diisi");
+        } else if (showErrors) setError(k as string, "");
+      });
+
+      if (d.nik && !/^\d{8,20}$/.test(d.nik)) {
+        valid = false;
+        if (showErrors) setError("nik", "NIK harus 8-20 digit angka");
+      } else if (showErrors) setError("nik", "");
+
+      if (d.kk && !/^\d{8,20}$/.test(d.kk)) {
+        valid = false;
+        if (showErrors) setError("kk", "No. KK harus 8-20 digit angka");
+      } else if (showErrors) setError("kk", "");
+
+      if (d.rt && !/^\d{1,3}$/.test(d.rt)) {
+        valid = false;
+        if (showErrors) setError("rt", "RT hanya angka (1-3 digit)");
+      } else if (showErrors) setError("rt", "");
+
+      if (d.rw && !/^\d{1,3}$/.test(d.rw)) {
+        valid = false;
+        if (showErrors) setError("rw", "RW hanya angka (1-3 digit)");
+      } else if (showErrors) setError("rw", "");
+
+      if (d.telepon && !/^\d{6,20}$/.test(d.telepon)) {
+        valid = false;
+        if (showErrors) setError("telepon", "Telepon hanya angka (6-20 digit)");
+      } else if (showErrors) setError("telepon", "");
+
+      if (d.email) {
+        const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email);
+        if (!ok) {
+          valid = false;
+          if (showErrors) setError("email", "Email tidak valid");
+        } else if (showErrors) setError("email", "");
+      } else if (showErrors) setError("email", "");
+
+      if (d.tanggal_masuk && d.tanggal_keluar) {
+        const masuk = new Date(d.tanggal_masuk);
+        const keluar = new Date(d.tanggal_keluar);
+        if (keluar < masuk) {
+          valid = false;
+          if (showErrors) setError("tanggal_keluar", "Tanggal keluar harus setelah tanggal masuk");
+        } else if (showErrors) setError("tanggal_keluar", "");
+      } else if (showErrors) setError("tanggal_keluar", "");
+
+      return valid;
+    }
+
+    // -------------------- Members Modal --------------------
+    let memberEditIndex: number | null = null;
+
+    function openMemberModal(
+      data: WargaMember = { nama: "", nik: "", relasi: "" },
+      index: number | null = null
+    ): void {
+      memberEditIndex = index;
+      const nm = document.getElementById("m-nama") as HTMLInputElement | null;
+      const nk = document.getElementById("m-nik") as HTMLInputElement | null;
+      const rl = document.getElementById("m-relasi") as HTMLSelectElement | null;
+
+      if (nm) nm.value = data.nama || "";
+      if (nk) nk.value = data.nik || "";
+      if (rl) rl.value = data.relasi || "";
+
+      setError("m-nama", "");
+      setError("m-nik", "");
+      setError("m-relasi", "");
+
+      showModal("#modal-member", true);
+      if (nm) nm.focus();
+    }
+
+    function validateMemberForm(showErrors = true): boolean {
+      const namaEl = document.getElementById("m-nama") as HTMLInputElement | null;
+      const nikEl = document.getElementById("m-nik") as HTMLInputElement | null;
+      const relasiEl = document.getElementById("m-relasi") as HTMLSelectElement | null;
+      if (!namaEl || !nikEl || !relasiEl) return false;
+
+      const nama = namaEl.value.trim();
+      const nik = nikEl.value.trim();
+      const relasi = relasiEl.value;
+
+      let ok = true;
+      if (!nama) {
+        ok = false;
+        if (showErrors) setError("m-nama", "Wajib diisi");
+      } else if (showErrors) setError("m-nama", "");
+
+      if (!/^\d{8,20}$/.test(nik)) {
+        ok = false;
+        if (showErrors) setError("m-nik", "NIK harus 8-20 digit angka");
+      } else if (showErrors) setError("m-nik", "");
+
+      if (!relasi) {
+        ok = false;
+        if (showErrors) setError("m-relasi", "Pilih relasi");
+      } else if (showErrors) setError("m-relasi", "");
+
+      return ok;
+    }
+
+    // -------------------- Modals --------------------
+    const showModal = (sel: string, show = true): void => {
+      const m = document.querySelector<HTMLElement>(sel);
+      if (!m) return;
+      m.setAttribute("aria-hidden", show ? "false" : "true");
+    };
+
+    // -------------------- Toasts --------------------
+    type ToastType = "success" | "info" | "warn" | "danger";
+    const toast = (message: string, type: ToastType = "info", timeout = 2200): void => {
+      let c = document.querySelector<HTMLElement>(".toasts");
+      if (!c) {
+        const d = document.createElement("div");
+        d.className = "toasts";
+        document.body.appendChild(d);
+        c = d;
+      }
+      const el = document.createElement("div");
+      el.className = `toast ${type}`;
+      const icon =
+        type === "success"
+          ? "fa-check-circle"
+          : type === "danger"
+          ? "fa-times-circle"
+          : type === "warn"
+          ? "fa-exclamation-circle"
+          : "fa-info-circle";
+      el.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
+      c.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = "0";
+        el.style.transform = "translateY(8px)";
+        el.addEventListener("transitionend", () => el.remove());
+      }, timeout);
+    };
+
+    // -------------------- Event Bindings --------------------
+    function bindEvents(): void {
+      function handleNumericInput(id: string) {
+        return (e: Event) => {
+          const target = e.target as HTMLInputElement;
+          const v = onlyDigits(target.value);
+          if (target.value !== v) target.value = v;
+
+          if (id.startsWith("m-")) return;
+
+          if (draft) {
+            const name = target.name as keyof WargaRow;
+            (draft as any)[name] = target.value;
+          }
+          dirty = true;
+          renderHeader();
+        };
+      }
+
+      function handleFormInput(e: Event): void {
+        const t = e.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+        if (!t?.name) return;
+        if (draft) {
+          const key = t.name as keyof WargaRow;
+          (draft as any)[key] = t.value;
+        }
+        dirty = true;
+        renderHeader();
+      }
+
+      function handleFormChange(e: Event): void {
+        const t = e.target as HTMLInputElement;
+        if (t.name === "tanggal_masuk" || t.name === "tanggal_keluar") {
+          validateForm(true);
+          dirty = true;
+          renderHeader();
+        }
+      }
+
+      function handleDragOver(e: DragEvent): void {
+        e.preventDefault();
+        dz.classList.add("dragover");
+      }
+      function handleDragLeave(): void {
+        dz.classList.remove("dragover");
+      }
+      function handleDrop(e: DragEvent): void {
+        e.preventDefault();
+        dz.classList.remove("dragover");
+        if (e.dataTransfer) handleFiles(e.dataTransfer.files);
+      }
+      function handleFileInput(e: Event): void {
+        const files = (e.target as HTMLInputElement).files;
+        handleFiles(files);
+      }
+      function handleDocDeleteClick(e: Event): void {
+        const btn = e.target as HTMLElement;
+        const b = btn.closest("button[data-doc-del]") as HTMLButtonElement | null;
+        if (!b) return;
+        const idx = parseInt(b.getAttribute("data-doc-del") ?? "-1", 10);
+        const d = (row?.documents ?? [])[idx];
+        const title = document.getElementById("confirm-title") as HTMLElement;
+        const msg = document.getElementById("confirm-message") as HTMLElement;
+        const yes = document.getElementById("btn-confirm-yes") as HTMLButtonElement;
+        title.innerHTML = `<i class="fas fa-file-times"></i> Hapus Dokumen`;
+        msg.textContent = `Hapus dokumen "${d?.name ?? "-"}"?`;
+        yes.dataset.action = `delete-doc:${idx}`;
+        showModal("#modal-confirm", true);
+      }
+      function handleKeydown(e: KeyboardEvent): void {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+          e.preventDefault();
+          const btn = document.getElementById("btn-save") as HTMLButtonElement | null;
+          btn?.click();
+        }
+      }
+      function handleBeforeUnload(e: BeforeUnloadEvent) {
+        if (dirty) {
+          e.preventDefault();
+          e.returnValue = "";
+        }
+      }
+
+      // Numeric-only filters
+      const numFields = ["nik", "kk", "rt", "rw", "telepon", "m-nik"];
+      numFields.forEach((id) => {
+        onDelegated(document, "input", `#${id}`, handleNumericInput(id));
+      });
+
+      // Main form inputs
+      on($("#form-main"), "input", handleFormInput);
+      on($("#form-main"), "change", handleFormChange);
+
+      // Save
+      on($("#btn-save"), "click", () => {
+        if (!validateForm(true)) {
+          toast("Periksa kembali input yang belum valid", "warn");
+          return;
+        }
+        if (!row) return;
+        const next: WargaRow = {
+          ...row,
+          ...(draft ?? {}),
+          updated_at: Date.now(),
+          anggota_keluarga: row.anggota_keluarga ?? [],
+          documents: row.documents ?? [],
+          history: row.history ?? [],
+        } as WargaRow;
+        row = next;
+        row.history = (row.history ?? []).concat({
+          time: Date.now(),
+          action: "update-main",
+          by: "admin",
+        });
+        persistRow();
+        dirty = false;
+        renderAll();
+        toast("Data berhasil disimpan", "success");
+      });
+
+      // Verify toggle
+      on($("#btn-verify"), "click", () => {
+        if (!row) return;
+        row.verified = !row.verified;
+        row.updated_at = Date.now();
+        row.history = (row.history ?? []).concat({
+          time: Date.now(),
+          action: row.verified ? "verify" : "unverify",
+          by: "admin",
+        });
+        persistRow();
+        renderAll();
+        toast(row.verified ? "Terverifikasi" : "Verifikasi dibatalkan", row.verified ? "success" : "info");
+      });
+
+      // Delete row (open confirm modal)
+      on($("#btn-delete"), "click", () => {
+        const title = document.getElementById("confirm-title") as HTMLElement;
+        const msg = document.getElementById("confirm-message") as HTMLElement;
+        const yes = document.getElementById("btn-confirm-yes") as HTMLButtonElement;
+        title.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Konfirmasi`;
+        msg.textContent = "Hapus data warga ini? Tindakan ini tidak dapat dibatalkan.";
+        yes.dataset.action = "delete-row";
+        showModal("#modal-confirm", true);
+      });
+
+      // Confirm modal actions
+      on($("#btn-confirm-yes"), "click", () => {
+        const yesBtn = document.getElementById("btn-confirm-yes") as HTMLButtonElement;
+        const act = yesBtn.dataset.action;
+        if (!row) return;
+
+        if (act === "delete-row") {
+          row.history = (row.history ?? []).concat({
+            time: Date.now(),
+            action: "delete-row",
+            by: "admin",
+          });
+          warga = warga.filter((x) => x.id !== row!.id);
+          saveAll();
+          toast("Data dihapus", "danger");
+          showModal("#modal-confirm", false);
+          setTimeout(() => {
+            location.href = "/admin/warga";
+          }, 500);
+        } else if (act?.startsWith("delete-member:")) {
+          const idx = parseInt(act.split(":")[1] ?? "-1", 10);
+          const m = (row.anggota_keluarga ?? [])[idx];
+          row.anggota_keluarga.splice(idx, 1);
+          row.updated_at = Date.now();
+          row.history = (row.history ?? []).concat({
+            time: Date.now(),
+            action: "delete-member",
+            by: "admin",
+            detail: m?.nama ?? "",
+          });
+          persistRow();
+          showModal("#modal-confirm", false);
+          renderMembers();
+          renderHistory();
+          renderHeader();
+          toast("Anggota dihapus", "danger");
+        } else if (act?.startsWith("delete-doc:")) {
+          const idx = parseInt(act.split(":")[1] ?? "-1", 10);
+          const d = (row.documents ?? [])[idx];
+          row.documents.splice(idx, 1);
+          row.updated_at = Date.now();
+          row.history = (row.history ?? []).concat({
+            time: Date.now(),
+            action: "delete-doc",
+            by: "admin",
+            detail: d?.name ?? "",
+          });
+          persistRow();
+          showModal("#modal-confirm", false);
+          renderDocs();
+          renderHistory();
+          renderHeader();
+          toast("Dokumen dihapus", "danger");
+        }
+      });
+
+      // Close modals
+      onDelegated(document, "click", "[data-close-modal]", () => {
+        ["#modal-member", "#modal-confirm"].forEach((sel) => {
+          const m = document.querySelector<HTMLElement>(sel);
+          m?.setAttribute("aria-hidden", "true");
+        });
+      });
+      on(document, "keydown", (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          ["#modal-member", "#modal-confirm"].forEach((sel) => {
+            const m = document.querySelector<HTMLElement>(sel);
+            m?.setAttribute("aria-hidden", "true");
+          });
+        }
+      });
+
+      // Add member
+      on($("#btn-add-member"), "click", () => openMemberModal());
+
+      // Members table actions
+      onDelegated(document, "click", "button[data-edit]", (e: Event) => {
+        const target = e.target as HTMLElement;
+        const btn = target.closest("button") as HTMLButtonElement | null;
+        const idx = parseInt(btn?.getAttribute("data-edit") ?? "0", 10);
+        const m = (row?.anggota_keluarga ?? [])[idx];
+        if (!m) return;
+        openMemberModal(m, idx);
+      });
+
+      onDelegated(document, "click", "button[data-del]", (e: Event) => {
+        const target = e.target as HTMLElement;
+        const btn = target.closest("button") as HTMLButtonElement | null;
+        const idx = parseInt(btn?.getAttribute("data-del") ?? "0", 10);
+        const m = (row?.anggota_keluarga ?? [])[idx];
+        const title = document.getElementById("confirm-title") as HTMLElement;
+        const msg = document.getElementById("confirm-message") as HTMLElement;
+        const yes = document.getElementById("btn-confirm-yes") as HTMLButtonElement;
+        title.innerHTML = `<i class="fas fa-user-times"></i> Hapus Anggota`;
+        msg.textContent = `Hapus anggota "${m?.nama ?? "-"}"?`;
+        yes.dataset.action = `delete-member:${idx}`;
+        showModal("#modal-confirm", true);
+      });
+
+      on($("#btn-save-member"), "click", () => {
+        if (!validateMemberForm(true)) return;
+        const nm = document.getElementById("m-nama") as HTMLInputElement;
+        const nk = document.getElementById("m-nik") as HTMLInputElement;
+        const rl = document.getElementById("m-relasi") as HTMLSelectElement;
+
+        const m: WargaMember = {
+          nama: nm.value.trim(),
+          nik: nk.value.trim(),
+          relasi: rl.value,
+        };
+
+        if (!row) return;
+        row.anggota_keluarga = row.anggota_keluarga ?? [];
+        const isEdit = memberEditIndex !== null && memberEditIndex >= 0;
+
+        if (isEdit) {
+          row.anggota_keluarga[memberEditIndex!] = m;
+          row.history = (row.history ?? []).concat({
+            time: Date.now(),
+            action: "edit-member",
+            by: "admin",
+            detail: m.nama,
+          });
+        } else {
+          row.anggota_keluarga.push(m);
+          row.history = (row.history ?? []).concat({
+            time: Date.now(),
+            action: "add-member",
+            by: "admin",
+            detail: m.nama,
+          });
+        }
+        row.updated_at = Date.now();
+        memberEditIndex = null;
+        persistRow();
+        showModal("#modal-member", false);
+        renderMembers();
+        renderHistory();
+        renderHeader();
+        toast(isEdit ? "Anggota diperbarui" : "Anggota ditambahkan", "success");
+      });
+
+      // Dropzone & file input
+      const dz = $("#dropzone") as HTMLElement;
+      const fi = document.getElementById("file-input") as HTMLInputElement | null;
+
+      on($("#btn-browse"), "click", () => {
+        fi?.click();
+      });
+      on(dz, "dragover", handleDragOver);
+      on(dz, "dragleave", handleDragLeave);
+      on(dz, "drop", handleDrop);
+      if (fi) on(fi, "change", handleFileInput);
+
+      // Delete doc button
+      onDelegated(document, "click", "button[data-doc-del]", handleDocDeleteClick);
+
+      // Keyboard shortcut Save
+      on(document, "keydown", handleKeydown);
+
+      // Warn before unload if dirty
+      window.addEventListener("beforeunload", handleBeforeUnload);
+    }
+
+    function handleFiles(fileList: FileList | null): void {
+      if (!fileList || !fileList.length) return;
+      if (!row) return;
+      row.documents = row.documents ?? [];
+
+      for (const f of Array.from(fileList)) {
+        const file = f as File;
+        row.documents.push({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          time: Date.now(),
+        });
+        row.history = (row.history ?? []).concat({
+          time: Date.now(),
+          action: "add-doc",
+          by: "admin",
+          detail: file.name,
+        });
+      }
+      row.updated_at = Date.now();
+      persistRow();
+      renderDocs();
+      renderHistory();
+      renderHeader();
+      toast("Dokumen ditambahkan", "success");
+    }
+
+    // -------------------- Init --------------------
+    function init(): void {
+      load();
+      row = warga.find((x) => x.id === id) ?? null;
+
+      if (!row) {
+        renderAll();
+        return;
+      }
+
+      draft = deepClone(row) as Partial<WargaRow>;
+      row.anggota_keluarga = row.anggota_keluarga ?? [];
+      row.documents = row.documents ?? [];
+      row.history = row.history ?? [];
+
+      dirty = false;
+      bindEvents();
+      renderAll();
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script> -->
+</Layout>

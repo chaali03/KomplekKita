@@ -1,0 +1,764 @@
+---
+import Layout from "~/layouts/admin-layout.astro";
+import AdminSidebar from "../../components/Admin-site/admin-sidebar.astro";
+import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
+// Complex branding to show in admin UI
+const complexName = 'Komplek Anggrek Asri';
+const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=100&h=100&fit=crop&crop=center';
+---
+
+<Layout>
+  <AdminSidebar slot="sidebar" complexName={complexName} complexImage={complexImage} />
+  <AdminTopbar slot="topbar" complexName={complexName} complexImage={complexImage} />
+
+  <div class="page px">
+    <div class="page-header">
+      <div>
+        <h1 class="title">Data Warga</h1>
+        <p class="muted">Kelola data warga, verifikasi, dan analitik demografi. Fitur sesuai paket Plus.</p>
+      </div>
+      <div class="actions">
+        <button id="btn-add" class="btn primary">
+          <i class="fas fa-user-plus"></i>
+          <span>Tambah Warga</span>
+        </button>
+        <button id="btn-export" class="btn">
+          <i class="fas fa-file-export"></i>
+          <span>Export CSV</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="filters card" data-animate>
+      <div class="row g">
+        <div class="col span-3">
+          <label for="q">Cari</label>
+          <div class="input-icon">
+            <i class="fas fa-search" aria-hidden="true"></i>
+            <input id="q" type="text" placeholder="Nama/NIK/KK/Alamat" />
+          </div>
+        </div>
+
+        <div class="col">
+          <label for="f-rt">RT</label>
+          <input id="f-rt" type="text" placeholder="01" />
+        </div>
+
+        <div class="col">
+          <label for="f-rw">RW</label>
+          <input id="f-rw" type="text" placeholder="01" />
+        </div>
+
+        <div class="col">
+          <label for="f-status">Status</label>
+          <select id="f-status">
+            <option value="">Semua</option>
+            <option value="aktif">Aktif</option>
+            <option value="pindah">Pindah</option>
+            <option value="nonaktif">Nonaktif</option>
+          </select>
+        </div>
+
+        <div class="col">
+          <label for="f-verified">Verifikasi</label>
+          <select id="f-verified">
+            <option value="">Semua</option>
+            <option value="true">Terverifikasi</option>
+            <option value="false">Belum</option>
+          </select>
+        </div>
+
+        <div class="col end no-label">
+          <label class="sr-only" aria-hidden="true">Aksi</label>
+          <div class="btns-end">
+            <button id="btn-reset" class="btn ghost">
+              <i class="fas fa-undo"></i>
+              <span>Reset</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-grid" data-animate>
+      <div class="kpi card">
+        <div class="kpi-title">Total Warga Aktif</div>
+        <div id="kpi-aktif" class="kpi-value">0</div>
+      </div>
+      <div class="kpi card">
+        <div class="kpi-title">Total KK</div>
+        <div id="kpi-kk" class="kpi-value">0</div>
+      </div>
+      <div class="kpi card">
+        <div class="kpi-title">Terverifikasi</div>
+        <div id="kpi-verified" class="kpi-value">0</div>
+      </div>
+      <div class="kpi card">
+        <div class="kpi-title">Belum Verifikasi</div>
+        <div id="kpi-unverified" class="kpi-value">0</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card chart-card" data-animate>
+        <div class="card-header"><h3>Distribusi RT/RW</h3></div>
+        <div class="card-body chart-body"><canvas id="chart-rt"></canvas></div>
+      </div>
+      <div class="card chart-card" data-animate>
+        <div class="card-header"><h3>Status & Verifikasi</h3></div>
+        <div class="card-body chart-body"><canvas id="chart-status"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card table-card" data-animate>
+      <div class="card-header">
+        <h3>Daftar Warga</h3>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table" id="tbl-warga" aria-describedby="tabel-warga">
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>NIK</th>
+                <th>No. KK</th>
+                <th>Alamat</th>
+                <th>RT/RW</th>
+                <th>Status</th>
+                <th>Verifikasi</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Tambah/Edit -->
+    <dialog id="dlg-warga" class="modal">
+      <form id="form-warga" method="dialog" class="modal-content" novalidate>
+        <header class="modal-header">
+          <h3 id="dlg-title">Tambah Warga</h3>
+          <button type="reset" class="icon-btn" aria-label="Tutup">
+            <i class="fas fa-times"></i>
+          </button>
+        </header>
+
+        <div class="grid form-grid">
+          <h4 class="form-section span-12">Data Pribadi</h4>
+          <label>Nama<input name="nama" required /></label>
+          <label>NIK<input name="nik" required pattern="\\d{8,20}" /></label>
+          <label class="span-12">No. KK<input name="kk" required pattern="\\d{8,20}" /></label>
+          <label class="span-12">Alamat<input name="alamat" required /></label>
+
+          <h4 class="form-section span-12">Domisili</h4>
+          <label>RT<input name="rt" required /></label>
+          <label>RW<input name="rw" required /></label>
+          <label class="span-12">No. Rumah<input name="no_rumah" /></label>
+
+          <h4 class="form-section span-12">Kontak & Status</h4>
+          <label>Telepon<input name="telepon" /></label>
+          <label>Status
+            <select name="status">
+              <option value="aktif">Aktif</option>
+              <option value="pindah">Pindah</option>
+              <option value="nonaktif">Nonaktif</option>
+            </select>
+          </label>
+          <label class="span-12">Email<input type="email" name="email" /></label>
+        </div>
+
+        <footer class="modal-actions">
+          <button type="reset" class="btn ghost">Batal</button>
+          <button type="submit" class="btn primary">Simpan</button>
+        </footer>
+      </form>
+
+      <div class="backdrop" aria-hidden="true"></div>
+    </dialog>
+  </div>
+
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --surface: #ffffff;
+      --surface-2: #fbfcfe;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e6e8ee;
+      --primary: #2563eb;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+
+      --radius-6: 6px;
+      --radius-8: 8px;
+      --radius-10: 10px;
+      --radius-12: 12px;
+
+      --shadow-1: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 1px rgba(15, 23, 42, 0.04);
+      --shadow-2: 0 6px 16px rgba(15, 23, 42, 0.06), 0 2px 6px rgba(15, 23, 42, 0.04);
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+
+      --focus: 0 0 0 3px rgba(37, 99, 235, 0.18);
+    }
+
+    .px { padding: var(--space-4); }
+    .page { max-width: 1200px; margin: 0 auto; color: var(--text); }
+    .page-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);
+    }
+    .title { margin: 0; font-size: clamp(18px, 2.2vw, 22px); font-weight: 700; letter-spacing: .2px; }
+    .muted { color: var(--muted); }
+
+    .actions .btn { margin-left: var(--space-2); }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-12);
+      box-shadow: var(--shadow-1);
+    }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--border);
+    }
+    .card-header h3 { margin: 0; font-size: 16px; font-weight: 700; }
+    .card-body { padding: var(--space-4); }
+
+    /* Filters */
+    .filters { margin-bottom: var(--space-3); }
+    .row.g {
+      display: grid;
+      gap: var(--space-3);
+      grid-template-columns: 2fr repeat(4, minmax(120px, 1fr)) auto;
+      align-items: end;
+    }
+    .row.g .span-2 { grid-column: span 2; }
+    .row.g .span-3 { grid-column: span 3; }
+    @media (max-width: 960px) {
+      .row.g { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+      .row.g .span-3 { grid-column: span 1; }
+    }
+    @media (max-width: 640px) {
+      .row.g .span-2 { grid-column: span 1; }
+    }
+
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    input, select {
+      width: 100%; height: 38px; padding: 8px 10px;
+      border: 1px solid var(--border); border-radius: var(--radius-8);
+      background: var(--surface-2);
+      color: var(--text);
+      outline: none;
+      transition: none; /* no hover animation */
+    }
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: var(--focus);
+      background: #fff;
+    }
+    .input-icon { position: relative; }
+    .input-icon i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; }
+    .input-icon input { padding-left: 34px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: var(--radius-10); background: #fff; color: var(--text);
+      cursor: pointer; font-weight: 600; transition: none; /* no hover animation */
+    }
+    .btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .btn.ghost { background: #f8fafc; }
+    .btn.small { padding: 8px 10px; font-size: 12px; border-radius: var(--radius-8); }
+
+    .btn:focus-visible { box-shadow: var(--focus); }
+
+    .icon-btn {
+      border: none; background: transparent; color: var(--muted); cursor: pointer; padding: 6px;
+      border-radius: var(--radius-8);
+    }
+    .icon-btn:focus-visible { box-shadow: var(--focus); }
+
+    /* KPI */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3); margin: var(--space-3) 0;
+    }
+    @media (max-width: 960px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 520px) { .kpi-grid { grid-template-columns: 1fr; } }
+    .kpi { padding: var(--space-4); }
+    .kpi-title { color: var(--muted); font-size: 12px; }
+    .kpi-value { font-size: 24px; font-weight: 800; margin-top: 6px; }
+
+    /* Charts */
+    .grid-2 { display: grid; gap: var(--space-3); grid-template-columns: 1fr 1fr; }
+    @media (max-width: 960px) { .grid-2 { grid-template-columns: 1fr; } }
+    .chart-body { position: relative; min-height: 260px; }
+
+    /* Table */
+    .table-card { margin-top: var(--space-3); }
+    .table-responsive { width: 100%; overflow: auto; -webkit-overflow-scrolling: touch; }
+    .table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .table th, .table td {
+      padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap;
+    }
+    .table thead th {
+      position: sticky; top: 0; background: var(--surface); z-index: 1; box-shadow: inset 0 -1px var(--border);
+      font-size: 12px; color: var(--muted); font-weight: 700; letter-spacing: .2px;
+    }
+    .table tbody tr:nth-child(odd) { background: #fafbfd; }
+    .table tbody tr { animation: row-in .22s ease-out both; }
+
+    /* Badges */
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600;
+    }
+    .badge.ok { background: #e8faf1; color: #10713b; }
+    .badge.warn { background: #fff3e1; color: #925a0a; }
+    .badge.aktif { background: #e9f7ee; color: #176f39; }
+    .badge.pindah { background: #fff7e6; color: #8a5b0a; }
+    .badge.nonaktif { background: #eef2f7; color: #475569; }
+
+    /* Modal */
+    .modal {
+      width: min(720px, 96vw); padding: 0; border: none; border-radius: var(--radius-12);
+      box-shadow: var(--shadow-2); background: transparent; max-height: 90vh;
+    }
+    .modal[open] .modal-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-12);
+      animation: pop .18s ease-out;
+      display: flex; flex-direction: column; max-height: 90vh; overflow: hidden;
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: var(--surface); z-index: 2;
+    }
+    .modal-content { padding: 0; }
+    .form-grid {
+      padding: var(--space-4);
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: var(--space-4);
+      column-gap: var(--space-6); /* jarak horizontal lebih besar */
+      row-gap: var(--space-5); /* jarak vertikal lebih besar */
+      overflow: auto; flex: 1;
+    }
+    .form-grid label {
+      grid-column: span 6;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .form-grid label.span-12 { grid-column: span 12; }
+    .form-grid .form-section {
+      grid-column: span 12;
+      margin: var(--space-3) 0 var(--space-3);
+      font-size: 13px; font-weight: 800; letter-spacing: .2px; color: #0f172a;
+      padding-top: var(--space-2);
+      border-top: 1px dashed var(--border);
+    }
+    .form-grid .form-section:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+    @media (max-width: 640px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid label, .form-grid label.span-12 { grid-column: span 1; }
+    }
+    .modal-actions {
+      display: flex; justify-content: flex-end; gap: var(--space-2);
+      padding: var(--space-3) var(--space-4); border-top: 1px solid var(--border);
+      background: #fafbff; position: sticky; bottom: 0; z-index: 2;
+    }
+    .modal .form-grid input, .modal .form-grid select {
+      height: 42px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-8);
+    }
+    .modal .form-grid select { appearance: none; }
+    /* Validation cues - only after failed submit or on focus */
+    .modal-content.was-validated .form-grid input:invalid,
+    .modal-content.was-validated .form-grid select:invalid { border-color: #f1b7b7; }
+    .form-grid input:focus:invalid, .form-grid select:focus:invalid { box-shadow: 0 0 0 3px rgba(239,68,68,.18); }
+    .modal::backdrop {
+      background: rgba(15, 23, 42, 0.3);
+      backdrop-filter: blur(2px);
+      animation: fade .18s ease-out;
+    }
+
+    .btns-end { display: flex; gap: var(--space-2); }
+    .col.end { display: flex; align-items: end; }
+    .col.no-label label { height: 0; margin: 0; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    /* Animations (no hover, motion-safe only) */
+    @keyframes enter { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes row-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pop { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    [data-animate] { animation: enter .24s ease-out both; }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+
+    /* ---------- Extra Responsiveness ---------- */
+    @media (max-width: 840px) {
+      .page-header { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+      .actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+      .actions .btn { width: 100%; justify-content: center; }
+    }
+    @media (max-width: 640px) {
+      .row.g { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+      .btn, input, select { height: 44px; }
+    }
+    @media (max-width: 480px) {
+      .row.g { grid-template-columns: 1fr; }
+      .row.g .span-3, .row.g .span-2 { grid-column: span 1; }
+      .btns-end { width: 100%; }
+      #btn-reset { width: 100%; justify-content: center; }
+      .table th, .table td { padding: 8px 10px; font-size: 13px; }
+    }
+    @media (max-width: 420px) {
+      .table th, .table td { white-space: normal; }
+    }
+
+    /* Full-screen modal on small screens */
+    @media (max-width: 520px) {
+      .modal { width: 100vw; max-height: 100dvh; border-radius: 0; }
+      .modal[open] .modal-content { max-height: 100dvh; border-radius: 0; }
+    }
+  </style>
+
+  <script>
+    // @ts-nocheck
+    // -----------------------------
+    // Data & State (tetap sama)
+    // -----------------------------
+    const STORAGE_KEY = 'warga_data_v1';
+    const FILTER_KEY = 'warga_filters_v1';
+
+    const state = {
+      warga: [],
+      filters: { q:'', rt:'', rw:'', status:'', verified:'' },
+      editingId: null,
+      charts: { rt:null, status:null },
+    };
+
+    function seedIfEmpty(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) return;
+      const sample = [];
+      const rts = ['01','02','03'];
+      const rws = ['01','02'];
+      const statuses = ['aktif','pindah','nonaktif'];
+      const names = ['Budi','Siti','Andi','Dewi','Rudi','Ayu','Fajar','Nina','Doni','Maya'];
+      let id=1;
+      for(let i=0;i<40;i++){
+        const rt = rts[Math.floor(Math.random()*rts.length)];
+        const rw = rws[Math.floor(Math.random()*rws.length)];
+        const status = Math.random()<0.75 ? 'aktif' : statuses[Math.floor(Math.random()*statuses.length)];
+        const verified = Math.random()<0.6;
+        const nama = names[Math.floor(Math.random()*names.length)] + ' ' + (['Santoso','Wibowo','Rahma','Putra','Sari'][Math.floor(Math.random()*5)]);
+        sample.push({
+          id: String(id++),
+          nama,
+          nik: String(3201000000000000 + Math.floor(Math.random()*1e6)),
+          kk: String(3201000000000000 + Math.floor(Math.random()*1e6)),
+          alamat: `Blok ${String.fromCharCode(65+Math.floor(Math.random()*6))} No. ${10+Math.floor(Math.random()*80)}`,
+          rt, rw,
+          no_rumah: String(10+Math.floor(Math.random()*90)),
+          telepon: '08' + Math.floor(1000000000 + Math.random()*899999999),
+          email: '',
+          status, verified,
+          tanggal_masuk: new Date(Date.now()-Math.floor(Math.random()*800)*86400000).toISOString().slice(0,10),
+          tanggal_keluar: '',
+          anggota_keluarga: [],
+          documents: [],
+          history: [{time:Date.now(), action:'seed', by:'system'}],
+        });
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sample));
+    }
+
+    function load(){ seedIfEmpty(); state.warga = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.warga)); }
+    function restoreFilters(){ try{ Object.assign(state.filters, JSON.parse(localStorage.getItem(FILTER_KEY)||'{}')||{}); }catch(e){} }
+    function persistFilters(){ localStorage.setItem(FILTER_KEY, JSON.stringify(state.filters)); }
+
+    function filtered(){
+      const f = state.filters;
+      const q = f.q.trim().toLowerCase();
+      let rows = state.warga.slice();
+      if(q){ rows = rows.filter(r => [r.nama,r.nik,r.kk,r.alamat].some(x=>String(x).toLowerCase().includes(q))); }
+      if(f.rt) rows = rows.filter(r => r.rt === f.rt);
+      if(f.rw) rows = rows.filter(r => r.rw === f.rw);
+      if(f.status) rows = rows.filter(r => r.status === f.status);
+      if(f.verified!=='' ) rows = rows.filter(r => String(r.verified) === f.verified);
+      return rows;
+    }
+    function formatRTRW(rt,rw){ return `${rt||'-'}/${rw||'-'}`; }
+
+    function renderTable(){
+      const tbody = document.querySelector('#tbl-warga tbody');
+      tbody.innerHTML = '';
+      const rows = filtered();
+
+      if(rows.length===0){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan=8; td.className='muted'; td.textContent='Tidak ada data';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      }
+
+      rows.forEach(r=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.nama}</td>
+          <td>${r.nik}</td>
+          <td>${r.kk}</td>
+          <td>${r.alamat}</td>
+          <td>${formatRTRW(r.rt,r.rw)}</td>
+          <td><span class="badge ${r.status}">${capitalize(r.status)}</span></td>
+          <td>${r.verified?'<span class="badge ok"><i class="fas fa-check"></i> Terverifikasi</span>':'<span class="badge warn"><i class="fas fa-exclamation"></i> Belum</span>'}</td>
+          <td>
+            <a class="btn small" href="/admin/kelola-warga?id=${encodeURIComponent(r.id)}"><i class="fas fa-edit"></i> Kelola</a>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+
+      // KPIs
+      const aktif = state.warga.filter(x=>x.status==='aktif').length;
+      const kk = new Set(state.warga.map(x=>x.kk)).size;
+      const ver = state.warga.filter(x=>x.verified).length;
+      document.getElementById('kpi-aktif').textContent = aktif;
+      document.getElementById('kpi-kk').textContent = kk;
+      document.getElementById('kpi-verified').textContent = ver;
+      document.getElementById('kpi-unverified').textContent = state.warga.length - ver;
+    }
+
+    function ensureChartJs(then){
+      function calibrate(){
+        if(!window.Chart) return;
+        // Set default typography/colors for a cleaner look
+        Chart.defaults.font.family = 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif';
+        Chart.defaults.color = '#64748b';
+        Chart.defaults.plugins.legend.labels.usePointStyle = true;
+        Chart.defaults.plugins.legend.labels.boxWidth = 10;
+      }
+      if(window.Chart){ calibrate(); then(); return; }
+      const s = document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/npm/chart.js';
+      s.onload=()=>{ calibrate(); then(); };
+      document.head.appendChild(s);
+    }
+
+    function renderCharts(){
+      const rows = filtered();
+
+      // RT/RW
+      const byRTRW = {};
+      rows.forEach(r=>{
+        const k = `${r.rt}/${r.rw}`;
+        byRTRW[k]=(byRTRW[k]||0)+1;
+      });
+      const labels1 = Object.keys(byRTRW);
+      const data1 = Object.values(byRTRW);
+
+      // Status & Verifikasi
+      const byStatus = { aktif:0, pindah:0, nonaktif:0 };
+      const byVer = { ver:0, nver:0 };
+      rows.forEach(r=>{
+        byStatus[r.status]=(byStatus[r.status]||0)+1;
+        r.verified?byVer.ver++:byVer.nver++;
+      });
+
+      // RT/RW chart
+      const ctx1 = document.getElementById('chart-rt').getContext('2d');
+      state.charts.rt && state.charts.rt.destroy();
+      state.charts.rt = new Chart(ctx1, {
+        type:'bar',
+        data:{
+          labels:labels1,
+          datasets:[{
+            label:'Jumlah',
+            data:data1,
+            backgroundColor:'#60a5fa',
+            borderRadius: 8,
+            maxBarThickness: 32
+          }]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          scales: {
+            x: {
+              grid: { display:false },
+              ticks: { color:'#475569' }
+            },
+            y: {
+              grid: { color:'#eef2f7' },
+              ticks: { stepSize: 1, precision:0, color:'#475569' }
+            }
+          },
+          plugins:{ legend:{ display:false } },
+          layout: { padding: 8 }
+        }
+      });
+
+      // Status & verification chart
+      const ctx2 = document.getElementById('chart-status').getContext('2d');
+      state.charts.status && state.charts.status.destroy();
+      state.charts.status = new Chart(ctx2, {
+        type:'doughnut',
+        data:{
+          labels:['Aktif','Pindah','Nonaktif','Verifikasi','Belum'],
+          datasets:[{
+            data:[byStatus.aktif,byStatus.pindah,byStatus.nonaktif,byVer.ver,byVer.nver],
+            backgroundColor:['#22c55e','#f59e0b','#94a3b8','#10b981','#ef4444'],
+            borderWidth: 0
+          }]
+        },
+        options:{
+          cutout:'56%',
+          plugins:{
+            legend:{ position:'bottom' }
+          },
+          layout: { padding: 8 }
+        }
+      });
+    }
+
+    function exportCSV(){
+      const rows = filtered();
+      const headers = ['id','nama','nik','kk','alamat','rt','rw','no_rumah','telepon','email','status','verified','tanggal_masuk','tanggal_keluar'];
+      const lines = [headers.join(',')].concat(rows.map(r=>headers.map(h=>`"${String(r[h]??'').replace(/"/g,'""')}"`).join(',')));
+      const blob = new Blob(["\uFEFF"+lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'data-warga.csv';
+      a.click();
+    }
+
+    function openDialog(mode, row){
+      const dlg = document.getElementById('dlg-warga');
+      const form = document.getElementById('form-warga');
+      document.getElementById('dlg-title').textContent = mode==='edit'?'Edit Warga':'Tambah Warga';
+      form.reset();
+      form.classList.remove('was-validated');
+      state.editingId = null;
+      if(row){
+        state.editingId = row.id;
+        ['nama','nik','kk','alamat','rt','rw','no_rumah','telepon','email','status'].forEach(k=>{
+          form.elements[k].value = row[k]||'';
+        });
+      }
+      dlg.showModal();
+    }
+
+    function submitForm(e){
+      e.preventDefault();
+      const form = e.target;
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.verified = false;
+
+      // Validasi sederhana
+      if(!form.checkValidity()){
+        form.classList.add('was-validated');
+        [...form.elements].forEach(el=>{
+          if(el.willValidate && !el.checkValidity()){
+            el.focus();
+          }
+        });
+        return;
+      }
+
+      if(state.editingId){
+        const idx = state.warga.findIndex(x=>x.id===state.editingId);
+        state.warga[idx] = { ...state.warga[idx], ...data };
+        state.warga[idx].history = (state.warga[idx].history||[]).concat({time:Date.now(), action:'update', by:'admin'});
+      }else{
+        const id = String(Math.max(0,...state.warga.map(x=>+x.id))+1);
+        state.warga.push({
+          id, ...data,
+          tanggal_masuk:new Date().toISOString().slice(0,10),
+          tanggal_keluar:'', anggota_keluarga:[], documents:[],
+          verified:false,
+          history:[{time:Date.now(), action:'create', by:'admin'}]
+        });
+      }
+      save();
+      renderTable();
+      renderCharts();
+      document.getElementById('dlg-warga').close();
+    }
+
+    function bind(){
+      document.getElementById('btn-add').addEventListener('click', ()=> openDialog('add'));
+      document.getElementById('form-warga').addEventListener('submit', submitForm);
+      document.getElementById('form-warga').addEventListener('reset', (e)=> { const dlg=document.getElementById('dlg-warga'); document.getElementById('form-warga').classList.remove('was-validated'); dlg.close(); });
+      document.querySelector('#dlg-warga .icon-btn')?.addEventListener('click', ()=> { const form=document.getElementById('form-warga'); form.classList.remove('was-validated'); document.getElementById('dlg-warga').close(); });
+
+      document.getElementById('btn-export').addEventListener('click', exportCSV);
+
+      const fs = ['q','f-rt','f-rw','f-status','f-verified'];
+      fs.forEach(id=>{
+        document.getElementById(id).addEventListener('input', ()=>{
+          state.filters.q = document.getElementById('q').value;
+          state.filters.rt = document.getElementById('f-rt').value;
+          state.filters.rw = document.getElementById('f-rw').value;
+          state.filters.status = document.getElementById('f-status').value;
+          state.filters.verified = document.getElementById('f-verified').value;
+          persistFilters();
+          renderTable();
+          renderCharts();
+        });
+      });
+
+      document.getElementById('btn-reset').addEventListener('click', ()=>{
+        state.filters = { q:'', rt:'', rw:'', status:'', verified:'' };
+        persistFilters();
+        ['q','f-rt','f-rw','f-status','f-verified'].forEach(id=> document.getElementById(id).value='');
+        renderTable();
+        renderCharts();
+      });
+    }
+
+    function hydrateFiltersUI(){
+      document.getElementById('q').value = state.filters.q||'';
+      document.getElementById('f-rt').value = state.filters.rt||'';
+      document.getElementById('f-rw').value = state.filters.rw||'';
+      document.getElementById('f-status').value = state.filters.status||'';
+      document.getElementById('f-verified').value = state.filters.verified||'';
+    }
+
+    function capitalize(s){ return (s||'').charAt(0).toUpperCase()+s.slice(1); }
+
+    function init(){
+      load();
+      restoreFilters();
+      hydrateFiltersUI();
+      renderTable();
+      ensureChartJs(renderCharts);
+      bind();
+    }
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</Layout>

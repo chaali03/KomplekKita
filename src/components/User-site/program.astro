@@ -1,3 +1,17 @@
+<!-- Optional Banner: rendered from localStorage 'programBanner' if enabled -->
+<section id="program-banner" class="program-banner" aria-live="polite" hidden>
+  <div class="banner-inner">
+    <div class="banner-text">
+      <h1 class="banner-title"></h1>
+      <p class="banner-subtitle"></p>
+    </div>
+    <img class="banner-image" alt="Banner Program" />
+  </div>
+  <div class="horizontal-line" aria-hidden="true"></div>
+  <div class="banner-gap" aria-hidden="true"></div>
+  <!-- Simple spacer so banner breathes above content -->
+</section>
+
 <!-- New section for "Program Penggalangan Dana" -->
 <section class="main-section">
   <h2>Program Penggalangan Dana</h2>
@@ -131,6 +145,51 @@
 </section>
 
 <style>
+  .program-banner {
+    width: 90%;
+    max-width: 1000px;
+    margin: 24px auto 12px;
+  }
+  .banner-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    background:#ffffff;
+    border: 1px solid #e5ebf3;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 8px 25px rgba(0, 50, 100, 0.08);
+  }
+  .banner-text{ flex:1; min-width: 0; }
+  .banner-title{
+    margin:0 0 6px 0;
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    color:#084c61;
+    font-weight:800;
+  }
+  .banner-subtitle{
+    margin:0;
+    color:#4b5a6a;
+    font-size: .98rem;
+  }
+  .banner-image{
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #e5ebf3;
+    display:none;
+  }
+  .program-banner .horizontal-line{
+    width: 74px;
+    height: 4px;
+    background: #085895;
+    border-radius: 999px;
+    margin: 10px 0 0 0;
+  }
+  .banner-gap{ height: 8px; }
+
   section {
     font-family: sans-serif;
   }
@@ -332,3 +391,29 @@
     }
   }
 </style>
+
+<script>
+  // @ts-nocheck
+  document.addEventListener('DOMContentLoaded', () => {
+    try{
+      const raw = localStorage.getItem('programBanner');
+      if (!raw) return;
+      const cfg = JSON.parse(raw);
+      if (!cfg || !cfg.enabled) return;
+
+      const sec = document.getElementById('program-banner');
+      if (!sec) return;
+      const titleEl = sec.querySelector('.banner-title');
+      const subtitleEl = sec.querySelector('.banner-subtitle');
+      const imgEl = sec.querySelector('.banner-image');
+
+      if (titleEl) titleEl.textContent = cfg.title || 'Program Komplek';
+      if (subtitleEl) subtitleEl.textContent = cfg.subtitle || '';
+      if (imgEl && cfg.imageUrl){
+        imgEl.src = cfg.imageUrl;
+        imgEl.style.display = 'block';
+      }
+      sec.hidden = false;
+    }catch(e){ /* silent */ }
+  });
+  </script>

@@ -1,111 +1,65 @@
 ---
-// Admin Topbar Component
-// Modern UI/UX Design
+/*
+  Admin Topbar Component v2
+  Modern UI/UX Design – responsive + accessibility + dark mode
+*/
+const { complexName, complexImage } = Astro.props;
+const displayName = complexName ?? 'Admin';
+const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=4f46e5&color=fff`;
 ---
 
-<div class="admin-topbar pre-animation">
+<div class="admin-topbar" role="region" aria-label="Bar atas admin">
   <div class="topbar-left">
-    <button class="menu-toggle" aria-label="Toggle Sidebar">
-      <i class="fas fa-bars"></i>
+    <button class="menu-toggle" aria-label="Buka menu" aria-expanded="false" aria-controls="mobile-menu">
+      <i class="fas fa-bars" aria-hidden="true"></i>
     </button>
+
     <div class="page-title">
-      <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
-      <div class="breadcrumbs">
+      <h2 title="Dashboard">
+        <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+        <span class="title-text">Dashboard</span>
+      </h2>
+
+      <div class="breadcrumbs" aria-label="Breadcrumb">
         <a href="/admin">Admin</a>
-        <span class="separator">/</span>
-        <span>Dashboard</span>
+        <span class="separator" aria-hidden="true">/</span>
+        <span aria-current="page">Dashboard</span>
       </div>
     </div>
   </div>
   
   <div class="topbar-right">
     <div class="topbar-actions">
-      <div class="action-dropdown">
-        <button class="action-button" data-tooltip="Notifikasi" id="notification-toggle">
-          <i class="fas fa-bell"></i>
-          <span class="badge pulse">3</span>
-        </button>
-        <div class="dropdown-panel notification-panel" id="notification-panel">
-          <div class="panel-header">
-            <h3>Notifikasi</h3>
-            <button class="panel-action" data-tooltip="Tandai semua dibaca">
-              <i class="fas fa-check-double"></i>
-            </button>
-          </div>
-          <div class="panel-body">
-            <div class="notification-item unread">
-              <div class="notification-icon primary">
-                <i class="fas fa-money-bill-wave"></i>
-              </div>
-              <div class="notification-content">
-                <h4>Pembayaran Diterima</h4>
-                <p>Pembayaran iuran bulan ini telah diterima</p>
-                <span class="notification-time">Baru saja</span>
-              </div>
-              <button class="btn-icon" data-tooltip="Tandai dibaca">
-                <i class="fas fa-circle"></i>
-              </button>
-            </div>
-            <div class="notification-item unread">
-              <div class="notification-icon warning">
-                <i class="fas fa-exclamation-triangle"></i>
-              </div>
-              <div class="notification-content">
-                <h4>Pengingat Pembayaran</h4>
-                <p>Tenggat pembayaran iuran 3 hari lagi</p>
-                <span class="notification-time">2 jam yang lalu</span>
-              </div>
-              <button class="btn-icon" data-tooltip="Tandai dibaca">
-                <i class="fas fa-circle"></i>
-              </button>
-            </div>
-            <div class="notification-item">
-              <div class="notification-icon success">
-                <i class="fas fa-check-circle"></i>
-              </div>
-              <div class="notification-content">
-                <h4>Laporan Bulanan</h4>
-                <p>Laporan keuangan bulan lalu telah selesai</p>
-                <span class="notification-time">Kemarin</span>
-              </div>
-            </div>
-          </div>
-          <div class="panel-footer">
-            <a href="/admin/notifikasi" class="view-all">
-              Lihat semua notifikasi <i class="fas fa-arrow-right"></i>
-            </a>
-          </div>
-        </div>
-      </div>
+      <span class="demo-chip" aria-label="Demo account">
+        <i class="fas fa-vial" aria-hidden="true"></i>
+        Demo
+      </span>
+      <span class="plan-chip plus only-plus" aria-label="Paket Plus aktif">
+        <i class="fas fa-star" aria-hidden="true"></i>
+        Plus
+      </span>
+
       
-      <div class="theme-toggle" data-tooltip="Ganti Tema">
-        <button class="action-button" id="theme-toggle-btn">
-          <i class="fas fa-moon"></i>
-        </button>
-      </div>
       
       <div class="user-dropdown">
-        <button class="user-button" id="user-dropdown-toggle">
-          <img src="https://ui-avatars.com/api/?name=Admin&background=4f46e5&color=fff" alt="User Avatar" />
+        <button class="user-button" id="user-dropdown-toggle" aria-expanded="false" aria-controls="user-dropdown-menu" aria-haspopup="true">
+          <img src={avatarUrl} alt="User Avatar" />
           <div class="user-info">
-            <span class="user-name">Admin</span>
+            <span class="user-name">{displayName}</span>
             <span class="user-role">Administrator</span>
           </div>
-          <i class="fas fa-chevron-down"></i>
+          <i class="fas fa-chevron-down" aria-hidden="true"></i>
         </button>
-        <div class="dropdown-menu" id="user-dropdown-menu">
-          <a href="/admin/profil" class="dropdown-item">
-            <i class="fas fa-user"></i> Profil
+        <div class="dropdown-menu" id="user-dropdown-menu" role="menu" aria-label="Menu pengguna">
+          <a href="/admin/profil" class="dropdown-item" role="menuitem">
+            <i class="fas fa-user" aria-hidden="true"></i> Profil
           </a>
-          <a href="/admin/pengaturan" class="dropdown-item">
-            <i class="fas fa-cog"></i> Pengaturan
+          <a href="/admin/pengaturan" class="dropdown-item" role="menuitem">
+            <i class="fas fa-cog" aria-hidden="true"></i> Pengaturan
           </a>
-          <a href="/admin/upgrade" class="dropdown-item highlight">
-            <i class="fas fa-crown"></i> Upgrade ke Premium
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="/logout" class="dropdown-item">
-            <i class="fas fa-sign-out-alt"></i> Keluar
+          <div class="dropdown-divider" role="separator"></div>
+          <a href="/logout" class="dropdown-item" role="menuitem">
+            <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Keluar
           </a>
         </div>
       </div>
@@ -113,69 +67,597 @@
   </div>
 </div>
 
+<!-- Demo account banner notice -->
+<div class="demo-banner" role="status" aria-live="polite" data-banner>
+  <div class="db-left">
+    <span class="db-icon" aria-hidden="true"><i class="fas fa-info-circle"></i></span>
+    <div class="db-content">
+      <div class="db-title">Ini adalah <strong>akun demo</strong></div>
+      <div class="db-desc">Data dan fitur hanya simulasi untuk tujuan presentasi. <a href="/admin/upgrade" class="demo-banner-link">Lihat paket nyata</a></div>
+    </div>
+  </div>
+  
+  <span class="sr-only">Pemberitahuan demo</span>
+  <span class="db-accent" aria-hidden="true"></span>
+  <span class="db-accent-2" aria-hidden="true"></span>
+</div>
+
+<!-- Mobile Hamburger Menu (cloned from sidebar) -->
+<div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+  <div class="mobile-menu-backdrop" data-close></div>
+  <aside class="mobile-menu-panel" role="dialog" aria-modal="true" aria-label="Menu navigasi mobile">
+    <div class="mobile-menu-header">
+      <a href="/admin" class="brand" aria-label="Beranda Admin">
+        <span class="brand-icon"><i class="fas fa-building" aria-hidden="true"></i></span>
+        <span class="brand-text">KomplekKita</span>
+        <span class="brand-glow" aria-hidden="true"></span>
+      </a>
+      <button class="close-btn" aria-label="Tutup menu" data-close>
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="mobile-profile">
+      <img class="avatar" src={avatarUrl} alt="Avatar" />
+      <div class="info">
+        <div class="name">{displayName}</div>
+        <div class="role">Administrator</div>
+      </div>
+    </div>
+    <div class="mobile-quick-actions" role="group" aria-label="Tindakan cepat">
+      <a href="/admin/profil" class="qa-btn" role="button">
+        <i class="fas fa-user" aria-hidden="true"></i>
+        <span>Profil</span>
+      </a>
+      <a href="/admin/pengaturan" class="qa-btn" role="button">
+        <i class="fas fa-cog" aria-hidden="true"></i>
+        <span>Pengaturan</span>
+      </a>
+      <a href="/logout" class="qa-btn danger" role="button">
+        <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+        <span>Keluar</span>
+      </a>
+    </div>
+    <div class="mobile-divider" role="separator" aria-hidden="true"></div>
+    <nav class="mobile-nav" aria-label="Menu utama">
+      <ul id="mobile-nav-list"></ul>
+    </nav>
+    <div class="mobile-footer">
+      <a href="/support" class="support-link"><i class="fas fa-life-ring" aria-hidden="true"></i> Bantuan</a>
+      <span class="version" aria-label="Versi aplikasi">v1.0</span>
+    </div>
+  </aside>
+  <span class="sr-only">Menu navigasi mobile</span>
+</div>
+
 <script>
-  // Initialize dropdown functionality
   document.addEventListener('DOMContentLoaded', function() {
+    const topbar = document.querySelector('.admin-topbar');
+    topbar?.classList.remove('pre-animation');
+
+    
+
+    // Hamburger / Mobile menu
+    const menuButton = document.querySelector('.admin-topbar .menu-toggle') as HTMLButtonElement | null;
+    const mobileMenu = document.getElementById('mobile-menu') as HTMLElement | null;
+    const mobileList = document.getElementById('mobile-nav-list') as HTMLUListElement | null;
+    let menuBuilt = false;
+    let lastFocused: HTMLElement | null = null;
+
+    function focusableWithin(el: Element | Document): HTMLElement[] {
+      return Array.from(
+        el.querySelectorAll<HTMLElement>('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])')
+      ).filter(node => !node.hasAttribute('disabled'));
+    }
+    function trapFocus(container: HTMLElement, e: KeyboardEvent) {
+      const nodes = focusableWithin(container);
+      if (nodes.length === 0) return;
+      const first: HTMLElement | undefined = nodes[0];
+      const last: HTMLElement | undefined = nodes[nodes.length - 1];
+      const active = document.activeElement as Element | null;
+      if (!first || !last) return;
+      if (e.shiftKey && active === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+    }
+
+    function openMenu() {
+      if (!mobileMenu) return;
+      lastFocused = document.activeElement as HTMLElement | null;
+      mobileMenu.classList.add('open');
+      mobileMenu.setAttribute('aria-hidden', 'false');
+      document.documentElement.classList.add('no-scroll');
+      document.body.classList.add('no-scroll');
+      menuButton?.setAttribute('aria-expanded', 'true');
+      if (!menuBuilt) buildMobileMenu();
+      setTimeout(() => {
+        const first = mobileMenu.querySelector<HTMLElement>('a, button');
+        first?.focus();
+      }, 10);
+    }
+    function closeMenu() {
+      if (!mobileMenu) return;
+      mobileMenu.classList.remove('open');
+      mobileMenu.setAttribute('aria-hidden', 'true');
+      document.documentElement.classList.remove('no-scroll');
+      document.body.classList.remove('no-scroll');
+      menuButton?.setAttribute('aria-expanded', 'false');
+      lastFocused?.focus();
+    }
+    function buildMobileMenu() {
+      if (!mobileList) return;
+      const sections = document.querySelectorAll('.admin-sidebar .nav-section');
+      mobileList.innerHTML = '';
+      sections.forEach((section) => {
+        const titleEl = section.querySelector('.nav-title') as HTMLElement | null;
+        const title = titleEl && titleEl.textContent ? titleEl.textContent.trim() : '';
+        if (title) {
+          const liTitle = document.createElement('li');
+          liTitle.className = 'mobile-section-title';
+          liTitle.textContent = title;
+          mobileList.appendChild(liTitle);
+        }
+        const links = section.querySelectorAll<HTMLAnchorElement>('.sidebar-link');
+        links.forEach((a: HTMLAnchorElement) => {
+          const li = document.createElement('li');
+          li.className = 'mobile-item';
+          const link = document.createElement('a');
+          link.href = a.getAttribute('href') || '#';
+          link.className = 'mobile-link';
+          // icon pill like sidebar
+          const iconWrap = document.createElement('span');
+          iconWrap.className = 'link-icon';
+          const iconEl = a.querySelector('.link-icon i');
+          if (iconEl) {
+            const i = document.createElement('i');
+            iconEl.classList.forEach(cls => i.classList.add(cls));
+            i.setAttribute('aria-hidden', 'true');
+            iconWrap.appendChild(i);
+          }
+          link.appendChild(iconWrap);
+          // text label
+          const spanText = a.querySelector('.link-text') as HTMLElement | null;
+          const label = spanText && spanText.textContent ? spanText.textContent.trim() : '';
+          const textEl = document.createElement('span');
+          textEl.className = 'link-text';
+          textEl.textContent = label;
+          link.appendChild(textEl);
+          li.appendChild(link);
+          mobileList.appendChild(li);
+        });
+      });
+      // Close drawer on link click for better UX
+      const allLinks = mobileList.querySelectorAll('a');
+      allLinks.forEach(a => a.addEventListener('click', () => closeMenu()));
+      // Active route highlight
+      const currentPath = window.location.pathname;
+      allLinks.forEach((a) => {
+        try {
+          const anchor = a as HTMLAnchorElement;
+          const url = new URL(anchor.href, window.location.origin);
+          if (url.pathname === currentPath) a.classList.add('active');
+        } catch {}
+      });
+      menuBuilt = true;
+    }
+
+    if (menuButton && mobileMenu) {
+      menuButton.addEventListener('click', () => {
+        if (mobileMenu.classList.contains('open')) closeMenu(); else openMenu();
+      });
+      mobileMenu.addEventListener('click', (e: MouseEvent) => {
+        const target = e.target as HTMLElement | null;
+        if (target && target.getAttribute('data-close') !== null) closeMenu();
+      });
+      // Close on quick action and footer links as well
+      const qaLinks = mobileMenu.querySelectorAll('a.qa-btn, .mobile-footer a');
+      qaLinks.forEach((a) => a.addEventListener('click', () => closeMenu()));
+      mobileMenu.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Escape') { e.stopPropagation(); closeMenu(); }
+        if (e.key === 'Tab') trapFocus(mobileMenu, e);
+      });
+      document.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Escape' && mobileMenu.classList.contains('open')) closeMenu();
+      });
+    }
+
     // User dropdown
     const userDropdownToggle = document.getElementById('user-dropdown-toggle') as HTMLButtonElement | null;
     const userDropdownMenu = document.getElementById('user-dropdown-menu') as HTMLElement | null;
-    
-    if (userDropdownToggle && userDropdownMenu) {
-      userDropdownToggle.addEventListener('click', function(e) {
-        e.stopPropagation();
-        userDropdownMenu.classList.toggle('show');
-      });
+    function closeUserMenu() {
+      userDropdownMenu?.classList.remove('show');
+      userDropdownToggle?.setAttribute('aria-expanded', 'false');
     }
-    
+    userDropdownToggle?.addEventListener('click', function(e: MouseEvent) {
+      e.stopPropagation();
+      const open = userDropdownMenu?.classList.toggle('show');
+      userDropdownToggle.setAttribute('aria-expanded', String(!!open));
+      // close notif if open
+      closeNotifPanel();
+    });
+
     // Notification panel
     const notificationToggle = document.getElementById('notification-toggle') as HTMLButtonElement | null;
     const notificationPanel = document.getElementById('notification-panel') as HTMLElement | null;
-    
-    if (notificationToggle && notificationPanel) {
-      notificationToggle.addEventListener('click', function(e) {
-        e.stopPropagation();
-        notificationPanel.classList.toggle('show');
-        userDropdownMenu?.classList.remove('show');
-      });
+    const markAllBtn = document.getElementById('mark-all-read') as HTMLButtonElement | null;
+
+    function closeNotifPanel() {
+      notificationPanel?.classList.remove('show');
+      notificationToggle?.setAttribute('aria-expanded', 'false');
     }
-    
-    // Theme toggle
-    const themeToggleBtn = document.getElementById('theme-toggle-btn') as HTMLButtonElement | null;
-    const htmlElement = document.documentElement;
-    
-    if (themeToggleBtn) {
-      // Check for saved theme preference or respect OS preference
-      const savedTheme = localStorage.getItem('theme');
-      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      
-      if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
-        htmlElement.classList.add('dark-theme');
-        themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+    function updateBadgeCount() {
+      const unread = notificationPanel?.querySelectorAll('.notification-item.unread')?.length || 0;
+      const badgeEl = notificationToggle?.querySelector('.badge') as HTMLElement | null;
+      if (unread > 0) {
+        if (badgeEl) badgeEl.textContent = String(unread);
+      } else {
+        badgeEl?.remove();
       }
-      
-      themeToggleBtn.addEventListener('click', function() {
-        htmlElement.classList.toggle('dark-theme');
-        
-        if (htmlElement.classList.contains('dark-theme')) {
-          localStorage.setItem('theme', 'dark');
-          themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
-        } else {
-          localStorage.setItem('theme', 'light');
-          themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
-        }
-      });
     }
-    
-    // Close all dropdowns when clicking outside
-    document.addEventListener('click', function(e) {
-      const target = e.target as Element | null;
-      if (!target?.closest('.user-dropdown')) {
-        userDropdownMenu?.classList.remove('show');
-      }
-      
-      if (!target?.closest('.action-dropdown')) {
-        notificationPanel?.classList.remove('show');
+
+    notificationToggle?.addEventListener('click', function(e: MouseEvent) {
+      e.stopPropagation();
+      const open = notificationPanel?.classList.toggle('show');
+      notificationToggle.setAttribute('aria-expanded', String(!!open));
+      closeUserMenu();
+      if (open) {
+        setTimeout(() => {
+          const first = notificationPanel?.querySelector<HTMLElement>('button, a, [tabindex]:not([tabindex="-1"])');
+          first?.focus();
+        }, 10);
+        updateBadgeCount();
       }
     });
+    markAllBtn?.addEventListener('click', () => {
+      notificationPanel?.querySelectorAll('.notification-item.unread')?.forEach(item => (item as HTMLElement).classList.remove('unread'));
+      updateBadgeCount();
+    });
+
+    // Individual mark-as-read inside panel
+    notificationPanel?.addEventListener('click', (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const btn = target.closest('.notification-item .btn-icon');
+      if (!btn) return;
+      const item = (btn as HTMLElement).closest('.notification-item');
+      if (!item) return;
+      (item as HTMLElement).classList.remove('unread');
+      updateBadgeCount();
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e: MouseEvent) {
+      const target = e.target as HTMLElement | null;
+      if (!target || !target.closest) return;
+      if (!target.closest('.user-dropdown')) closeUserMenu();
+      if (!target.closest('.action-dropdown')) closeNotifPanel();
+    });
+    // Close on Escape when focus inside panel/menu
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeUserMenu();
+        closeNotifPanel();
+      }
+    });
+
+    // Topbar shadow on scroll
+    const onScroll = () => {
+      if (window.scrollY > 2) topbar?.classList.add('scrolled');
+      else topbar?.classList.remove('scrolled');
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
   });
 </script>
+
+<style>
+  /* Tokens */
+  .admin-topbar {
+    --tb-bg: rgba(255,255,255,0.78);
+    --tb-border: #e5e7eb;
+    --tb-text: #111827;
+    --tb-muted: #6b7280;
+    --tb-accent: #4f46e5;
+    --tb-hover: #f9fafb;
+    --tb-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 6px 24px rgba(0,0,0,0.08);
+    --radius: 12px;
+    position: sticky; top: 0; z-index: 30;
+    background: linear-gradient(to bottom, var(--tb-bg), rgba(255,255,255,0.92));
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--tb-border);
+    min-height: 56px;
+  }
+  .admin-topbar.pre-animation { opacity: 1; transform: none; }
+  .admin-topbar { transition: opacity .2s ease, transform .2s ease; }
+  .admin-topbar.scrolled { box-shadow: var(--tb-shadow); }
+
+  /* Layout */
+  .admin-topbar { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 10px 12px; color: var(--tb-text); }
+  .topbar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-wrap: nowrap; }
+
+  .menu-toggle {
+    display: none; width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--tb-border);
+    background: #fff; color: var(--tb-text); align-items: center; justify-content: center;
+    transition: background .16s ease, border-color .16s ease, transform .16s ease;
+  }
+  .menu-toggle:hover { background: var(--tb-hover); border-color: #d1d5db; transform: translateY(-1px); }
+
+  .page-title { display: grid; gap: 2px; min-width: 0; }
+  .page-title h2 {
+    margin: 0; font-size: 20px; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; color: var(--tb-text);
+    max-width: min(60vw, 680px); overflow: hidden; text-overflow: ellipsis;
+  }
+  .page-title .title-text { overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumbs {
+    display: inline-flex; align-items: center; gap: 8px; color: var(--tb-muted); font-size: 13px;
+    max-width: min(60vw, 680px); overflow: hidden; white-space: nowrap; position: relative;
+  }
+  .breadcrumbs::after {
+    content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 40px;
+    background: linear-gradient(to right, transparent, var(--tb-bg));
+    pointer-events: none;
+  }
+  .breadcrumbs a { color: inherit; text-decoration: none; font-weight: 700; }
+  .breadcrumbs .separator { opacity: .6; }
+
+  /* (search removed) */
+
+  /* Actions */
+  .topbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
+  .action-button {
+    position: relative; width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--tb-border);
+    background: #fff; color: var(--tb-text); display: inline-flex; align-items: center; justify-content: center;
+    transition: background .16s ease, border-color .16s ease, transform .16s ease;
+  }
+  .action-button:hover { background: var(--tb-hover); border-color: #d1d5db; transform: translateY(-1px); }
+  .badge {
+    position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+    background: #ef4444; color: #fff; font-weight: 800; font-size: 11px; display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(239,68,68,.4);
+  }
+  .badge.pulse { animation: pulseBadge 1.8s ease-in-out infinite; }
+  @keyframes pulseBadge {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+
+  /* Chips */
+  .demo-chip, .plan-chip {
+    display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 999px; font-weight: 800; letter-spacing: .2px;
+    border: 1px solid #fde68a; background: #fef3c7; color: #92400e;
+  }
+  .plan-chip.plus { border-color: #c7d2fe; background: #eef2ff; color: #4338ca; }
+
+  /* User dropdown */
+  .user-button {
+    display: inline-flex; align-items: center; gap: 8px; padding: 4px 6px 4px 4px; border-radius: 12px; border: 1px solid var(--tb-border);
+    background: #fff; color: var(--tb-text); transition: background .16s ease, border-color .16s ease;
+  }
+  .user-button:hover { background: var(--tb-hover); border-color: #d1d5db; }
+  .user-button img { width: 34px; height: 34px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+  .user-info { display: grid; line-height: 1.1; }
+  .user-info .user-name { font-weight: 800; font-size: 13px; }
+  .user-info .user-role { font-size: 11px; color: var(--tb-muted); }
+
+  /* Dropdowns */
+  .action-dropdown, .user-dropdown { position: relative; }
+  .dropdown-panel, .dropdown-menu {
+    position: absolute; top: calc(100% + 8px); right: 0; min-width: 280px; border-radius: 14px;
+    background: #fff; border: 1px solid var(--tb-border); box-shadow: 0 12px 40px rgba(0,0,0,.12);
+    opacity: 0; transform: translateY(-6px) scale(.98); pointer-events: none; transition: opacity .16s ease, transform .16s ease;
+  }
+  .dropdown-menu { min-width: 220px; overflow: hidden; }
+  .dropdown-panel.show, .dropdown-menu.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+  .dropdown-menu .dropdown-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px; text-decoration: none; color: var(--tb-text); font-weight: 600;
+  }
+  .dropdown-menu .dropdown-item i { width: 18px; color: var(--tb-accent); }
+  .dropdown-menu .dropdown-item:hover { background: var(--tb-hover); }
+  .dropdown-menu .dropdown-item.highlight { background: #f0f9ff; color: #075985; border-left: 3px solid #38bdf8; }
+  .dropdown-divider { height: 1px; background: var(--tb-border); margin: 6px 0; }
+
+  /* Notification panel */
+  .notification-panel { width: clamp(280px, 32vw, 420px); }
+  .notification-panel .panel-header {
+    display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--tb-border);
+  }
+  .notification-panel .panel-header h3 { margin: 0; font-size: 14px; font-weight: 900; }
+  .notification-panel .panel-header .panel-action {
+    width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--tb-border); background: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .notification-panel .panel-header .panel-action:hover { background: var(--tb-hover); }
+  /* Panel body expands with animation and has custom scrollbar */
+  .notification-panel .panel-body { max-height: 0; overflow: hidden; padding: 0 6px; }
+  .dropdown-panel.show .panel-body { max-height: 360px; overflow: auto; padding: 6px; transition: max-height .24s ease, padding .18s ease; }
+  /* Custom scrollbar (WebKit) */
+  .notification-panel .panel-body::-webkit-scrollbar { width: 10px; }
+  .notification-panel .panel-body::-webkit-scrollbar-track { background: transparent; border-radius: 10px; }
+  .notification-panel .panel-body::-webkit-scrollbar-thumb { background: rgba(100,116,139,.35); border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+  .notification-panel .panel-body:hover::-webkit-scrollbar-thumb { background: rgba(100,116,139,.55); }
+  /* Firefox */
+  .notification-panel .panel-body { scrollbar-width: thin; scrollbar-color: rgba(100,116,139,.45) transparent; }
+  .notification-item {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: start; padding: 10px; border-radius: 12px; border: 1px solid transparent;
+  }
+  .notification-item:hover { background: #f9fafb; }
+  .notification-item.unread { background: #f8fafc; border-color: #e2e8f0; }
+  /* Staggered entrance animation when panel opens */
+  @keyframes notifIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .dropdown-panel.show .notification-item { animation: notifIn .18s ease both; }
+  .dropdown-panel.show .notification-item:nth-child(1) { animation-delay: .04s; }
+  .dropdown-panel.show .notification-item:nth-child(2) { animation-delay: .08s; }
+  .dropdown-panel.show .notification-item:nth-child(3) { animation-delay: .12s; }
+  .notification-icon {
+    width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; color: #fff;
+  }
+  .notification-icon.primary { background: linear-gradient(135deg, #6366f1, #3b82f6); }
+  .notification-icon.warning { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+  .notification-icon.success { background: linear-gradient(135deg, #22c55e, #10b981); }
+  .notification-content h4 { margin: 0 0 2px; font-size: 14px; font-weight: 800; }
+  .notification-content p { margin: 0; font-size: 13px; color: var(--tb-text); opacity: .9; }
+  .notification-time { font-size: 11px; color: var(--tb-muted); }
+  .btn-icon {
+    width: 32px; height: 32px; border-radius: 10px; border: 1px solid var(--tb-border); background: #fff; color: #64748b;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .btn-icon:hover { background: var(--tb-hover); }
+
+  /* Demo banner */
+  .demo-banner {
+    position: relative; margin: 10px 12px 0; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    border-radius: 14px; border: 1px solid #f4e5a6; background: linear-gradient(180deg,#fffaf0, #fff6dc);
+    color: #6f4a14; font-weight: 600; box-shadow: 0 2px 10px rgba(214,168,49,.12);
+    transition: background .16s ease, border-color .16s ease, box-shadow .16s ease, opacity .18s ease, transform .18s ease;
+  }
+  
+  .db-left { display: inline-flex; align-items: center; gap: 12px; min-width: 0; }
+  .db-icon { width: 28px; height: 28px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: #f6e8a9; color: #9b6515; }
+  .db-content { display: grid; gap: 2px; min-width: 0; }
+  .db-title { font-weight: 800; font-size: 13px; color: inherit; }
+  .db-desc { font-size: 12px; color: #845f1a; opacity: .9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .demo-banner .demo-banner-link { text-decoration: underline; font-weight: 800; color: #8f5a12; }
+  
+  .db-accent { position: absolute; inset: 0; pointer-events: none; border-radius: 14px; box-shadow: inset 0 0 0 2px rgba(214,168,49,.16); }
+  .db-accent-2 { position: absolute; left: 10px; right: 10px; bottom: -6px; height: 10px; background: radial-gradient(ellipse at center, rgba(214,168,49,.22), transparent); filter: blur(6px); border-radius: 999px; pointer-events: none; }
+  .demo-banner strong { font-weight: 900; }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  /* Mobile menu drawer */
+  :global(html.no-scroll), :global(body.no-scroll), html.no-scroll, body.no-scroll { overflow: hidden; }
+  .mobile-menu { position: fixed; inset: 0; z-index: 50; pointer-events: none; opacity: 0; transition: opacity .2s ease; }
+  .mobile-menu.open { pointer-events: auto; opacity: 1; }
+  .mobile-menu-backdrop { position: absolute; inset: 0; background: rgba(17,24,39,.5); backdrop-filter: blur(2px); }
+  .mobile-menu-panel {
+    position: absolute; left: 0; top: 0; bottom: 0; width: min(84%, 360px); background: #fff; border-right: 1px solid #e5e7eb;
+    box-shadow: 0 10px 30px rgba(0,0,0,.15); transform: translateX(-100%); transition: transform .22s ease;
+    display: flex; flex-direction: column;
+  }
+  .mobile-menu.open .mobile-menu-panel { transform: translateX(0); }
+  .mobile-menu-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px; border-bottom: 1px solid #e5e7eb; }
+  .mobile-menu-header .brand { display: inline-flex; align-items: center; gap: 12px; font-weight: 800; color: #111827; text-decoration: none; position: relative; }
+  .mobile-menu-header .brand .brand-icon { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #3B82F6, #1E40AF); color: #fff; box-shadow: 0 2px 10px rgba(59,130,246,0.3); }
+  .mobile-menu-header .brand .brand-text { font-size: 1.3rem; font-weight: 900; background: linear-gradient(135deg, #1F2937, #3B82F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+  .mobile-menu-header .brand .brand-glow { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(59,130,246,0.28) 0%, transparent 70%); filter: blur(10px); opacity: 0; transition: opacity .2s ease; z-index: -1; }
+  .mobile-menu-header .brand:hover .brand-glow { opacity: 1; }
+  .mobile-menu-header .close-btn {
+    width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #e5e7eb; background: #fff;
+  }
+  .mobile-menu-header .close-btn:hover { background: #f9fafb; }
+  .mobile-profile { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #e5e7eb; }
+  .mobile-profile .avatar { width: 44px; height: 44px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+  .mobile-profile .info { display: grid; line-height: 1.1; }
+  .mobile-profile .name { font-weight: 900; font-size: 14px; color: #111827; }
+  .mobile-profile .role { font-size: 12px; color: #6b7280; }
+  .mobile-quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px; border-bottom: 1px solid #e5e7eb; }
+  .qa-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 8px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; text-decoration: none; color: #111827; font-weight: 800; font-size: 12px; }
+  .qa-btn i { color: #4f46e5; font-size: 16px; }
+  .qa-btn:hover { background: #f9fafb; }
+  .qa-btn.danger { border-color: #fecaca; color: #991b1b; }
+  .qa-btn.danger i { color: #ef4444; }
+  .mobile-divider { height: 8px; background: #f3f4f6; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; }
+  .mobile-nav { padding: 8px 8px 18px; overflow: auto; }
+  .mobile-nav ul { list-style: none; padding: 0; margin: 0; }
+  .mobile-section-title { padding: 12px 8px 6px; font-size: 12px; letter-spacing: .4px; text-transform: uppercase; color: #6b7280; font-weight: 800; }
+  .mobile-item { animation: drawerItemIn .28s ease both; }
+  .mobile-item:nth-child(1) { animation-delay: .02s; }
+  .mobile-item:nth-child(2) { animation-delay: .04s; }
+  .mobile-item:nth-child(3) { animation-delay: .06s; }
+  @keyframes drawerItemIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .mobile-link { position: relative; display: grid; grid-template-columns: 32px 1fr; align-items: center; gap: 10px; padding: 10px 10px; border-radius: 12px; text-decoration: none !important; color: #111827 !important; }
+  .mobile-link .link-icon { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; background: linear-gradient(180deg, rgba(79,70,229,.08), rgba(79,70,229,.12)); color: #4f46e5; box-shadow: 0 1px 2px rgba(79,70,229,0.06) inset; }
+  .mobile-link .link-text { font-weight: 700; }
+  .mobile-link:hover { background: #f9fafb; }
+  .mobile-link:hover .link-icon { background: linear-gradient(180deg, rgba(59,130,246,.12), rgba(79,70,229,.18)); box-shadow: 0 2px 6px rgba(79,70,229,0.12); transform: translateY(-1px); }
+  .mobile-link.active { background: rgba(79,70,229, .06); border: 1px solid rgba(99,102,241,.22); font-weight: 800; }
+  .mobile-footer { margin-top: auto; display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px; }
+  .mobile-footer .support-link { text-decoration: none; color: #2563eb; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; }
+  .mobile-footer .support-link i { color: #3b82f6; }
+  .mobile-footer .version { opacity: .9; }
+
+  /* Responsiveness */
+  
+  @media (max-width: 1024px) {
+    .menu-toggle { display: inline-flex; }
+    .page-title h2 { max-width: 60vw; }
+    .breadcrumbs { display: none; }
+  }
+  @media (max-width: 768px) {
+    .admin-topbar { padding: 8px 10px; }
+    .page-title h2 { font-size: 18px; }
+    .topbar-actions { gap: 6px; }
+    /* compact chips and buttons on small screens */
+    .action-button { width: 36px; height: 36px; }
+    .demo-chip, .plan-chip { height: 24px; padding: 0 8px; font-size: 12px; gap: 4px; }
+    .user-button img { width: 32px; height: 32px; }
+    .demo-banner { grid-template-columns: 1fr auto; }
+    .demo-banner { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px; }
+  }
+  /* Hide page title/breadcrumbs on very small screens */
+  @media (max-width: 640px) {
+    .page-title { display: none; }
+  }
+  @media (max-width: 480px) {
+    .action-button { width: 32px; height: 32px; }
+    .user-button .user-info { display: none; }
+    .user-button { padding: 4px; }
+    .user-button img { width: 30px; height: 30px; }
+    /* tighten badge so it doesn't overflow */
+    .badge { top: -4px; right: -4px; min-width: 16px; height: 16px; font-size: 10px; }
+    /* hide demo chip to avoid crowding on very small screens */
+    .demo-chip { display: none; }
+    .demo-banner { padding: 8px 10px; gap: 8px; }
+    .demo-banner .demo-banner-link { font-size: 12px; }
+  }
+
+  /* Dark mode */
+  @media (prefers-color-scheme: dark) {
+    .admin-topbar {
+      --tb-bg: rgba(11,18,32,0.86);
+      --tb-border: #1f2a44;
+      --tb-text: #e6eefc;
+      --tb-muted: #91a0b6;
+      --tb-hover: rgba(255,255,255,0.06);
+      --tb-shadow: 0 1px 2px rgba(0,0,0,0.6), 0 6px 28px rgba(0,0,0,0.45);
+    }
+    .menu-toggle, .action-button, .user-button,
+    .dropdown-panel, .dropdown-menu, .mobile-menu-panel {
+      background: #0b1220; border-color: var(--tb-border); color: var(--tb-text);
+    }
+    .mobile-profile .name { color: var(--tb-text); }
+    .mobile-profile .role { color: var(--tb-muted); }
+    .qa-btn { background: #0b1220; border-color: var(--tb-border); color: var(--tb-text); }
+    .qa-btn:hover { background: rgba(255,255,255,0.06); }
+    .qa-btn.danger { border-color: #402426; color: #ff9f9f; }
+    .qa-btn.danger i { color: #ff6b6b; }
+    .mobile-divider { background: rgba(255,255,255,0.04); border-top-color: var(--tb-border); border-bottom-color: var(--tb-border); }
+    .mobile-footer { border-top-color: var(--tb-border); color: var(--tb-muted); }
+    .mobile-footer .support-link { color: #7aa5ff; }
+    .mobile-footer .support-link i { color: #7aa5ff; }
+    .mobile-menu-backdrop { background: rgba(3,7,18,.6); }
+    .dropdown-menu .dropdown-item:hover { background: var(--tb-hover); }
+    .notification-item:hover { background: rgba(255,255,255,.04); }
+    .notification-item.unread { background: rgba(255,255,255,.035); border-color: #26324a; }
+    /* Dark mode: demo banner */
+    .demo-banner { background: linear-gradient(180deg,#0e1629,#0b1220); border-color: #5b4b11; color: #ffde8a; box-shadow: 0 6px 20px rgba(0,0,0,.5); }
+    .db-icon { background: #2a1f07; color: #ffde8a; }
+    .db-title { color: #ffe8a3; }
+    .db-desc { color: #e6c069; }
+    .demo-banner .demo-banner-link { color: #ffd36b; }
+    
+    .db-accent { box-shadow: inset 0 0 0 2px rgba(255,211,99,.18); }
+    .db-accent-2 { background: radial-gradient(ellipse at center, rgba(255,211,99,.24), transparent); }
+    .demo-banner { background: rgba(255, 193, 7, .08); color: #ffd36b; border-color: rgba(255, 193, 7, .45); }
+    .demo-banner .demo-banner-link { color: #ffde8a; }
+    .breadcrumbs::after { background: linear-gradient(to right, transparent, var(--tb-bg)); }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .admin-topbar, .dropdown-panel, .dropdown-menu, .mobile-menu, .mobile-menu-panel, .badge.pulse { animation: none !important; transition: none !important; }
+  }
+</style>
