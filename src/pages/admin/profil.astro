@@ -1,0 +1,458 @@
+---
+import Layout from "~/layouts/admin-layout.astro";
+import AdminSidebar from "../../components/Admin-site/admin-sidebar.astro";
+import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
+
+// Branding shown in Admin UI
+const complexName = 'Komplek Anggrek Asri';
+const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=100&h=100&fit=crop&crop=center';
+---
+
+<Layout>
+  <AdminSidebar slot="sidebar" complexName={complexName} complexImage={complexImage} />
+  <AdminTopbar slot="topbar" complexName={complexName} complexImage={complexImage} />
+
+  <!-- Header -->
+  <section class="page-header">
+    <div class="ph-left">
+      <div class="ph-icon"><i class="fas fa-user"></i></div>
+      <div>
+        <h1 style="margin:0">Profil Komplek</h1>
+        <p style="margin:.25rem 0 0; color:#6b7280">Edit informasi komplek, lokasi, dan pengurus</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- INFORMASI KOMPLEK -->
+  <section class="card-container">
+    <div class="card-header">
+      <h3><i class="fa-solid fa-city"></i> Informasi Komplek</h3>
+    </div>
+    <div class="card-content">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="pf-nama" class="form-label">Nama Komplek</label>
+          <input id="pf-nama" type="text" class="form-input" placeholder="Nama komplek" value={complexName} />
+        </div>
+
+        <div class="form-group">
+          <label for="pf-deskripsi" class="form-label">Deskripsi Komplek</label>
+          <textarea id="pf-deskripsi" class="form-input" rows="3" placeholder="Deskripsi singkat fasilitas, peraturan, suasana, dll.">Selamat datang di Komplek Anggrek Asri! Rasakan keindahan lingkungan hijau dengan sistem manajemen komunitas cerdas dan keamanan terjamin sepanjang waktu.</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="pf-profil" class="form-label">Profil Komplek</label>
+          <textarea id="pf-profil" class="form-input" rows="4" placeholder="Profil lebih lengkap (sejarah, jumlah blok, jumlah warga, dsb.)"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="pf-banner">Banner Komplek</label>
+            <input id="pf-banner" type="file" accept="image/*" class="form-input" />
+            <div class="preview-wrapper">
+              <img id="pf-banner-preview" alt="Preview Banner" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pf-avatar">Foto Profil Komplek</label>
+            <input id="pf-avatar" type="file" accept="image/*" class="form-input" />
+            <div class="preview-wrapper">
+              <img id="pf-avatar-preview" alt="Preview Profil" src={complexImage} />
+            </div>
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <button class="action-btn primary"><i class="fas fa-save"></i><span>Simpan Informasi</span></button>
+          <button class="action-btn secondary"><i class="fas fa-undo"></i><span>Reset</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOKASI KOMPLEK -->
+  <section class="card-container">
+    <div class="card-header">
+      <h3><i class="fa-solid fa-location-dot"></i> Lokasi Komplek</h3>
+    </div>
+    <div class="card-content">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="pf-alamat" class="form-label">Alamat Lengkap</label>
+          <input id="pf-alamat" type="text" class="form-input" placeholder="Jl. Melati No. 10, Kelurahan, Kecamatan, Kota, Provinsi" value="Jl. Anggrek Mas Blok A, Tangerang" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pf-lat" class="form-label">Latitude</label>
+            <input id="pf-lat" type="text" class="form-input" placeholder="-6.200000" value="-6.1701" />
+          </div>
+          <div class="form-group">
+            <label for="pf-lng" class="form-label">Longitude</label>
+            <input id="pf-lng" type="text" class="form-input" placeholder="106.816666" value="106.6403" />
+          </div>
+        </div>
+
+        <!-- Interactive Map (Leaflet) like register-komplek -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+        <div class="map-container">
+          <div class="map-header">
+            <h4><i class="fas fa-location-dot"></i> Lokasi Komplek</h4>
+            <div class="map-buttons">
+              <button type="button" class="tool-btn" id="pfSearchBtn"><i class="fas fa-search"></i> Cari Lokasi</button>
+              <button type="button" class="tool-btn" id="pfMyLocBtn"><i class="fas fa-crosshairs"></i> Lokasi Saya</button>
+              <button type="button" class="tool-btn primary" id="pfConfirmBtn"><i class="fas fa-check"></i> Konfirmasi Lokasi</button>
+              <button class="directions-btn" id="pfDirectionsBtn"><i class="fas fa-route"></i> Petunjuk Arah</button>
+              <button class="open-maps-btn" id="pfOpenMapsBtn"><i class="fas fa-external-link-alt"></i> Buka di Google Maps</button>
+            </div>
+          </div>
+          <div class="map-wrapper">
+            <div id="pfInteractiveMap" class="interactive-map"></div>
+            <div class="map-instructions">
+              <div class="instruction-item"><i class="fas fa-mouse-pointer"></i><span>Klik peta untuk memilih lokasi</span></div>
+              <div class="instruction-item"><i class="fas fa-hand-rock"></i><span>Drag marker untuk menyesuaikan</span></div>
+              <div class="instruction-item"><i class="fas fa-map-marker-alt"></i><span>Koordinat: <strong id="pfDisplayLat">-</strong>, <strong id="pfDisplayLng">-</strong></span></div>
+            </div>
+          </div>
+        </div>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+        <div class="actions-row">
+          <button type="button" id="geoBtn" class="action-btn secondary"><i class="fas fa-crosshairs"></i><span>Gunakan Lokasi Saya</span></button>
+          <button class="action-btn primary"><i class="fas fa-save"></i><span>Simpan Lokasi</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP SEARCH MODAL -->
+  <div class="map-search-modal" id="pfSearchModal" aria-hidden="true">
+    <div class="msm-content" role="dialog" aria-modal="true" aria-labelledby="pfSearchTitle">
+      <div class="msm-header">
+        <h3 id="pfSearchTitle">Cari Lokasi</h3>
+        <button type="button" class="msm-close" id="pfSearchClose" aria-label="Tutup">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="msm-body">
+        <div class="msm-input">
+          <i class="fas fa-search"></i>
+          <input type="text" id="pfSearchInput" placeholder="Masukkan alamat atau nama tempat" />
+        </div>
+        <div class="msm-actions">
+          <button type="button" class="msm-action" id="pfSearchGo">
+            <i class="fas fa-search-location"></i>
+            <span>Cari</span>
+          </button>
+        </div>
+        <div class="msm-hint">Tip: gunakan alamat lengkap agar hasil lebih akurat.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PENGURUS KOMPLEK -->
+  <section class="card-container">
+    <div class="card-header">
+      <h3><i class="fa-solid fa-users"></i> Pengurus Komplek</h3>
+    </div>
+    <div class="card-content">
+      <div class="pengurus-grid">
+        <!-- Ketua RT -->
+        <div class="pengurus-card">
+          <div class="pengurus-header"><i class="fas fa-user-tie"></i><h4>Ketua RT</h4></div>
+          <div class="form-group">
+            <label for="ketua-nama" class="form-label">Nama Lengkap</label>
+            <input id="ketua-nama" type="text" class="form-input" placeholder="Nama Ketua RT" value="Ahmad Rahman" />
+          </div>
+          <div class="form-group">
+            <label for="ketua-phone" class="form-label">No. HP (opsional)</label>
+            <input id="ketua-phone" type="tel" class="form-input" placeholder="Contoh: +62 812-3456-7890" />
+            <div class="wa-inline"><a id="ketua-wa" class="wa-link" href="#" target="_blank" rel="noopener" style="display:none;"><i class="fa-brands fa-whatsapp"></i><span>Chat WhatsApp</span></a></div>
+          </div>
+          <div class="form-group">
+            <label for="ketua-foto" class="form-label">Foto</label>
+            <input id="ketua-foto" type="file" accept="image/*" class="form-input" />
+            <div class="preview-wrapper circular"><img id="ketua-preview" alt="Preview Ketua RT" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" /></div>
+          </div>
+        </div>
+
+        <!-- Bendahara -->
+        <div class="pengurus-card">
+          <div class="pengurus-header"><i class="fas fa-wallet"></i><h4>Bendahara</h4></div>
+          <div class="form-group">
+            <label for="bendahara-nama" class="form-label">Nama Lengkap</label>
+            <input id="bendahara-nama" type="text" class="form-input" placeholder="Nama Bendahara" value="Dewi Sartika" />
+          </div>
+          <div class="form-group">
+            <label for="bendahara-phone" class="form-label">No. HP (opsional)</label>
+            <input id="bendahara-phone" type="tel" class="form-input" placeholder="Contoh: +62 812-3456-7890" />
+            <div class="wa-inline"><a id="bendahara-wa" class="wa-link" href="#" target="_blank" rel="noopener" style="display:none;"><i class="fa-brands fa-whatsapp"></i><span>Chat WhatsApp</span></a></div>
+          </div>
+          <div class="form-group">
+            <label for="bendahara-foto" class="form-label">Foto</label>
+            <input id="bendahara-foto" type="file" accept="image/*" class="form-input" />
+            <div class="preview-wrapper circular"><img id="bendahara-preview" alt="Preview Bendahara" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" /></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button class="action-btn primary"><i class="fas fa-save"></i><span>Simpan Pengurus</span></button>
+        <button class="action-btn secondary"><i class="fas fa-undo"></i><span>Reset</span></button>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+// @ts-nocheck
+document.addEventListener('DOMContentLoaded', () => {
+  function bindPreview(inputId, imgId) {
+    const input = document.getElementById(inputId);
+    const img = document.getElementById(imgId);
+    if (!input || !img) return;
+    input.addEventListener('change', () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      img.src = url;
+    });
+  }
+  bindPreview('pf-banner', 'pf-banner-preview');
+  bindPreview('pf-avatar', 'pf-avatar-preview');
+  bindPreview('ketua-foto', 'ketua-preview');
+  bindPreview('bendahara-foto', 'bendahara-preview');
+
+  function updateWaLink(phoneInputId, linkId) {
+    const inp = document.getElementById(phoneInputId);
+    const link = document.getElementById(linkId);
+    if (!inp || !link) return;
+    const fmt = (val) => {
+      let v = String(val || '').trim();
+      if (!v) return '';
+      // normalize to +62 format
+      if (v.startsWith('0')) v = '+62' + v.slice(1);
+      if (/^62/.test(v)) v = '+' + v; // 62xxxx -> +62xxxx
+      if (!v.startsWith('+') && /^\d+$/.test(v)) v = '+' + v;
+      return v;
+    };
+    const refresh = () => {
+      const num = fmt(inp.value);
+      if (num && /^\+?\d{8,15}$/.test(num.replace(/\s|-/g, ''))) {
+        link.href = `https://wa.me/${num.replace(/\D/g,'')}`;
+        link.style.display = '';
+      } else {
+        link.style.display = 'none';
+      }
+    };
+    inp.addEventListener('input', refresh);
+    refresh();
+  }
+  updateWaLink('ketua-phone', 'ketua-wa');
+  updateWaLink('bendahara-phone', 'bendahara-wa');
+
+  // Geolocation helper
+  const geoBtn = document.getElementById('geoBtn');
+  geoBtn?.addEventListener('click', async () => {
+    const latEl = document.getElementById('pf-lat');
+    const lngEl = document.getElementById('pf-lng');
+    if (!navigator.geolocation) return alert('Geolocation tidak didukung browser ini');
+    navigator.geolocation.getCurrentPosition((pos) => {
+      latEl.value = String(pos.coords.latitude.toFixed(6));
+      lngEl.value = String(pos.coords.longitude.toFixed(6));
+      refreshMap();
+    }, () => alert('Gagal mengambil lokasi'));
+  });
+
+  // Map helpers (Leaflet interactive map)
+  const latEl = document.getElementById('pf-lat');
+  const lngEl = document.getElementById('pf-lng');
+  const addrEl = document.getElementById('pf-alamat');
+  const openMapsBtn = document.getElementById('pfOpenMapsBtn');
+  const directionsBtn = document.getElementById('pfDirectionsBtn');
+  const pfMyLocBtn = document.getElementById('pfMyLocBtn');
+  const pfSearchBtn = document.getElementById('pfSearchBtn');
+  const pfConfirmBtn = document.getElementById('pfConfirmBtn');
+  const pfDisplayLat = document.getElementById('pfDisplayLat');
+  const pfDisplayLng = document.getElementById('pfDisplayLng');
+
+  let pfMap = null;
+  let pfMarker = null;
+
+  function buildMapsUrl(lat, lng, addr) {
+    const q = addr && addr.trim() ? encodeURIComponent(addr) : encodeURIComponent(`${lat},${lng}`);
+    return `https://www.google.com/maps/search/?api=1&query=${q}`;
+  }
+  function buildDirectionsUrl(lat, lng) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat + ',' + lng)}`;
+  }
+  function setInputs(lat, lng) {
+    if (latEl) latEl.value = String(Number(lat).toFixed(6));
+    if (lngEl) lngEl.value = String(Number(lng).toFixed(6));
+    if (pfDisplayLat) pfDisplayLat.textContent = String(Number(lat).toFixed(6));
+    if (pfDisplayLng) pfDisplayLng.textContent = String(Number(lng).toFixed(6));
+  }
+  function placeMarker(lat, lng) {
+    if (!pfMap || !window.L) return;
+    if (!pfMarker) {
+      pfMarker = L.marker([lat, lng], { draggable: true }).addTo(pfMap);
+      pfMarker.on('dragend', () => {
+        const { lat: dlat, lng: dlng } = pfMarker.getLatLng();
+        setInputs(dlat, dlng);
+      });
+    } else {
+      pfMarker.setLatLng([lat, lng]);
+    }
+  }
+  function refreshMap() {
+    const lat = parseFloat(latEl?.value || '');
+    const lng = parseFloat(lngEl?.value || '');
+    if (!isFinite(lat) || !isFinite(lng) || !pfMap) return;
+    setInputs(lat, lng);
+    placeMarker(lat, lng);
+    pfMap.setView([lat, lng], Math.max(pfMap.getZoom() || 15, 15));
+  }
+  function initPfMap() {
+    const mapEl = document.getElementById('pfInteractiveMap');
+    if (!mapEl || !window.L) return;
+    const dLat = parseFloat(latEl?.value || '') || -6.200000;
+    const dLng = parseFloat(lngEl?.value || '') || 106.816666;
+    pfMap = L.map('pfInteractiveMap', { center: [dLat, dLng], zoom: 15, scrollWheelZoom: true });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', maxZoom: 19 }).addTo(pfMap);
+    placeMarker(dLat, dLng);
+    setInputs(dLat, dLng);
+    pfMap.on('click', (e) => {
+      setInputs(e.latlng.lat, e.latlng.lng);
+      placeMarker(e.latlng.lat, e.latlng.lng);
+    });
+    setTimeout(() => pfMap.invalidateSize(), 100);
+  }
+
+  // Wire inputs to map updates
+  latEl?.addEventListener('input', refreshMap);
+  lngEl?.addEventListener('input', refreshMap);
+
+  // Action buttons
+  openMapsBtn?.addEventListener('click', () => {
+    const lat = parseFloat(latEl?.value || '');
+    const lng = parseFloat(lngEl?.value || '');
+    const addr = addrEl?.value || '';
+    if (!isFinite(lat) || !isFinite(lng)) return;
+    window.open(buildMapsUrl(lat, lng, addr), '_blank', 'noopener');
+  });
+  directionsBtn?.addEventListener('click', () => {
+    const lat = parseFloat(latEl?.value || '');
+    const lng = parseFloat(lngEl?.value || '');
+    if (!isFinite(lat) || !isFinite(lng)) return;
+    window.open(buildDirectionsUrl(lat, lng), '_blank', 'noopener');
+  });
+  pfMyLocBtn?.addEventListener('click', () => {
+    if (!navigator.geolocation) return alert('Geolocation tidak didukung browser ini');
+    navigator.geolocation.getCurrentPosition((pos) => {
+      setInputs(pos.coords.latitude, pos.coords.longitude);
+      placeMarker(pos.coords.latitude, pos.coords.longitude);
+      if (pfMap) pfMap.setView([pos.coords.latitude, pos.coords.longitude], 16);
+    }, () => alert('Gagal mengambil lokasi'));
+  });
+  // Search Modal elements
+  const pfSearchModal = document.getElementById('pfSearchModal');
+  const pfSearchInput = document.getElementById('pfSearchInput');
+  const pfSearchClose = document.getElementById('pfSearchClose');
+  const pfSearchGo = document.getElementById('pfSearchGo');
+
+  function openSearchModal() {
+    if (!pfSearchModal) return;
+    pfSearchModal.classList.add('show');
+    pfSearchModal.setAttribute('aria-hidden', 'false');
+    setTimeout(() => pfSearchInput?.focus(), 50);
+  }
+  function closeSearchModal() {
+    if (!pfSearchModal) return;
+    pfSearchModal.classList.remove('show');
+    pfSearchModal.setAttribute('aria-hidden', 'true');
+  }
+  async function doModalSearch() {
+    const q = (pfSearchInput?.value || '').trim();
+    if (!q) return;
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&accept-language=id&q=${encodeURIComponent(q)}&limit=1`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (Array.isArray(data) && data.length) {
+        const { lat, lon } = data[0];
+        const latNum = parseFloat(lat); const lngNum = parseFloat(lon);
+        if (isFinite(latNum) && isFinite(lngNum)) {
+          setInputs(latNum, lngNum);
+          placeMarker(latNum, lngNum);
+          if (pfMap) pfMap.setView([latNum, lngNum], 16);
+          closeSearchModal();
+        }
+      } else {
+        alert('Lokasi tidak ditemukan');
+      }
+    } catch (_) { alert('Gagal mencari lokasi'); }
+  }
+
+  pfSearchBtn?.addEventListener('click', openSearchModal);
+  pfSearchClose?.addEventListener('click', closeSearchModal);
+  pfSearchModal?.addEventListener('click', (e) => { if (e.target === pfSearchModal) closeSearchModal(); });
+  pfSearchGo?.addEventListener('click', doModalSearch);
+  pfSearchInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); doModalSearch(); } });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSearchModal(); });
+  pfConfirmBtn?.addEventListener('click', () => {
+    // In real app, you might persist or show toast. For now, just a quick feedback.
+    alert('Lokasi dikonfirmasi.');
+  });
+
+  // Initial map load
+  initPfMap();
+});
+</script>
+
+<style>
+  .card-container{background:#fff;border:1px solid #e5e7eb;border-radius:16px;margin:16px 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .card-header{padding:12px 16px;border-bottom:1px solid #e5e7eb;background:#f9fafb}
+  .card-header h3{margin:0;display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px}
+  .card-content{padding:16px}
+  .form-grid{display:grid;gap:12px}
+  .form-row{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+  .form-group{display:grid;gap:6px}
+  .form-label{font-size:13px;font-weight:700;color:#374151}
+  .form-input{padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;font-size:14px}
+  .actions-row{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}
+  .action-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;font-weight:700;border:1px solid #e5e7eb;background:#f3f4f6;color:#111827}
+  .action-btn.primary{background:#3b82f6;color:#fff;border-color:#3b82f6}
+  .preview-wrapper{margin-top:8px;border:1px dashed #e5e7eb;border-radius:12px;padding:8px;display:flex;align-items:center;justify-content:center;min-height:120px;background:#fafafa}
+  .preview-wrapper img{max-width:100%;max-height:200px;border-radius:10px}
+  .preview-wrapper.circular img{width:120px;height:120px;border-radius:999px;object-fit:cover}
+  .pengurus-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  .pengurus-card{border:1px solid #e5e7eb;border-radius:12px;padding:12px}
+  .pengurus-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:800}
+  .wa-inline{margin-top:6px}
+  .wa-link{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;background:#e7f6ed;color:#166534;text-decoration:none;font-weight:700}
+  /* Map styles */
+  .map-container{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:12px}
+  .map-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .map-header h4{margin:0;display:flex;align-items:center;gap:8px;color:#111827}
+  .map-buttons{display:flex;gap:8px;flex-wrap:wrap}
+  .tool-btn{border:1px solid #e5e7eb;background:#fff;border-radius:10px;padding:8px 12px;font-weight:700;display:inline-flex;align-items:center;gap:8px;color:#111827}
+  .tool-btn.primary{background:#3b82f6;color:#fff;border-color:#3b82f6}
+  .open-maps-btn,.directions-btn{border:1px solid #e5e7eb;background:#fff;border-radius:10px;padding:8px 12px;font-weight:700;display:inline-flex;align-items:center;gap:8px;color:#111827}
+  .open-maps-btn{background:#f3f4f6}
+  .map-wrapper{border-radius:12px;overflow:hidden;position:relative}
+  .interactive-map{height:360px;width:100%}
+  .map-instructions{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border:1px solid #e5e7eb;border-radius:10px;padding:8px;display:flex;gap:12px;flex-wrap:wrap}
+  .instruction-item{display:flex;align-items:center;gap:6px;color:#111827}
+  /* Search Modal */
+  .map-search-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:1000}
+  .map-search-modal.show{display:flex}
+  .msm-content{background:#fff;border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.25);width:min(92vw,540px);overflow:hidden}
+  .msm-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #e5e7eb}
+  .msm-header h3{margin:0;font-size:1.1rem}
+  .msm-close{border:none;background:transparent;font-size:1.1rem;color:#111827;cursor:pointer}
+  .msm-body{padding:16px}
+  .msm-input{display:flex;align-items:center;gap:10px;border:1px solid #e5e7eb;border-radius:10px;padding:10px}
+  .msm-input input{border:none;outline:none;flex:1;font-size:.95rem}
+  .msm-actions{margin-top:12px;display:flex;justify-content:flex-end}
+  .msm-action{display:inline-flex;align-items:center;gap:8px;border:1px solid #3b82f6;background:#3b82f6;color:#fff;border-radius:10px;padding:10px 14px;font-weight:700}
+  .msm-hint{margin-top:8px;color:#6b7280;font-size:.85rem}
+  @media (max-width:768px){.form-row{grid-template-columns:1fr}}
+</style>

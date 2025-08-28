@@ -47,6 +47,48 @@
 			integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
 			crossorigin=""
 		></script>
+    
+    	<!-- Global modern scrollbar (applies site-wide) -->
+    	<style>
+    	  :root {
+    	    --scrollbar-size: 10px;
+    	    --scrollbar-bg: transparent;
+    	    --scrollbar-thumb: linear-gradient(180deg, #93c5fd 0%, #3b82f6 50%, #1d4ed8 100%);
+    	    --scrollbar-thumb-hover: linear-gradient(180deg, #bfdbfe 0%, #60a5fa 50%, #2563eb 100%);
+    	    --scrollbar-thumb-active: linear-gradient(180deg, #93c5fd 0%, #3b82f6 50%, #1d4ed8 100%);
+    	    --scrollbar-radius: 999px;
+    	  }
+    
+    	  /* Firefox */
+    	  * {
+    	    scrollbar-width: thin;
+    	    scrollbar-color: #60a5fa transparent;
+    	  }
+    
+    	  /* WebKit/Chromium */
+    	  *::-webkit-scrollbar {
+    	    width: var(--scrollbar-size);
+    	    height: var(--scrollbar-size);
+    	  }
+    	  *::-webkit-scrollbar-track {
+    	    background: var(--scrollbar-bg);
+    	  }
+    	  *::-webkit-scrollbar-thumb {
+    	    background: var(--scrollbar-thumb);
+    	    border-radius: var(--scrollbar-radius);
+    	    border: 2px solid transparent;
+    	    background-clip: padding-box;
+    	  }
+    	  *::-webkit-scrollbar-thumb:hover {
+    	    background: var(--scrollbar-thumb-hover);
+    	  }
+    	  *::-webkit-scrollbar-thumb:active {
+    	    background: var(--scrollbar-thumb-active);
+    	  }
+    	  *::-webkit-scrollbar-corner {
+    	    background: transparent;
+    	  }
+    	</style>
 	</head>
 	<body>
 		<slot />
@@ -2195,19 +2237,6 @@
   --gradient-accent: linear-gradient(135deg, var(--primary-blue), var(--muted-green), var(--muted-orange));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0b1220;
-    --surface: #0f172a;
-    --surface-2: #0b1325;
-    --border: rgba(148, 163, 184, 0.16);
-    --text-dark: #E2E8F0;
-    --text-light: #94A3B8;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-    --shadow-md: 0 8px 24px rgba(0,0,0,0.35);
-    --shadow-lg: 0 16px 40px rgba(0,0,0,0.45);
-  }
-}
 
 /* Background mesh + subtle grid overlay */
 body {
@@ -2359,19 +2388,6 @@ body { font-size: var(--step-0); }
 .container-md { max-width: 980px; margin-inline: auto; padding-inline: 1rem; }
 .container-lg { max-width: 1200px; margin-inline: auto; padding-inline: 1rem; }
 .container-xl { max-width: 1320px; margin-inline: auto; padding-inline: 1rem; }
-
-/* Dark mode adaptations */
-@media (prefers-color-scheme: dark) {
-  body { background: radial-gradient(1200px 600px at 10% -10%, rgba(30,58,138,0.35), transparent 60%),
-                         radial-gradient(1000px 600px at 90% 10%, rgba(180,83,9,0.25), transparent 60%),
-                         radial-gradient(800px 500px at 50% 100%, rgba(5,150,105,0.24), transparent 60%),
-                         var(--bg); }
-  .card { background: linear-gradient(#0f172a, #0f172a) padding-box,
-                  linear-gradient(145deg, rgba(135,206,235,0.25), rgba(152,216,200,0.2), rgba(244,164,96,0.2)) border-box; }
-  .btn-ghost { color: #cbd5e1; border-color: rgba(148,163,184,0.24); }
-  .badge { background: rgba(255,255,255,0.04); }
-  .badge-accent { color: #c7e3f5; }
-}
 
 	body img,
 	body video,

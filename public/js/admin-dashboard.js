@@ -11,7 +11,32 @@ document.addEventListener('DOMContentLoaded', function() {
   if (typeof Chart !== 'undefined') {
     initCharts();
     initSparklines();
+    initChartCardActions();
   }
+  // If Chart.js wasn't ready yet, wait for a later signal and then init once
+  if (typeof Chart === 'undefined') {
+    const onChartsReady = () => {
+      // Avoid double init
+      if (window.dashboardCharts && window.dashboardCharts.size > 0) return;
+      if (typeof Chart === 'undefined') return;
+      initCharts();
+      initSparklines();
+      initChartCardActions();
+      window.removeEventListener('charts-ready', onChartsReady);
+    };
+    window.addEventListener('charts-ready', onChartsReady);
+    // Safety re-check in case Chart loads without event
+    setTimeout(onChartsReady, 1500);
+  }
+  
+  // Initialize other UI features
+  initTopbarElevation();
+  initAnimations();
+  initCounters();
+  initTooltips();
+  initDataTables();
+  initPremiumLocks();
+});
 
 /**
  * Elevate topbar when scrolling
@@ -26,31 +51,81 @@ function initTopbarElevation() {
   handler();
   window.addEventListener('scroll', handler, { passive: true });
 }
-  
-  // Initialize data tables
-  initDataTables();
-  
-  // Initialize counters animation
-  initCounters();
-  
-  // Initialize tooltips
-  initTooltips();
-  
-  // Initialize premium feature locks
-  initPremiumLocks();
 
-  // Initialize animations
-  initAnimations();
+/**
+ * Initialize sidebar interactions (idempotent)
+ */
+function initSidebar() {
+  const sidebarToggle = document.getElementById('sidebar-toggle');
+  const adminSidebar = document.querySelector('.admin-sidebar');
+  const adminFrame = document.querySelector('.admin-frame');
 
-  // Initialize search functionality
-  initSearch();
+  // Toggle sidebar expand/collapse
+  if (sidebarToggle && !sidebarToggle.dataset.bound) {
+    sidebarToggle.dataset.bound = '1';
+    sidebarToggle.addEventListener('click', () => {
+      if (adminSidebar) adminSidebar.classList.toggle('collapsed');
+      if (adminFrame) adminFrame.classList.toggle('expanded');
+      const icon = sidebarToggle.querySelector('i');
+      if (icon && adminSidebar) {
+        if (adminSidebar.classList.contains('collapsed')) {
+          icon.classList.remove('fa-chevron-left');
+          icon.classList.add('fa-chevron-right');
+        } else {
+          icon.classList.remove('fa-chevron-right');
+          icon.classList.add('fa-chevron-left');
+        }
+      }
+    });
+  }
 
-  // Initialize dropdown menus
-  initDropdowns();
+  // Section toggles
+  const sectionToggles = document.querySelectorAll('.section-toggle');
+  sectionToggles.forEach((btn) => {
+    if (btn.dataset.bound) return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', (e) => {
+      const target = e.currentTarget;
+      const expanded = target.getAttribute('aria-expanded') === 'true';
+      target.setAttribute('aria-expanded', String(!expanded));
+      const targetId = target.getAttribute('aria-controls');
+      const targetList = targetId ? document.getElementById(targetId) : null;
+      if (targetList) {
+        if (expanded) {
+          targetList.style.maxHeight = '0';
+          targetList.classList.add('collapsed');
+        } else {
+          targetList.style.maxHeight = targetList.scrollHeight + 'px';
+          targetList.classList.remove('collapsed');
+        }
+      }
+      const icon = target.querySelector('.toggle-icon');
+      if (icon) {
+        const isExpanding = !expanded;
+        icon.classList.remove(isExpanding ? 'fa-chevron-down' : 'fa-chevron-up');
+        icon.classList.add(isExpanding ? 'fa-chevron-up' : 'fa-chevron-down');
+        icon.style.transform = '';
+      }
+    });
+  });
 
-  // Elevate topbar on scroll
-  initTopbarElevation();
-});
+  // Active link highlighting and auto-expand parent section
+  const currentPath = window.location.pathname;
+  const sidebarLinks = document.querySelectorAll('.sidebar-link');
+  sidebarLinks.forEach((link) => {
+    const href = link.getAttribute('href');
+    if (href === currentPath) {
+      link.classList.add('active');
+      const parentList = link.closest('.nav-list');
+      if (parentList && parentList.classList.contains('collapsed')) {
+        const sectionToggle = parentList.previousElementSibling;
+        if (sectionToggle && sectionToggle.classList.contains('section-toggle')) {
+          sectionToggle.dispatchEvent(new Event('click'));
+        }
+      }
+    }
+  });
+}
 
 /**
  * Initialize animations for UI elements
@@ -91,9 +166,67 @@ function initAnimations() {
 }
 
 /**
+ * Enable Download and Zoom actions for chart cards
+ */
+function initChartCardActions() {
+  const cards = document.querySelectorAll('.chart-card');
+  cards.forEach(card => {
+    const canvas = card.querySelector('canvas');
+    if (!canvas) return;
+    const buttons = card.querySelectorAll('.card-actions .action-button');
+    if (!buttons.length) return;
+
+    // Download button (first)
+    const downloadBtn = buttons[0];
+    if (downloadBtn && !downloadBtn.dataset.bound) {
+      downloadBtn.dataset.bound = '1';
+      downloadBtn.addEventListener('click', () => {
+        try {
+          const chart = window.dashboardCharts ? window.dashboardCharts.get(canvas.id) : null;
+          if (chart && chart.canvas) {
+            const link = document.createElement('a');
+            link.href = chart.canvas.toDataURL('image/png');
+            link.download = `${canvas.id || 'chart'}.png`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+          }
+        } catch (e) {
+          console.error('Failed to download chart image', e);
+        }
+      });
+    }
+
+    // Zoom/fullscreen button (second)
+    const zoomBtn = buttons[1];
+    if (zoomBtn && !zoomBtn.dataset.bound) {
+      zoomBtn.dataset.bound = '1';
+      zoomBtn.addEventListener('click', async () => {
+        try {
+          if (document.fullscreenElement) {
+            await document.exitFullscreen();
+            return;
+          }
+          if (card.requestFullscreen) {
+            await card.requestFullscreen();
+          } else if (card.webkitRequestFullscreen) {
+            card.webkitRequestFullscreen();
+          }
+        } catch (e) {
+          console.error('Fullscreen failed', e);
+        }
+      });
+    }
+  });
+}
+
+/**
  * Initialize charts
  */
 function initCharts() {
+  // Global registry to access chart instances by canvas id
+  if (!window.dashboardCharts) window.dashboardCharts = new Map();
+
   // Theme helpers
   const palette = {
     primary: '#4361ee',
@@ -214,6 +347,7 @@ function initCharts() {
         }
       }
     });
+    window.dashboardCharts.set('chartKas', cashFlowChart);
   }
 
   // Composition Pie Chart
@@ -270,6 +404,7 @@ function initCharts() {
         cutout: '70%'
       }
     });
+    window.dashboardCharts.set('chartPie', compositionChart);
   }
 
   // Expense Categories Chart (Premium Feature)
@@ -322,6 +457,7 @@ function initCharts() {
                 if (label) {
                   label += ': ';
                 }
+
                 if (context.parsed.y !== null) {
                   label += formatIDRCurrency(context.parsed.y);
                 }
@@ -354,6 +490,7 @@ function initCharts() {
         }
       }
     });
+    window.dashboardCharts.set('chartExpenseCategories', expenseCategoriesChart);
   }
 
   // Monthly Comparison Chart (Premium Feature)
@@ -449,13 +586,14 @@ function initCharts() {
         }
       }
     });
+    window.dashboardCharts.set('chartMonthlyComparison', monthlyComparisonChart);
   }
 
   // Optional: Stacked Area Chart (Pemasukan vs Pengeluaran)
   const areaCtx = document.getElementById('chartIncomeExpenseArea');
   if (areaCtx) {
     const ctx = areaCtx.getContext ? areaCtx.getContext('2d') : null;
-    new Chart(areaCtx, {
+    const areaChart = new Chart(areaCtx, {
       type: 'line',
       data: {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
@@ -498,71 +636,13 @@ function initCharts() {
         }
       }
     });
+    window.dashboardCharts.set('chartIncomeExpenseArea', areaChart);
   }
 
-  // Optional: Radar Chart for Category Performance
-  const radarCtx = document.getElementById('chartRadarCategories');
-  if (radarCtx) {
-    new Chart(radarCtx, {
-      type: 'radar',
-      data: {
-        labels: ['Keamanan', 'Kebersihan', 'Fasilitas', 'Kegiatan', 'Pelayanan', 'Transparansi'],
-        datasets: [
-          {
-            label: 'Kepuasan',
-            data: [80, 70, 75, 65, 85, 78],
-            backgroundColor: 'rgba(67, 97, 238, 0.2)',
-            borderColor: palette.primary,
-            pointBackgroundColor: palette.primary
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom' } },
-        scales: {
-          r: {
-            angleLines: { color: 'rgba(229, 231, 235, 0.5)' },
-            grid: { color: 'rgba(229, 231, 235, 0.5)' },
-            pointLabels: { color: palette.grayTick },
-            ticks: { display: false }
-          }
-        }
-      }
-    });
-  }
+  // Radar Kepuasan removed per request
 
-  // Optional: Horizontal Bar for Top Contributors
-  const topContribCtx = document.getElementById('chartTopContributors');
-  if (topContribCtx) {
-    new Chart(topContribCtx, {
-      type: 'bar',
-      data: {
-        labels: ['RT 01', 'RT 02', 'RT 03', 'RT 04', 'RT 05'],
-        datasets: [{
-          label: 'Iuran Terkumpul',
-          data: [3200000, 2900000, 2600000, 2400000, 2000000],
-          backgroundColor: palette.primary,
-          borderRadius: 8,
-          barThickness: 18
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: { callbacks: { label: (ctx) => formatIDRCurrency(ctx.parsed.x) } }
-        },
-        scales: {
-          x: { grid: { color: palette.grid }, ticks: { color: palette.grayTick } },
-          y: { grid: { display: false }, ticks: { color: palette.grayTick } }
-        }
-      }
-    });
-  }
+  // Kontributor Teratas removed per request
+
 }
 
 /**
@@ -576,10 +656,50 @@ function initSparklines() {
     if (!valuesAttr) return;
     const values = valuesAttr.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v));
     if (!values.length) return;
+    // allow custom height to make the line clearer
+    const desiredHeight = parseInt(cv.getAttribute('data-height') || '48', 10);
+    if (!isNaN(desiredHeight) && desiredHeight > 0) {
+      cv.style.height = desiredHeight + 'px';
+      // align the internal canvas resolution as well to avoid blur/clipping
+      try { cv.height = desiredHeight; } catch (e) {}
+    }
+
+    // pick a high-contrast color: CSS var --primary or fallback
+    const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#2563eb';
+    const fillColor = 'rgba(37, 99, 235, 0.12)';
+
+    // compute y-axis padding so the line doesn't touch the top/bottom edges
+    const minVal = Math.min(...values);
+    const maxVal = Math.max(...values);
+    const range = Math.max(1, maxVal - minVal);
+    const pad = Math.max(0.5, range * 0.1);
+
     new Chart(cv, {
       type: 'line',
-      data: { labels: values.map((_, i) => i + 1), datasets: [{ data: values, borderColor: '#4cc9f0', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.35 }] },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false } } }
+      data: { 
+        labels: values.map((_, i) => i + 1), 
+        datasets: [{ 
+          data: values, 
+          borderColor: primary, 
+          backgroundColor: fillColor, 
+          borderWidth: 3,
+          borderCapStyle: 'round',
+          borderJoinStyle: 'round', 
+          pointRadius: 0, 
+          fill: true, 
+          tension: 0.4 
+        }] 
+      },
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false, 
+        layout: { padding: { left: 8, right: 10, top: 6, bottom: 6 } },
+        plugins: { legend: { display: false }, tooltip: { enabled: false } }, 
+        scales: { 
+          x: { display: false, offset: true }, 
+          y: { display: false, suggestedMin: minVal - pad, suggestedMax: maxVal + pad } 
+        } 
+      }
     });
   });
 }
@@ -769,6 +889,8 @@ function initTooltips() {
  * Initialize premium feature locks
  */
 function initPremiumLocks() {
+  // Disabled to unlock all premium features
+  return;
   const premiumFeatures = document.querySelectorAll('.premium-feature');
   
   premiumFeatures.forEach(feature => {
@@ -785,7 +907,7 @@ function initPremiumLocks() {
       message.className = 'premium-message';
       
       const icon = document.createElement('i');
-      icon.className = 'fas fa-lock';
+      icon.className = 'fa-solid fa-lock';
       
       const text = document.createElement('span');
       text.textContent = 'Fitur Premium';
