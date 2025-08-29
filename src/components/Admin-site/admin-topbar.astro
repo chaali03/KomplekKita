@@ -39,7 +39,24 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
         Plus
       </span>
 
-      
+      <!-- Notifications dropdown -->
+      <div class="action-dropdown">
+        <button class="action-button" id="notification-toggle" aria-expanded="false" aria-controls="notification-panel" aria-label="Notifikasi">
+          <i class="fas fa-bell" aria-hidden="true"></i>
+          <span class="badge pulse" style="display:none">0</span>
+        </button>
+        <div class="dropdown-panel notification-panel" id="notification-panel" role="menu" aria-label="Panel notifikasi">
+          <div class="panel-header">
+            <h3>Notifikasi</h3>
+            <button class="panel-action" id="mark-all-read" title="Tandai semua dibaca" aria-label="Tandai semua dibaca">
+              <i class="fas fa-check-double" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="panel-body" id="notif-panel-body">
+            <!-- diisi via script -->
+          </div>
+        </div>
+      </div>
       
       <div class="user-dropdown">
         <button class="user-button" id="user-dropdown-toggle" aria-expanded="false" aria-controls="user-dropdown-menu" aria-haspopup="true">
@@ -210,6 +227,75 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
 
     
 
+    // Simple notification store (localStorage)
+    const STORE_KEY = 'kk_notifications';
+    const COUNT_KEY = 'kk_unread_count';
+    type NotifItem = { id: string; type: 'info'|'success'|'warning'; title: string; message: string; time: string; unread: boolean };
+    function uuid(){ try{ return crypto.randomUUID(); }catch{ return 'id-'+Date.now()+'-'+Math.random().toString(16).slice(2);} }
+    function getNotifs(): NotifItem[]{
+      try{ const raw = localStorage.getItem(STORE_KEY); return raw? JSON.parse(raw): []; }catch{ return []; }
+    }
+    function setNotifs(items: NotifItem[]){
+      localStorage.setItem(STORE_KEY, JSON.stringify(items));
+      const unread = items.filter(x=>x.unread).length;
+      localStorage.setItem(COUNT_KEY, String(unread));
+      updateBadges(unread);
+      renderPanel(items);
+    }
+    function addNotif(type: 'info'|'success'|'warning', title: string, message: string){
+      const items = getNotifs();
+      const it: NotifItem = { id: uuid(), type, title, message, time: new Date().toISOString(), unread: true };
+      items.unshift(it);
+      setNotifs(items);
+    }
+    // Expose global API for other pages
+    (window as any).KKNotif = { add: addNotif };
+
+    function fmtTime(iso: string){ try{ const d = new Date(iso); return d.toLocaleString('id-ID', { hour: '2-digit', minute:'2-digit', day:'2-digit', month:'short' }); }catch{ return ''; } }
+    function iconClass(t: string){ return t==='success'?'success': t==='warning'?'warning':'primary'; }
+    function renderPanel(items?: NotifItem[]){
+      const body = document.getElementById('notif-panel-body');
+      if (!body) return;
+      const arr = items ?? getNotifs();
+      body.innerHTML = '';
+      if (arr.length === 0){ body.innerHTML = '<div style="padding:10px;color:#64748b">Tidak ada notifikasi</div>'; return; }
+      arr.forEach(n => {
+        const wrap = document.createElement('div');
+        wrap.className = 'notification-item' + (n.unread? ' unread' : '');
+        wrap.innerHTML = `
+          <div class="notification-icon ${iconClass(n.type)}"><i class="fas ${n.type==='success'?'fa-check-circle': n.type==='warning'?'fa-exclamation-triangle':'fa-info-circle'}"></i></div>
+          <div class="notification-content">
+            <h4>${n.title}</h4>
+            <p>${n.message}</p>
+            <span class="notification-time">${fmtTime(n.time)}</span>
+          </div>
+          <button class="btn-icon" title="Tandai dibaca" aria-label="Tandai dibaca" data-id="${n.id}"><i class="fas fa-check"></i></button>
+        `;
+        body.appendChild(wrap);
+      });
+    }
+    function getUnreadCount(){
+      try{ return parseInt(localStorage.getItem(COUNT_KEY) || '0', 10) || 0; }catch{ return 0; }
+    }
+    function updateBadges(count?: number){
+      const c = typeof count === 'number' ? count : getUnreadCount();
+      const notifBtn = document.getElementById('notification-toggle');
+      const badge = notifBtn?.querySelector('.badge') as HTMLElement | null;
+      if (badge){
+        if (c > 0){ badge.style.display = ''; badge.textContent = String(c); }
+        else { badge.style.display = 'none'; }
+      }
+    }
+
+    // Initialize notif UI
+    renderPanel();
+    updateBadges();
+    window.addEventListener('storage', (e) => {
+      if (e.key === STORE_KEY || e.key === COUNT_KEY){ renderPanel(); updateBadges(); }
+    });
+    // Same-document immediate sync when notifications updated from another component
+    window.addEventListener('kk-notifs-updated', () => { renderPanel(); updateBadges(); });
+
     // Hamburger / Mobile menu
     const menuButton = document.querySelector('.admin-topbar .menu-toggle') as HTMLButtonElement | null;
     const mobileMenu = document.getElementById('mobile-menu') as HTMLElement | null;
@@ -368,33 +454,24 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
     }
 
     notificationToggle?.addEventListener('click', function(e: MouseEvent) {
+      e.preventDefault();
       e.stopPropagation();
-      const open = notificationPanel?.classList.toggle('show');
-      notificationToggle.setAttribute('aria-expanded', String(!!open));
-      closeUserMenu();
-      if (open) {
-        setTimeout(() => {
-          const first = notificationPanel?.querySelector<HTMLElement>('button, a, [tabindex]:not([tabindex="-1"])');
-          first?.focus();
-        }, 10);
-        updateBadgeCount();
-      }
+      window.location.href = '/admin/notifikasi';
     });
     markAllBtn?.addEventListener('click', () => {
-      notificationPanel?.querySelectorAll('.notification-item.unread')?.forEach(item => (item as HTMLElement).classList.remove('unread'));
-      updateBadgeCount();
+      const items = getNotifs().map(n => ({...n, unread:false}));
+      setNotifs(items);
     });
 
     // Individual mark-as-read inside panel
     notificationPanel?.addEventListener('click', (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (!target) return;
-      const btn = target.closest('.notification-item .btn-icon');
+      const btn = target.closest('.notification-item .btn-icon') as HTMLElement | null;
       if (!btn) return;
-      const item = (btn as HTMLElement).closest('.notification-item');
-      if (!item) return;
-      (item as HTMLElement).classList.remove('unread');
-      updateBadgeCount();
+      const id = btn.getAttribute('data-id') || '';
+      const items = getNotifs().map(n => n.id===id ? ({...n, unread:false}) : n);
+      setNotifs(items);
     });
 
     // Close dropdowns when clicking outside
@@ -533,6 +610,11 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
     border: 1px solid #fde68a; background: #fef3c7; color: #92400e;
   }
   .plan-chip.plus { border-color: #c7d2fe; background: #eef2ff; color: #4338ca; }
+
+  /* Hide demo chip on smaller frames */
+  @media (max-width: 768px) {
+    .topbar-actions .demo-chip { display: none; }
+  }
 
   /* User dropdown */
   .user-button {
