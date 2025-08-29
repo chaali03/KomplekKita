@@ -1,5 +1,5 @@
 <!-- Optional Banner: rendered from localStorage 'programBanner' if enabled -->
-<section id="program-banner" class="program-banner" aria-live="polite" hidden>
+<section id="program-banner" class="program-banner" aria-live="polite" hidden data-aos="fade-down">
   <div class="banner-inner">
     <div class="banner-text">
       <h1 class="banner-title"></h1>
@@ -12,135 +12,271 @@
   <!-- Simple spacer so banner breathes above content -->
 </section>
 
-<!-- New section for "Program Penggalangan Dana" -->
-<section class="main-section">
-  <h2>Program Penggalangan Dana</h2>
-  <div class="flex-container">
-    <div class="card">
-      <div class="gambar-komplek"></div>
-      <div class="details">
-        <h3>Penggalangan dana program perbaikan jalan</h3>
-        <p class="info">Infromasi Lanjut :<br />08999099909 (Pak Tanyo)</p>
-      </div>
+<!-- Program Penggalangan Dana section -->
+<section class="main-section" data-aos="fade-up">
+  <div class="section-header">
+    <div class="header-content">
+      <h2 class="section-title">Program Penggalangan Dana</h2>
+      <p class="section-subtitle">Daftar program penggalangan dana yang sedang berjalan di komplek</p>
     </div>
-    <div class="card">
-      <div class="gambar-komplek"></div>
-      <div class="details">
-        <h3>Penggalangan dana program Pembuatan lapangan</h3>
-        <p class="info">
-          Infromasi Lanjut :<br />No Rek 0000000 (Tonya maimunah)
-        </p>
-      </div>
+    <div class="header-actions">
+      <button class="filter-btn active">Semua</button>
+      <button class="filter-btn">Infrastruktur</button>
+      <button class="filter-btn">Fasilitas</button>
     </div>
-    <div class="card">
-      <div class="gambar-komplek"></div>
-      <div class="details">
-        <h3>Penggalangan dana program Pembuatan lapangan</h3>
-        <p class="info">
-          Infromasi Lanjut :<br />No Rek 0000000 (Tonya maimunah)
-        </p>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="gambar-komplek"></div>
-      <div class="details">
-        <h3>Penggalangan dana program Pembuatan lapangan</h3>
-        <p class="info">
-          Infromasi Lanjut :<br />No Rek 0000000 (Tonya maimunah)
-        </p>
-      </div>
-    </div>
-    <div class="card">
-      <div class="gambar-komplek"></div>
-      <div class="details">
-        <h3>Penggalangan dana program Pembuatan lapangan</h3>
-        <p class="info">
-          Infromasi Lanjut :<br />No Rek 0000000 (Tonya maimunah)
-        </p>
-      </div>
-    </div>
-
   </div>
+  
+  <div class="flex-container">
+    <div class="card" data-aos="fade-up" data-aos-delay="100">
+      <div class="gambar-komplek">
+        <i class="fas fa-road"></i>
+      </div>
+      <div class="details">
+        <div class="card-badge">Infrastruktur</div>
+        <h3>Penggalangan dana program perbaikan jalan</h3>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 65%;"></div>
+          </div>
+          <div class="progress-text">65% terkumpul</div>
+        </div>
+        <p class="info">
+          <i class="fas fa-phone-alt"></i> Informasi: 08999099909 (Pak Tanyo)
+        </p>
+        <button class="donate-btn">Donasi Sekarang</button>
+      </div>
+    </div>
+    
+    <div class="card" data-aos="fade-up" data-aos-delay="150">
+      <div class="gambar-komplek">
+        <i class="fas fa-futbol"></i>
+      </div>
+      <div class="details">
+        <div class="card-badge">Fasilitas</div>
+        <h3>Penggalangan dana program Pembuatan lapangan</h3>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 40%;"></div>
+          </div>
+          <div class="progress-text">40% terkumpul</div>
+        </div>
+        <p class="info">
+          <i class="fas fa-credit-card"></i> Rekening: 0000000 (Tonya Maimunah)
+        </p>
+        <button class="donate-btn">Donasi Sekarang</button>
+      </div>
+    </div>
+    
+    <div class="card" data-aos="fade-up" data-aos-delay="200">
+      <div class="gambar-komplek">
+        <i class="fas fa-tree"></i>
+      </div>
+      <div class="details">
+        <div class="card-badge">Fasilitas</div>
+        <h3>Penggalangan dana program Taman Bermain</h3>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 25%;"></div>
+          </div>
+          <div class="progress-text">25% terkumpul</div>
+        </div>
+        <p class="info">
+          <i class="fas fa-credit-card"></i> Rekening: 0000000 (Tonya Maimunah)
+        </p>
+        <button class="donate-btn">Donasi Sekarang</button>
+      </div>
+    </div>
 
+    <div class="card" data-aos="fade-up" data-aos-delay="250">
+      <div class="gambar-komplek">
+        <i class="fas fa-water"></i>
+      </div>
+      <div class="details">
+        <div class="card-badge">Infrastruktur</div>
+        <h3>Penggalangan dana program Saluran Air</h3>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 80%;"></div>
+          </div>
+          <div class="progress-text">80% terkumpul</div>
+        </div>
+        <p class="info">
+          <i class="fas fa-credit-card"></i> Rekening: 0000000 (Tonya Maimunah)
+        </p>
+        <button class="donate-btn">Donasi Sekarang</button>
+      </div>
+    </div>
+    
+    <div class="card" data-aos="fade-up" data-aos-delay="300">
+      <div class="gambar-komplek">
+        <i class="fas fa-lightbulb"></i>
+      </div>
+      <div class="details">
+        <div class="card-badge">Infrastruktur</div>
+        <h3>Penggalangan dana program Penerangan Jalan</h3>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 55%;"></div>
+          </div>
+          <div class="progress-text">55% terkumpul</div>
+        </div>
+        <p class="info">
+          <i class="fas fa-credit-card"></i> Rekening: 0000000 (Tonya Maimunah)
+        </p>
+        <button class="donate-btn">Donasi Sekarang</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="view-all-container" data-aos="fade-up" data-aos-delay="350">
+    <a href="/program-detail" class="view-all-btn">
+      <span>Lihat Semua Program</span>
+      <i class="fas fa-arrow-right"></i>
+    </a>
+  </div>
 </section>
 
-<!-- acara mendatang -->
-
-<section class="events-section">
-  <h2>Acara Mendatang</h2>
+<!-- Acara Mendatang Section -->
+<section class="events-section" data-aos="fade-up">
+  <div class="section-header">
+    <div class="header-content">
+      <h2 class="section-title">Acara Mendatang</h2>
+      <p class="section-subtitle">Jadwal kegiatan yang akan datang di komplek</p>
+    </div>
+    <div class="header-actions">
+      <button class="filter-btn active">Semua</button>
+      <button class="filter-btn">Minggu Ini</button>
+      <button class="filter-btn">Bulan Ini</button>
+    </div>
+  </div>
 
   <div class="events-grid">
-    <div class="event-card">
+    <div class="event-card" data-aos="fade-up" data-aos-delay="100">
+      <div class="event-date-badge">
+        <div class="date-day">15</div>
+        <div class="date-month">Mei</div>
+      </div>
       <div class="event-details">
+        <div class="event-category">Sosial</div>
         <h3>Arisan Komplek</h3>
         <p class="event-location">
-          <span class="icon-map">📍</span> Aula Komplek Duta Bijaksana
+          <i class="fas fa-map-marker-alt"></i> Aula Komplek Duta Bijaksana
+        </p>
+        <p class="event-time">
+          <i class="fas fa-clock"></i> 19:00 - 21:00 WIB
         </p>
         <p class="event-description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
-          congue lacus quam, nec finibus mauris tincidunt sed.
+          Arisan rutin warga komplek dengan doorprize dan acara ramah tamah untuk mempererat silaturahmi antar warga.
         </p>
+        <div class="event-actions">
+          <button class="event-btn primary">Daftar</button>
+          <button class="event-btn secondary">Detail</button>
+        </div>
       </div>
-      <div class="event-date">10.20.2025</div>
     </div>
 
-    <div class="event-card">
+    <div class="event-card" data-aos="fade-up" data-aos-delay="150">
+      <div class="event-date-badge">
+        <div class="date-day">20</div>
+        <div class="date-month">Mei</div>
+      </div>
       <div class="event-details">
-        <h3>Arisan Komplek</h3>
+        <div class="event-category">Olahraga</div>
+        <h3>Turnamen Futsal</h3>
         <p class="event-location">
-          <span class="icon-map">📍</span> Aula Komplek Duta Bijaksana
+          <i class="fas fa-map-marker-alt"></i> Lapangan Futsal Komplek
+        </p>
+        <p class="event-time">
+          <i class="fas fa-clock"></i> 08:00 - 17:00 WIB
         </p>
         <p class="event-description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
-          congue lacus quam, nec finibus mauris tincidunt sed.
+          Turnamen futsal antar RT dengan hadiah menarik. Pendaftaran dibuka untuk semua warga komplek.
         </p>
+        <div class="event-actions">
+          <button class="event-btn primary">Daftar</button>
+          <button class="event-btn secondary">Detail</button>
+        </div>
       </div>
-      <div class="event-date">10.20.2025</div>
     </div>
 
-    <div class="event-card">
+    <div class="event-card" data-aos="fade-up" data-aos-delay="200">
+      <div class="event-date-badge">
+        <div class="date-day">25</div>
+        <div class="date-month">Mei</div>
+      </div>
       <div class="event-details">
-        <h3>Arisan Komplek</h3>
+        <div class="event-category">Kesehatan</div>
+        <h3>Pemeriksaan Kesehatan Gratis</h3>
         <p class="event-location">
-          <span class="icon-map">📍</span> Aula Komplek Duta Bijaksana
+          <i class="fas fa-map-marker-alt"></i> Balai Warga Komplek
+        </p>
+        <p class="event-time">
+          <i class="fas fa-clock"></i> 09:00 - 14:00 WIB
         </p>
         <p class="event-description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
-          congue lacus quam, nec finibus mauris tincidunt sed.
+          Pemeriksaan kesehatan gratis untuk warga komplek meliputi cek tekanan darah, gula darah, dan konsultasi kesehatan.
         </p>
+        <div class="event-actions">
+          <button class="event-btn primary">Daftar</button>
+          <button class="event-btn secondary">Detail</button>
+        </div>
       </div>
-      <div class="event-date">10.20.2025</div>
     </div>
 
-    <div class="event-card">
+    <div class="event-card" data-aos="fade-up" data-aos-delay="250">
+      <div class="event-date-badge">
+        <div class="date-day">01</div>
+        <div class="date-month">Jun</div>
+      </div>
       <div class="event-details">
-        <h3>Arisan Komplek</h3>
+        <div class="event-category">Pendidikan</div>
+        <h3>Workshop Digital Marketing</h3>
         <p class="event-location">
-          <span class="icon-map">📍</span> Aula Komplek Duta Bijaksana
+          <i class="fas fa-map-marker-alt"></i> Aula Komplek Duta Bijaksana
+        </p>
+        <p class="event-time">
+          <i class="fas fa-clock"></i> 13:00 - 16:00 WIB
         </p>
         <p class="event-description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
-          congue lacus quam, nec finibus mauris tincidunt sed.
+          Workshop digital marketing untuk UMKM warga komplek. Belajar strategi pemasaran online untuk meningkatkan penjualan.
         </p>
+        <div class="event-actions">
+          <button class="event-btn primary">Daftar</button>
+          <button class="event-btn secondary">Detail</button>
+        </div>
       </div>
-      <div class="event-date">10.20.2025</div>
     </div>
 
-    <div class="event-card">
+    <div class="event-card" data-aos="fade-up" data-aos-delay="300">
+      <div class="event-date-badge">
+        <div class="date-day">10</div>
+        <div class="date-month">Jun</div>
+      </div>
       <div class="event-details">
-        <h3>Arisan Komplek</h3>
+        <div class="event-category">Keagamaan</div>
+        <h3>Pengajian Rutin</h3>
         <p class="event-location">
-          <span class="icon-map">📍</span> Aula Komplek Duta Bijaksana
+          <i class="fas fa-map-marker-alt"></i> Masjid Al-Ikhlas Komplek
+        </p>
+        <p class="event-time">
+          <i class="fas fa-clock"></i> 19:30 - 21:00 WIB
         </p>
         <p class="event-description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
-          congue lacus quam, nec finibus mauris tincidunt sed.
+          Pengajian rutin bulanan dengan tema "Membangun Keluarga Sakinah" bersama Ustadz Ahmad Zainuddin, Lc.
         </p>
+        <div class="event-actions">
+          <button class="event-btn primary">Daftar</button>
+          <button class="event-btn secondary">Detail</button>
+        </div>
       </div>
-      <div class="event-date">10.20.2025</div>
     </div>
-
+  </div>
+  
+  <div class="view-all-container" data-aos="fade-up" data-aos-delay="350">
+    <a href="/events-calendar" class="view-all-btn">
+      <span>Lihat Kalender Acara</span>
+      <i class="fas fa-calendar-alt"></i>
+    </a>
   </div>
 </section>
 
@@ -194,108 +330,63 @@
     font-family: sans-serif;
   }
 
-  .events-section {
+  /* Program Penggalangan Dana Section */
+  .main-section {
     max-width: 1000px;
     margin: 0 auto;
-    text-align: center;
+    padding: 2rem;
   }
 
-  h2 {
-    font-size: 2em;
-    color: #333;
-    margin-bottom: 1em;
-  }
-
-  .events-grid {
+  .section-header {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 25px;
-    margin-bottom: 15rem;
-  }
-
-  .event-card {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0, 50, 100, 0.1);
-    position: relative;
-    box-sizing: border-box;
-    transition:
-      transform 0.3s ease-in-out,
-      box-shadow 0.3s ease-in-out;
-    cursor: pointer;
-    flex: 0 1 300px;
-    max-width: 400px;
-  }
-
-  .event-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 35px rgba(0, 50, 100, 0.15);
-  }
-
-  .event-details {
-    text-align: left;
-  }
-
-  .event-details h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-top: 0;
-    color: #084c61;
-  }
-
-  .event-location {
-    color: #666;
-    font-size: 0.9em;
-    display: flex;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
   }
 
-  .icon-map {
-    font-size: 1.2em;
-    margin-right: 5px;
+  .header-content {
+    flex: 1;
+    min-width: 250px;
   }
 
-  .event-description {
-    font-size: 0.9em;
-    color: #666;
-    line-height: 1.4;
-  }
-
-  .event-date {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #999;
-  }
-
-  @media (max-width: 768px) {
-    .main-section h2 {
-      text-align: center;
-    }
-  }
-
-  /* ------------------------------------------------------------------------------------------------------------ */
-
-  /* program penggalangan dana */
-  / .main-section {
-    width: 90%;
-    max-width: 500px;
-    margin: 0 auto;
-  }
-
-  .main-section h2 {
-    font-size: 2rem;
+  .section-title {
+    font-size: 1.8rem;
     font-weight: 700;
     color: #084c61;
-    margin-bottom: 25px;
-    position: relative;
-    text-align: left;
-    margin-left: 70px;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-subtitle {
+    color: #666;
+    font-size: 1rem;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    background-color: #f0f2f5;
+    border: none;
+    border-radius: 20px;
+    color: #555;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .filter-btn:hover {
+    background-color: #e0e5eb;
+  }
+
+  .filter-btn.active {
+    background-color: #007bff;
+    color: white;
   }
 
   .flex-container {
@@ -303,7 +394,7 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 25px;
-    margin-bottom: 10rem;
+    margin-bottom: 2rem;
   }
 
   .card {
@@ -336,15 +427,25 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.6rem;
+    font-size: 2rem;
+    color: #ffffff;
     text-align: center;
     flex-shrink: 0;
-    position: relative;
-    overflow: hidden;
   }
 
   .details {
     text-align: left;
+    flex: 1;
+  }
+
+  .card-badge {
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    background-color: #f0f2f5;
+    color: #555;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
   }
 
   .details h3 {
@@ -355,33 +456,247 @@
     color: #084c61;
   }
 
+  .progress-container {
+    margin: 10px 0;
+  }
+
+  .progress-bar {
+    height: 8px;
+    background-color: #e0e5eb;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 5px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #007bff, #00c6ff);
+    border-radius: 4px;
+  }
+
+  .progress-text {
+    font-size: 0.8rem;
+    color: #666;
+    text-align: right;
+  }
+
   .info {
     font-size: 0.9rem;
     color: #666;
-    margin: 0;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
-  .info br {
-    line-height: 1.5;
+  .donate-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-top: 10px;
   }
 
-  .scroll:hover {
-    color: #0077b6;
+  .donate-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
   }
 
-  .line {
-    width: 100px;
-    height: 2px;
-    background-color: #ccc;
+  .view-all-container {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  .view-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    background-color: #f0f2f5;
+    color: #333;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .view-all-btn:hover {
+    background-color: #e0e5eb;
+    transform: translateY(-2px);
+  }
+
+  .view-all-btn i {
+    transition: transform 0.3s ease;
+  }
+
+  .view-all-btn:hover i {
+    transform: translateX(3px);
+  }
+
+  /* Acara Mendatang Section */
+  .events-section {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 2rem;
+  }
+
+  .events-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 2rem;
+  }
+
+  .event-card {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 50, 100, 0.1);
+    position: relative;
+    box-sizing: border-box;
+    transition:
+      transform 0.3s ease-in-out,
+      box-shadow 0.3s ease-in-out;
+    cursor: pointer;
+    flex: 0 1 300px;
+    max-width: 400px;
+  }
+
+  .event-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 35px rgba(0, 50, 100, 0.15);
+  }
+
+  .event-date-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 50px;
+    height: 60px;
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+  }
+
+  .date-day {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .date-month {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+  }
+
+  .event-details {
+    text-align: left;
+    padding-left: 65px;
+  }
+
+  .event-category {
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    background-color: #f0f2f5;
+    color: #555;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .event-details h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 0;
+    color: #084c61;
+  }
+
+  .event-location, .event-time {
+    display: flex;
+    align-items: center;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .event-location i, .event-time i {
+    margin-right: 0.5rem;
+    color: #007bff;
+  }
+
+  .event-description {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.4;
+    margin: 0.8rem 0;
+  }
+
+  .event-actions {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+
+  .event-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+  }
+
+  .event-btn.primary {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .event-btn.primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+  }
+
+  .event-btn.secondary {
+    background-color: #f0f2f5;
+    color: #333;
+  }
+
+  .event-btn.secondary:hover {
+    background-color: #e0e5eb;
+    transform: translateY(-2px);
   }
 
   @media (max-width: 768px) {
-    .main-section h2 {
-      text-align: center;
-      font-size: 30px;
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
     }
-    .grid {
-      grid-template-columns: 1fr;
+    
+    .header-actions {
+      width: 100%;
+      justify-content: flex-start;
+      margin-top: 0.5rem;
+    }
+    
+    .events-grid {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .event-card {
+      width: 100%;
+      max-width: 400px;
     }
   }
 
@@ -395,6 +710,16 @@
 <script>
   // @ts-nocheck
   document.addEventListener('DOMContentLoaded', () => {
+    // Initialize AOS if it exists
+    if (typeof AOS !== 'undefined') {
+      AOS.init({
+        duration: 800,
+        easing: 'ease-out',
+        once: true
+      });
+    }
+    
+    // Banner functionality
     try{
       const raw = localStorage.getItem('programBanner');
       if (!raw) return;
@@ -415,5 +740,100 @@
       }
       sec.hidden = false;
     }catch(e){ /* silent */ }
+    
+    // Program filter functionality
+    const programFilterBtns = document.querySelectorAll('.main-section .filter-btn');
+    const programCards = document.querySelectorAll('.main-section .card');
+    
+    if (programFilterBtns.length > 0 && programCards.length > 0) {
+      programFilterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          // Remove active class from all buttons
+          programFilterBtns.forEach(b => b.classList.remove('active'));
+          // Add active class to clicked button
+          this.classList.add('active');
+          
+          const filter = this.textContent.trim().toLowerCase();
+          
+          // Filter cards
+          programCards.forEach(card => {
+            const category = card.querySelector('.card-badge')?.textContent.trim().toLowerCase() || '';
+            
+            if (filter === 'semua' || category.includes(filter)) {
+              card.style.display = 'flex';
+              // Refresh AOS animation
+              if (typeof AOS !== 'undefined') {
+                setTimeout(() => {
+                  AOS.refresh();
+                }, 100);
+              }
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+    }
+    
+    // Events filter functionality
+    const eventFilterBtns = document.querySelectorAll('.events-section .filter-btn');
+    const eventCards = document.querySelectorAll('.event-card');
+    
+    if (eventFilterBtns.length > 0 && eventCards.length > 0) {
+      eventFilterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          // Remove active class from all buttons
+          eventFilterBtns.forEach(b => b.classList.remove('active'));
+          // Add active class to clicked button
+          this.classList.add('active');
+          
+          const filter = this.textContent.trim().toLowerCase();
+          const today = new Date();
+          const oneWeekLater = new Date(today);
+          oneWeekLater.setDate(today.getDate() + 7);
+          const oneMonthLater = new Date(today);
+          oneMonthLater.setMonth(today.getMonth() + 1);
+          
+          // Filter cards
+          eventCards.forEach(card => {
+            // Get date from card
+            const dateDay = card.querySelector('.date-day')?.textContent.trim() || '';
+            const dateMonth = card.querySelector('.date-month')?.textContent.trim() || '';
+            
+            // Convert to date object (simplified for demo)
+            const months = {'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'mei': 4, 'jun': 5, 'jul': 6, 'agu': 7, 'sep': 8, 'okt': 9, 'nov': 10, 'des': 11};
+            const monthIndex = months[dateMonth.toLowerCase()] || 0;
+            const eventDate = new Date(today.getFullYear(), monthIndex, parseInt(dateDay) || 1);
+            
+            // If date is in the past, set it to next year
+            if (eventDate < today && monthIndex < today.getMonth()) {
+              eventDate.setFullYear(today.getFullYear() + 1);
+            }
+            
+            let showCard = false;
+            
+            if (filter === 'semua') {
+              showCard = true;
+            } else if (filter === 'minggu ini' && eventDate <= oneWeekLater && eventDate >= today) {
+              showCard = true;
+            } else if (filter === 'bulan ini' && eventDate <= oneMonthLater && eventDate >= today) {
+              showCard = true;
+            }
+            
+            if (showCard) {
+              card.style.display = 'block';
+              // Refresh AOS animation
+              if (typeof AOS !== 'undefined') {
+                setTimeout(() => {
+                  AOS.refresh();
+                }, 100);
+              }
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+    }
   });
   </script>

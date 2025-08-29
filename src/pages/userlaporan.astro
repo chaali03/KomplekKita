@@ -1,10 +1,60 @@
 ---
-import Nav from '../components/User-site/navclient.astro';
-import Laporan from '../components/User-site/laporandash.astro';
+import Nav from '~/components/User-site/navclient.astro';
+import Laporan from '~/components/User-site/laporandash.astro';
 import Layout from "~/layouts/userlayout.astro";
 ---
 
 <Layout>
 <Nav />
+<!-- Iuran Notice Banner (visible if current month dues not saved by admin) -->
+<div id="dues-notice" class="notice-banner" style="display:none">
+  <i class="fas fa-exclamation-triangle"></i>
+  <span id="dues-notice-text">Iuran bulan ini belum disimpan oleh admin. Belum ada tagihan berjalan.</span>
+</div>
+
+<style>
+  .notice-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    max-width: 1000px;
+    margin: 0.75rem auto 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    background: #fff7e6;
+    border: 1px solid #ffe2b4;
+    color: #8a5a00;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    font-size: 0.95rem;
+  }
+  .notice-banner i { color: #ff9f00; }
+</style>
+
+<script type="module">
+  (function(){
+    try {
+      const now = new Date();
+      const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+      const raw = localStorage.getItem('dues_configs');
+      let saved = false;
+      if (raw) {
+        try {
+          const cfg = JSON.parse(raw);
+          const val = cfg?.[ym];
+          saved = !!(typeof val === 'number' ? val > 0 : val && typeof val.amount !== 'undefined' ? Number(val.amount) > 0 : false);
+        } catch {}
+      }
+      const wrap = document.getElementById('dues-notice');
+      if (wrap) wrap.style.display = saved ? 'none' : 'flex';
+      const txt = document.getElementById('dues-notice-text');
+      if (txt) txt.innerHTML = `Iuran bulan <strong>${ym}</strong> belum disimpan admin. Belum ada penagihan berjalan.`;
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'dues_configs') location.reload();
+      });
+    } catch (err) {
+      console.warn('Failed to compute dues notice (userlaporan):', err);
+    }
+  })();
+</script>
 <Laporan />
 </Layout>

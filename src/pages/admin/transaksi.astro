@@ -88,7 +88,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     <div class="kpi-card">
       <div class="kpi-icon kpi-blue"><i class="fas fa-wallet"></i></div>
       <div class="kpi-content">
-        <div class="kpi-label">Saldo</div>
+        <div class="kpi-label">Uang Kas</div>
         <div class="kpi-value" id="kpi-saldo" aria-live="polite">Rp0</div>
       </div>
     </div>
@@ -190,7 +190,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
   <section class="grid-charts pre-anim">
     <div class="card block chart-card">
       <div class="card-header">
-        <h3><i class="fas fa-chart-line"></i> Tren Saldo</h3>
+        <h3><i class="fas fa-chart-line"></i> Tren Uang Kas</h3>
         <div class="card-actions">
           <button class="action-button" aria-label="Unduh grafik" title="Unduh PNG">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -211,7 +211,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       </div>
       <div class="card-body chart-body">
         <div class="skeleton" id="sk-cashflow"></div>
-        <canvas id="chart-cashflow" aria-label="Grafik tren saldo" role="img"></canvas>
+        <canvas id="chart-cashflow" aria-label="Grafik tren uang kas" role="img"></canvas>
       </div>
     </div>
 
@@ -395,11 +395,12 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       display:flex; align-items:center; justify-content:space-between;
       background: var(--surface);
       border:1px solid var(--outline);
-      border-radius:14px; padding:18px 20px; margin-bottom:20px;
+      border-radius:14px; padding:22px 24px; margin-bottom:22px;
       box-shadow: 0 8px 20px rgba(0,0,0,.08);
-      flex-wrap: wrap; gap: 18px;
+      flex-wrap: wrap; gap: 20px 16px;
     }
-    .section-header-left{ display:flex; gap:12px; align-items:center; flex: 1; min-width: 280px; }
+    .section-header-left{ display:flex; gap:14px; align-items:flex-start; flex: 1; min-width: 320px; }
+
     @media (max-width: 480px) {
       .section-header-left { gap: 8px; min-width: 200px; }
     }
@@ -412,6 +413,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       font-size:18px;
       flex-shrink: 0;
     }
+
     @media (max-width: 480px) {
       .section-icon {
         width: 38px; height: 38px; 
@@ -419,13 +421,16 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         border-radius: 10px;
       }
     }
-    .section-title h1{ margin:0; font-weight:900; letter-spacing:.2px; font-size: clamp(1.5rem, 4vw, 2rem); }
+    .section-title{ display:flex; flex-direction: column; gap: 4px; }
+    .section-title h1{ margin:0; font-weight:900; letter-spacing:.2px; font-size: clamp(1.5rem, 4vw, 2rem); line-height: 1.15; }
+
     @media (max-width: 480px) {
       .section-title h1 { font-size: clamp(1.2rem, 5vw, 1.5rem); }
     }
-    .subtitle{ color:var(--text-subtle); font-weight:600; margin:2px 0 0; }
+    .subtitle{ color:var(--text-subtle); font-weight:600; margin:4px 0 0; line-height: 1.45; max-width: 56ch; }
 
-    .section-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content: flex-end; }
+    .section-actions{ display:flex; column-gap:12px; row-gap:10px; align-items:center; flex-wrap:wrap; justify-content: flex-end; }
+
     @media (max-width: 480px) {
       .section-actions { gap: 6px; justify-content: center; margin-top: 8px; width: 100%; }
     }
@@ -652,11 +657,14 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     }
 
     .btn{
-      display:inline-flex; align-items:center; gap:8px; padding:8px 14px;
+      display:inline-flex; align-items:center; gap:8px; padding:10px 14px;
       border-radius:999px; border:1px solid var(--outline); font-weight:900;
       background: var(--surface-2); color: var(--text); box-shadow: 0 6px 18px rgba(0,0,0,.06);
       white-space: nowrap;
     }
+    .btn i { font-size: 0.95rem; }
+    .btn span { letter-spacing: .1px; }
+
     .btn.primary{ background:#2563eb; color:#fff; border-color:#1d4ed8; box-shadow:0 10px 22px rgba(37,99,235,.25); }
     .btn.soft{ background: var(--surface-2); color: var(--text); }
     .btn.ghost{ background: transparent; }
@@ -924,6 +932,19 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     // Utilities
     const fmtIDR = (n)=> new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR', maximumFractionDigits:0}).format(n);
+    // Unified Komplek context and fetch helpers (align with `src/components/User-site/laporandash.astro`)
+    const qs = new URLSearchParams(location.search);
+    const komplekId = parseInt(qs.get('komplek_id') || localStorage.getItem('komplek_id') || '1');
+    localStorage.setItem('komplek_id', String(komplekId));
+
+    async function fetchJson(url){
+      const res = await fetch(url, { headers: { 'Accept':'application/json' } });
+      if(!res.ok){
+        const text = await res.text().catch(()=> '');
+        throw new Error(`Gagal fetch: ${url} [${res.status}] ${text?.slice(0,200)}`);
+      }
+      return res.json();
+    }
     const fmtDateID = (iso)=> new Date(iso+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
 
     // State
@@ -1344,7 +1365,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       animateNumber(elSaldo, saldo, fmtIDR);
       animateNumber(elMasuk, totalIn, fmtIDR);
       animateNumber(elKeluar, totalOut, fmtIDR);
-      animateNumber(elCount, rows.length, (n)=> n.toLocaleString('id-ID'));
+      animateNumber(elCount, rows.length, (v)=> String(v).toLocaleString('id-ID'));
     }
 
     function animateNumber(el, to, format=(n)=>n){
@@ -1364,6 +1385,48 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         else el.dataset.val = String(to);
       }
       requestAnimationFrame(step);
+    }
+
+    // Unified KPI loader from centralized API summary
+    let lastSummaryFetch = 0;
+    async function loadSummaryKPIs(){
+      try{
+        const now = Date.now();
+        const SNAP_KEY = 'summary_kpis';
+        const snap = JSON.parse(localStorage.getItem(SNAP_KEY)||'null');
+        // If we fetched in the last 60s, reuse snapshot to avoid spam
+        if(snap && (now - (Number(snap.ts)||0)) < 60000 && String(snap.komplekId)===String(komplekId)){
+          if(elSaldo) elSaldo.textContent = fmtIDR(Number(snap.totalKas||0));
+          if(elMasuk) elMasuk.textContent = fmtIDR(Number(snap.totalMasuk||0));
+          if(elKeluar) elKeluar.textContent = fmtIDR(Number(snap.totalKeluar||0));
+          if(elCount) elCount.textContent = String(Number(snap.trxCount||0));
+          return;
+        }
+        const data = await fetchJson(`/api/public/transaksi/summary?komplek_id=${encodeURIComponent(komplekId)}`);
+        const totalKas = Number(data?.totalKas || data?.total_kas || 0);
+        const totalMasuk = Number(data?.totalMasuk || data?.total_masuk || 0);
+        const totalKeluar = Number(data?.totalKeluar || data?.total_keluar || 0);
+        const trxCount = Number(data?.countTransaksi || data?.transactionCount || data?.count || 0);
+        if(elSaldo) elSaldo.textContent = fmtIDR(totalKas);
+        if(elMasuk) elMasuk.textContent = fmtIDR(totalMasuk);
+        if(elKeluar) elKeluar.textContent = fmtIDR(totalKeluar);
+        if(elCount) elCount.textContent = String(trxCount);
+        // Persist last successful API snapshot (optional UX)
+        localStorage.setItem(SNAP_KEY, JSON.stringify({komplekId, totalKas, totalMasuk, totalKeluar, trxCount, ts: now}));
+        lastSummaryFetch = now;
+      }catch(err){
+        console.warn('Gagal memuat ringkasan dari API, menggunakan nilai lokal sementara.', err);
+        // Fallback: try last snapshot
+        try{
+          const snap = JSON.parse(localStorage.getItem('summary_kpis')||'null');
+          if(snap && String(snap.komplekId)===String(komplekId)){
+            if(elSaldo) elSaldo.textContent = fmtIDR(Number(snap.totalKas||0));
+            if(elMasuk) elMasuk.textContent = fmtIDR(Number(snap.totalMasuk||0));
+            if(elKeluar) elKeluar.textContent = fmtIDR(Number(snap.totalKeluar||0));
+            if(elCount) elCount.textContent = String(Number(snap.trxCount||0));
+          }
+        }catch(_e){ /* noop */ }
+      }
     }
 
     // Charts
@@ -1409,7 +1472,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           labels: dates.map(fmtDateID),
           datasets:[
             {
-              label:'Saldo',
+              label:'Uang Kas',
               data: saldoSeries,
               borderColor:'#2563eb',
               backgroundColor:'rgba(37,99,235,.15)', // solid alpha, no gradient
@@ -1757,10 +1820,12 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     // When Chart.js ready
     script.onload = ()=> {
       refreshAll();
+      loadSummaryKPIs();
     };
 
     // First render (skeleton visible until Chart.js ready)
     refreshAll();
+    loadSummaryKPIs();
 
     // ===== Import CSV & Rollback =====
     const importModal = document.getElementById('import-modal');

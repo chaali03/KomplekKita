@@ -81,11 +81,19 @@ class TransaksiKeuanganController extends Controller
             ->orderBy('kategori')
             ->get();
         $total = (clone $q)->sum('jumlah');
+        
+        // Hitung total pemasukan (jumlah > 0) dan pengeluaran (jumlah < 0)
+        $totalMasuk = (clone $q)->where('jumlah', '>', 0)->sum('jumlah');
+        $totalKeluar = (clone $q)->where('jumlah', '<', 0)->sum('jumlah') * -1; // Ubah ke nilai positif
+        $totalKas = $totalMasuk - $totalKeluar;
 
         return response()->json([
             'byTanggal' => $byTanggal,
             'byKategori' => $byKategori,
             'total' => (float)$total,
+            'totalKas' => (float)$totalKas,
+            'totalMasuk' => (float)$totalMasuk,
+            'totalKeluar' => (float)$totalKeluar
         ]);
     }
 }

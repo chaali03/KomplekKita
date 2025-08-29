@@ -824,7 +824,7 @@ import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
       background: var(--surface);
       border: 1px solid var(--outline);
       border-radius: var(--radius-lg);
-      padding: 1.5rem;
+      padding: 1.375rem 1.5rem; /* 22px 24px for tighter vertical rhythm */
       margin-bottom: 1.5rem;
       box-shadow: var(--shadow);
     }
@@ -834,7 +834,7 @@ import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
         padding: 1.25rem;
         margin-bottom: 1.25rem;
         flex-wrap: wrap;
-        gap: 1rem;
+        gap: 0.75rem 1rem; /* row-gap col-gap */
       }
     }
     
@@ -849,8 +849,9 @@ import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
 
     .section-header-left {
       display: flex;
-      gap: 1rem;
-      align-items: center;
+      gap: 0.875rem;
+      align-items: flex-start;
+      min-width: 320px;
     }
 
     .section-icon {
@@ -884,19 +885,27 @@ import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
       }
     }
 
+    .section-title {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
     .section-title h1 {
       margin: 0;
       font-size: 1.875rem;
       font-weight: 700;
       color: var(--text);
-      line-height: 1.2;
+      line-height: 1.15;
     }
 
     .subtitle {
       color: var(--text-subtle);
       font-weight: 500;
-      margin: 0.25rem 0 0 0;
+      margin: 0.125rem 0 0 0;
       font-size: 0.875rem;
+      line-height: 1.45;
+      max-width: 56ch;
     }
     
     @media (max-width: 768px) {
@@ -912,12 +921,14 @@ import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
       
       .subtitle {
         font-size: 0.8125rem;
+        line-height: 1.45;
       }
     }
 
     .section-actions {
       display: flex;
-      gap: 0.75rem;
+      column-gap: 0.75rem;
+      row-gap: 0.625rem;
       align-items: center;
       flex-wrap: wrap;
     }
@@ -1179,7 +1190,7 @@ import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      padding: 0.75rem 1.25rem;
+      padding: 0.625rem 1rem; /* 10px vertical for better balance */
       border-radius: var(--radius);
       font-weight: 600;
       font-size: 0.875rem;
@@ -1231,6 +1242,10 @@ import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
 
     .btn svg {
       flex-shrink: 0;
+    }
+
+    .btn span {
+      letter-spacing: 0.1px;
     }
 
     /* KPI Grid */
