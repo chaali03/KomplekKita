@@ -1154,6 +1154,47 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       chartMap: new Map(), // id -> chart instance
     };
 
+    // Global Chart registry to avoid canvas reuse across navigations/rerenders
+    ;(function initChartRegistry(){
+      // plain JS (no TS casts in this file)
+      (window as any)?.dashboardCharts; // keep potential tooling happy
+      // ensure global map exists
+      // @ts-ignore
+      window.dashboardCharts = window.dashboardCharts || new Map();
+    })();
+
+    function destroyChartForCanvasId(id){
+      try{
+        const w = window;
+        const canvas = document.getElementById(id);
+        if(!canvas) return;
+        // @ts-ignore
+        const reg = w.dashboardCharts;
+        const prev = reg && typeof reg.get === 'function' ? reg.get(id) : null;
+        if(prev && typeof prev.destroy === 'function'){
+          prev.destroy();
+          reg.delete(id);
+        }
+        // Defensive: also destroy any chart bound to this canvas even if untracked
+        // @ts-ignore
+        if(w.Chart && typeof w.Chart.getChart === 'function'){
+          // @ts-ignore
+          const bound = w.Chart.getChart(canvas);
+          if(bound && typeof bound.destroy === 'function'){
+            bound.destroy();
+          }
+        }
+      }catch{/* noop */}
+    }
+
+    function getCtxPrepared(id){
+      destroyChartForCanvasId(id);
+      const el = document.getElementById(id);
+      // el might be null or not a canvas; getContext exists on canvas only
+      // @ts-ignore
+      return el && typeof el.getContext === 'function' ? el.getContext('2d') : null;
+    }
+
     function seedIfEmpty(){
       const raw = localStorage.getItem(STORAGE_KEY);
       if(raw) return;
@@ -1326,7 +1367,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       rows.forEach(r=>{ byStatus[r.status]=(byStatus[r.status]||0)+1; r.verified?byVer.ver++:byVer.nver++; });
 
       // Bar RT/RW
-      const ctx1 = document.getElementById('chart-rt').getContext('2d');
+      const ctx1 = getCtxPrepared('chart-rt');
       state.charts.rt && state.charts.rt.destroy();
       state.charts.rt = new Chart(ctx1, {
         type:'bar',
@@ -1342,9 +1383,11 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         }
       });
       state.chartMap.set('chart-rt', state.charts.rt);
+      // @ts-ignore
+      window.dashboardCharts.set('chart-rt', state.charts.rt);
 
       // Doughnut Status & Verifikasi
-      const ctx2 = document.getElementById('chart-status').getContext('2d');
+      const ctx2 = getCtxPrepared('chart-status');
       state.charts.status && state.charts.status.destroy();
       state.charts.status = new Chart(ctx2, {
         type:'doughnut',
@@ -1355,6 +1398,8 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         options:{ cutout:'56%', plugins:{ legend:{ position:'bottom' } }, layout: { padding: 8 }, responsive:true, maintainAspectRatio:false }
       });
       state.chartMap.set('chart-status', state.charts.status);
+      // @ts-ignore
+      window.dashboardCharts.set('chart-status', state.charts.status);
     }
 
     // Chart actions: download + fullscreen

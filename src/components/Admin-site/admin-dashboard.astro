@@ -718,17 +718,44 @@
     };
     const cashFlowCtx = document.getElementById('chartKas');
     if (cashFlowCtx) {
+      try {
+        const existing = window.dashboardCharts ? window.dashboardCharts.get('chartKas') : null;
+        existing && typeof existing.destroy === 'function' && existing.destroy();
+      } catch (e) {}
+      try {
+        // Also destroy if a Chart is already bound to this canvas (defensive)
+        if (typeof Chart !== 'undefined' && Chart.getChart) {
+          const prev = Chart.getChart(cashFlowCtx);
+          if (prev && typeof prev.destroy === 'function') prev.destroy();
+        }
+      } catch (e) {}
       const ctx = cashFlowCtx.getContext ? cashFlowCtx.getContext('2d') : null;
       const cashFlowChart = new Chart(cashFlowCtx, { type: 'line', data: { labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], datasets:[{ label:'Total Kas', data:[1000000,1200000,1350000,1500000,1800000,2000000,2200000,2400000,2600000,2800000,3000000,3200000], borderColor: palette.primary, backgroundColor: ctx ? makeGradient(ctx, palette.primary) : palette.primarySoft, borderWidth:2, tension:0.4, fill:true, pointBackgroundColor:'#ffffff', pointBorderColor: palette.primary, pointBorderWidth:2, pointRadius:4, pointHoverRadius:6 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ display:false }, tooltip:{ mode:'index', intersect:false, backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:function(context){ let label=context.dataset.label||''; if(label){label+=': ';} if(context.parsed.y!==null){ label+=formatIDRCurrency(context.parsed.y);} return label; } } } }, scales:{ x:{ grid:{ display:false }, ticks:{ color: palette.grayTick } }, y:{ beginAtZero:true, grid:{ color: palette.grid }, ticks:{ color: palette.grayTick, callback:function(value){ return new Intl.NumberFormat('id-ID',{ style:'currency', currency:'IDR', maximumSignificantDigits:3 }).format(value); } } } } } });
       window.dashboardCharts.set('chartKas', cashFlowChart);
     }
+
     const compositionCtx = document.getElementById('chartPie');
     if (compositionCtx) {
+      try { const ex = window.dashboardCharts ? window.dashboardCharts.get('chartPie') : null; ex && ex.destroy && ex.destroy(); } catch (e) {}
+      try {
+        if (typeof Chart !== 'undefined' && Chart.getChart) {
+          const prev = Chart.getChart(compositionCtx);
+          if (prev && typeof prev.destroy === 'function') prev.destroy();
+        }
+      } catch (e) {}
       const compositionChart = new Chart(compositionCtx, { type:'doughnut', data:{ labels:['Pemasukan','Pengeluaran'], datasets:[{ data:[65,35], backgroundColor:[palette.green, palette.red], borderColor:[palette.green, palette.red], borderWidth:1 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ animateRotate:true, animateScale:true, duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ position:'bottom', labels:{ padding:20, usePointStyle:true, pointStyle:'circle' } }, tooltip:{ backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:function(context){ const label=context.label||''; const value=context.raw||0; const total=context.dataset.data.reduce((a,b)=>a+b,0); const percentage=Math.round((value/total)*100); return `${label}: ${percentage}%`; } } } }, cutout:'70%' } });
       window.dashboardCharts.set('chartPie', compositionChart);
     }
+
     const expenseCategoriesCtx = document.getElementById('chartExpenseCategories');
     if (expenseCategoriesCtx) {
+      try { const ex = window.dashboardCharts ? window.dashboardCharts.get('chartExpenseCategories') : null; ex && ex.destroy && ex.destroy(); } catch (e) {}
+      try {
+        if (typeof Chart !== 'undefined' && Chart.getChart) {
+          const prev = Chart.getChart(expenseCategoriesCtx);
+          if (prev && typeof prev.destroy === 'function') prev.destroy();
+        }
+      } catch (e) {}
       const expenseCategoriesChart = new Chart(expenseCategoriesCtx, {
         type: 'bar',
         data: {

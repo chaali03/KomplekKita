@@ -894,6 +894,34 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
     document.head.appendChild(script);
 
+    // Global Chart registry to avoid canvas reuse issues
+    window.dashboardCharts = window.dashboardCharts || new Map();
+
+    function destroyChartForCanvasId(id){
+      try{
+        const canvas = document.getElementById(id);
+        if(!canvas) return;
+        // Destroy if tracked in global map
+        const prev = window.dashboardCharts.get(id);
+        if(prev && typeof prev.destroy === 'function'){
+          prev.destroy();
+          window.dashboardCharts.delete(id);
+        }
+        // Defensive: destroy any chart bound directly to this canvas
+        if(window.Chart && typeof window.Chart.getChart === 'function'){
+          const bound = window.Chart.getChart(canvas);
+          if(bound && typeof bound.destroy === 'function'){
+            bound.destroy();
+          }
+        }
+      }catch(_e){ /* noop */ }
+    }
+    function getCtxPrepared(id){
+      destroyChartForCanvasId(id);
+      const el = document.getElementById(id);
+      return el ? el.getContext('2d') : null;
+    }
+
     // Utilities
     const fmtIDR = (n)=> new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR', maximumFractionDigits:0}).format(n);
     const fmtDateID = (iso)=> new Date(iso+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
@@ -1363,15 +1391,19 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       const perCatOut = cats.map(c=> rows.filter(x=>x.cat===c && x.type==='Keluar').reduce((s,x)=>s+x.amount,0));
       const catColors = cats.map(getCatColor);
 
-      // Destroy previous
+      // Destroy previous (state + any bound on canvases)
       Object.keys(state.charts).forEach(k=>{
-        if(state.charts[k]){ state.charts[k].destroy(); state.charts[k]=null; }
+        try{ state.charts[k]?.destroy?.(); }catch(_){ }
+        state.charts[k]=null;
       });
+      ['chart-cashflow','chart-mix','chart-category'].forEach(destroyChartForCanvasId);
 
-      const make = (id)=> document.getElementById(id).getContext('2d');
+      const make = (id)=> getCtxPrepared(id);
 
       // Line: Cashflow trend
-      state.charts.cashflow = new Chart(make('chart-cashflow'), {
+      const ctxCash = make('chart-cashflow');
+      if(ctxCash){
+      state.charts.cashflow = new Chart(ctxCash, {
         type:'line',
         data:{
           labels: dates.map(fmtDateID),
@@ -1402,9 +1434,13 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           }
         }
       });
+      window.dashboardCharts.set('chart-cashflow', state.charts.cashflow);
+      }
 
       // Pie: mix
-      state.charts.mix = new Chart(make('chart-mix'), {
+      const ctxMix = make('chart-mix');
+      if(ctxMix){
+      state.charts.mix = new Chart(ctxMix, {
         type:'doughnut',
         data:{
           labels:['Masuk','Keluar'],
@@ -1420,9 +1456,13 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           cutout: '62%'
         }
       });
+      window.dashboardCharts.set('chart-mix', state.charts.mix);
+      }
 
       // Bar: per category (Masuk vs Keluar)
-      state.charts.category = new Chart(make('chart-category'), {
+      const ctxCat = make('chart-category');
+      if(ctxCat){
+      state.charts.category = new Chart(ctxCat, {
         type:'bar',
         data:{
           labels: cats,
@@ -1444,8 +1484,9 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           }
         }
       });
-    }
-
+      window.dashboardCharts.set('chart-category', state.charts.category);
+      }
+      }
     // Recompute everything
     function refreshAll(){
       renderTable();
