@@ -426,22 +426,53 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
     padding: 12px 8px 8px 8px;
     cursor: pointer;
     border-radius: 10px;
-    transition: background 160ms ease;
+    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
   }
-  .admin-sidebar .section-toggle:hover { background: var(--sidebar-hover); }
-  .admin-sidebar .section-toggle .toggle-icon { color: var(--sidebar-muted); transition: transform 220ms ease, color 160ms ease; }
+  
+  .admin-sidebar .section-toggle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(79,70,229,0.08) 0%, rgba(79,70,229,0) 70%);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  .admin-sidebar .section-toggle:hover { 
+    background: var(--sidebar-hover); 
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79,70,229,0.08);
+  }
+  
+  .admin-sidebar .section-toggle:hover::after {
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+  .admin-sidebar .section-toggle .toggle-icon { 
+    color: var(--sidebar-muted); 
+    transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), color 220ms ease; 
+  }
 
   .admin-sidebar .nav-list {
     list-style: none;
     padding: 4px;
     margin: 0 4px 8px;
     border-radius: 12px;
-    transition: max-height 260ms ease, opacity 220ms ease;
-    will-change: max-height, opacity;
+    transition: max-height 360ms cubic-bezier(0.4, 0, 0.2, 1), opacity 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: max-height, opacity, transform;
     background: transparent;
     opacity: 1;
+    transform-origin: top center;
   }
-  .admin-sidebar .nav-list.collapsed { opacity: 0.6; }
+  .admin-sidebar .nav-list.collapsed { 
+    opacity: 0.6; 
+    transform: scaleY(0.95);
+  }
 
   .admin-sidebar .nav-item { margin: 2px 0; }
   .admin-sidebar .sidebar-link {
@@ -454,15 +485,48 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
     border-radius: 12px;
     color: inherit;
     text-decoration: none;
-    transition: background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    transition: all 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+  }
+  
+  .admin-sidebar .sidebar-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(79,70,229,0) 0%, rgba(79,70,229,0.08) 50%, rgba(79,70,229,0) 100%);
+    transform: translateX(-100%);
+    transition: transform 650ms cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
   }
   .admin-sidebar .sidebar-link:hover {
     background: var(--sidebar-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(79,70,229,0.12);
+  }
+  
+  .admin-sidebar .sidebar-link:hover::before {
+    transform: translateX(100%);
   }
   .admin-sidebar .sidebar-link.active {
-    background: rgba(79,70,229, .06);
-    box-shadow: none;
-    border: 1px solid rgba(99,102,241,.22);
+    background: rgba(79,70,229, .08);
+    box-shadow: 0 4px 12px rgba(79,70,229,0.08);
+    border: 1px solid rgba(99,102,241,.25);
+    transform: translateY(-1px);
+  }
+  
+  .admin-sidebar .sidebar-link.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(to bottom, #4f46e5, #818cf8);
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 8px rgba(79,70,229,0.4);
   }
   /* Focus-visible accessibility */
   .admin-sidebar .sidebar-link:focus-visible {
@@ -480,10 +544,34 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
     background: linear-gradient(180deg, rgba(79,70,229,.08), rgba(79,70,229,.12));
     color: var(--primary);
     box-shadow: 0 1px 2px rgba(79,70,229,0.06) inset;
+    transition: all 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    z-index: 1;
+  }
+  
+  .admin-sidebar .link-icon::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(79,70,229,.12), rgba(79,70,229,.18));
+    opacity: 0;
+    transition: opacity 240ms ease;
+    z-index: -1;
   }
   .admin-sidebar .sidebar-link:hover .link-icon {
     background: linear-gradient(180deg, rgba(59,130,246,.12), rgba(79,70,229,.18));
-    box-shadow: 0 2px 6px rgba(79,70,229,0.12);
+    box-shadow: 0 4px 12px rgba(79,70,229,0.18);
+    transform: translateY(-2px) scale(1.05);
+  }
+  
+  .admin-sidebar .sidebar-link:hover .link-icon::before {
+    opacity: 1;
+  }
+  
+  .admin-sidebar .sidebar-link.active .link-icon {
+    background: linear-gradient(180deg, rgba(79,70,229,.15), rgba(79,70,229,.25));
+    box-shadow: 0 4px 12px rgba(79,70,229,0.15);
     transform: translateY(-1px);
   }
   .admin-sidebar .link-text { font-weight: 600; }
@@ -560,8 +648,9 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
   }
   @keyframes pulseOnline {
     0% { transform: scale(1); opacity: .8; box-shadow: 0 0 0 0 rgba(34,197,94,.35); }
+    50% { transform: scale(1.5); opacity: 0.3; box-shadow: 0 0 0 4px rgba(34,197,94,.2); }
     70% { transform: scale(1.8); opacity: 0; box-shadow: 0 0 0 6px rgba(34,197,94,0); }
-    100% { transform: scale(1.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 0; }
   }
   /* Arrange name on first row, role + demo badge on second row (side-by-side) */
   .admin-sidebar .user-details {
@@ -652,16 +741,42 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
 
   /* Appear/entrance animations (subtle) */
   @keyframes sidebarFadeSlideIn {
-    from { opacity: 0; transform: translateY(4px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .admin-sidebar .nav-section {
-    animation: sidebarFadeSlideIn .35s ease both;
+  
+  @keyframes sidebarScaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
   }
-  .admin-sidebar .nav-section:nth-child(1) { animation-delay: .02s; }
-  .admin-sidebar .nav-section:nth-child(2) { animation-delay: .05s; }
-  .admin-sidebar .nav-section:nth-child(3) { animation-delay: .08s; }
-  .admin-sidebar .nav-section:nth-child(4) { animation-delay: .11s; }
+  
+  @keyframes sidebarGlowIn {
+    0% { box-shadow: 0 0 0 0 rgba(79,70,229,0); }
+    50% { box-shadow: 0 0 12px 4px rgba(79,70,229,0.12); }
+    100% { box-shadow: 0 0 0 0 rgba(79,70,229,0); }
+  }
+  
+  .admin-sidebar .nav-section {
+    animation: sidebarFadeSlideIn .45s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  
+  .admin-sidebar .nav-section:nth-child(1) { animation-delay: .05s; }
+  .admin-sidebar .nav-section:nth-child(2) { animation-delay: .1s; }
+  .admin-sidebar .nav-section:nth-child(3) { animation-delay: .15s; }
+  .admin-sidebar .nav-section:nth-child(4) { animation-delay: .2s; }
+  
+  .admin-sidebar .sidebar-link.active {
+    animation: sidebarGlowIn 2s ease-in-out infinite;
+  }
+  
+  .admin-sidebar .sidebar-header {
+    animation: sidebarScaleIn .4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  
+  .admin-sidebar .sidebar-footer {
+    animation: sidebarScaleIn .5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: .25s;
+  }
 
   /* Accessibility – respect reduced motion */
   @media (prefers-reduced-motion: reduce) {
