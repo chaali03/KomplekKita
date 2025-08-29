@@ -1142,6 +1142,16 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     renderAll();
     markAdded(programListEl);
 
+    // Notify: program created (inline add)
+    try {
+      (window as any).KKNotif?.add(
+        'success',
+        'Program dibuat',
+        item.desc ? `Program baru: ${item.desc}` : 'Program baru ditambahkan'
+      );
+      window.dispatchEvent(new Event('kk-notifs-updated'));
+    } catch {}
+
     // reset
     $('#nominal-program').value = '';
     $('#desc-program').value = '';
@@ -1269,6 +1279,20 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     }
     save();
     renderAll();
+
+    // Notify: program created/updated (modal)
+    try {
+      const isEdit = !!editingId;
+      (window as any).KKNotif?.add(
+        isEdit ? 'info' : 'success',
+        isEdit ? 'Program diubah' : 'Program dibuat',
+        payload.desc
+          ? (isEdit ? `Perubahan: ${payload.desc}` : `Program baru: ${payload.desc}`)
+          : (isEdit ? 'Program diperbarui' : 'Program baru ditambahkan')
+      );
+      window.dispatchEvent(new Event('kk-notifs-updated'));
+    } catch {}
+
     closeProgramModal();
   });
 

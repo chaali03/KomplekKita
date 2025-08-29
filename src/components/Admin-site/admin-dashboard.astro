@@ -418,106 +418,10 @@
       <h2><i class="fas fa-bell"></i> Notifikasi Terbaru</h2>
       <a href="/admin/notifikasi" class="view-all">Lihat Semua <i class="fas fa-arrow-right"></i></a>
     </div>
-    <div class="notifications-list">
-      <div class="notification-item unread">
-        <div class="notification-icon warning">
-          <i class="fas fa-exclamation-triangle"></i>
-        </div>
-        <div class="notification-content">
-          <h4>Pembayaran Tertunda</h4>
-          <p>5 warga belum melakukan pembayaran iuran bulan ini</p>
-          <span class="notification-time">2 jam yang lalu</span>
-        </div>
-        <div class="notification-actions">
-          <button class="btn-icon" aria-label="Tandai dibaca">
-            <i class="fas fa-check"></i>
-          </button>
-        </div>
-      </div>
-      
-      <div class="notification-item">
-        <div class="notification-icon success">
-          <i class="fas fa-check-circle"></i>
-        </div>
-        <div class="notification-content">
-          <h4>Laporan Bulanan Selesai</h4>
-          <p>Laporan keuangan bulan Juli telah selesai dibuat</p>
-          <span class="notification-time">Kemarin, 15:30</span>
-        </div>
-        <div class="notification-actions">
-          <button class="btn-icon" aria-label="Tandai dibaca">
-            <i class="fas fa-check"></i>
-          </button>
-        </div>
-      </div>
-      
-      <div class="notification-item">
-        <div class="notification-icon info">
-          <i class="fas fa-info-circle"></i>
-        </div>
-        <div class="notification-content">
-          <h4>Warga Baru</h4>
-          <p>2 keluarga baru telah terdaftar di sistem</p>
-          <span class="notification-time">2 hari yang lalu</span>
-        </div>
-        <div class="notification-actions">
-          <button class="btn-icon" aria-label="Tandai dibaca">
-            <i class="fas fa-check"></i>
-          </button>
-        </div>
-      </div>
-    </div>
+    <div class="notifications-list" id="dash-notif-list"></div>
   </div>
 
-  <!-- Recent Activity Feed -->
-  <div class="activity-section pre-animation">
-    <div class="section-header">
-      <h3><i class="fas fa-history"></i> Aktivitas Terbaru</h3>
-      <a href="#" class="view-all-link">Lihat Semua <i class="fas fa-arrow-right"></i></a>
-    </div>
-    
-    <div class="activity-feed">
-      <div class="activity-item">
-        <div class="activity-icon">
-          <i class="fas fa-plus-circle"></i>
-        </div>
-        <div class="activity-content">
-          <p class="activity-text"><strong>Admin</strong> menambahkan transaksi baru</p>
-          <p class="activity-time">Baru saja</p>
-        </div>
-      </div>
-      
-      <div class="activity-item">
-        <div class="activity-icon">
-          <i class="fas fa-edit"></i>
-        </div>
-        <div class="activity-content">
-          <p class="activity-text"><strong>Admin</strong> mengubah status pembayaran</p>
-          <p class="activity-time">30 menit yang lalu</p>
-        </div>
-      </div>
-      
-      <div class="activity-item">
-        <div class="activity-icon">
-          <i class="fas fa-file-invoice"></i>
-        </div>
-        <div class="activity-content">
-          <p class="activity-text"><strong>Sistem</strong> membuat laporan bulanan</p>
-          <p class="activity-time">2 jam yang lalu</p>
-        </div>
-      </div>
-      
-      <div class="activity-item">
-        <div class="activity-icon">
-          <i class="fas fa-user-plus"></i>
-        </div>
-        <div class="activity-content">
-          <p class="activity-text"><strong>Admin</strong> menambahkan pengguna baru</p>
-          <p class="activity-time">Kemarin, 14:30</p>
-        </div>
-      </div>
-    </div>
-  </div>
+  
 
 </div>
 
@@ -543,6 +447,106 @@
       initSparklines();
       initChartCardActions();
     }
+
+  // ===== Dashboard Notifications (sync with /admin/notifikasi) =====
+  function initDashboardNotifications(){
+    const LIST_ID = 'dash-notif-list';
+    const STORE_KEY = 'kk_notifications';
+    const COUNT_KEY = 'kk_unread_count';
+    const list = document.getElementById(LIST_ID);
+    if(!list) return;
+
+    function iconClass(t){
+      if (t==='resident') return 'resident';
+      if (t==='income') return 'income';
+      if (t==='expense') return 'expense';
+      return t==='success' ? 'success' : t==='warning' ? 'warning' : 'info';
+    }
+    function iconFor(t){
+      if (t==='resident') return 'fa-user-plus';
+      if (t==='income') return 'fa-arrow-down';
+      if (t==='expense') return 'fa-arrow-up';
+      if (t==='success') return 'fa-check-circle';
+      if (t==='warning') return 'fa-exclamation-triangle';
+      return 'fa-info-circle';
+    }
+    function inferType(n){
+      const t = ((n && n.type) || '').toString().toLowerCase();
+      const title = ((n && n.title) || '').toString().toLowerCase();
+      const msg = ((n && n.message) || '').toString().toLowerCase();
+      const text = title + ' ' + msg;
+      if (t==='resident') return 'resident';
+      if (t==='income') return 'income';
+      if (t==='expense') return 'expense';
+      if (/warga|penduduk|resident/.test(text)) return 'resident';
+      if (/pemasukan|income|bayar|pembayaran masuk|iuran masuk|setoran/.test(text)) return 'income';
+      if (/pengeluaran|expense|biaya|keluar|pembayaran keluar|penarikan/.test(text)) return 'expense';
+      if (t==='success' || /berhasil|selesai|sukses/.test(text)) return 'success';
+      if (t==='warning' || /peringatan|hati-hati|menurun|terlambat/.test(text)) return 'warning';
+      return 'info';
+    }
+    function ensureSeed(){
+      // Seed demo notifications if empty to mirror notifikasi page style
+      try{
+        const raw = localStorage.getItem(STORE_KEY);
+        if(raw) return;
+        const now = Date.now();
+        const seed = [
+          { id:'n1', title:'Pembayaran Tertunda', message:'5 warga belum melakukan pembayaran iuran bulan ini', time:new Date(now-2*60*60*1000).toISOString(), unread:true, type:'warning' },
+          { id:'n2', title:'Laporan Bulanan Selesai', message:'Laporan keuangan bulan ini telah dibuat', time:new Date(now-24*60*60*1000).toISOString(), unread:false, type:'success' },
+          { id:'n3', title:'Warga Baru', message:'2 keluarga baru terdaftar', time:new Date(now-2*24*60*60*1000).toISOString(), unread:false, type:'info' },
+        ];
+        localStorage.setItem(STORE_KEY, JSON.stringify(seed));
+        const unread = seed.filter(x=>x.unread).length; localStorage.setItem(COUNT_KEY, String(unread));
+      }catch(_){/* noop */}
+    }
+    function getNotifs(){
+      try{ const raw = localStorage.getItem(STORE_KEY); return raw? JSON.parse(raw): []; }catch{ return []; }
+    }
+    function fmtTime(iso){ try{ const d = new Date(iso); return d.toLocaleString('id-ID', { hour: '2-digit', minute:'2-digit', day:'2-digit', month:'short' }); }catch{ return ''; } }
+    function render(){
+      if(!list) return;
+      let arr = getNotifs();
+      // sort desc by time if available
+      arr = arr.slice().sort((a,b)=> new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0,3);
+      list.innerHTML = '';
+      if(arr.length===0){ list.innerHTML = '<div style="padding:12px;color:#64748b">Tidak ada notifikasi</div>'; return; }
+      arr.forEach(n=>{
+        const rt = inferType(n);
+        const el = document.createElement('div');
+        el.className = 'notification-item' + (n.unread?' unread':'');
+        el.innerHTML = `
+          <div class="notification-icon ${iconClass(rt)}">
+            <i class="fas ${iconFor(rt)}"></i>
+          </div>
+          <div class="notification-content">
+            <h4>${n.title||''}</h4>
+            <p>${n.message||''}</p>
+            <span class="notification-time">${fmtTime(n.time||'')}</span>
+          </div>
+          <div class="notification-actions">
+            <button class="btn-icon" aria-label="Tandai dibaca" data-id="${n.id}">Baca</button>
+          </div>`;
+        list.appendChild(el);
+      });
+    }
+    // mark read from widget
+    list.addEventListener('click', (e)=>{
+      const btn = e.target?.closest?.('.btn-icon'); if(!btn) return;
+      const id = btn.getAttribute('data-id'); if(!id) return;
+      const arr = getNotifs(); const idx = arr.findIndex(x=>String(x.id)===String(id));
+      if(idx>=0){ arr[idx].unread = false; localStorage.setItem(STORE_KEY, JSON.stringify(arr));
+        const unread = arr.filter(x=>x.unread).length; localStorage.setItem(COUNT_KEY, String(unread));
+        render();
+        try { window.dispatchEvent(new CustomEvent('kk-notifs-updated')); } catch {}
+      }
+    });
+    // react to changes from notifikasi page or other tabs
+    window.addEventListener('storage', (e)=>{ if(e.key==='kk_notifications' || e.key==='kk_unread_count'){ render(); } });
+    window.addEventListener('kk-notifs-updated', ()=> render());
+    ensureSeed();
+    render();
+  }
     // Initialize other UI features
     initTopbarElevation();
     initAnimations();
@@ -553,6 +557,8 @@
     // Listen for laporan/local changes to keep KPIs (incl. Tertunda) in sync
     setupSyncListeners();
     initPremiumLocks();
+    // Sync dashboard notifications with /admin/notifikasi
+    initDashboardNotifications();
   });
 
   function initTopbarElevation() {
@@ -706,9 +712,27 @@
         elKeluar && (elKeluar.textContent = fmtIDR(Number(snap.totalKeluar||0)), elKeluar.setAttribute('data-target', String(Number(snap.totalKeluar||0))));
         elIuranPending && (elIuranPending.textContent = fmtIDR(Number(snap.iuranPending||0)), elIuranPending.setAttribute('data-target', String(Number(snap.iuranPending||0))));
       }
+      // Prefer laporan snapshot first, then API (non-zero), then local current month
       let totalKas = 0, totalMasuk = 0, totalKeluar = 0;
+      let skipApi = false;
+      try{
+        const lapSnap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
+        if(lapSnap && lapSnap.totals){
+          const li = Number(lapSnap.totals.income||0);
+          const le = Number(lapSnap.totals.expense||0);
+          const lb = Number(lapSnap.totals.balance||0);
+          if (li>0 || le>0 || lb>0){
+            totalMasuk = li; totalKeluar = le; totalKas = lb;
+            // Paint immediately and mark to skip API overwrite
+            elMasuk && (elMasuk.textContent = fmtIDR(li), elMasuk.setAttribute('data-target', String(li)));
+            elKeluar && (elKeluar.textContent = fmtIDR(le), elKeluar.setAttribute('data-target', String(le)));
+            elKas && (elKas.textContent = fmtIDR(lb), elKas.setAttribute('data-target', String(lb)));
+            skipApi = true;
+          }
+        }
+      }catch(_){/* noop */}
       const apiDisabled = localStorage.getItem('disable_api') === '1';
-      if (komplekId && !apiDisabled) {
+      if (!skipApi && komplekId && !apiDisabled) {
         const url = `/api/public/transaksi/summary?komplek_id=${encodeURIComponent(komplekId)}`;
         console.debug('[Dashboard] Fetching summary:', url);
         const data = await fetchJson(url);
@@ -717,33 +741,29 @@
         totalMasuk = Number(data?.totalMasuk || data?.total_masuk || 0);
         totalKeluar = Number(data?.totalKeluar || data?.total_keluar || 0);
       }
-      elKas && (elKas.textContent = fmtIDR(totalKas), elKas.setAttribute('data-target', String(totalKas)));
-      elMasuk && (elMasuk.textContent = fmtIDR(totalMasuk), elMasuk.setAttribute('data-target', String(totalMasuk)));
-      elKeluar && (elKeluar.textContent = fmtIDR(totalKeluar), elKeluar.setAttribute('data-target', String(totalKeluar)));
+      if (!skipApi) {
+        elKas && (elKas.textContent = fmtIDR(totalKas), elKas.setAttribute('data-target', String(totalKas)));
+        elMasuk && (elMasuk.textContent = fmtIDR(totalMasuk), elMasuk.setAttribute('data-target', String(totalMasuk)));
+        elKeluar && (elKeluar.textContent = fmtIDR(totalKeluar), elKeluar.setAttribute('data-target', String(totalKeluar)));
+      }
       // If API returned zeros but local laporan demo data exists, override to keep consistency with laporan page
       try{
         const local = computeLocalSummary();
         if(local){
           const allApiZero = (totalKas===0 && totalMasuk===0 && totalKeluar===0);
           const hasLocal = (Number(local.income||0)>0 || Number(local.expense||0)>0);
-          if(allApiZero && hasLocal){
+          if(!skipApi && allApiZero && hasLocal){
             elMasuk && (elMasuk.textContent = fmtIDR(local.income), elMasuk.setAttribute('data-target', String(local.income)));
             elKeluar && (elKeluar.textContent = fmtIDR(local.expense), elKeluar.setAttribute('data-target', String(local.expense)));
             elKas && (elKas.textContent = fmtIDR(local.balance), elKas.setAttribute('data-target', String(local.balance)));
+            // keep variables in sync so snapshot isn't zeroed
+            totalMasuk = Number(local.income||0);
+            totalKeluar = Number(local.expense||0);
+            totalKas = Number(local.balance||0);
           }
         }
         // If still zero, try laporan snapshot which reflects the laporan page totals exactly
-        const lapSnap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
-        if(lapSnap && lapSnap.totals){
-          const li = Number(lapSnap.totals.income||0);
-          const le = Number(lapSnap.totals.expense||0);
-          const lb = Number(lapSnap.totals.balance||0);
-          if ((totalKas===0 && totalMasuk===0 && totalKeluar===0) && (li>0 || le>0 || lb>0)){
-            elMasuk && (elMasuk.textContent = fmtIDR(li), elMasuk.setAttribute('data-target', String(li)));
-            elKeluar && (elKeluar.textContent = fmtIDR(le), elKeluar.setAttribute('data-target', String(le)));
-            elKas && (elKas.textContent = fmtIDR(lb), elKas.setAttribute('data-target', String(lb)));
-          }
-        }
+        // Already prioritized earlier; no need to re-apply here
       }catch(_){/* noop */}
       // Also fetch iuran status to compute pending total
       let iuranPending = 0;
@@ -2059,6 +2079,9 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
 .notification-icon.warning { color:#b87300; background:#fff6e6; border-color:#f1e2c4; }
 .notification-icon.success { color:#0c6b2f; background:#e8f6ee; border-color:#d7eadf; }
 .notification-icon.info    { color:#0a6791; background:#e9f6ff; border-color:#cfe8fb; }
+.notification-icon.resident { color:#0a6791; background:#e9f6ff; border-color:#cfe8fb; }
+.notification-icon.income   { color:#0c6b2f; background:#e8f6ee; border-color:#d7eadf; }
+.notification-icon.expense  { color:#9b1c1c; background:#fee2e2; border-color:#fecaca; }
 
 .notification-content h4 { margin: 0; font-weight: 800; }
 .notification-content p { margin: 2px 0; color: var(--text-muted); }

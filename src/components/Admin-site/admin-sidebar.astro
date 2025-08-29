@@ -110,7 +110,6 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
             <a href="/admin/notifikasi" class="sidebar-link">
               <div class="link-icon"><i class="fa-solid fa-bell"></i></div>
               <span class="link-text">Notifikasi</span>
-              <span class="link-badge notif-count" data-notif-badge style="display:none">0</span>
             </a>
           </li>
         </ul>
@@ -516,7 +515,7 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
     grid-template-columns: 32px 1fr auto;
     align-items: center;
     gap: 10px;
-    padding: 10px 10px;
+    padding: 10px 14px; /* extra right padding so badge isn't cramped */
     border-radius: 12px;
     color: inherit;
     text-decoration: none;
@@ -618,11 +617,17 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
     justify-self: end;
   }
   .admin-sidebar .link-badge.notif-count {
-    min-width: 18px; height: 18px; padding: 0 6px; border-radius: 999px;
-    background: #ef4444; color: #fff; font-weight: 800; font-size: 11px;
+    min-width: 22px; height: 20px; padding: 0 8px; border-radius: 999px;
+    background: linear-gradient(180deg, #ef4444, #dc2626);
+    color: #fff; font-weight: 900; font-size: 12px; letter-spacing: .1px;
     display: inline-flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 6px rgba(239,68,68,.35);
-    justify-self: end;
+    border: 1px solid #fecaca; /* red-200 */
+    box-shadow: 0 4px 12px rgba(239,68,68,.35), inset 0 1px 0 rgba(255,255,255,.35);
+    justify-self: end; margin-left: 6px;
+  }
+  .admin-sidebar .sidebar-link:hover .link-badge.notif-count {
+    box-shadow: 0 6px 16px rgba(239,68,68,.45), inset 0 1px 0 rgba(255,255,255,.45);
+    transform: translateY(-1px);
   }
   
   .admin-sidebar .premium-indicator {
