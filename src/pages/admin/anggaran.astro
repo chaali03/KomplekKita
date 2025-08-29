@@ -2732,20 +2732,24 @@ import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
     function handleResponsiveView() {
       const planTable = document.querySelector('.plan-table');
       const budgetTable = document.querySelector('.budget-table');
-      const planMobileCards = document.getElementById('plan-mobile-cards');
-      const budgetMobileCards = document.getElementById('budget-mobile-cards');
+      const planMobileCards = document.getElementById('plan-mobile-cards') as HTMLElement | null;
+      const budgetMobileCards = document.getElementById('budget-mobile-cards') as HTMLElement | null;
 
       function updateView() {
         if (window.innerWidth <= 640) {
           // Mobile view - show cards, hide tables
-          if (planTable) planTable.closest('.table-container').style.display = 'none';
-          if (budgetTable) budgetTable.closest('.table-container').style.display = 'none';
+          const planTableContainer = planTable?.closest('.table-container') as HTMLElement | null;
+          const budgetTableContainer = budgetTable?.closest('.table-container') as HTMLElement | null;
+          if (planTableContainer) planTableContainer.style.display = 'none';
+          if (budgetTableContainer) budgetTableContainer.style.display = 'none';
           if (planMobileCards) planMobileCards.style.display = 'flex';
           if (budgetMobileCards) budgetMobileCards.style.display = 'flex';
         } else {
           // Desktop view - show tables, hide cards
-          if (planTable) planTable.closest('.table-container').style.display = 'block';
-          if (budgetTable) budgetTable.closest('.table-container').style.display = 'block';
+          const planTableContainer = planTable?.closest('.table-container') as HTMLElement | null;
+          const budgetTableContainer = budgetTable?.closest('.table-container') as HTMLElement | null;
+          if (planTableContainer) planTableContainer.style.display = 'block';
+          if (budgetTableContainer) budgetTableContainer.style.display = 'block';
           if (planMobileCards) planMobileCards.style.display = 'none';
           if (budgetMobileCards) budgetMobileCards.style.display = 'none';
         }
