@@ -12,6 +12,13 @@ use App\Http\Controllers\Komplek\KomplekController;
 use App\Http\Controllers\Komplek\TemplateController;
 use App\Http\Controllers\Komplek\WargaImportController;
 use App\Http\Controllers\Komplek\KeuanganImportController;
+use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\InformasiController;
+use App\Http\Controllers\AnggaranController;
+use App\Http\Controllers\WargaController;
+use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\TransaksiKeuanganController;
+use App\Http\Controllers\PengaturanController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -78,3 +85,65 @@ Route::post('/komplek/{id}/import/keuangan', [KeuanganImportController::class, '
 // Preview import routes (no Komplek ID required) — reuse same validators
 Route::post('/import/warga/preview', [WargaImportController::class, 'upload'])->defaults('id', 0);
 Route::post('/import/keuangan/preview', [KeuanganImportController::class, 'upload'])->defaults('id', 0);
+
+// -----------------------------
+// Admin endpoints (require komplek_id)
+// -----------------------------
+Route::middleware('auth:sanctum')->group(function () {
+    // Warga
+    Route::get('/warga', [WargaController::class, 'index']);
+    Route::post('/warga', [WargaController::class, 'store']);
+    Route::put('/warga/{id}', [WargaController::class, 'update']);
+    Route::patch('/warga/{id}', [WargaController::class, 'update']);
+    Route::delete('/warga/{id}', [WargaController::class, 'destroy']);
+
+    // Transaksi Keuangan
+    Route::get('/transaksi', [TransaksiKeuanganController::class, 'index']);
+    Route::post('/transaksi', [TransaksiKeuanganController::class, 'store']);
+    Route::put('/transaksi/{id}', [TransaksiKeuanganController::class, 'update']);
+    Route::patch('/transaksi/{id}', [TransaksiKeuanganController::class, 'update']);
+    Route::delete('/transaksi/{id}', [TransaksiKeuanganController::class, 'destroy']);
+    Route::get('/transaksi/summary', [TransaksiKeuanganController::class, 'summary']);
+
+    // Anggaran
+    Route::get('/anggaran', [AnggaranController::class, 'index']);
+    Route::post('/anggaran', [AnggaranController::class, 'store']);
+    Route::put('/anggaran/{id}', [AnggaranController::class, 'update']);
+    Route::patch('/anggaran/{id}', [AnggaranController::class, 'update']);
+    Route::delete('/anggaran/{id}', [AnggaranController::class, 'destroy']);
+    Route::get('/anggaran/summary', [AnggaranController::class, 'summary']);
+
+    // Program
+    Route::get('/program', [ProgramController::class, 'index']);
+    Route::post('/program', [ProgramController::class, 'store']);
+    Route::put('/program/{id}', [ProgramController::class, 'update']);
+    Route::patch('/program/{id}', [ProgramController::class, 'update']);
+    Route::delete('/program/{id}', [ProgramController::class, 'destroy']);
+
+    // Informasi
+    Route::get('/informasi', [InformasiController::class, 'index']);
+    Route::post('/informasi', [InformasiController::class, 'store']);
+    Route::put('/informasi/{id}', [InformasiController::class, 'update']);
+    Route::patch('/informasi/{id}', [InformasiController::class, 'update']);
+    Route::delete('/informasi/{id}', [InformasiController::class, 'destroy']);
+
+    // Notifikasi (arsip)
+    Route::get('/notifikasi', [NotifikasiController::class, 'index']);
+    Route::post('/notifikasi', [NotifikasiController::class, 'store']);
+    Route::put('/notifikasi/{id}', [NotifikasiController::class, 'update']);
+    Route::patch('/notifikasi/{id}', [NotifikasiController::class, 'update']);
+    Route::delete('/notifikasi/{id}', [NotifikasiController::class, 'destroy']);
+
+    // Pengaturan (key/value per komplek)
+    Route::get('/pengaturan', [PengaturanController::class, 'index']);
+    Route::put('/pengaturan', [PengaturanController::class, 'update']);
+});
+
+// -----------------------------
+// Public endpoints (read-only, require komplek_id via query)
+// -----------------------------
+Route::get('/public/warga/stats', [WargaController::class, 'publicStats']);
+Route::get('/public/transaksi/summary', [TransaksiKeuanganController::class, 'summary']);
+Route::get('/public/anggaran/summary', [AnggaranController::class, 'summary']);
+Route::get('/public/program', [ProgramController::class, 'publicIndex']);
+Route::get('/public/informasi', [InformasiController::class, 'publicIndex']);

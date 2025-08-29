@@ -19,5 +19,9 @@ class Warga extends Model
         'alamat',
         'blok',
         'no_rumah',
+        'rt',
+        'rw',
+        'status',
+        'verified',
     ];
 }
