@@ -30,64 +30,310 @@
     </div>
 </div>
 
+<script is:inline>
+  // Client-side rendering of Warga list from admin storage
+  (function(){
+    const STORAGE_KEY = 'warga_data_v1';
+    const PAGE_SIZE = 10;
+    let currentPage = 1;
+    let allDataCache = [];
+
+    function safeParse(json, fallback){
+      try { return JSON.parse(json); } catch { return fallback; }
+    }
+
+    function load(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const data = safeParse(raw, []);
+      const arr = Array.isArray(data) ? data : [];
+      allDataCache = arr;
+      return arr;
+    }
+
+    function matchesQuery(w, q){
+      if(!q) return true;
+      const t = q.toLowerCase();
+      const fields = [w.nama, w.nik, w.kk, w.alamat, w.rt, w.rw, w.no_rumah, w.telepon];
+      return fields.some(v => String(v||'').toLowerCase().includes(t));
+    }
+
+    function render(items){
+      const listEl = document.querySelector('.data-warga-section .data-list');
+      if(!listEl) return;
+      listEl.innerHTML = '';
+      if(!items.length){
+        const empty = document.createElement('div');
+        empty.className = 'data-item';
+        empty.innerHTML = `
+          <div class="data-icon"><i class="fas fa-info-circle"></i></div>
+          <div class="data-content">
+            <p class="data-block">Belum ada data warga</p>
+            <p class="data-family">Silakan hubungi pengurus atau cek halaman admin.</p>
+          </div>
+        `;
+        listEl.appendChild(empty);
+        return;
+      }
+
+      items.sort((a,b)=>{
+        const rw = String(a.rw||'').localeCompare(String(b.rw||''));
+        if(rw!==0) return rw;
+        const rt = String(a.rt||'').localeCompare(String(b.rt||''));
+        if(rt!==0) return rt;
+        return String(a.alamat||'').localeCompare(String(b.alamat||''));
+      });
+
+      // compute pagination window
+      const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+      if(currentPage > totalPages) currentPage = totalPages;
+      const startIndex = (currentPage - 1) * PAGE_SIZE;
+      const endIndex = startIndex + PAGE_SIZE;
+      const pageItems = items.slice(startIndex, endIndex);
+
+      const frag = document.createDocumentFragment();
+      pageItems.forEach((w, idx)=>{
+        const item = document.createElement('div');
+        item.className = 'data-item';
+        item.setAttribute('data-aos','fade-right');
+        item.setAttribute('data-aos-delay', String(100 + (idx%5)*50));
+        const blok = w.alamat || `RT ${w.rt||'-'} / RW ${w.rw||'-'}`;
+        const keluarga = w.nama ? `Keluarga ${w.nama}` : 'Nama tidak tersedia';
+        const status = String(w.status||'').toLowerCase();
+        const verified = Boolean(w.verified);
+        const statusClass = status === 'aktif' ? 'badge-success' : (status === 'pindah' ? 'badge-warning' : 'badge-muted');
+        item.innerHTML = `
+          <div class=\"data-icon\"><i class=\"fas fa-home\"></i></div>
+          <div class=\"data-content\">
+            <div class=\"data-header\">
+              <p class=\"data-block\">${blok}</p>
+              <div class=\"badges\">
+                <span class=\"badge ${statusClass}\">${status ? status.charAt(0).toUpperCase()+status.slice(1) : 'Tidak diketahui'}</span>
+                ${verified ? '<span class=\"badge badge-verify\"><i class=\"fas fa-check\"></i> Terverifikasi</span>' : '<span class=\"badge badge-unverify\"><i class=\"fas fa-exclamation\"></i> Belum Verif</span>'}
+              </div>
+            </div>
+            <p class=\"data-family\">${keluarga}</p>
+            <div class=\"chips\">
+              <span class=\"chip\"><i class=\"fas fa-map-signs\"></i> RT ${w.rt||'-'} / RW ${w.rw||'-'}</span>
+              ${w.no_rumah ? '<span class=\"chip\"><i class=\"fas fa-door-closed\"></i> No. '+w.no_rumah+'</span>' : ''}
+              ${w.telepon ? '<a href=\"tel:'+w.telepon+'\" class=\"chip chip-link\"><i class=\"fas fa-phone\"></i> '+w.telepon+'</a>' : ''}
+            </div>
+          </div>
+          <div class=\"data-arrow\"><i class=\"fas fa-chevron-right\"></i></div>
+        `;
+        frag.appendChild(item);
+      });
+      listEl.appendChild(frag);
+
+      renderPagination(totalPages);
+    }
+
+    function apply(){
+      const section = document.querySelector('.data-warga-section');
+      const searchInput = section?.querySelector('.search-input');
+      const rtSel = section?.querySelector('.ctrl.rt');
+      const rwSel = section?.querySelector('.ctrl.rw');
+      const stSel = section?.querySelector('.ctrl.status');
+      const vfSel = section?.querySelector('.ctrl.verif');
+      const sortSel = section?.querySelector('.ctrl.sort');
+
+      // ensure cache loaded at least once
+      const all = allDataCache.length ? allDataCache : load();
+      const q = (searchInput && searchInput.value || '').trim();
+      let rows = all.filter(w => matchesQuery(w, q));
+      if(rtSel && rtSel.value) rows = rows.filter(r => String(r.rt||'') === rtSel.value);
+      if(rwSel && rwSel.value) rows = rows.filter(r => String(r.rw||'') === rwSel.value);
+      if(stSel && stSel.value) rows = rows.filter(r => String(r.status||'').toLowerCase() === stSel.value);
+      if(vfSel && vfSel.value !== '') rows = rows.filter(r => String(!!r.verified) === vfSel.value);
+
+      // sort
+      const mode = sortSel && sortSel.value || 'rw_rt';
+      if(mode === 'nama'){
+        rows.sort((a,b)=> String(a.nama||'').localeCompare(String(b.nama||'')));
+      } else if(mode === 'status'){
+        rows.sort((a,b)=> String(a.status||'').localeCompare(String(b.status||'')));
+      } else {
+        rows.sort((a,b)=>{
+          const rw = String(a.rw||'').localeCompare(String(b.rw||''));
+          if(rw!==0) return rw;
+          const rt = String(a.rt||'').localeCompare(String(b.rt||''));
+          if(rt!==0) return rt;
+          return String(a.alamat||'').localeCompare(String(b.alamat||''));
+        });
+      }
+
+      // update count
+      const cnt = document.getElementById('dw-count');
+      if(cnt) cnt.textContent = rows.length ? `(${rows.length})` : '';
+
+      render(rows);
+    }
+
+    function renderPagination(totalPages){
+      const pag = document.querySelector('.data-warga-section .pagination');
+      if(!pag) return;
+      const numbers = pag.querySelector('.page-numbers');
+      const prev = pag.querySelector('.prev');
+      const next = pag.querySelector('.next');
+      if(numbers) numbers.innerHTML = '';
+      if(totalPages <= 1){
+        pag.style.display = 'none';
+        return;
+      }
+      pag.style.display = 'flex';
+      const frag = document.createDocumentFragment();
+      for(let p=1;p<=totalPages;p++){
+        const btn = document.createElement('button');
+        btn.className = 'page-btn' + (p===currentPage ? ' active' : '');
+        btn.textContent = String(p);
+        btn.addEventListener('click', ()=>{
+          if(p===currentPage) return;
+          currentPage = p;
+          apply();
+          const section = document.querySelector('.data-warga-section');
+          section && section.scrollIntoView({behavior:'smooth', block:'start'});
+        });
+        frag.appendChild(btn);
+      }
+      if(numbers) numbers.appendChild(frag);
+      if(prev){
+        prev.disabled = currentPage === 1;
+        prev.onclick = ()=>{ if(currentPage>1){ currentPage--; apply(); }}
+      }
+      if(next){
+        next.disabled = currentPage === totalPages;
+        next.onclick = ()=>{ if(currentPage<totalPages){ currentPage++; apply(); }}
+      }
+    }
+
+    function populateFilterOptions(){
+      const section = document.querySelector('.data-warga-section');
+      const rtSel = section?.querySelector('.ctrl.rt');
+      const rwSel = section?.querySelector('.ctrl.rw');
+      const rts = Array.from(new Set(allDataCache.map(x=>String(x.rt||'')).filter(Boolean))).sort();
+      const rws = Array.from(new Set(allDataCache.map(x=>String(x.rw||'')).filter(Boolean))).sort();
+      if(rtSel){
+        const cur = rtSel.value;
+        rtSel.innerHTML = '<option value="">RT: Semua</option>' + rts.map(v=>`<option value="${v}">${v}</option>`).join('');
+        if(cur) rtSel.value = cur;
+      }
+      if(rwSel){
+        const cur = rwSel.value;
+        rwSel.innerHTML = '<option value="">RW: Semua</option>' + rws.map(v=>`<option value="${v}">${v}</option>`).join('');
+        if(cur) rwSel.value = cur;
+      }
+    }
+
+    function init(){
+      load();
+      populateFilterOptions();
+      apply();
+      const searchInput = document.querySelector('.data-warga-section .search-input');
+      const section = document.querySelector('.data-warga-section');
+      const rtSel = section?.querySelector('.ctrl.rt');
+      const rwSel = section?.querySelector('.ctrl.rw');
+      const stSel = section?.querySelector('.ctrl.status');
+      const vfSel = section?.querySelector('.ctrl.verif');
+      const sortSel = section?.querySelector('.ctrl.sort');
+      const btnClear = section?.querySelector('.btn.clear');
+      const btnRefresh = section?.querySelector('.btn.refresh');
+      const btnSearch = section?.querySelector('.search-button');
+      if(searchInput){
+        let t;
+        searchInput.addEventListener('input', ()=>{
+          clearTimeout(t);
+          currentPage = 1;
+          t = setTimeout(apply, 150);
+        });
+        searchInput.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter'){ e.preventDefault(); currentPage = 1; apply(); }
+        });
+      }
+      [rtSel,rwSel,stSel,vfSel,sortSel].forEach(sel=>{
+        sel && sel.addEventListener('change', ()=>{ currentPage = 1; apply(); });
+      });
+      if(btnClear){
+        btnClear.addEventListener('click', ()=>{
+          if(rtSel) rtSel.value=''; if(rwSel) rwSel.value=''; if(stSel) stSel.value=''; if(vfSel) vfSel.value=''; if(searchInput) searchInput.value='';
+          currentPage = 1; apply();
+        });
+      }
+      if(btnRefresh){
+        btnRefresh.addEventListener('click', ()=>{ load(); populateFilterOptions(); currentPage=1; apply(); });
+      }
+      if(btnSearch){
+        btnSearch.addEventListener('click', ()=>{ currentPage=1; apply(); });
+      }
+      const scrollBtn = section?.querySelector('.scroll');
+      if(scrollBtn){
+        scrollBtn.addEventListener('click', ()=>{
+          const all = allDataCache.length ? allDataCache : load();
+          const totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
+          if(currentPage < totalPages){
+            currentPage++;
+            apply();
+            const list = section?.querySelector('.data-list');
+            list && list.scrollIntoView({behavior:'smooth', block:'start'});
+          } else {
+            // bounce animation when at end
+            scrollBtn.classList.add('bounce');
+            setTimeout(()=>scrollBtn.classList.remove('bounce'), 600);
+          }
+        });
+      }
+      window.addEventListener('storage', (e)=>{
+        if(e.key === STORAGE_KEY){ load(); populateFilterOptions(); apply(); }
+      });
+    }
+
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
+
 <div class="data-warga-section" data-aos="fade-up" data-aos-delay="200">
     <div class="section-header">
-        <h2 class="section-title">Data Warga</h2>
+        <h2 class="section-title">Data Warga <span class="section-count" id="dw-count"></span></h2>
         <div class="search-container">
-            <input type="text" placeholder="Cari warga..." class="search-input">
-            <button class="search-button"><i class="fas fa-search"></i></button>
+            <input type="text" placeholder="Cari warga..." class="search-input" aria-label="Cari warga">
+            <button class="search-button" title="Cari"><i class="fas fa-search"></i></button>
+        </div>
+    </div>
+    <div class="controls">
+        <div class="filters">
+            <select class="ctrl rt" aria-label="Filter RT">
+              <option value="">RT: Semua</option>
+            </select>
+            <select class="ctrl rw" aria-label="Filter RW">
+              <option value="">RW: Semua</option>
+            </select>
+            <select class="ctrl status" aria-label="Filter Status">
+              <option value="">Status: Semua</option>
+              <option value="aktif">Aktif</option>
+              <option value="pindah">Pindah</option>
+              <option value="nonaktif">Nonaktif</option>
+            </select>
+            <select class="ctrl verif" aria-label="Filter Verifikasi">
+              <option value="">Verifikasi: Semua</option>
+              <option value="true">Terverifikasi</option>
+              <option value="false">Belum Verif</option>
+            </select>
+        </div>
+        <div class="actions">
+            <select class="ctrl sort" aria-label="Urutkan">
+              <option value="rw_rt">Urut: RW, RT, Alamat</option>
+              <option value="nama">Urut: Nama</option>
+              <option value="status">Urut: Status</option>
+            </select>
+            <button class="btn clear" title="Reset filter"><i class="fas fa-undo"></i> Reset</button>
+            <button class="btn refresh" title="Muat ulang"><i class="fas fa-sync"></i></button>
         </div>
     </div>
     
     <div class="data-list">
-        <div class="data-item" data-aos="fade-right" data-aos-delay="100">
-            <div class="data-icon"><i class="fas fa-home"></i></div>
-            <div class="data-content">
-                <p class="data-block">Blok A No 1</p>
-                <p class="data-family">Keluarga Pak Ahmad</p>
-            </div>
-            <div class="data-arrow"><i class="fas fa-chevron-right"></i></div>
-        </div>
-        <div class="data-item" data-aos="fade-right" data-aos-delay="150">
-            <div class="data-icon"><i class="fas fa-home"></i></div>
-            <div class="data-content">
-                <p class="data-block">Blok A No 2</p>
-                <p class="data-family">Keluarga Pak Budi</p>
-            </div>
-            <div class="data-arrow"><i class="fas fa-chevron-right"></i></div>
-        </div>
-        <div class="data-item" data-aos="fade-right" data-aos-delay="200">
-            <div class="data-icon"><i class="fas fa-home"></i></div>
-            <div class="data-content">
-                <p class="data-block">Blok A No 3</p>
-                <p class="data-family">Keluarga Pak Candra</p>
-            </div>
-            <div class="data-arrow"><i class="fas fa-chevron-right"></i></div>
-        </div>
-        <div class="data-item" data-aos="fade-right" data-aos-delay="250">
-            <div class="data-icon"><i class="fas fa-home"></i></div>
-            <div class="data-content">
-                <p class="data-block">Blok B No 1</p>
-                <p class="data-family">Keluarga Pak Deni</p>
-            </div>
-            <div class="data-arrow"><i class="fas fa-chevron-right"></i></div>
-        </div>
-        <div class="data-item" data-aos="fade-right" data-aos-delay="300">
-            <div class="data-icon"><i class="fas fa-home"></i></div>
-            <div class="data-content">
-                <p class="data-block">Blok B No 2</p>
-                <p class="data-family">Keluarga Pak Eko</p>
-            </div>
-            <div class="data-arrow"><i class="fas fa-chevron-right"></i></div>
-        </div>
-        <div class="data-item" data-aos="fade-right" data-aos-delay="350">
-            <div class="data-icon"><i class="fas fa-home"></i></div>
-            <div class="data-content">
-                <p class="data-block">Blok B No 3</p>
-                <p class="data-family">Keluarga Pak Fajar</p>
-            </div>
-            <div class="data-arrow"><i class="fas fa-chevron-right"></i></div>
-        </div>
+        <!-- Will be populated dynamically from localStorage('warga_data_v1') -->
     </div>
 
     <div class="scroll" data-aos="fade-up" data-aos-delay="400">
@@ -97,11 +343,9 @@
     </div>
 
     <div class="pagination" data-aos="fade-up" data-aos-delay="450">
-        <button class="page-btn active">1</button>
-        <button class="page-btn">2</button>
-        <button class="page-btn">3</button>
-        <button class="page-btn">4</button>
-        <button class="page-btn">5</button>
+        <button class="page-btn nav prev" title="Sebelumnya"><i class="fas fa-chevron-left"></i></button>
+        <div class="page-numbers"></div>
+        <button class="page-btn nav next" title="Berikutnya"><i class="fas fa-chevron-right"></i></button>
     </div>
 </div>
 
@@ -715,5 +959,72 @@
   color: #999;
   transform: rotate(270deg);
 }
+
+/* Controls (filters + actions) */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.controls .filters,
+.controls .actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.controls .ctrl {
+  appearance: none;
+  padding: 0.6rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 0.9rem;
+}
+.controls .btn {
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #f8f9fb;
+  color: #333;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.controls .btn:hover { background:#eef3f8; }
+.controls .btn.refresh { border-color:#085895; color:#085895; }
+.controls .btn.refresh:hover { background:#eaf3fb; }
+
+/* Badges and Chips */
+.badges { display:flex; gap:.4rem; flex-wrap:wrap; }
+.badge {
+  display:inline-flex; align-items:center; gap:.35rem;
+  padding:.25rem .6rem; border-radius:999px;
+  font-size:.75rem; font-weight:600;
+}
+.badge-success { background:#e9f7ef; color:#1e7e34; border:1px solid #cdebd7; }
+.badge-warning { background:#fff8e6; color:#b07600; border:1px solid #f5e3b8; }
+.badge-muted { background:#f2f2f2; color:#666; border:1px solid #e2e2e2; }
+.badge-verify { background:#e6f4ff; color:#085895; border:1px solid #cfe9ff; }
+.badge-unverify { background:#fff0f0; color:#b42318; border:1px solid #ffd6d6; }
+
+.chips { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.5rem; }
+.chip {
+  display:inline-flex; align-items:center; gap:.35rem;
+  background:#f6f7f9; color:#555; border:1px solid #e6e8eb;
+  padding:.3rem .6rem; border-radius:999px; font-size:.78rem;
+}
+.chip-link { color:#085895; border-color:#d6e8f7; background:#eef6fd; text-decoration:none; }
+
+/* Pagination */
+.pagination { align-items:center; }
+.pagination .page-numbers { display:flex; gap:.5rem; }
+.page-btn.nav { width:36px; height:36px; }
+.page-btn:disabled { opacity:.5; cursor:not-allowed; }
+
+/* Scroll bounce */
+.scroll.bounce { animation: bounce .6s; }
+@keyframes bounce { 0%{transform:translateY(0)} 30%{transform:translateY(-6px)} 60%{transform:translateY(0)} 100%{transform:translateY(-3px)} }
 
 </style>

@@ -25,7 +25,7 @@
   <div class="grid">
     <div class="report-card" data-aos="fade-right" data-aos-delay="200">
       <div class="card-header">
-        <h3><i class="fas fa-tags"></i> By Kategori</h3>
+        <h3><i class="fas fa-file-alt"></i> Laporan</h3>
         <div class="card-actions">
           <button class="refresh-btn" title="Refresh data"><i class="fas fa-sync-alt"></i></button>
         </div>
@@ -37,7 +37,7 @@
     
     <div class="report-card" data-aos="fade-left" data-aos-delay="300">
       <div class="card-header">
-        <h3><i class="fas fa-calendar-alt"></i> By Tanggal</h3>
+        <h3><i class="fas fa-receipt"></i> Transaksi</h3>
         <div class="card-actions">
           <button class="refresh-btn" title="Refresh data"><i class="fas fa-sync-alt"></i></button>
         </div>
@@ -48,12 +48,6 @@
     </div>
   </div>
   
-  <div class="laporan-footer" data-aos="fade-up" data-aos-delay="400">
-    <a href="/userlaporan/detail" class="view-all-btn">
-      <span>Lihat Detail Laporan</span>
-      <i class="fas fa-arrow-right"></i>
-    </a>
-  </div>
 </section>
 
 <style>
@@ -260,40 +254,7 @@
     background-color: #085895;
   }
 
-  .laporan-footer {
-    margin-top: 1.5rem;
-    display: flex;
-    justify-content: center;
-  }
-
-  .view-all-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: #f8f9fa;
-    color: #085895;
-    padding: 0.75rem 1.5rem;
-    border-radius: 30px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: 1px solid #e9ecef;
-  }
-
-  .view-all-btn:hover {
-    background-color: #085895;
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(8, 88, 149, 0.2);
-  }
-
-  .view-all-btn i {
-    transition: transform 0.3s ease;
-  }
-
-  .view-all-btn:hover i {
-    transform: translateX(5px);
-  }
+  
 
   @media (max-width: 768px) { 
     .grid { 
@@ -353,6 +314,27 @@
   // Track loading state
   let isLoading = false;
 
+  function getLaporanSnapshot(){
+    try {
+      const snap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
+      if (snap && snap.totals){
+        const income = Number(snap.totals.income||0);
+        const expense = Number(snap.totals.expense||0);
+        const balance = Number(snap.totals.balance||0);
+        const any = (income>0 || expense>0 || balance>0);
+        return { income, expense, balance, any };
+      }
+    } catch(_) { }
+    return { income:0, expense:0, balance:0, any:false };
+  }
+
+  function paintTotalKasAnimated(val){
+    const totalEl = document.getElementById('total-kas');
+    if(!totalEl) return;
+    totalEl.style.opacity = '0';
+    setTimeout(()=>{ totalEl.textContent = currency(val); totalEl.style.opacity = '1'; }, 300);
+  }
+
   async function fetchJson(url){
     const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
     if(!res.ok){
@@ -362,63 +344,116 @@
     return res.json();
   }
 
+  // Helpers to format
+  const formatDateID = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(`${dateStr}T00:00:00`);
+    return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+  };
+
+  // Read admin data from localStorage
+  function readAdminReports(){
+    try { return JSON.parse(localStorage.getItem('financial_reports')||'[]') || [] } catch { return [] }
+  }
+  function readAdminTransactions(){
+    try { return JSON.parse(localStorage.getItem('financial_transactions_v2')||'[]') || [] } catch { return [] }
+  }
+
+  // Safe HTML text
+  function escapeHTML(str){
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  // Render Laporan list (maps to admin riwayat laporan)
+  function renderReportsList(){
+    const katEl = document.getElementById('by-kategori');
+    if(!katEl) return;
+    katEl.innerHTML = '';
+    const reports = (readAdminReports() || []).slice().sort((a,b)=>{
+      const ad = a?.createdAt || '';
+      const bd = b?.createdAt || '';
+      return String(bd).localeCompare(String(ad));
+    }).slice(0, 6);
+    if (reports.length === 0){
+      const li = document.createElement('li');
+      li.textContent = 'Belum ada laporan tersimpan';
+      katEl.appendChild(li);
+      return;
+    }
+    reports.forEach((r, index)=>{
+      const periodeText = (r?.snapshot?.txDate)
+        ? formatDateID(r.snapshot.txDate)
+        : `${formatDateID(r?.startDate)} — ${formatDateID(r?.endDate)}`;
+      const jumlahText = (typeof r?.snapshot?.txAmount === 'number' && r?.snapshot?.txAmount > 0)
+        ? ` • ${currency(r.snapshot.txAmount)}`
+        : '';
+      const ket = (r?.snapshot?.txDesc && String(r.snapshot.txDesc).trim().length > 0)
+        ? String(r.snapshot.txDesc)
+        : (r?.notes && String(r.notes).trim().length > 0 ? String(r.notes) : '');
+      const li = document.createElement('li');
+      li.innerHTML = `${escapeHTML(r?.title || 'Laporan')} <span style="opacity:.8">(${periodeText}${jumlahText})</span>${ket ? `<div style="opacity:.85;margin-top:4px;font-size:.92em;">\u201C${escapeHTML(ket)}\u201D</div>` : ''}`;
+      li.style.opacity = '0';
+      li.style.transform = 'translateX(-10px)';
+      katEl.appendChild(li);
+      setTimeout(()=>{
+        li.style.transition = 'all 0.3s ease';
+        li.style.opacity = '1';
+        li.style.transform = 'translateX(0)';
+      }, 100*index);
+    });
+  }
+
+  // Render Transaksi list (maps to admin daftar transaksi)
+  function renderTransactionsList(){
+    const tglEl = document.getElementById('by-tanggal');
+    if(!tglEl) return;
+    tglEl.innerHTML = '';
+    const txs = (readAdminTransactions() || []).slice().sort((a,b)=>{
+      return String(b?.date||'').localeCompare(String(a?.date||''));
+    }).slice(0, 8);
+    if (txs.length === 0){
+      const li = document.createElement('li');
+      li.textContent = 'Belum ada transaksi';
+      tglEl.appendChild(li);
+      return;
+    }
+    txs.forEach((t, index)=>{
+      const li = document.createElement('li');
+      const tipe = (t?.type||'').toLowerCase() === 'masuk' ? 'Masuk' : 'Keluar';
+      const kategori = t?.category || '-';
+      const tanggal = formatDateID(t?.date || '');
+      const amount = currency(t?.amount || 0);
+      const desc = (t?.description && String(t.description).trim().length > 0) ? ` • ${escapeHTML(t.description)}` : '';
+      li.innerHTML = `${tanggal} — ${tipe} ${escapeHTML(kategori)}: ${amount}${desc}`;
+      li.style.opacity = '0';
+      li.style.transform = 'translateX(-10px)';
+      tglEl.appendChild(li);
+      setTimeout(()=>{
+        li.style.transition = 'all 0.3s ease';
+        li.style.opacity = '1';
+        li.style.transform = 'translateX(0)';
+      }, 100*index);
+    });
+  }
+
   function renderSummary(data){
-    // Update total kas with animation
+    // Keep API fallback only for total-kas when no snapshot
     const totalEl = document.getElementById('total-kas');
     if(totalEl) {
-      // Add fade effect
       totalEl.style.opacity = '0';
       setTimeout(() => {
         totalEl.textContent = currency(data?.total ?? 0);
         totalEl.style.opacity = '1';
       }, 300);
     }
-
-    // Update kategori list with animation
-    const katEl = document.getElementById('by-kategori');
-    if(katEl){
-      // Clear existing items
-      katEl.innerHTML = '';
-      
-      // Add new items with staggered animation
-      (data?.byKategori || []).forEach((row, index) => {
-        const li = document.createElement('li');
-        li.textContent = `${row.kategori}: ${currency(row.total)}`;
-        li.style.opacity = '0';
-        li.style.transform = 'translateX(-10px)';
-        katEl.appendChild(li);
-        
-        // Staggered animation
-        setTimeout(() => {
-          li.style.transition = 'all 0.3s ease';
-          li.style.opacity = '1';
-          li.style.transform = 'translateX(0)';
-        }, 100 * index);
-      });
-    }
-
-    // Update tanggal list with animation
-    const tglEl = document.getElementById('by-tanggal');
-    if(tglEl){
-      // Clear existing items
-      tglEl.innerHTML = '';
-      
-      // Add new items with staggered animation
-      (data?.byTanggal || []).forEach((row, index) => {
-        const li = document.createElement('li');
-        li.textContent = `${row.tanggal}: ${currency(row.total)}`;
-        li.style.opacity = '0';
-        li.style.transform = 'translateX(-10px)';
-        tglEl.appendChild(li);
-        
-        // Staggered animation
-        setTimeout(() => {
-          li.style.transition = 'all 0.3s ease';
-          li.style.opacity = '1';
-          li.style.transform = 'translateX(0)';
-        }, 100 * index);
-      });
-    }
+    // Lists are driven by admin data, not API summary
+    renderReportsList();
+    renderTransactionsList();
   }
 
   async function fetchData() {
@@ -434,8 +469,17 @@
     });
     
     try {
-      const data = await fetchJson(`/api/public/transaksi/summary?komplek_id=${encodeURIComponent(komplekId)}`);
-      renderSummary(data);
+      // If laporan snapshot exists and is non-zero, prefer it and skip API overwrite
+      const snap = getLaporanSnapshot();
+      if (snap.any) {
+        paintTotalKasAnimated(snap.balance);
+      } else {
+        const data = await fetchJson(`/api/public/transaksi/summary?komplek_id=${encodeURIComponent(komplekId)}`);
+        renderSummary(data);
+      }
+      // Always render lists from admin data
+      renderReportsList();
+      renderTransactionsList();
     } catch(err) {
       console.error(err);
       // Show error notification
@@ -465,11 +509,33 @@
 
   // Initialize data
   (async function init(){
+    // Try paint from laporan snapshot first so it matches admin/laporan immediately
+    const snap = getLaporanSnapshot();
+    if (snap.any) paintTotalKasAnimated(snap.balance);
+    // Render lists immediately from stored admin data
+    renderReportsList();
+    renderTransactionsList();
+    // Then fetch if needed (e.g., when no snapshot yet)
     await fetchData();
     
     // Add event listeners to refresh buttons
     document.querySelectorAll('.refresh-btn').forEach(btn => {
       btn.addEventListener('click', fetchData);
+    });
+
+    // Keep in sync with laporan page changes in real-time
+    window.addEventListener('storage', (e)=>{
+      if (!e) return;
+      if (e.key === 'laporan_totals_snapshot'){
+        const s = getLaporanSnapshot();
+        if (s.any) paintTotalKasAnimated(s.balance);
+      }
+      if (e.key === 'financial_reports'){
+        renderReportsList();
+      }
+      if (e.key === 'financial_transactions_v2'){
+        renderTransactionsList();
+      }
     });
   })();
 

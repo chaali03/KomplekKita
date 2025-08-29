@@ -26,12 +26,13 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           <i class="fas fa-bullhorn"></i>
           <span>Buat Informasi</span>
         </button>
-        <button id="btn-manage-cats" class="btn soft pressable">
+        <button id="btn-manage-tags" class="btn soft pressable">
           <i class="fas fa-tags"></i>
           <span>Kelola Kategori</span>
         </button>
       </div>
     </section>
+
 
     <!-- Overview Stats -->
     <section class="stats-row pre-anim">
@@ -88,10 +89,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       <div class="card-subheader">
         <div id="info-chips" class="chips">
           <button class="chip pressable" data-cat="all" aria-pressed="true"><i class="fas fa-layer-group"></i> Semua</button>
-          <button class="chip pressable" data-cat="Umum"><i class="fas fa-circle"></i> Umum</button>
-          <button class="chip pressable" data-cat="Keamanan"><i class="fas fa-shield-alt"></i> Keamanan</button>
-          <button class="chip pressable" data-cat="Lingkungan"><i class="fas fa-leaf"></i> Lingkungan</button>
-          <button class="chip pressable" data-cat="Acara"><i class="fas fa-calendar-alt"></i> Acara</button>
+          <span id="tag-chips-host"></span>
           <button class="chip pressable" data-pinned="only"><i class="fas fa-thumbtack"></i> Pinned</button>
         </div>
       </div>
@@ -117,12 +115,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
             </div>
             <div class="kk-form__field">
               <label for="category">Kategori</label>
-              <select id="category">
-                <option>Umum</option>
-                <option>Keamanan</option>
-                <option>Lingkungan</option>
-                <option>Acara</option>
-              </select>
+              <select id="category"></select>
             </div>
             <div class="kk-form__field">
               <label for="date">Tanggal</label>
@@ -165,28 +158,6 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       </div>
     </div>
 
-    <!-- Modal: Kelola Kategori -->
-    <div id="cats-modal" class="kk-modal" aria-hidden="true">
-      <div class="kk-modal__overlay" data-close></div>
-      <div class="kk-modal__content kk-modal__content--md" role="dialog" aria-modal="true" aria-labelledby="cats-modal-title">
-        <div class="kk-modal__header">
-          <h3 id="cats-modal-title"><i class="fas fa-tags"></i> Kelola Kategori</h3>
-          <button class="kk-modal__close pressable" data-close aria-label="Tutup"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="kk-modal__body">
-          <div class="cats-add-row">
-            <input id="cat-input" type="text" placeholder="Tambah kategori baru" />
-            <button id="cat-add" class="btn primary pressable"><i class="fas fa-plus"></i> Tambah</button>
-          </div>
-          <div id="cats-list" class="cats-list"></div>
-          <div class="cats-hint">Kategori "Umum" tidak dapat dihapus.</div>
-        </div>
-        <div class="kk-modal__footer">
-          <button type="button" class="btn light pressable" data-close>Batal</button>
-        </div>
-      </div>
-    </div>
-
     <!-- Confirm Delete Modal -->
     <div id="confirm-modal" class="kk-modal" aria-hidden="true">
       <div class="kk-modal__overlay" data-close></div>
@@ -196,7 +167,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           <button class="kk-modal__close pressable" data-close aria-label="Tutup"><i class="fas fa-times"></i></button>
         </div>
         <div class="kk-modal__body">
-          <p id="confirm-body">Yakin ingin menghapus informasi ini? Tindakan ini tidak dapat dibatalkan.</p>
+          <p>Yakin ingin menghapus informasi ini? Tindakan ini tidak dapat dibatalkan.</p>
         </div>
         <div class="kk-modal__footer">
           <button type="button" class="btn light pressable" data-close>Batal</button>
@@ -237,8 +208,6 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       --shadow-lg: 0 16px 44px rgba(20, 40, 80, 0.10);
 
       --ring: #93c5fd;
-      --glass: color-mix(in srgb, #fff 72%, transparent);
-      --glass-strong: color-mix(in srgb, #fff 60%, transparent);
     }
     .info-ui {
       display: grid;
@@ -259,21 +228,20 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     /* HEADER */
     .section-header-card {
-      display: flex; justify-content: space-between; align-items: center; gap: 12px;
-      background: linear-gradient(180deg, var(--surface), var(--surface-2));
-      border: 1px solid var(--outline); border-radius: var(--radius-lg);
-      padding: 16px 18px; box-shadow: var(--shadow-md);
-      backdrop-filter: blur(6px);
+      display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 14px;
+      background: var(--surface); border: 1px solid var(--outline); border-radius: var(--radius-lg);
+      padding: 16px; box-shadow: var(--shadow-md);
     }
-    .section-header-left { display: flex; gap: 12px; align-items: center; }
+    .section-header-left { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; min-width: 0; }
     .section-icon {
       width: 44px; height: 44px; display: grid; place-items: center;
-      background: #e9f3ff; color: var(--primary);
-      border: 1px solid var(--outline); border-radius: 12px;
+      background: linear-gradient(180deg, #eef5ff, #ffffff); color: var(--primary);
+      border: 1px solid var(--outline); border-radius: 12px; box-shadow: inset 0 -1px 0 rgba(255,255,255,.4);
       font-size: 1.1rem;
     }
-    .section-title h1 { margin: 0; font-size: 1.25rem; font-weight: 800; letter-spacing: .2px; }
-    .section-title p { margin: 2px 0 0; color: var(--text-muted); }
+    .section-title h1 { margin: 0; font-size: 1.22rem; font-weight: 900; letter-spacing: .2px; line-height: 1.2; }
+    .section-title p { margin: 3px 0 0; color: var(--text-muted); font-weight: 600; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; }
+    .section-actions { display: inline-grid; grid-auto-flow: column; gap: 10px; align-items: center; }
 
     /* BUTTONS */
     .btn {
@@ -283,10 +251,8 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       color: var(--text); font-weight: 800; box-shadow: var(--shadow-sm);
       outline: none;
     }
-    .btn:hover { transform: translateY(-0.5px); box-shadow: 0 6px 16px rgba(15, 23, 42, .08); }
-    .btn:active { transform: translateY(0) scale(.99); box-shadow: var(--shadow-sm); }
     .btn:focus-visible { box-shadow: 0 0 0 3px var(--ring); }
-    .btn.primary { background: linear-gradient(180deg, var(--primary), var(--primary-600)); border-color: #0a5699; color: #fff; }
+    .btn.primary { background: var(--primary); border-color: #0a5699; color: #fff; }
     .btn.soft { background: var(--surface); }
     .btn.light { background: var(--surface-2); }
     .btn.danger { background: #fee2e2; color: #991b1b; border-color: #f3c5c5; }
@@ -298,7 +264,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     }
     .stat-box {
       display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center;
-      background: linear-gradient(180deg, var(--surface), var(--surface-2)); border: 1px solid var(--outline); border-radius: var(--radius-lg);
+      background: var(--surface); border: 1px solid var(--outline); border-radius: var(--radius-lg);
       padding: 12px 14px; box-shadow: var(--shadow-sm);
     }
     .stat-icon {
@@ -313,30 +279,34 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     /* CARD WRAPPER */
     .card.block {
-      background: linear-gradient(180deg, var(--surface), var(--surface-2)); border: 1px solid var(--outline); border-radius: var(--radius-lg);
+      background: var(--surface); border: 1px solid var(--outline); border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm); overflow: hidden;
-      container-type: inline-size; /* enable container queries */
     }
     .card-header {
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+      display: grid; align-items: center; row-gap: 10px; column-gap: 14px;
+      grid-template-columns: 1fr auto; grid-template-areas:
+        "search actions"
+        "title actions";
       padding: 14px 16px; border-bottom: 1px solid var(--outline);
     }
-    .card-title { display: flex; align-items: center; gap: 8px; }
+    .card-title { grid-area: title; display: flex; align-items: center; gap: 8px; min-width: 0; }
     .title-icon {
       width: 36px; height: 36px; display: grid; place-items: center;
       border: 1px solid var(--outline); border-radius: 10px;
       background: #eef4fb; color: var(--primary);
     }
     .card-title h2 { margin: 0; font-size: 1rem; font-weight: 900; }
-    .actions-wrap {
-      display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
-      justify-content: flex-start; width: 100%;
-    }
-    .actions-wrap > * { flex: 0 0 auto; position: relative; z-index: 0; }
+    /* allow children (
+      .input-group, .select-box, #view-toggle) to become direct grid items
+      so we can place search on the left and others on the right */
+    .actions-wrap { display: contents; }
+    .actions-wrap > * { position: relative; z-index: 0; }
+    .actions-wrap .input-group { grid-area: search; justify-self: start; }
+    .actions-wrap .select-box, .actions-wrap #view-toggle { grid-area: actions; justify-self: end; }
     .card-subheader { padding: 10px 12px; border-bottom: 1px solid var(--outline); }
 
     /* INPUT GROUP */
-    .input-group { position: relative; width: auto; flex: 1 1 480px; min-width: 200px; margin-right: 0; z-index: 0; }
+    .input-group { position: relative; width: 100%; max-width: 520px; min-width: 220px; z-index: 0; }
     .input-group input {
       width: 100%; height: 40px; border-radius: 999px; border: 1px solid var(--outline);
       background: linear-gradient(180deg, var(--surface-2), var(--surface)); padding: 0 12px 0 40px; color: var(--text); font-weight: 600; outline: none;
@@ -353,67 +323,38 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       padding: 0 10px; font-weight: 800; color: var(--text); outline: none;
     }
     .select:focus-visible { box-shadow: 0 0 0 3px var(--ring); }
-    .segmented { display: inline-flex; background: var(--surface-2); border: 1px solid var(--outline); border-radius: 12px; padding: 2px; height: 40px; z-index: 1; margin-left: 2px; box-shadow: inset 0 1px 0 rgba(255,255,255,.6); }
+    .segmented { display: inline-flex; background: var(--surface-2); border: 1px solid var(--outline); border-radius: 12px; padding: 2px; height: 40px; z-index: 1; margin-left: 2px; }
     .seg-btn {
       display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border: 0; background: transparent; color: var(--text); font-weight: 800; border-radius: 10px; outline: none;
     }
-    .seg-btn.active { background: var(--surface); border: 1px solid var(--outline); box-shadow: 0 6px 16px rgba(15, 23, 42, .06); }
+    .seg-btn.active { background: var(--surface); border: 1px solid var(--outline); }
 
-    /* Attach look only on wide screens */
-    @media (min-width: 1024px){
-      .actions-wrap .input-group + .select-box { margin-left: 40px; }
-      .actions-wrap .input-group input { border-top-right-radius: 999px; border-bottom-right-radius: 999px; }
-      .actions-wrap .input-group + .select-box .select { border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-left: 1px solid var(--outline); }
-    }
+    /* Remove old coupled spacing between search and select */
+    .actions-wrap .input-group + .select-box { margin-left: 0; }
 
     /* Responsive tweak to avoid collisions */
     @media (max-width: 900px){
-      .card-header{ flex-wrap: wrap; row-gap: 10px; }
-      .actions-wrap{ width: 100%; gap: 12px; justify-content: flex-start; }
-      .input-group{ order: -1; width: 100%; flex: 1 1 100%; min-width: 0; margin-right: 0; }
-      .select-box, .segmented{ flex: 0 0 auto; }
-      .actions-wrap .input-group + .select-box{ margin-left: 0; }
-    }
-
-    /* Ensure wrap also in tablet widths */
-    @media (max-width: 1024px){
-      /* Switch to grid so search can be forced to the first full-width row */
-      .card-header{ display: grid; grid-template-columns: 1fr; row-gap: 10px; }
-      .actions-wrap{ grid-row: 1; justify-self: stretch; width: 100%; justify-content: flex-start; display: grid; grid-template-columns: 1fr auto auto; column-gap: 8px; }
-      .card-title{ grid-row: 2; }
-      .input-group{ order: 0; width: 100%; flex: 1 1 100%; min-width: 0; grid-column: 1 / -1; }
-      .actions-wrap .input-group + .select-box{ margin-left: 0; }
-      .segmented{ margin-left: 0; }
-    }
-
-    /* Compact search for small screens */
-    @media (max-width: 640px){
-      .card-header{ align-items: stretch; }
-      .actions-wrap{ width: 100%; gap: 10px; }
-      .actions-wrap .input-group{ order: -1; width: 100%; flex: 1 1 100%; min-width: 0; margin-right: 0; }
-      .actions-wrap .input-group + .select-box{ margin-left: 0; }
-      .segmented{ margin-left: 0; }
-
-      .input-group input{ height: 36px; padding-left: 36px; font-size: .95rem; }
-      .input-icon{ left: 10px; }
-
-      .select-box .select{ height: 36px; border-radius: 10px; padding: 0 10px; }
-      .segmented{ height: 36px; border-radius: 10px; }
-      .seg-btn{ height: 32px; padding: 0 10px; gap: 4px; font-size: .94rem; }
+      .card-header{
+        grid-template-columns: 1fr; grid-template-areas:
+          "title"
+          "search"
+          "actions";
+      }
+      .actions-wrap .select-box, .actions-wrap #view-toggle { justify-self: start; }
     }
 
     /* CHIPS */
-    .chips { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 2px; }
+    .chips { display: flex; gap: 8px; padding: 4px 2px 8px; overflow-x: auto; overflow-y: hidden; white-space: nowrap; width: 100%; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
     .chips::-webkit-scrollbar { height: 6px; }
     .chips::-webkit-scrollbar-thumb { background: var(--outline-2); border-radius: 999px; }
     .chip {
-      display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: 999px;
+      display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: 999px; flex: 0 0 auto; scroll-snap-align: start;
       border: 1px solid var(--outline); background: linear-gradient(180deg, var(--surface-2), var(--surface));
       color: var(--text); font-weight: 800; outline: none; white-space: nowrap; transition: background .2s ease, box-shadow .2s ease, border-color .2s ease;
     }
-    .chip:hover { border-color: var(--outline-2); box-shadow: 0 6px 16px rgba(0,0,0,.06); }
+    .chip:hover { border-color: var(--outline-2); box-shadow: 0 2px 8px rgba(0,0,0,.04); }
     .chip:focus-visible { box-shadow: 0 0 0 3px var(--ring); }
-    .chip.active, .chip[aria-pressed="true"] { background: linear-gradient(180deg, var(--primary), var(--primary-600)); color: #fff; border-color: #0a5699; box-shadow: 0 10px 24px rgba(8,88,149,.22); }
+    .chip.active, .chip[aria-pressed="true"] { background: var(--primary); color: #fff; border-color: #0a5699; box-shadow: 0 6px 18px rgba(8,88,149,.18); }
 
     /* GRID / LIST */
     .card-body { padding: 16px; }
@@ -423,7 +364,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     /* CARD ITEM */
     .info-card{
       position: relative;
-      background: linear-gradient(180deg, var(--surface), var(--surface-2)); border: 1px solid var(--outline);
+      background: var(--surface); border: 1px solid var(--outline);
       border-radius: 14px; box-shadow: var(--shadow-sm);
       overflow: hidden; transition: box-shadow .18s ease, transform .12s ease, border-color .2s ease;
     }
@@ -431,9 +372,8 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     .info-card::before { /* accent bar */
       content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: transparent;
     }
-    .info-card.pinned::before { background: linear-gradient(90deg, #facc15, #f59e0b); }
-    /* Pin ribbon */
-    .pin-ribbon{ position:absolute; top:8px; left:-8px; background:#facc15; color:#7c5800; padding:2px 10px; font-weight:900; font-size:.78rem; transform:rotate(-8deg); border-radius:6px; border:1px solid #f59e0b; box-shadow:0 4px 12px rgba(0,0,0,.12); }
+    .info-card.pinned::before { background: #f1c75b; }
+    /* (moved to global) .pin-ribbon */
     .thumb { width: 100%; height: 164px; object-fit: cover; background: var(--surface-2); display: block; border-bottom: 1px solid var(--outline); }
     .pad { padding: .9rem 1rem; display: grid; gap: .6rem; }
     .info-meta { display: flex; align-items: center; justify-content: space-between; gap: .5rem; color: var(--text-subtle); font-size: .8rem; }
@@ -442,7 +382,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     .badge.new { background: #e8f6ee; color: #0c6b2f; border-color: #d7eadf; }
     .info-card h3 { margin: .1rem 0 0; font-size: 1.04rem; font-weight: 900; color: var(--text); line-height: 1.25; letter-spacing: .1px; }
     .info-card p { margin: 0; color: var(--text-muted); font-size: .94rem; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-    .info-actions { display: flex; gap: .5rem; margin-top: .4rem; }
+    .info-card .info-actions { display: flex; gap: .5rem; margin-top: .4rem; }
 
     /* LIST ROW */
     .info-row {
@@ -450,10 +390,18 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       background: var(--surface); border: 1px solid var(--outline); border-radius: 12px; box-shadow: var(--shadow-sm); padding: 10px;
     }
     .info-row:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); transition: box-shadow .18s ease, transform .12s ease, border-color .2s ease; border-color: var(--outline-2); }
+    .info-row.pinned { border-color: #f1e0b9; box-shadow: 0 6px 18px rgba(184, 115, 0, 0.08); }
+    .info-row.pinned::before {
+      content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 4px;
+      border-radius: 6px; background: linear-gradient(180deg, #ffd88a, #f1c75b);
+    }
     .row-thumb { width: 96px; height: 64px; object-fit: cover; background: var(--surface-2); border-radius: 8px; border: 1px solid var(--outline); }
     .row-content { display: grid; gap: 4px; }
     .row-title { display: flex; align-items: center; gap: 8px; font-weight: 900; }
-    .row-title .title { font-size: 1rem; color: var(--text); letter-spacing: .1px; }
+    .row-title .pin-badge {
+      display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: 999px;
+      background: #fff7e6; color: #b87300; border: 1px solid #f1e0b9; font-size: .78rem; font-weight: 900;
+    }
     .row-meta { display: flex; gap: 8px; flex-wrap: wrap; color: var(--text-subtle); font-size: .86rem; }
     .row-actions { display: inline-flex; gap: 6px; }
 
@@ -549,42 +497,15 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       .stats-row { grid-template-columns: 1fr; }
     }
     @media (max-width: 780px) {
-      .section-header-card { flex-direction: column; align-items: stretch; }
+      .section-header-card { grid-template-columns: 1fr; gap: 12px; padding: 14px; }
       .section-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .section-actions .btn { width: 100%; justify-content: center; }
+      .section-title h1 { font-size: 1.12rem; }
+      .section-title p { font-size: .92rem; }
       .kk-form__grid { grid-template-columns: 1fr; }
       .kk-modal__content { top: 30px; }
       .info-row { grid-template-columns: 72px 1fr auto; }
       .row-thumb { width: 72px; height: 56px; }
-    }
-
-    /* Categories modal */
-    .cats-add-row{ display:grid; grid-template-columns:1fr auto; gap:8px; }
-    #cat-input{ border:1px solid var(--outline); border-radius:10px; background:var(--surface-2); padding:.6rem .7rem; color:var(--text); font-weight:600; outline:none; }
-    #cat-input:focus-visible{ box-shadow:0 0 0 3px var(--ring); }
-    .cats-list{ display:grid; gap:8px; margin-top:10px; }
-    .cat-row{ display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; border:1px solid var(--outline); border-radius:10px; background:var(--surface); padding:8px 10px; }
-    .cat-name{ font-weight:800; color:var(--text); }
-    .cat-meta{ color:var(--text-subtle); font-weight:700; font-size:.86rem; }
-    .cat-actions{ display:inline-flex; gap:6px; }
-    .cats-hint{ margin-top:8px; color:var(--text-subtle); font-size:.86rem; font-weight:700; }
-
-    /* DARK MODE (optional) */
-    @media (prefers-color-scheme: dark) {
-      .info-ui{
-        --bg: #0b1220;
-        --surface: #0f172a;
-        --surface-2: #0b1325;
-        --outline: #253046;
-        --outline-2: #2e3b55;
-        --text: #e5e7eb;
-        --text-muted: #9aa4b2;
-        --text-subtle: #8a97ac;
-        --ring: #2563eb80;
-        --shadow-sm: 0 2px 10px rgba(0,0,0,.25);
-        --shadow-md: 0 8px 22px rgba(0,0,0,.35);
-        --shadow-lg: 0 16px 44px rgba(0,0,0,.5);
-      }
-      .chip.active, .chip[aria-pressed="true"]{ box-shadow: 0 10px 24px rgba(37,99,235,.28); }
     }
 
     /* REDUCED MOTION */
@@ -597,18 +518,97 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     }
   </style>
 
+  <!-- Global styles to apply to JS-rendered elements (Astro scope-safe) -->
+  <style is:global>
+    /* Buttons */
+    .btn{ display:inline-flex; align-items:center; gap:8px; height:38px; padding:0 14px; border-radius:10px; border:1px solid #e6eef7; background:#f7fbff; color:#0d3f66; font-weight:800; box-shadow: 0 3px 10px rgba(0,0,0,.04); }
+    .btn.light{ background:#eef5fd; color:#085895; border-color:#d6e6f7; }
+    .btn.soft{ background:#eaf3ff; color:#0a6bb2; border-color:#cfe0f2; }
+    .btn.danger{ background:#fff1f0; color:#e74c3c; border-color:#ffd6d6; }
+    .btn.sm{ height:32px; padding:0 12px; border-radius:8px; }
+
+    /* Chips and segmented */
+    .chips{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
+    .chip{ display:inline-flex; align-items:center; gap:8px; height:34px; padding:0 12px; border-radius:999px; border:1px solid #d9e7f8; background:#eef5ff; color:#0a5fb3; font-weight:800; white-space:nowrap; }
+    .segmented{ display:inline-flex; background:#f0f5fb; border:1px solid #e1eaf6; border-radius:12px; padding:2px; }
+    .segmented .seg-btn{ display:inline-flex; align-items:center; gap:6px; height:34px; padding:0 12px; border:0; background:transparent; color:#24303f; font-weight:800; border-radius:10px; }
+    .segmented .seg-btn.active{ background:#fff; border:1px solid #e6eef7; }
+
+    /* Stats */
+    .stats-row{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+    .stat-box{ display:grid; grid-template-columns:auto 1fr; gap:10px; align-items:center; background:#fff; border:1px solid #e6eef7; border-radius:14px; padding:12px 14px; box-shadow:0 4px 14px rgba(0,0,0,.05); }
+    .stat-icon{ width:42px; height:42px; display:grid; place-items:center; border-radius:12px; border:1px solid #e6eef7; background:#f7fbff; color:#085895; }
+
+    /* Grid/List containers */
+    .info-grid.grid-mode{ display:grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap:12px; }
+    .info-grid.list-mode{ display:grid; gap:8px; }
+
+    /* Cards */
+    .info-card{ position:relative; background:#fff; border:1px solid #e6eef7; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.06); overflow:hidden; }
+    .info-card .thumb{ width:100%; height:160px; object-fit:cover; background:#f2f6fb; display:block; }
+    .info-card .pad{ padding:.85rem .95rem; display:grid; gap:.55rem; }
+    .info-card .info-meta{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; color:#5b6778; font-size:.85rem; }
+    .info-card .badge{ display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 10px; border-radius:999px; border:1px solid #e6eef7; font-weight:800; }
+    .info-card .badge.pill{ background:#eef5ff; color:#0a5fb3; border-color:#d9e7f8; }
+    .info-card .badge.new{ background:#e8f6ee; color:#0c6b2f; border-color:#d7eadf; }
+    .info-card h3{ margin:.1rem 0 0; font-size:1.02rem; font-weight:900; color:#24303f; line-height:1.25; }
+    .info-card p{ margin:0; color:#6b7686; font-size:.93rem; line-height:1.35; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    .info-card .info-actions{ display:flex; gap:.5rem; margin-top:.4rem; }
+
+    /* Rows */
+    .info-row{ display:grid; grid-template-columns:96px 1fr auto; gap:12px; align-items:center; background:#fff; border:1px solid #e6eef7; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.06); padding:8px; }
+    .info-row .row-thumb{ width:96px; height:64px; object-fit:cover; background:#f2f6fb; border-radius:8px; border:1px solid #e6eef7; }
+    .info-row .row-content{ display:grid; gap:4px; }
+    .info-row .row-title{ display:flex; align-items:center; gap:8px; font-weight:900; }
+    .info-row .row-meta{ display:flex; gap:8px; flex-wrap:wrap; color:#5b6778; font-size:.85rem; }
+    .info-row .row-actions{ display:inline-flex; gap:6px; }
+
+    /* Diagonal pinned ribbon (global, mirrors .harga-card-badge) */
+    .pin-ribbon,
+    .info-card > .pin-ribbon,
+    .info-row > .pin-ribbon{
+      position:absolute;
+      top:1rem !important;
+      right:-3rem !important;
+      background: var(--primary-blue, #2563eb) !important;
+      color:#fff !important;
+      padding:0.5rem 3rem !important;
+      font-size:.8rem !important;
+      font-weight:800 !important;
+      text-transform:uppercase !important;
+      transform:rotate(45deg) !important;
+      box-shadow:0 2px 10px rgba(37,99,235,0.3) !important;
+      letter-spacing:.3px !important;
+      z-index:5 !important;
+      pointer-events:none !important;
+      user-select:none !important;
+      display:inline-block !important;
+    }
+
+    /* Category color pills (light + dark handled in page CSS already) */
+    .cat-Umum{ background:#eef5ff; color:#0a5fb3; border-color:#d9e7f8; }
+    .cat-Keamanan{ background:#fff2f2; color:#b22234; border-color:#f4c7ce; }
+    .cat-Lingkungan{ background:#ebfaef; color:#0c6b2f; border-color:#cfe9d9; }
+    .cat-Acara{ background:#fff7e6; color:#b87300; border-color:#f1e0b9; }
+
+    @media (max-width:980px){ .stats-row{ grid-template-columns:1fr; } }
+    @media (max-width:780px){ .info-row{ grid-template-columns:72px 1fr auto; } .info-row .row-thumb{ width:72px; height:56px; } }
+  </style>
+
   <script>
     // @ts-nocheck
     (() => {
+      function init(){
       const root = document.querySelector('.info-ui');
       if (!root) return;
 
       // Elements
       const grid = document.getElementById('info-grid');
       const btnOpenCreate = document.getElementById('btn-open-create');
-      const btnManageCats = document.getElementById('btn-manage-cats');
+      const btnManageTags = document.getElementById('btn-manage-tags');
       const searchInput = document.getElementById('info-search');
       const chips = document.getElementById('info-chips');
+      const tagChipsHost = document.getElementById('tag-chips-host');
 
       const sortSelect = document.getElementById('sort-select');
       const viewToggle = document.getElementById('view-toggle');
@@ -630,15 +630,15 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
       const confirmModal = document.getElementById('confirm-modal');
       const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-      const confirmTitle = document.getElementById('confirm-title');
-      const confirmBody = document.querySelector('#confirm-modal .kk-modal__body p');
 
       const toast = document.getElementById('kk-toast');
 
-      const catsModal = document.getElementById('cats-modal');
-      const catsList = document.getElementById('cats-list');
-      const catInput = document.getElementById('cat-input');
-      const catAddBtn = document.getElementById('cat-add');
+      // Tag Manager Modal elements
+      const tagModal = document.getElementById('tag-modal');
+      const tagForm = document.getElementById('tag-form');
+      const tagInput = document.getElementById('tag-input');
+      const tagList = document.getElementById('tag-list');
+      const tagAddBtn = document.getElementById('tag-add-btn');
 
       const statTotal = document.getElementById('stat-total');
       const statPinned = document.getElementById('stat-pinned');
@@ -648,7 +648,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
       // State
       const STORAGE_KEY = 'kk_infos_v3';
-      const CATS_KEY = 'kk_info_categories_v1';
+      const TAGS_KEY = 'kk_info_tags_v1';
       let activeCat = 'all';
       let pinnedOnly = false;
       let isLoading = true;
@@ -661,8 +661,10 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
       };
       const writeData = (items) => localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-      const readCats = () => { try { return JSON.parse(localStorage.getItem(CATS_KEY) || '[]'); } catch { return []; } };
-      const writeCats = (arr) => localStorage.setItem(CATS_KEY, JSON.stringify(arr));
+      const readTags = () => {
+        try { return JSON.parse(localStorage.getItem(TAGS_KEY) || '[]'); } catch { return []; }
+      };
+      const writeTags = (tags) => localStorage.setItem(TAGS_KEY, JSON.stringify(tags));
       const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
       const fmtDate = (iso) => {
         if (!iso) return '-';
@@ -690,14 +692,6 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         }, 1600);
       }
 
-      // Ensure default categories exist on first load
-      (function seedDefaultCategories(){
-        const current = readCats();
-        if (!Array.isArray(current) || current.length === 0) {
-          writeCats(['Umum','Keamanan','Lingkungan','Acara']);
-        }
-      })();
-
       // Seed data first time
       if (readData().length === 0) {
         writeData([
@@ -706,6 +700,132 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           { id: uid(), title: 'Pembersihan Selokan', category: 'Lingkungan', date: new Date(Date.now()-2*86400000).toISOString().slice(0,10), pinned: false, content: 'Kerja bakti pada Hari Minggu pukul 07.00.', banner: '' },
         ]);
       }
+      // Seed default tags if missing
+      if (!Array.isArray(readTags()) || readTags().length === 0) {
+        writeTags(['Umum','Keamanan','Lingkungan','Acara']);
+      }
+
+      // Tag helpers
+      function ensureUniqueName(name) {
+        const n = (name || '').trim();
+        if (!n) return null;
+        const tags = readTags();
+        if (tags.some(t => t.toLowerCase() === n.toLowerCase())) return null;
+        return n;
+      }
+
+      function populateCategorySelect() {
+        if (!inputCategory) return;
+        const tags = readTags();
+        inputCategory.innerHTML = '';
+        tags.forEach(tag => {
+          const opt = document.createElement('option');
+          opt.value = tag; opt.textContent = tag; inputCategory.appendChild(opt);
+        });
+      }
+
+      function renderTagChips() {
+        if (!tagChipsHost) return;
+        const tags = readTags();
+        tagChipsHost.innerHTML = '';
+        tags.forEach(tag => {
+          const btn = document.createElement('button');
+          btn.className = 'chip pressable';
+          btn.setAttribute('data-cat', tag);
+          btn.innerHTML = `<i class="fas fa-tag"></i> ${tag}`;
+          tagChipsHost.appendChild(btn);
+        });
+        setActiveChips();
+      }
+
+      function openTagModal() {
+        tagModal.classList.add('show');
+        tagModal.setAttribute('aria-hidden','false');
+        tagInput.value = '';
+        renderTagList();
+        setTimeout(() => tagInput?.focus?.(), 20);
+      }
+      function closeTagModal() {
+        tagModal.classList.remove('show');
+        tagModal.setAttribute('aria-hidden','true');
+      }
+      function renderTagList() {
+        if (!tagList) return;
+        const tags = readTags();
+        tagList.innerHTML = '';
+        tags.forEach((tag) => {
+          const li = document.createElement('div');
+          li.className = 'tag-item';
+          li.innerHTML = `
+            <span class="tag-name">${tag}</span>
+            <div class="tag-actions">
+              <button class="btn light sm pressable" data-edit><i class="fas fa-edit"></i></button>
+              <button class="btn danger sm pressable" data-delete><i class="fas fa-trash"></i></button>
+            </div>`;
+          // edit
+          li.querySelector('[data-edit]')?.addEventListener('click', () => {
+            const current = tag;
+            const input = document.createElement('input');
+            input.type = 'text'; input.value = current; input.className = 'tag-edit-input';
+            li.querySelector('.tag-name').replaceWith(input);
+            input.focus();
+            const save = () => {
+              const newName = ensureUniqueName(input.value);
+              if (!newName) { showToast('Nama tidak valid/duplikat'); return; }
+              const arr = readTags();
+              const idx = arr.indexOf(current);
+              if (idx >= 0) { arr[idx] = newName; writeTags(arr); }
+              // migrate info items categories
+              const infos = readData();
+              infos.forEach(it => { if (it.category === current) it.category = newName; });
+              writeData(infos);
+              if (activeCat === current) { activeCat = newName; }
+              renderTagList(); renderTagChips(); populateCategorySelect(); render(searchInput?.value || '');
+              updateStats(infos);
+              showToast('Kategori diperbarui');
+            };
+            input.addEventListener('keydown', (e) => { if (e.key === 'Enter') save(); if (e.key === 'Escape') renderTagList(); });
+            input.addEventListener('blur', () => save());
+          });
+          // delete
+          li.querySelector('[data-delete]')?.addEventListener('click', () => {
+            if (tag === 'Umum') { showToast('Kategori default tidak bisa dihapus'); return; }
+            const current = readTags();
+            if (current.length <= 1) { showToast('Minimal satu kategori harus ada'); return; }
+            const arr = current.filter(t => t !== tag);
+            writeTags(arr);
+            // reassign infos using deleted tag -> 'Umum'
+            const infos = readData();
+            infos.forEach(it => { if (it.category === tag) it.category = 'Umum'; });
+            writeData(infos);
+            if (activeCat === tag) { activeCat = 'all'; }
+            renderTagList(); renderTagChips(); populateCategorySelect(); setActiveChips(); render(searchInput?.value || '');
+            updateStats(infos);
+            showToast('Kategori dihapus');
+          });
+          tagList.appendChild(li);
+        });
+      }
+
+      // Tag modal interactions
+      tagModal?.addEventListener('click', (e) => {
+        const target = e.target;
+        if (target?.closest('[data-close]')) closeTagModal();
+      });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeTagModal(); } });
+
+      function addTagFromInput() {
+        const n = ensureUniqueName(tagInput.value);
+        if (!n) { showToast('Nama tidak valid/duplikat'); return; }
+        const arr = readTags();
+        arr.push(n);
+        writeTags(arr);
+        tagInput.value = '';
+        renderTagList(); renderTagChips(); populateCategorySelect();
+        showToast('Kategori ditambahkan');
+      }
+      tagAddBtn?.addEventListener('click', addTagFromInput);
+      tagInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addTagFromInput(); } });
 
       // Modal controls
       function openModal(mode = 'create', data) {
@@ -713,20 +833,30 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         infoModal.setAttribute('aria-hidden', 'false');
         modalTitleText.textContent = mode === 'edit' ? 'Edit Informasi' : 'Buat Informasi';
 
+        // always refresh categories before filling
+        populateCategorySelect();
+
         if (mode === 'edit' && data) {
-          renderCategorySelect(data.category || 'Umum');
           inputId.value = data.id;
           inputTitle.value = data.title || '';
-          inputCategory.value = data.category || 'Umum';
+          // ensure category option exists; if not, add it temporarily
+          const currentCat = data.category || 'Umum';
+          const hasOpt = Array.from(inputCategory.options).some(o => o.value === currentCat);
+          if (!hasOpt) {
+            const opt = document.createElement('option'); opt.value = currentCat; opt.textContent = currentCat; inputCategory.appendChild(opt);
+          }
+          inputCategory.value = currentCat;
           inputDate.value = data.date || '';
           inputPinned.checked = !!data.pinned;
           inputContent.value = data.content || '';
           if (data.banner && bannerImg && bannerPreview) { bannerImg.src = data.banner; bannerPreview.hidden = false; }
           else if (bannerPreview && bannerImg) { bannerPreview.hidden = true; bannerImg.removeAttribute('src'); }
         } else {
-          renderCategorySelect('Umum');
           inputId.value = '';
           infoForm.reset();
+          // set default category to first tag or 'Umum'
+          const tags = readTags();
+          inputCategory.value = (tags && tags[0]) ? tags[0] : 'Umum';
           if (bannerPreview && bannerImg) { bannerPreview.hidden = true; bannerImg.removeAttribute('src'); }
         }
         setTimeout(() => inputTitle?.focus?.(), 20);
@@ -741,20 +871,16 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       });
 
       // Confirm modal
-      function openConfirm(onConfirm, opts = {}) {
+      function openConfirm(onConfirm) {
         deleteHook = onConfirm;
         confirmModal.classList.add('show');
         confirmModal.setAttribute('aria-hidden', 'false');
-        if (opts.title && confirmTitle) confirmTitle.textContent = opts.title;
-        if (opts.body && confirmBody) confirmBody.textContent = opts.body;
         confirmDeleteBtn.onclick = () => { deleteHook && deleteHook(); closeConfirm(); };
       }
       function closeConfirm() {
         confirmModal.classList.remove('show');
         confirmModal.setAttribute('aria-hidden', 'true');
         deleteHook = null;
-        if (confirmTitle) confirmTitle.textContent = 'Konfirmasi Hapus';
-        if (confirmBody) confirmBody.textContent = 'Yakin ingin menghapus informasi ini? Tindakan ini tidak dapat dibatalkan.';
       }
       confirmModal?.addEventListener('click', (e) => {
         const target = e.target;
@@ -827,7 +953,8 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       function updateStats(items) {
         statTotal && (statTotal.textContent = String(items.length));
         statPinned && (statPinned.textContent = String(items.filter(i => i.pinned).length));
-        statCats && (statCats.textContent = String(new Set(items.map(i => i.category)).size));
+        // show count of managed tags
+        statCats && (statCats.textContent = String(readTags().length));
       }
 
       // Render (grid/list)
@@ -908,12 +1035,12 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           // list mode
           filtered.forEach((item, idx) => {
             const row = document.createElement('div');
-            row.className = 'info-row';
+            row.className = 'info-row' + (item.pinned ? ' pinned' : '');
             row.innerHTML = `
-              ${item.pinned ? `<div class="pin-ribbon" style="position:absolute;top:1rem;right:-3rem;background:var(--primary-blue,#2563eb);color:#fff;padding:0.5rem 3rem;font-size:.8rem;font-weight:800;text-transform:uppercase;transform:rotate(45deg);box-shadow:0 2px 10px rgba(37,99,235,0.3);letter-spacing:.3px;z-index:5;pointer-events:none;user-select:none;display:inline-block;">Pinned</div>` : ``}
               ${item.banner ? `<img class="row-thumb" src="${item.banner}" alt="${item.title}" />` : `<div class="row-thumb"></div>`}
               <div class="row-content">
                 <div class="row-title">
+                  ${item.pinned ? `<span class=\"pin-badge\"><i class=\"fas fa-thumbtack\"></i> Pinned</span>` : ``}
                   <span class="title">${item.title || '-'}</span>
                 </div>
                 <div class="row-meta">
@@ -966,6 +1093,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
       // Events
       btnOpenCreate.addEventListener('click', () => openModal('create'));
+      btnManageTags?.addEventListener('click', () => openTagModal());
       searchInput?.addEventListener('input', () => render(searchInput.value || ''));
 
       infoForm.addEventListener('submit', async (e) => {
@@ -996,31 +1124,19 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         closeModal();
         render(searchInput?.value || '');
         updateStats(arr);
+        try {
+          const isEdit = idx >= 0;
+          (window as any).KKNotif?.add(
+            isEdit ? 'info' : 'success',
+            isEdit ? 'Informasi diubah' : 'Informasi dibuat',
+            payload.title ? `${payload.title}` : (isEdit ? 'Item informasi diperbarui' : 'Item informasi baru ditambahkan')
+          );
+          window.dispatchEvent(new Event('kk-notifs-updated'));
+        } catch {}
         showToast('Informasi disimpan');
       });
 
-      // Chips
-      function renderChips(){
-        if (!chips) return;
-        const cats = readCats();
-        const chipHtml = [
-          `<button class="chip pressable" data-cat="all" aria-pressed="${activeCat==='all'}"><i class="fas fa-layer-group"></i> Semua</button>`,
-          ...cats.map(c => `<button class="chip pressable" data-cat="${c}"><i class="fas fa-circle"></i> ${c}</button>`),
-          `<button class="chip pressable" data-pinned="only" aria-pressed="${pinnedOnly}"><i class="fas fa-thumbtack"></i> Pinned</button>`
-        ].join('');
-        chips.innerHTML = chipHtml;
-        setActiveChips();
-      }
-      function setActiveChips() {
-        chips?.querySelectorAll('.chip').forEach((ch) => {
-          const isActive =
-            (ch.hasAttribute('data-cat') && ch.getAttribute('data-cat') === activeCat) ||
-            (ch.hasAttribute('data-pinned') && pinnedOnly);
-          ch.classList.toggle('active', isActive);
-          ch.setAttribute('aria-pressed', String(isActive));
-        });
-        render(searchInput?.value || '');
-      }
+      // delegate click on dynamic chips
       chips?.addEventListener('click', (e) => {
         const btn = e.target?.closest?.('.chip');
         if (!btn) return;
@@ -1028,7 +1144,6 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         if (btn.hasAttribute('data-pinned')) pinnedOnly = !pinnedOnly;
         setActiveChips();
       });
-      // Categories UI
       chips?.addEventListener('keydown', (e) => {
         const target = e.target;
         if ((e.key === 'Enter' || e.key === ' ') && target?.classList.contains('chip')) {
@@ -1036,121 +1151,44 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           target.click();
         }
       });
+      // smooth horizontal scroll using vertical wheel
+      chips?.addEventListener('wheel', (e) => {
+        if (!chips) return;
+        // if vertical scroll dominates, translate to horizontal
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+          e.preventDefault();
+          chips.scrollLeft += e.deltaY;
+        }
+      }, { passive: false });
 
-      // Render category <select> options from categories
-      function renderCategorySelect(selectedValue){
-        if (!inputCategory) return;
-        const cats = readCats();
-        if (!cats.length) return;
-        inputCategory.innerHTML = cats.map(c => `<option${c===selectedValue ? ' selected' : ''}>${c}</option>`).join('');
-      }
-
-      // Wire Manage Categories button (bound later once)
-
-      // Refresh UI after category CRUD
-      function openCatsModal() {
-        if (!catsModal) return;
-        catsModal.classList.add('show');
-        catsModal.setAttribute('aria-hidden', 'false');
-        renderCats();
-        setTimeout(() => catInput?.focus?.(), 20);
-      }
-      function closeCatsModal() {
-        catsModal?.classList.remove('show');
-        catsModal?.setAttribute('aria-hidden', 'true');
-      }
-      catsModal?.addEventListener('click', (e) => { const t = e.target; if (t?.closest('[data-close]')) closeCatsModal(); });
-      function normalizeCat(name){ return String(name || '').trim(); }
-      function renderCats(){
-        if (!catsList) return;
-        const cats = readCats();
-        const items = readData();
-        if (cats.length === 0) { catsList.innerHTML = '<div class="empty-state">Belum ada kategori</div>'; return; }
-        catsList.innerHTML = '';
-        const frag = document.createDocumentFragment();
-        cats.forEach((c) => {
-          const count = items.filter(i => i.category === c).length;
-          const row = document.createElement('div');
-          row.className = 'cat-row';
-          row.innerHTML = `
-            <div>
-              <div class="cat-name">${c}</div>
-              <div class="cat-meta">${count} item</div>
-            </div>
-            <div class="cat-actions">
-              <button class="btn soft sm pressable" data-edit><i class="fas fa-edit"></i> Ubah</button>
-              <button class="btn danger sm pressable" data-del><i class="fas fa-trash"></i> Hapus</button>
-            </div>`;
-          row.querySelector('[data-edit]')?.addEventListener('click', () => {
-            const inp = document.createElement('input');
-            inp.type = 'text'; inp.value = c; inp.className = 'kk-input-edit';
-            inp.style.cssText = 'border:1px solid var(--outline);border-radius:10px;padding:.4rem .6rem;font-weight:700;';
-            const nameDiv = row.querySelector('.cat-name');
-            if (!nameDiv) return;
-            nameDiv.replaceWith(inp);
-            inp.focus(); inp.select();
-            const commit = () => {
-              const nv = normalizeCat(inp.value);
-              if (!nv) { showToast('Nama tidak boleh kosong'); renderCats(); return; }
-              const list = readCats();
-              if (list.includes(nv) && nv !== c) { showToast('Kategori sudah ada'); renderCats(); return; }
-              // update categories
-              const updated = list.map(x => x === c ? nv : x);
-              writeCats(updated);
-              // update items
-              const arr = readData().map(i => i.category === c ? { ...i, category: nv } : i);
-              writeData(arr);
-              showToast('Kategori diubah');
-              renderCats();
-              render(searchInput?.value || '');
-              renderChips();
-              renderCategorySelect(nv);
-            };
-            inp.addEventListener('blur', commit);
-            inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') renderCats(); });
-          });
-          row.querySelector('[data-del]')?.addEventListener('click', () => {
-            if (c === 'Umum') { showToast('Kategori "Umum" tidak dapat dihapus'); return; }
-            openConfirm(() => {
-              // move items to Umum and delete category
-              const list = readCats().filter(x => x !== c);
-              writeCats(list);
-              const arr = readData().map(i => i.category === c ? { ...i, category: 'Umum' } : i);
-              writeData(arr);
-              showToast('Kategori dihapus');
-              // fix active filter if needed
-              if (activeCat === c) activeCat = 'all';
-              renderCats();
-              render(searchInput?.value || '');
-              setActiveChips();
-              renderChips();
-              renderCategorySelect('Umum');
-            }, { title: 'Hapus Kategori', body: `Hapus kategori "${c}"? Item akan dipindah ke "Umum".` });
-          });
-          frag.appendChild(row);
-        });
-        catsList.appendChild(frag);
-      }
-      catAddBtn?.addEventListener('click', () => {
-        const nv = normalizeCat(catInput?.value);
-        if (!nv) { showToast('Nama tidak boleh kosong'); return; }
-        const list = readCats();
-        if (list.includes(nv)) { showToast('Kategori sudah ada'); return; }
-        writeCats([...list, nv]);
-        catInput.value = '';
-        showToast('Kategori ditambahkan');
-        renderCats();
+      // Sort + View toggle
+      sortSelect?.addEventListener('change', () => {
+        sortMode = sortSelect.value;
+        localStorage.setItem('info_sort', sortMode);
         render(searchInput?.value || '');
-        renderChips();
-        renderCategorySelect(nv);
       });
-      catInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); catAddBtn?.click(); } });
-      btnManageCats?.addEventListener('click', openCatsModal);
+      viewToggle?.addEventListener('click', (e) => {
+        const btn = e.target?.closest?.('.seg-btn');
+        if (!btn) return;
+        viewMode = btn.getAttribute('data-view') || 'grid';
+        localStorage.setItem('info_view', viewMode);
+        viewToggle.querySelectorAll('.seg-btn').forEach(b => {
+          b.classList.toggle('active', b === btn);
+          b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+        });
+        render(searchInput?.value || '');
+      });
+      // init segmented UI
+      viewToggle?.querySelectorAll('.seg-btn').forEach(b => {
+        const isActive = b.getAttribute('data-view') === viewMode;
+        b.classList.toggle('active', isActive);
+        b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+      sortSelect && (sortSelect.value = sortMode);
 
       // Initial render with skeleton then data
-      // Initial UI render
-      renderCategorySelect('Umum');
-      renderChips();
+      populateCategorySelect();
+      renderTagChips();
       render();
       setTimeout(() => { isLoading = false; render(searchInput?.value || ''); }, 450);
 
@@ -1167,7 +1205,47 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
       // Make clicks "pressable"
       root.querySelectorAll('button, .chip').forEach((el) => el.classList.add('pressable'));
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+      else init();
     })();
   </script>
+
+  <!-- Modal: Manage Tags -->
+  <div id="tag-modal" class="kk-modal" aria-hidden="true">
+    <div class="kk-modal__overlay" data-close></div>
+    <div class="kk-modal__content kk-modal__content--md" role="dialog" aria-modal="true" aria-labelledby="tag-modal-title">
+      <div class="kk-modal__header">
+        <h3 id="tag-modal-title"><i class="fas fa-tags"></i> Kelola Kategori</h3>
+        <button class="kk-modal__close pressable" data-close aria-label="Tutup"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="kk-modal__body">
+        <form id="tag-form" class="kk-form" onsubmit="return false;">
+          <div class="kk-form__grid">
+            <div class="kk-form__field kk-form__field--full">
+              <label for="tag-input">Tambah Kategori</label>
+              <div style="display:flex; gap:8px;">
+                <input id="tag-input" type="text" placeholder="Nama kategori baru" />
+                <button type="button" id="tag-add-btn" class="btn primary pressable"><i class="fas fa-plus"></i> Tambah</button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div id="tag-list" class="tag-list" aria-live="polite"></div>
+        <p style="color:var(--text-subtle); font-weight:700; margin-top:8px;">Catatan: Menghapus kategori akan memindahkan item pada kategori tersebut ke "Umum".</p>
+      </div>
+      <div class="kk-modal__footer">
+        <button type="button" class="btn light pressable" data-close>Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .tag-list{ display:grid; gap:8px; margin-top:8px; }
+    .tag-item{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; border:1px solid var(--outline); border-radius:10px; background:var(--surface-2); }
+    .tag-name{ font-weight:800; }
+    .tag-actions{ display:inline-flex; gap:6px; }
+    .tag-edit-input{ flex:1; border:1px solid var(--outline); border-radius:8px; padding:.45rem .6rem; font-weight:700; }
+  </style>
 
 </Layout>
