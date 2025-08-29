@@ -291,6 +291,26 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     </dialog>
   </div>
 
+  <!-- Modal: Import Error -->
+  <dialog id="dlg-import-error" class="modal">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h3 id="dlg-import-error-title">Kesalahan Import</h3>
+        <button type="button" class="icon-btn" aria-label="Tutup" id="dlg-import-error-close">
+          <i class="fas fa-times"></i>
+        </button>
+      </header>
+      <div class="modal-body" style="padding: 16px;">
+        <div class="error-summary" id="dlg-import-error-summary"></div>
+        <ul class="error-list" id="dlg-import-error-list" role="list"></ul>
+      </div>
+      <footer class="modal-actions">
+        <button type="button" class="btn primary" id="dlg-import-error-ok">Mengerti</button>
+      </footer>
+    </div>
+    <div class="backdrop" aria-hidden="true"></div>
+  </dialog>
+
   <style>
     /* ========== RESET & CONTAINER ========== */
     *, *::before, *::after { box-sizing: border-box; }
@@ -461,6 +481,140 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       border-radius: var(--radius-8);
     }
     .action-button:focus-visible { box-shadow: var(--focus); }
+
+    /* ========== IMPORT (Upload & Preview) ========== */
+    .section-card.import-warga-card { margin-top: var(--space-3); }
+    .section-card .section-header {
+      display: flex; gap: var(--space-3); align-items: center;
+      padding: var(--space-4); border-bottom: 1px solid var(--border);
+    }
+    .section-card .section-icon {
+      width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center;
+      background: #eef4ff; color: var(--primary);
+    }
+    .section-card .section-text h2 { margin: 0; font-size: 16px; font-weight: 800; }
+    .section-card .section-text p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+    .import-section { padding: var(--space-4); display: grid; gap: var(--space-3); }
+    .import-area {
+      border: 2px dashed #d8deea; border-radius: var(--radius-12);
+      background: #f9fbff; padding: 28px; text-align: center;
+      display: grid; gap: 10px; justify-items: center;
+      transition: background .15s ease, border-color .15s ease, transform .12s ease;
+      cursor: pointer;
+    }
+    .import-area:hover { background: #f3f7ff; border-color: #c9d4ea; }
+    .import-area.drag-active { background: #eef4ff; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.12) inset; }
+    .import-icon { width: 60px; height: 60px; border-radius: 12px; background: #fff; display: grid; place-items: center; box-shadow: var(--shadow-1); }
+    .import-icon i { font-size: 24px; color: var(--primary); }
+    .import-text h3 { margin: 0; font-size: 15px; font-weight: 800; }
+    .import-text p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .import-actions { display: inline-flex; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
+    .browse-btn, .template-btn {
+      display: inline-flex; align-items: center; gap: 8px; font-weight: 800;
+      padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: #fff; color: var(--text); cursor: pointer;
+    }
+    .browse-btn { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .browse-btn i, .template-btn i { font-size: 14px; }
+    .import-hint { color: var(--muted); font-size: 12px; }
+
+    .data-preview {
+      border: 1px solid var(--border); border-radius: var(--radius-12); background: var(--surface);
+      box-shadow: var(--shadow-1);
+    }
+    .data-preview .table-container { max-height: 360px; overflow: auto; border-radius: 0 0 var(--radius-12) var(--radius-12); }
+    .preview-header {
+      display: grid; grid-template-columns: 1fr auto auto; align-items: center;
+      column-gap: 16px; row-gap: 8px; padding: 14px 18px; border-bottom: 1px solid var(--border);
+      background: #fbfcff; border-radius: var(--radius-12) var(--radius-12) 0 0;
+    }
+    .preview-header h3 { margin: 0; font-size: 14px; font-weight: 900; }
+    .preview-header .data-count { justify-self: center; color: var(--muted); font-size: 12px; }
+    .preview-header .preview-actions { 
+      justify-self: end; display: inline-flex; gap: 20px; align-items: center;
+      padding: 10px 14px; background: rgba(255,255,255,.9); border: 1px solid var(--border);
+      border-radius: 999px; box-shadow: var(--shadow-1); margin-right: 12px;
+      backdrop-filter: saturate(150%) blur(4px);
+      flex-wrap: nowrap; white-space: nowrap;
+    }
+    /* remove inner divider for cleaner look */
+    .preview-header .preview-actions::before { display: none; }
+
+    /* Text buttons only within preview actions to avoid affecting chart icon buttons */
+    .preview-actions > .action-button {
+      width: auto; min-width: 140px; height: auto; padding: 10px 18px; gap: 8px;
+      border-radius: 999px; font-size: 13.25px; font-weight: 800;
+      background: #fff; color: var(--text); border: 1px solid var(--border);
+      transition: background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .08s ease;
+      display: inline-flex !important; align-items: center; justify-content: center;
+      white-space: nowrap;
+    }
+    /* Fallback spacing for older browsers or overridden gap */
+    .preview-actions > .action-button + .action-button { margin-left: 20px !important; }
+    .preview-actions > .action-button span { white-space: nowrap; display: inline-block; }
+    .preview-actions .action-button i { font-size: 14px; margin-right: 10px; display: inline-block; min-width: 16px; }
+    .preview-actions .action-button:hover { background: #f8fafc; border-color: #d9dfeb; box-shadow: 0 2px 10px rgba(15, 23, 42, .08); }
+    .preview-actions .action-button:active { transform: translateY(1px) scale(.99); }
+    .preview-actions .action-button:focus-visible {
+      outline: 3px solid rgba(59,130,246,.35); outline-offset: 2px;
+    }
+    .preview-actions .action-button.outline { background: #fff; }
+    /* Hard spacing between specific buttons as a final guard */
+    .preview-actions #btnWargaChange { margin-right: 20px !important; }
+    .preview-actions #btnWargaCancel { margin-left: 0 !important; }
+    /* Spacer element between buttons as the ultimate fallback */
+    .preview-actions .actions-gap { display: inline-block; width: 20px; height: 1px; flex: 0 0 20px; }
+    /* Variant: secondary (Ganti Data) */
+    /* Variant: success (Ganti Baru) */
+    .preview-actions .action-button.is-success { 
+      background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
+      border-color: #15803d; color: #ffffff;
+      box-shadow: 0 1px 0 rgba(0,0,0,.03), 0 6px 18px rgba(22,163,74,.25);
+    }
+    .preview-actions .action-button.is-success:hover { background: linear-gradient(180deg, #16a34a 0%, #166534 100%); border-color: #166534; }
+    .preview-actions .action-button.is-success:active { background: #166534; }
+    /* Variant: danger (Batal) */
+    .preview-actions .action-button.is-danger { 
+      background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+      border-color: #b91c1c; color: #ffffff;
+      box-shadow: 0 1px 0 rgba(0,0,0,.03), 0 6px 18px rgba(239,68,68,.22);
+    }
+    .preview-actions .action-button.is-danger:hover { background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%); border-color: #991b1b; }
+    .preview-actions .action-button.is-danger:active { background: #991b1b; }
+    .preview-actions .action-button.is-danger:focus-visible { outline-color: rgba(239,68,68,.35); }
+
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+      .preview-actions > .action-button { transition: none; }
+      .preview-actions .action-button:active { transform: none; }
+    }
+
+    @media (max-width: 640px) {
+      .preview-header { grid-template-columns: 1fr; row-gap: 8px; }
+      .preview-header .preview-actions { justify-self: center; gap: 14px; margin-right: 0; padding: 8px 12px; }
+      .preview-header .preview-actions::before { display: none; }
+      .preview-actions .action-button { min-width: 138px; }
+    }
+
+    /* Modern compact table for preview */
+    .data-table.modern {
+      width: 100%; border-collapse: separate; border-spacing: 0; table-layout: auto;
+    }
+    .data-table.modern thead th {
+      position: sticky; top: 0; z-index: 1; background: #f6f8fc; color: var(--muted);
+      font-size: 12px; font-weight: 800; padding: 10px 12px; border-bottom: 1px solid var(--border);
+    }
+    .data-table.modern tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .data-table.modern tbody tr:nth-child(odd) { background: #fbfdff; }
+    .data-table.modern tbody tr:hover { background: #f5f9ff; }
+
+    @media (max-width: 640px) {
+      .import-section { padding: var(--space-3); }
+      .import-area { padding: 20px; }
+      .preview-header { grid-template-columns: 1fr; text-align: center; }
+      .preview-header .preview-actions { justify-self: center; }
+    }
 
     /* ========== FILTERS ========== */
     .filters { margin-bottom: var(--space-3); }
@@ -937,6 +1091,17 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     }
     .modal .form-grid select { appearance: none; }
 
+    /* Error modal specific tweaks */
+    #dlg-import-error .error-summary { 
+      font-size: 13px; color: var(--text); font-weight: 700; margin-bottom: 8px;
+    }
+    #dlg-import-error .error-list { 
+      margin: 0; padding-left: 18px; display: grid; gap: 6px; max-height: 40vh; overflow: auto;
+    }
+    #dlg-import-error .error-list li { 
+      color: #991b1b; background: #fef2f2; border: 1px solid #fee2e2; border-radius: 8px; padding: 8px 10px; list-style: none;
+    }
+
     @media (max-width: 768px) {
       .form-grid { padding: var(--space-3); column-gap: var(--space-4); row-gap: var(--space-3); }
     }
@@ -1251,6 +1416,113 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     function capitalize(s){ return (s||'').charAt(0).toUpperCase()+s.slice(1); }
 
     // -----------------------------
+    // Modal: Add/Edit Warga
+    // -----------------------------
+    function openDialog(mode = 'add', data = null){
+      try {
+        const dlg = document.getElementById('dlg-warga');
+        const form = document.getElementById('form-warga');
+        const title = document.getElementById('dlg-title');
+        if(!dlg || !form || !title) return;
+
+        form.reset();
+        form.classList.remove('was-validated');
+        state.editingId = null;
+
+        if(mode === 'edit' && data){
+          title.textContent = 'Edit Warga';
+          state.editingId = data.id;
+          form.elements['nama'].value = data.nama || '';
+          form.elements['nik'].value = data.nik || '';
+          form.elements['kk'].value = data.kk || '';
+          form.elements['alamat'].value = data.alamat || '';
+          form.elements['rt'].value = data.rt || '';
+          form.elements['rw'].value = data.rw || '';
+          form.elements['no_rumah'].value = data.no_rumah || '';
+          form.elements['telepon'].value = data.telepon || '';
+          form.elements['status'].value = data.status || 'aktif';
+          form.elements['email'].value = data.email || '';
+        } else {
+          title.textContent = 'Tambah Warga';
+        }
+
+        if(typeof dlg.showModal === 'function'){
+          dlg.showModal();
+        } else {
+          dlg.setAttribute('open','');
+        }
+      } catch(e){ console.warn('openDialog failed', e); }
+    }
+
+    function serializeForm(form){
+      const fd = new FormData(form);
+      const obj = Object.fromEntries(fd.entries());
+      return obj;
+    }
+
+    function validateForm(form){
+      // Use native validation; add class for styling feedback if needed
+      const ok = form.checkValidity();
+      if(!ok){
+        form.classList.add('was-validated');
+      }
+      return ok;
+    }
+
+    function submitForm(e){
+      e.preventDefault();
+      const form = document.getElementById('form-warga');
+      if(!form) return;
+      if(!validateForm(form)) return;
+
+      const data = serializeForm(form);
+      const now = Date.now();
+
+      // Normalize fields
+      const rec = {
+        id: state.editingId || String(((state.warga?.length||0) ? Math.max(...state.warga.map(r=>Number(r.id)||0))+1 : 1)),
+        nama: (data.nama||'').trim(),
+        nik: (data.nik||'').trim(),
+        kk: (data.kk||'').trim(),
+        alamat: (data.alamat||'').trim(),
+        rt: (data.rt||'').trim(),
+        rw: (data.rw||'').trim(),
+        no_rumah: (data.no_rumah||'').trim(),
+        telepon: (data.telepon||'').trim(),
+        email: (data.email||'').trim(),
+        status: data.status || 'aktif',
+        verified: false,
+        tanggal_masuk: new Date().toISOString().slice(0,10),
+        tanggal_keluar: '',
+        anggota_keluarga: [],
+        documents: [],
+        history: [{ time: now, action: state.editingId ? 'update' : 'create', by: 'admin' }]
+      };
+
+      if(state.editingId){
+        const idx = state.warga.findIndex(x=>String(x.id)===String(state.editingId));
+        if(idx>=0){
+          // Preserve existing fields not present in form
+          const existing = state.warga[idx];
+          state.warga[idx] = { ...existing, ...rec, id: existing.id, history: (existing.history||[]).concat(rec.history) };
+        }
+      } else {
+        state.warga.push(rec);
+      }
+
+      save();
+      renderTable();
+      if(window.Chart){ renderCharts(); }
+
+      // Close dialog and reset
+      try {
+        form.classList.remove('was-validated');
+        const dlg = document.getElementById('dlg-warga');
+        dlg?.close?.();
+      } catch(_){}
+    }
+
+    // -----------------------------
     // Table & KPI
     // -----------------------------
     function renderTable(){
@@ -1470,23 +1742,34 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     function preventDefaults(e){ e.preventDefault(); e.stopPropagation(); }
 
     function handleWargaDrop(e){
-      preventDefaults(e);
-      const dt = e.dataTransfer; const files = dt?.files || [];
+      e.preventDefault();
+      const dt = e.dataTransfer;
+      const files = dt?.files || [];
       if(files.length>0){
         const wargaInput = document.getElementById('excelWarga');
+        // Cache last dropped files for quick re-use
+        try { window.lastWargaFiles = files; } catch(_) { /* noop */ }
         if(wargaInput){ wargaInput.files = files; handleWargaFile({ target:{ files } }); }
       }
     }
 
     async function handleWargaFile(e){
       const file = e.target?.files?.[0];
+      // Cache last picked files so 'Ganti Baru' can immediately re-apply the latest drop/select
+      if(e?.target?.files){ try { window.lastWargaFiles = e.target.files; } catch(_) { /* noop */ } }
       if(!file) return;
       if(!/\.(xlsx|xls)$/i.test(file.name||'')){
-        alert('File harus .xlsx atau .xls');
+        showImportError('Format File Salah', [
+          'File harus berformat .xlsx atau .xls.',
+          'Silakan gunakan template resmi melalui tombol Download Template.'
+        ]);
         return;
       }
       if(file.size > 5*1024*1024){
-        alert('Ukuran file maksimum 5MB');
+        showImportError('Ukuran File Terlalu Besar', [
+          'Ukuran file maksimum 5MB.',
+          'Kurangi isi atau kompresi workbook Anda lalu coba lagi.'
+        ]);
         return;
       }
       try{
@@ -1494,21 +1777,69 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         fd.append('file', file);
         const res = await fetchWithFallback('/api/import/warga/preview', { method:'POST', body: fd, credentials:'include' });
         const payload = await res.json().catch(()=>({ status:'error', message:'Response tidak valid' }));
-        if(!res.ok){ alert(payload?.message || 'Gagal memproses file'); return; }
-        const { status, data, errors, summary } = payload || {};
-        const ok = status === 'ok';
-        renderWargaData(Array.isArray(data)?data:[]);
-        if(!ok){
-          const total = (errors||[]).length;
-          console.warn('Validasi gagal:', total, errors);
-          alert(`Validasi gagal: ${total} isu. Periksa file Anda atau gunakan template.`);
-        } else if(summary){
-          console.log('Preview:', summary);
+        if(!res.ok){ 
+          showImportError('Gagal Memproses File', [ payload?.message || 'Terjadi kesalahan pada server saat memproses file.' ]);
+          return; 
         }
+        const { status, data, errors, summary } = payload || {};
+        const serverOk = status === 'ok';
+
+        // Client-side validation to enforce exact template
+        const rows = Array.isArray(data) ? data : [];
+        const v = validateWargaRows(rows);
+
+        if(!serverOk || !v.ok){
+          const allErrors = ([]).concat(errors||[], v.errors||[]);
+          const maxShow = 12;
+          const show = allErrors.slice(0, maxShow);
+          if(allErrors.length>maxShow) show.push(`Dan ${allErrors.length-maxShow} isu lainnya...`);
+          showImportError('Validasi Gagal', [
+            'Pastikan file mengikuti template resmi: Kolom (Nama, NIK, Telepon, Alamat, Blok, NoRumah).',
+            ...(show.length ? show : ['Format header tidak sesuai atau data kosong.'])
+          ]);
+          console.warn('Validasi import warga:', allErrors);
+          return; // stop, do not render preview for invalid file
+        }
+
+        // All good, render preview
+        renderWargaData(rows);
+        if(summary){ console.log('Preview:', summary); }
       }catch(err){
         console.error('Import error', err);
-        alert('Terjadi kesalahan saat mengunggah/validasi file');
+        showImportError('Kesalahan Sistem', ['Terjadi kesalahan saat mengunggah/validasi file. Coba lagi beberapa saat.']);
       }
+    }
+
+    // Enforce warga template: Nama, NIK, Telepon, Alamat, Blok, NoRumah
+    function validateWargaRows(rows){
+      const result = { ok: true, errors: [] };
+      const required = ['Nama','NIK','Telepon','Alamat','Blok','NoRumah'];
+      if(!Array.isArray(rows) || rows.length===0){
+        result.ok = false; result.errors.push('File kosong atau tidak terbaca.');
+        return result;
+      }
+      // header check: ensure every row has required keys (tolerate extra cols)
+      const hasAllKeys = rows.every(r => r && required.every(k => Object.prototype.hasOwnProperty.call(r, k)));
+      if(!hasAllKeys){
+        result.ok = false;
+        result.errors.push('Header kolom tidak sesuai. Wajib: Nama, NIK, Telepon, Alamat, Blok, NoRumah');
+        return result;
+      }
+      // row-wise checks
+      const nikRe = /^\d{8,20}$/;
+      const telRe = /^[+]?\d[\d\s\-()]{6,}$/; // permissive but numeric
+      rows.forEach((r, idx)=>{
+        const row = idx+1;
+        if(!String(r.Nama||'').trim()) result.errors.push(`Baris ${row}: Nama wajib diisi`);
+        if(!nikRe.test(String(r.NIK||'').trim())) result.errors.push(`Baris ${row}: NIK harus angka (8-20 digit)`);
+        if(!String(r.Alamat||'').trim()) result.errors.push(`Baris ${row}: Alamat wajib diisi`);
+        if(!String(r.Blok||'').trim()) result.errors.push(`Baris ${row}: Blok wajib diisi`);
+        if(!String(r.NoRumah||'').trim()) result.errors.push(`Baris ${row}: NoRumah wajib diisi`);
+        const tel = String(r.Telepon||'').trim();
+        if(tel && !telRe.test(tel)) result.errors.push(`Baris ${row}: Telepon tidak valid`);
+      });
+      if(result.errors.length){ result.ok = false; }
+      return result;
     }
 
     function renderWargaData(rows){
@@ -1531,6 +1862,16 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       });
       if(count) count.textContent = `${rows?.length||0} data`;
       preview.style.display = 'block';
+      // Hide drop area while preview is shown
+      const drop = document.getElementById('wargaDropArea');
+      if(drop){
+        if(!drop.dataset.prevDisplay){
+          try { drop.dataset.prevDisplay = getComputedStyle(drop).display || ''; } catch(_) {}
+        }
+        drop.style.display = 'none';
+      }
+      // Inject actions (Ganti Data, Batal)
+      injectWargaPreviewActions();
     }
 
     async function downloadWargaTemplate(){
@@ -1544,7 +1885,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         a.click();
       }catch(err){
         console.error(err);
-        alert('Gagal mengunduh template warga');
+        showImportError('Gagal Mengunduh Template', ['Tidak dapat mengunduh template warga saat ini. Coba lagi nanti.']);
       }
     }
 
@@ -1553,6 +1894,9 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       const input = document.getElementById('excelWarga');
       const browseBtn = drop?.querySelector('.browse-btn');
       const templateBtn = document.getElementById('downloadTemplateWarga');
+      if(drop && !drop.dataset.prevDisplay){
+        try { drop.dataset.prevDisplay = getComputedStyle(drop).display || ''; } catch(_) {}
+      }
       if(browseBtn && input){ browseBtn.addEventListener('click', (e)=>{ e.stopPropagation(); input.click(); }); }
       if(drop && input){
         drop.addEventListener('click', ()=> input.click());
@@ -1563,6 +1907,83 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       }
       if(input){ input.addEventListener('change', handleWargaFile); }
       if(templateBtn){ templateBtn.addEventListener('click', (e)=>{ e.stopPropagation(); downloadWargaTemplate(); }); }
+    }
+
+    function resetWargaImport(){
+      const preview = document.getElementById('wargaPreview');
+      const tbody = document.querySelector('#wargaTable tbody');
+      const count = document.getElementById('wargaCount');
+      const input = document.getElementById('excelWarga');
+      const drop = document.getElementById('wargaDropArea');
+      if(tbody) tbody.innerHTML = '';
+      if(count) count.textContent = '0 data';
+      if(preview) preview.style.display = 'none';
+      if(input) input.value = '';
+      if(drop){ drop.style.display = drop.dataset.prevDisplay || ''; }
+    }
+
+    function injectWargaPreviewActions(){
+      const preview = document.getElementById('wargaPreview');
+      if(!preview) return;
+      // Find or create actions container inside preview header
+      let header = preview.querySelector('.preview-header');
+      if(!header){ header = document.createElement('div'); header.className = 'preview-header'; preview.prepend(header); }
+      let actions = header.querySelector('.preview-actions');
+      if(!actions){ actions = document.createElement('div'); actions.className = 'preview-actions'; header.appendChild(actions); }
+
+      // Build buttons if not present
+      if(!actions.querySelector('#btnWargaChange')){
+        const btnChange = document.createElement('button');
+        btnChange.type = 'button';
+        btnChange.id = 'btnWargaChange';
+        btnChange.className = 'action-button is-success';
+        btnChange.setAttribute('aria-label', 'Ganti file import warga (unggah baru)');
+        btnChange.innerHTML = '<i class="fas fa-rotate"></i><span>Ganti&nbsp;Baru</span>';
+        // Hard inline styles to defeat external overrides
+        btnChange.style.marginRight = '20px';
+        btnChange.style.whiteSpace = 'nowrap';
+        btnChange.style.display = 'inline-flex';
+        btnChange.style.alignItems = 'center';
+        btnChange.style.justifyContent = 'center';
+        btnChange.addEventListener('click', ()=>{
+          const input = document.getElementById('excelWarga');
+          const cached = (typeof window !== 'undefined' && window.lastWargaFiles) ? window.lastWargaFiles : null;
+          if(cached && cached.length){
+            if(input) input.files = cached;
+            handleWargaFile({ target: { files: cached } });
+          } else {
+            input?.click();
+          }
+        });
+        actions.appendChild(btnChange);
+        // Insert spacer to guarantee visible separation
+        if(!actions.querySelector('#btnWargaSpacer')){
+          const gap = document.createElement('span');
+          gap.id = 'btnWargaSpacer';
+          gap.className = 'actions-gap';
+          gap.style.display = 'inline-block';
+          gap.style.width = '20px';
+          actions.appendChild(gap);
+        }
+      }
+      if(!actions.querySelector('#btnWargaCancel')){
+        const btnCancel = document.createElement('button');
+        btnCancel.type = 'button';
+        btnCancel.id = 'btnWargaCancel';
+        btnCancel.className = 'action-button is-danger';
+        btnCancel.setAttribute('aria-label', 'Batalkan preview import (hapus)');
+        btnCancel.innerHTML = '<i class="fas fa-xmark"></i><span>Batal</span>';
+        // Hard inline styles
+        btnCancel.style.whiteSpace = 'nowrap';
+        btnCancel.style.display = 'inline-flex';
+        btnCancel.style.alignItems = 'center';
+        btnCancel.style.justifyContent = 'center';
+        btnCancel.addEventListener('click', resetWargaImport);
+        actions.appendChild(btnCancel);
+      }
+      // Ensure container also declares spacing inline
+      actions.style.gap = '20px';
+      actions.style.whiteSpace = 'nowrap';
     }
 
     // -----------------------------
@@ -1628,6 +2049,11 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       handleResponsiveView();
       // Initialize Warga import section
       setupWargaImport();
+      // Import error modal bindings
+      const dlg = document.getElementById('dlg-import-error');
+      const closeBtn = document.getElementById('dlg-import-error-close');
+      const okBtn = document.getElementById('dlg-import-error-ok');
+      [closeBtn, okBtn].forEach(btn=> btn?.addEventListener('click', ()=> dlg?.close()));
     }
     
     // Handle responsive view switching
@@ -1657,6 +2083,22 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         resizeTimer = setTimeout(updateView, 100);
       });
     }
+    function showImportError(title, messages){
+      const dlg = document.getElementById('dlg-import-error');
+      const t = document.getElementById('dlg-import-error-title');
+      const sum = document.getElementById('dlg-import-error-summary');
+      const list = document.getElementById('dlg-import-error-list');
+      if(t) t.textContent = title || 'Kesalahan Import';
+      if(sum) sum.textContent = '';
+      if(list){
+        list.innerHTML = '';
+        (messages||[]).forEach(msg=>{
+          const li = document.createElement('li'); li.textContent = String(msg); list.appendChild(li);
+        });
+      }
+      if(dlg && !dlg.open){ dlg.showModal?.(); }
+    }
+
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </Layout>

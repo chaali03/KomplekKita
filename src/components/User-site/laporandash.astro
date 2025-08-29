@@ -1,0 +1,503 @@
+---
+---
+
+<section class="laporan" data-aos="fade-up">
+  <div class="laporan-header">
+    <div class="header-content">
+      <h2 class="laporan-title">Laporan Keuangan</h2>
+      <p class="laporan-subtitle">Ringkasan transaksi keuangan komplek</p>
+    </div>
+    <div class="header-icon">
+      <i class="fas fa-chart-line"></i>
+    </div>
+  </div>
+  
+  <div class="summary-card" data-aos="fade-up" data-aos-delay="100">
+    <div class="summary-icon">
+      <i class="fas fa-wallet"></i>
+    </div>
+    <div class="summary-content">
+      <div class="summary-label">Total Kas:</div>
+      <div id="total-kas" class="summary-value">Rp. 0</div>
+    </div>
+  </div>
+  
+  <div class="grid">
+    <div class="report-card" data-aos="fade-right" data-aos-delay="200">
+      <div class="card-header">
+        <h3><i class="fas fa-tags"></i> By Kategori</h3>
+        <div class="card-actions">
+          <button class="refresh-btn" title="Refresh data"><i class="fas fa-sync-alt"></i></button>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul id="by-kategori" class="data-list"></ul>
+      </div>
+    </div>
+    
+    <div class="report-card" data-aos="fade-left" data-aos-delay="300">
+      <div class="card-header">
+        <h3><i class="fas fa-calendar-alt"></i> By Tanggal</h3>
+        <div class="card-actions">
+          <button class="refresh-btn" title="Refresh data"><i class="fas fa-sync-alt"></i></button>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul id="by-tanggal" class="data-list"></ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="laporan-footer" data-aos="fade-up" data-aos-delay="400">
+    <a href="/userlaporan/detail" class="view-all-btn">
+      <span>Lihat Detail Laporan</span>
+      <i class="fas fa-arrow-right"></i>
+    </a>
+  </div>
+</section>
+
+<style>
+  .laporan { 
+    padding: 2rem; 
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+  }
+
+  .laporan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .header-content {
+    flex: 1;
+  }
+
+  .laporan-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+    position: relative;
+    display: inline-block;
+  }
+
+  .laporan-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #085895, #00b4d8);
+    border-radius: 3px;
+  }
+
+  .laporan-subtitle {
+    color: #666;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  .header-icon {
+    background: linear-gradient(135deg, #085895, #00b4d8);
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 10px rgba(8, 88, 149, 0.2);
+  }
+
+  .summary-card {
+    background: linear-gradient(135deg, #085895, #00b4d8);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 20px rgba(8, 88, 149, 0.15);
+    color: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(8, 88, 149, 0.25);
+  }
+
+  .summary-icon {
+    background-color: rgba(255, 255, 255, 0.2);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.25rem;
+  }
+
+  .summary-content {
+    flex: 1;
+  }
+
+  .summary-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 0.25rem;
+  }
+
+  .summary-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 1.5rem; 
+  }
+
+  .report-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #f0f0f0;
+  }
+
+  .report-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-header {
+    background-color: #f8f9fa;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .card-header h3 i {
+    color: #085895;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .refresh-btn {
+    background-color: transparent;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .refresh-btn:hover {
+    background-color: rgba(8, 88, 149, 0.1);
+    color: #085895;
+  }
+
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  .data-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    list-style-type: none;
+  }
+
+  .data-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #f0f0f0;
+    position: relative;
+  }
+
+  .data-list li:last-child {
+    border-bottom: none;
+  }
+
+  .data-list li::before {
+    content: '';
+    position: absolute;
+    left: -1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #085895;
+  }
+
+  .laporan-footer {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .view-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #f8f9fa;
+    color: #085895;
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+  }
+
+  .view-all-btn:hover {
+    background-color: #085895;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(8, 88, 149, 0.2);
+  }
+
+  .view-all-btn i {
+    transition: transform 0.3s ease;
+  }
+
+  .view-all-btn:hover i {
+    transform: translateX(5px);
+  }
+
+  @media (max-width: 768px) { 
+    .grid { 
+      grid-template-columns: 1fr; 
+    }
+    
+    .laporan-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .header-icon {
+      align-self: flex-end;
+      margin-top: -3rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .laporan {
+      padding: 1.5rem;
+    }
+    
+    .summary-card {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .summary-icon {
+      margin-right: 0;
+      margin-bottom: 1rem;
+    }
+    
+    .laporan-title {
+      font-size: 1.5rem;
+    }
+    
+    .summary-value {
+      font-size: 1.25rem;
+    }
+  }
+</style>
+
+<script type="module">
+  // Import AOS if not already imported in the layout
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof AOS !== 'undefined') {
+      AOS.refresh();
+    }
+  });
+
+  const currency = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(n||0));
+  const qs = new URLSearchParams(location.search);
+  const komplekId = parseInt(qs.get('komplek_id') || localStorage.getItem('komplek_id') || '1');
+  localStorage.setItem('komplek_id', String(komplekId));
+
+  // Track loading state
+  let isLoading = false;
+
+  async function fetchJson(url){
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if(!res.ok){
+      const text = await res.text().catch(()=> '');
+      throw new Error(`Gagal fetch: ${url} [${res.status}] ${text?.slice(0,200)}`);
+    }
+    return res.json();
+  }
+
+  function renderSummary(data){
+    // Update total kas with animation
+    const totalEl = document.getElementById('total-kas');
+    if(totalEl) {
+      // Add fade effect
+      totalEl.style.opacity = '0';
+      setTimeout(() => {
+        totalEl.textContent = currency(data?.total ?? 0);
+        totalEl.style.opacity = '1';
+      }, 300);
+    }
+
+    // Update kategori list with animation
+    const katEl = document.getElementById('by-kategori');
+    if(katEl){
+      // Clear existing items
+      katEl.innerHTML = '';
+      
+      // Add new items with staggered animation
+      (data?.byKategori || []).forEach((row, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${row.kategori}: ${currency(row.total)}`;
+        li.style.opacity = '0';
+        li.style.transform = 'translateX(-10px)';
+        katEl.appendChild(li);
+        
+        // Staggered animation
+        setTimeout(() => {
+          li.style.transition = 'all 0.3s ease';
+          li.style.opacity = '1';
+          li.style.transform = 'translateX(0)';
+        }, 100 * index);
+      });
+    }
+
+    // Update tanggal list with animation
+    const tglEl = document.getElementById('by-tanggal');
+    if(tglEl){
+      // Clear existing items
+      tglEl.innerHTML = '';
+      
+      // Add new items with staggered animation
+      (data?.byTanggal || []).forEach((row, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${row.tanggal}: ${currency(row.total)}`;
+        li.style.opacity = '0';
+        li.style.transform = 'translateX(-10px)';
+        tglEl.appendChild(li);
+        
+        // Staggered animation
+        setTimeout(() => {
+          li.style.transition = 'all 0.3s ease';
+          li.style.opacity = '1';
+          li.style.transform = 'translateX(0)';
+        }, 100 * index);
+      });
+    }
+  }
+
+  async function fetchData() {
+    if (isLoading) return;
+    
+    isLoading = true;
+    
+    // Add loading animation to refresh buttons
+    document.querySelectorAll('.refresh-btn').forEach(btn => {
+      btn.classList.add('loading');
+      const icon = btn.querySelector('i');
+      if (icon) icon.className = 'fas fa-spinner fa-spin';
+    });
+    
+    try {
+      const data = await fetchJson(`/api/public/transaksi/summary?komplek_id=${encodeURIComponent(komplekId)}`);
+      renderSummary(data);
+    } catch(err) {
+      console.error(err);
+      // Show error notification
+      const errorMsg = document.createElement('div');
+      errorMsg.className = 'error-notification';
+      errorMsg.textContent = 'Gagal memuat data. Silakan coba lagi.';
+      document.body.appendChild(errorMsg);
+      
+      setTimeout(() => {
+        errorMsg.style.opacity = '0';
+        setTimeout(() => errorMsg.remove(), 500);
+      }, 3000);
+    } finally {
+      // Reset loading state
+      isLoading = false;
+      
+      // Reset refresh buttons
+      setTimeout(() => {
+        document.querySelectorAll('.refresh-btn').forEach(btn => {
+          btn.classList.remove('loading');
+          const icon = btn.querySelector('i');
+          if (icon) icon.className = 'fas fa-sync-alt';
+        });
+      }, 500);
+    }
+  }
+
+  // Initialize data
+  (async function init(){
+    await fetchData();
+    
+    // Add event listeners to refresh buttons
+    document.querySelectorAll('.refresh-btn').forEach(btn => {
+      btn.addEventListener('click', fetchData);
+    });
+  })();
+
+  // Add CSS for error notification
+  const style = document.createElement('style');
+  style.textContent = `
+    .error-notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #f44336;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 4px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      z-index: 1000;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+    
+    .refresh-btn.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    
+    .summary-value {
+      transition: opacity 0.3s ease;
+    }
+  `;
+  document.head.appendChild(style);
+</script>

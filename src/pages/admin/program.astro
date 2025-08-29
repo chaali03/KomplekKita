@@ -40,6 +40,32 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         <label for="deadline-program">Masukan Deadline Program</label>
         <input id="deadline-program" type="date" placeholder="Masukan deadline waktu" class="input-field" />
       </div>
+
+      <div class="input-group">
+        <label for="phone-program">No HP (opsional)</label>
+        <input id="phone-program" type="tel" placeholder="Contoh: 0812xxxxxxx" class="input-field" />
+      </div>
+
+      <div class="input-group">
+        <label for="rekening-program">No Rekening (opsional)</label>
+        <input id="rekening-program" type="text" placeholder="Contoh: 1234567890 (BNI)" class="input-field" />
+      </div>
+
+      <div class="input-group">
+        <label for="image-program">Gambar (opsional)</label>
+        <input id="image-program" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="input-field" />
+        <small style="color:#64748b">Maks 2MB. Format: PNG, JPG, WEBP, SVG.</small>
+      </div>
+
+      <div class="input-group full">
+        <label for="link-type">Alamat Link (WA atau QRIS) - Wajib</label>
+        <select id="link-type" class="input-field" aria-label="Pilih jenis alamat link">
+          <option value="">Pilih jenis link</option>
+          <option value="wa">WhatsApp</option>
+          <option value="qris">QRIS</option>
+        </select>
+        <input id="link-url" type="url" class="input-field" placeholder="Masukkan tautan sesuai pilihan" />
+      </div>
     </div>
 
     <div class="actions">
@@ -86,6 +112,29 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         <label class="pm-field">
           <span>Deadline</span>
           <input id="pm-deadline" type="date" class="input-field" />
+        </label>
+        <label class="pm-field">
+          <span>No HP (opsional)</span>
+          <input id="pm-phone" type="tel" class="input-field" placeholder="Contoh: 0812xxxxxxx" />
+        </label>
+        <label class="pm-field">
+          <span>No Rekening (opsional)</span>
+          <input id="pm-rek" type="text" class="input-field" placeholder="Contoh: 1234567890 (BNI)" />
+        </label>
+
+        <label class="pm-field">
+          <span>Gambar (opsional)</span>
+          <input id="pm-image" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="input-field" />
+          <small style="color:#64748b">Maks 2MB. Format: PNG, JPG, WEBP, SVG.</small>
+        </label>
+        <label class="pm-field full">
+          <span>Alamat Link (WA atau QRIS) - Wajib</span>
+          <select id="pm-link-type" class="input-field" aria-label="Pilih jenis alamat link">
+            <option value="">Pilih jenis link</option>
+            <option value="wa">WhatsApp</option>
+            <option value="qris">QRIS</option>
+          </select>
+          <input id="pm-link-url" type="url" class="input-field" placeholder="Masukkan tautan sesuai pilihan" />
         </label>
       </div>
       <div class="pm-actions">
@@ -139,7 +188,6 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     --highlight:#eaf3ff;
     --line:#dbe7f6;
   }
-
   *{ box-sizing:border-box }
   html,body{
     margin:0;
@@ -343,6 +391,20 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     outline: none;
     transition: all 0.2s ease;
     box-sizing: border-box;
+  }
+
+  /* Left arrow for select fields */
+  select.input-field{
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M6.293 9.293a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z' fill='%23677A8E'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 12px center;
+    background-size: 14px 14px;
+    padding-left: 2rem; /* space for left arrow */
+    padding-right: 1rem;
+    direction: ltr; /* keep text LTR */
   }
 
   .input-field:focus {
@@ -739,8 +801,29 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
   const pmNominal = $('#pm-nominal');
   const pmInfo = $('#pm-info');
   const pmDeadline = $('#pm-deadline');
+  const pmPhone = $('#pm-phone');
+  const pmRek = $('#pm-rek');
+  const pmLinkType = $('#pm-link-type');
+  const pmLinkUrl = $('#pm-link-url');
+  const imageInput = $('#image-program');
+  const pmImage = $('#pm-image');
   const confirmModal = $('#program-confirm');
   const confirmDeleteBtn = $('#pc-delete');
+
+  // Live auto-detect when typing URL (moved from <style> to <script>)
+  $('#link-url')?.addEventListener('input', (e) => {
+    const val = (e.target?.value || '').trim();
+    const t = detectLinkType(val);
+    if (t) {
+      const sel = $('#link-type') as HTMLSelectElement | null;
+      if (sel) sel.value = t;
+    }
+  });
+  pmLinkUrl?.addEventListener('input', (e) => {
+    const val = (e.target?.value || '').trim();
+    const t = detectLinkType(val);
+    if (t && pmLinkType) (pmLinkType as HTMLSelectElement).value = t as any;
+  });
 
   // Local state
   let programs = JSON.parse(localStorage.getItem('programs') || '[]');
@@ -749,6 +832,21 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
   const save = (): void => {
     localStorage.setItem('programs', JSON.stringify(programs));
   };
+
+  // Helpers
+  function readFileAsDataURL(file: File): Promise<string>{
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(String(fr.result||''));
+      fr.onerror = reject;
+      fr.readAsDataURL(file);
+    });
+  }
+  function isAcceptableImage(file: File): boolean{
+    const okTypes = new Set(['image/png','image/jpeg','image/webp','image/svg+xml']);
+    const max = 2 * 1024 * 1024; // 2MB
+    return okTypes.has(file.type) && file.size <= max;
+  }
 
   const formatDate = (val: string): string => {
     if (!val) return '-';
@@ -765,6 +863,36 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
   };
 
   // Toast removed
+
+  // Security & detection utils
+  function isSafeUrl(input: string): boolean{
+    try{
+      const u = new URL(input);
+      if (u.protocol !== 'https:') return false; // enforce HTTPS only
+      // Disallow localhost, IP literals, and custom ports (except 443 default)
+      const host = u.hostname;
+      const isIPv4 = /^\d+\.\d+\.\d+\.\d+$/.test(host);
+      const isIPv6 = /:\d*[a-fA-F0-9]+:/.test(host);
+      if (host === 'localhost' || isIPv4 || isIPv6) return false;
+      if (u.port && u.port !== '443') return false;
+      // Basic javascript/data/mailto guards (already caught by protocol check)
+      return true;
+    }catch{ return false; }
+  }
+
+  function detectLinkType(input: string): 'wa' | 'qris' | null{
+    try{
+      const u = new URL(input);
+      const host = u.hostname.toLowerCase();
+      const full = (host + u.pathname + u.search).toLowerCase();
+      // WhatsApp canonical hosts
+      const waHosts = new Set(['wa.me','api.whatsapp.com','web.whatsapp.com','whatsapp.com']);
+      if (waHosts.has(host)) return 'wa';
+      // Heuristics for QRIS: common image/pdf link or contains "qris"
+      if (/\.(png|jpe?g|webp|svg|pdf)$/i.test(u.pathname) || full.includes('qris')) return 'qris';
+      return null;
+    }catch{ return null; }
+  }
 
   // Renderers
   const renderList = (items: any[], container: HTMLElement, type: string): void => {
@@ -794,7 +922,8 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       if (type === 'program'){
         const nominalChip = item.nominal ? `<span class="chip">${formatIDR(item.nominal)}</span>` : '';
         const infoChip = item.info ? `<span class="chip" title="${item.info}">Info</span>` : '';
-        name.innerHTML = `${item.desc || 'Tanpa Deskripsi'} ${nominalChip} ${infoChip}`;
+        const linkTypeChip = item.linkType ? `<span class="chip" title="${item.linkUrl || ''}">${String(item.linkType).toUpperCase()}</span>` : '';
+        name.innerHTML = `${item.desc || 'Tanpa Deskripsi'} ${nominalChip} ${infoChip} ${linkTypeChip}`;
       } else {
         const descChip = item.desc ? `<span class="chip" title="${item.desc}">Detail</span>` : '';
         name.innerHTML = `${item.title || 'Tanpa Judul'} ${descChip}`;
@@ -844,22 +973,79 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
   renderAll();
 
   // Add Program
-  $('#btn-add-program').addEventListener('click', () => {
+  $('#btn-add-program').addEventListener('click', async () => {
     const nominal = $('#nominal-program').value.trim();
     const desc = $('#desc-program').value.trim();
     const info = $('#info-program').value.trim();
     const deadline = $('#deadline-program').value;
+    const phone = $('#phone-program').value.trim();
+    const rekening = $('#rekening-program').value.trim();
+    let linkType = $('#link-type').value;
+    const linkUrl = $('#link-url').value.trim();
 
-    if (!desc || !deadline){
-      pulseInvalid(['#desc-program', '#deadline-program']);
+    // Auto-detect type if empty or mismatch
+    const detected = linkUrl ? detectLinkType(linkUrl) : null;
+    if (!linkType && detected) linkType = detected;
+
+    if (!desc || !deadline || !linkUrl || !linkType){
+      const invalid: string[] = [];
+      if (!desc) invalid.push('#desc-program');
+      if (!deadline) invalid.push('#deadline-program');
+      if (!linkUrl) invalid.push('#link-url');
+      if (!linkType) invalid.push('#link-type');
+      pulseInvalid(invalid);
       return;
     }
+    // Safety check
+    if (!isSafeUrl(linkUrl)){
+      pulseInvalid(['#link-url']);
+      alert('URL tidak aman. Wajib HTTPS dan tidak boleh localhost/IP/port non-443.');
+      return;
+    }
+    // Strict type verification: must be WA or QRIS and match selection
+    const detected2 = detectLinkType(linkUrl);
+    if (!detected2){
+      // Unknown/unsupported link type
+      pulseInvalid(['#link-url']);
+      alert('URL tidak dikenali sebagai WhatsApp atau QRIS. Pastikan menggunakan wa.me/whatsapp.com atau tautan QRIS (gambar/pdf yang mengandung "qris").');
+      return;
+    }
+    if (detected2 !== linkType){
+      // Don't auto-override silently; set UI to detected and ask user to confirm by submitting again
+      $('#link-type').value = detected2;
+      pulseInvalid(['#link-type']);
+      const pesan = detected2 === 'wa' ? 'URL terdeteksi sebagai WhatsApp, bukan QRIS.' : 'URL terdeteksi sebagai QRIS, bukan WhatsApp.';
+      alert(pesan + ' Jenis link telah disesuaikan otomatis. Silakan periksa lalu klik Input lagi.');
+      return;
+    }
+    // Prepare optional image
+    let imageData: string | null = null;
+    const f = (imageInput as HTMLInputElement)?.files?.[0] as File | undefined;
+    if (f){
+      if (!isAcceptableImage(f)){
+        pulseInvalid(['#image-program']);
+        alert('Gambar tidak valid. Maks 2MB dan harus PNG/JPG/WEBP/SVG.');
+        return;
+      }
+      try{
+        imageData = await readFileAsDataURL(f);
+      }catch{
+        alert('Gagal membaca file gambar.');
+        return;
+      }
+    }
+
     const item = {
       id: crypto.randomUUID(),
       nominal: nominal ? Number(nominal) : null,
       desc,
       info,
-      deadline
+      deadline,
+      phone: phone || null,
+      rekening: rekening || null,
+      linkType,
+      linkUrl,
+      image: imageData
     };
     programs.unshift(item);
     save();
@@ -871,7 +1057,13 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     $('#desc-program').value = '';
     $('#info-program').value = '';
     $('#deadline-program').value = '';
+    $('#phone-program').value = '';
+    $('#rekening-program').value = '';
+    $('#link-type').value = '';
+    $('#link-url').value = '';
+    if (imageInput) (imageInput as HTMLInputElement).value = '';
   });
+
   // Modal logic
   function openProgramModal(mode = 'create', data?: any){
     if (!modal || !modalForm) return;
@@ -886,6 +1078,10 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       pmNominal.value = data.nominal ?? '';
       pmInfo.value = data.info || '';
       pmDeadline.value = data.deadline || '';
+      pmPhone.value = data.phone || '';
+      pmRek.value = data.rekening || '';
+      pmLinkType.value = data.linkType || '';
+      pmLinkUrl.value = data.linkUrl || '';
     } else {
       editingId = '';
       pmId.value = '';
@@ -893,15 +1089,20 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       pmNominal.value = '';
       pmInfo.value = '';
       pmDeadline.value = '';
+      pmPhone.value = '';
+      pmRek.value = '';
+      pmLinkType.value = '';
+      pmLinkUrl.value = '';
     }
   }
+
   function closeProgramModal(){
     if (!modal) return;
     modal.classList.remove('show');
     modal.setAttribute('aria-hidden', 'true');
   }
   modal?.addEventListener('click', (e) => { if (e.target?.closest?.('[data-close]')) closeProgramModal(); });
-  modalForm?.addEventListener('submit', (e) => {
+  modalForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const payload = {
       id: editingId || crypto.randomUUID(),
@@ -909,11 +1110,67 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       nominal: pmNominal.value ? Number(pmNominal.value) : null,
       info: pmInfo.value.trim(),
       deadline: pmDeadline.value,
+      phone: pmPhone.value.trim() || null,
+      rekening: pmRek.value.trim() || null,
+      linkType: pmLinkType.value,
+      linkUrl: pmLinkUrl.value.trim(),
+      image: null as string | null,
     };
-    if (!payload.desc || !payload.deadline){
-      pulseInvalid(['#pm-desc', '#pm-deadline']);
+    // Auto-detect in modal
+    const detected = payload.linkUrl ? detectLinkType(payload.linkUrl) : null;
+    if (!payload.linkType && detected){
+      payload.linkType = detected;
+      pmLinkType.value = detected;
+    }
+    if (!payload.desc || !payload.deadline || !payload.linkUrl || !payload.linkType){
+      const invalid: string[] = [];
+      if (!payload.desc) invalid.push('#pm-desc');
+      if (!payload.deadline) invalid.push('#pm-deadline');
+      if (!payload.linkUrl) invalid.push('#pm-link-url');
+      if (!payload.linkType) invalid.push('#pm-link-type');
+      pulseInvalid(invalid);
       return;
     }
+    // Safety check for modal
+    if (!isSafeUrl(payload.linkUrl)){
+      pulseInvalid(['#pm-link-url']);
+      alert('URL tidak aman. Wajib HTTPS dan tidak boleh localhost/IP/port non-443.');
+      return;
+    }
+    // Strict type verification: must be WA or QRIS and match selection
+    const detected2 = detectLinkType(payload.linkUrl);
+    if (!detected2){
+      pulseInvalid(['#pm-link-url']);
+      alert('URL tidak dikenali sebagai WhatsApp atau QRIS. Pastikan menggunakan wa.me/whatsapp.com atau tautan QRIS (gambar/pdf yang mengandung "qris").');
+      return;
+    }
+    if (detected2 !== payload.linkType){
+      pmLinkType.value = detected2;
+      pulseInvalid(['#pm-link-type']);
+      const pesan = detected2 === 'wa' ? 'URL terdeteksi sebagai WhatsApp, bukan QRIS.' : 'URL terdeteksi sebagai QRIS, bukan WhatsApp.';
+      alert(pesan + ' Jenis link telah disesuaikan otomatis. Silakan periksa lalu klik Simpan lagi.');
+      return;
+    }
+    // Handle optional image in modal (keep old if not changed)
+    const f2 = (pmImage as HTMLInputElement)?.files?.[0] as File | undefined;
+    if (f2){
+      if (!isAcceptableImage(f2)){
+        pulseInvalid(['#pm-image']);
+        alert('Gambar tidak valid. Maks 2MB dan harus PNG/JPG/WEBP/SVG.');
+        return;
+      }
+      try{
+        payload.image = await readFileAsDataURL(f2);
+      }catch{
+        alert('Gagal membaca file gambar.');
+        return;
+      }
+    } else if (editingId){
+      // Preserve existing image if present
+      const old = programs.find(p => p.id === editingId);
+      if (old) payload.image = old.image || null;
+    }
+
     if (editingId){
       const i = programs.findIndex(p => p.id === editingId);
       if (i >= 0) programs[i] = payload;

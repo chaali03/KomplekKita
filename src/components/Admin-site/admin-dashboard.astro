@@ -36,7 +36,7 @@
       </div>
       <div class="stat-content">
         <h3>Total Kas</h3>
-        <div class="stat-value" data-target="3200000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
+        <div id="dash-total-kas" class="stat-value" data-target="3200000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
         <div class="stat-trend up">
           <i class="fas fa-arrow-up"></i> 12% dari bulan lalu
         </div>
@@ -50,7 +50,7 @@
       </div>
       <div class="stat-content">
         <h3>Pemasukan</h3>
-        <div class="stat-value" data-target="2200000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
+        <div id="dash-total-masuk" class="stat-value" data-target="2200000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
         <div class="stat-trend up">
           <i class="fas fa-arrow-up"></i> 8% dari bulan lalu
         </div>
@@ -64,7 +64,7 @@
       </div>
       <div class="stat-content">
         <h3>Pengeluaran</h3>
-        <div class="stat-value" data-target="1100000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
+        <div id="dash-total-keluar" class="stat-value" data-target="1100000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
         <div class="stat-trend down">
           <i class="fas fa-arrow-up"></i> 5% dari bulan lalu
         </div>
@@ -77,8 +77,8 @@
         <i class="fas fa-clock"></i>
       </div>
       <div class="stat-content">
-        <h3>Tertunda</h3>
-        <div class="stat-value" data-target="800000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
+        <h3 id="dash-iuran-title">Tertunda</h3>
+        <div id="dash-iuran-pending" class="stat-value" data-target="800000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
         <div class="stat-trend neutral">
           <i class="fas fa-minus"></i> Sama dengan bulan lalu
         </div>
@@ -235,8 +235,8 @@
       <h3><i class="fas fa-exchange-alt"></i> Transaksi Terbaru</h3>
       <div class="section-actions">
         <div class="search-container">
+          <i class="fas fa-search search-icon left" aria-hidden="true"></i>
           <input type="text" placeholder="Cari transaksi..." class="search-input" aria-label="Cari transaksi">
-          <i class="fas fa-search search-icon" aria-hidden="true"></i>
         </div>
         <button class="action-button primary icon" aria-label="Tambah transaksi">
           <i class="fas fa-plus" aria-hidden="true"></i>
@@ -518,6 +518,7 @@
       </div>
     </div>
   </div>
+
 </div>
 
 <!-- Load Chart.js only for the dashboard -->
@@ -534,6 +535,8 @@
   document.addEventListener('DOMContentLoaded', function() {
     // Initialize sidebar toggle functionality
     initSidebar();
+    // Unified KPI loader for dashboard stat cards (run early so counters get correct targets)
+    loadDashboardKPIs();
     // Initialize charts if Chart.js is available
     if (typeof Chart !== 'undefined') {
       initCharts();
@@ -543,9 +546,12 @@
     // Initialize other UI features
     initTopbarElevation();
     initAnimations();
+    // Counters after KPI values are set
     initCounters();
     initTooltips();
     initDataTables();
+    // Listen for laporan/local changes to keep KPIs (incl. Tertunda) in sync
+    setupSyncListeners();
     initPremiumLocks();
   });
 
@@ -558,6 +564,319 @@
     };
     handler();
     window.addEventListener('scroll', handler, { passive: true });
+  }
+
+  // ===== Unified KPI loader (shared summary API) =====
+  function fmtIDR(val){
+    try { return new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', maximumFractionDigits:0 }).format(Number(val||0)); }
+    catch(_){ return `Rp${Number(val||0).toLocaleString('id-ID')}`; }
+  }
+  async function fetchJson(url){
+    // Match transaksi.astro behavior: no credentials to avoid cross-origin issues
+    const res = await fetch(url, { headers: { 'Accept':'application/json' } });
+    if(!res.ok){ const t = await res.text().catch(()=> ''); throw new Error(`HTTP ${res.status}: ${t}`); }
+    return res.json();
+  }
+  function resolveKomplekId(){
+    const url = new URL(window.location.href);
+    let id = url.searchParams.get('komplek_id') || localStorage.getItem('komplek_id') || '';
+    // Accept only positive numeric IDs; otherwise treat as demo/offline (no API)
+    const n = Number(id);
+    const valid = Number.isFinite(n) && n > 0 && String(Math.floor(n)) === String(id || n);
+    if(valid){ localStorage.setItem('komplek_id', String(id)); return String(id); }
+    return '';
+  }
+  function getCurrentMonth(){
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  }
+  
+  function getMonthRange(){
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth()+1, 0);
+    const toISO = (dt)=>{
+      const z = new Date(dt.getTime() - dt.getTimezoneOffset()*60000);
+      return z.toISOString().slice(0,10);
+    };
+    return { start: toISO(start), end: toISO(end) };
+  }
+  // Fallback to the same local data used in laporan.ts
+  function computeLocalSummary(){
+    try{
+      const raw = localStorage.getItem('financial_transactions_v2');
+      if(!raw) return null;
+      const txs = JSON.parse(raw)||[];
+      if(!Array.isArray(txs) || txs.length===0) return null;
+      const { start, end } = getMonthRange();
+      const inRange = txs.filter(t => t && t.date >= start && t.date <= end);
+      const income = inRange.filter(t=>t.type==='Masuk').reduce((s,t)=> s + Number(t.amount||0), 0);
+      const expense = inRange.filter(t=>t.type==='Keluar').reduce((s,t)=> s + Number(t.amount||0), 0);
+      const balance = income - expense;
+      return { income, expense, balance };
+    }catch(_){ return null }
+  }
+  const DASH_SNAP_KEY = 'summary_kpis';
+  let lastDashFetch = 0;
+
+  // Keep dashboard synced with laporan updates across tabs/pages
+  function setupSyncListeners(){
+    let lastDirty = 0;
+    try { lastDirty = Number(localStorage.getItem('iuran_dirty')||'0') || 0; } catch(_){}
+    // Track same-tab changes by string snapshot (storage event doesn't fire in same tab)
+    let lastCfg = '';
+    let lastPays = '';
+    try { lastCfg = String(localStorage.getItem('dues_configs')||''); } catch(_){ lastCfg = ''; }
+    try { lastPays = String(localStorage.getItem('dues_payments')||''); } catch(_){ lastPays = ''; }
+    const onStorage = (e: StorageEvent) => {
+      if (!e) return;
+      const keys = ['iuran_dirty','dues_payments','dues_configs','laporan_totals_snapshot', 'laporan_chart_series', DASH_SNAP_KEY];
+      if (keys.includes(String(e.key))) {
+        loadDashboardKPIs();
+        if (String(e.key) === 'laporan_chart_series' && typeof Chart !== 'undefined') {
+          // Re-render charts to mirror laporan
+          initCharts();
+        }
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    // Refresh when tab becomes visible again
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') loadDashboardKPIs(); });
+    // Fallback polling in same tab (storage event won't fire)
+    setInterval(() => {
+      let curr = 0;
+      try { curr = Number(localStorage.getItem('iuran_dirty')||'0') || 0; } catch(_){ curr = 0; }
+      if (curr && curr !== lastDirty) {
+        lastDirty = curr;
+        loadDashboardKPIs();
+      }
+      // Also detect direct changes to configs/payments strings within same tab
+      let cfgNow = '';
+      let paysNow = '';
+      try { cfgNow = String(localStorage.getItem('dues_configs')||''); } catch(_){ cfgNow = ''; }
+      try { paysNow = String(localStorage.getItem('dues_payments')||''); } catch(_){ paysNow = ''; }
+      if (cfgNow !== lastCfg || paysNow !== lastPays) {
+        lastCfg = cfgNow; lastPays = paysNow;
+        loadDashboardKPIs();
+      }
+    }, 3000);
+  }
+  async function loadDashboardKPIs(){
+    const komplekId = resolveKomplekId();
+    const elKas = document.getElementById('dash-total-kas');
+    const elMasuk = document.getElementById('dash-total-masuk');
+    const elKeluar = document.getElementById('dash-total-keluar');
+    const elIuranPending = document.getElementById('dash-iuran-pending');
+    const now = Date.now();
+    // 1) Immediate paint from any snapshot (no TTL) to avoid showing zeros
+    try {
+      const snapNow = JSON.parse(localStorage.getItem(DASH_SNAP_KEY)||'null');
+      if(snapNow && String(snapNow.komplekId)===String(komplekId)){
+        const sKas = Number(snapNow.totalKas||0);
+        const sMasuk = Number(snapNow.totalMasuk||0);
+        const sKeluar = Number(snapNow.totalKeluar||0);
+        const sIuranPending = Number(snapNow.iuranPending||0);
+        elKas && (elKas.textContent = fmtIDR(sKas), elKas.setAttribute('data-target', String(sKas)));
+        elMasuk && (elMasuk.textContent = fmtIDR(sMasuk), elMasuk.setAttribute('data-target', String(sMasuk)));
+        elKeluar && (elKeluar.textContent = fmtIDR(sKeluar), elKeluar.setAttribute('data-target', String(sKeluar)));
+        elIuranPending && (elIuranPending.textContent = fmtIDR(sIuranPending), elIuranPending.setAttribute('data-target', String(sIuranPending)));
+      }
+      // Also paint from laporan snapshot if present so values match laporan exactly
+      const lapSnap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
+      if(lapSnap && lapSnap.totals){
+        const li = Number(lapSnap.totals.income||0);
+        const le = Number(lapSnap.totals.expense||0);
+        const lb = Number(lapSnap.totals.balance||0);
+        if (li>0 || le>0 || lb>0){
+          elMasuk && (elMasuk.textContent = fmtIDR(li), elMasuk.setAttribute('data-target', String(li)));
+          elKeluar && (elKeluar.textContent = fmtIDR(le), elKeluar.setAttribute('data-target', String(le)));
+          elKas && (elKas.textContent = fmtIDR(lb), elKas.setAttribute('data-target', String(lb)));
+        }
+      }
+    } catch(_) { /* noop */ }
+    try{
+      const snap = JSON.parse(localStorage.getItem(DASH_SNAP_KEY)||'null');
+      const snapTs = Number(snap?.ts)||0;
+      let dirtyTs = 0; try { dirtyTs = Number(localStorage.getItem('iuran_dirty')||'0')||0; } catch(_){}
+      const snapFresh = snap && (now - snapTs) < 60000 && String(snap.komplekId)===String(komplekId);
+      const staleDueToDirty = dirtyTs && dirtyTs > snapTs; // if dues changed after snapshot, don't early-return
+      if(snapFresh){
+        elKas && (elKas.textContent = fmtIDR(Number(snap.totalKas||0)), elKas.setAttribute('data-target', String(Number(snap.totalKas||0))));
+        elMasuk && (elMasuk.textContent = fmtIDR(Number(snap.totalMasuk||0)), elMasuk.setAttribute('data-target', String(Number(snap.totalMasuk||0))));
+        elKeluar && (elKeluar.textContent = fmtIDR(Number(snap.totalKeluar||0)), elKeluar.setAttribute('data-target', String(Number(snap.totalKeluar||0))));
+        elIuranPending && (elIuranPending.textContent = fmtIDR(Number(snap.iuranPending||0)), elIuranPending.setAttribute('data-target', String(Number(snap.iuranPending||0))));
+      }
+      let totalKas = 0, totalMasuk = 0, totalKeluar = 0;
+      const apiDisabled = localStorage.getItem('disable_api') === '1';
+      if (komplekId && !apiDisabled) {
+        const url = `/api/public/transaksi/summary?komplek_id=${encodeURIComponent(komplekId)}`;
+        console.debug('[Dashboard] Fetching summary:', url);
+        const data = await fetchJson(url);
+        console.debug('[Dashboard] Summary data:', data);
+        totalKas = Number(data?.totalKas || data?.total_kas || 0);
+        totalMasuk = Number(data?.totalMasuk || data?.total_masuk || 0);
+        totalKeluar = Number(data?.totalKeluar || data?.total_keluar || 0);
+      }
+      elKas && (elKas.textContent = fmtIDR(totalKas), elKas.setAttribute('data-target', String(totalKas)));
+      elMasuk && (elMasuk.textContent = fmtIDR(totalMasuk), elMasuk.setAttribute('data-target', String(totalMasuk)));
+      elKeluar && (elKeluar.textContent = fmtIDR(totalKeluar), elKeluar.setAttribute('data-target', String(totalKeluar)));
+      // If API returned zeros but local laporan demo data exists, override to keep consistency with laporan page
+      try{
+        const local = computeLocalSummary();
+        if(local){
+          const allApiZero = (totalKas===0 && totalMasuk===0 && totalKeluar===0);
+          const hasLocal = (Number(local.income||0)>0 || Number(local.expense||0)>0);
+          if(allApiZero && hasLocal){
+            elMasuk && (elMasuk.textContent = fmtIDR(local.income), elMasuk.setAttribute('data-target', String(local.income)));
+            elKeluar && (elKeluar.textContent = fmtIDR(local.expense), elKeluar.setAttribute('data-target', String(local.expense)));
+            elKas && (elKas.textContent = fmtIDR(local.balance), elKas.setAttribute('data-target', String(local.balance)));
+          }
+        }
+        // If still zero, try laporan snapshot which reflects the laporan page totals exactly
+        const lapSnap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
+        if(lapSnap && lapSnap.totals){
+          const li = Number(lapSnap.totals.income||0);
+          const le = Number(lapSnap.totals.expense||0);
+          const lb = Number(lapSnap.totals.balance||0);
+          if ((totalKas===0 && totalMasuk===0 && totalKeluar===0) && (li>0 || le>0 || lb>0)){
+            elMasuk && (elMasuk.textContent = fmtIDR(li), elMasuk.setAttribute('data-target', String(li)));
+            elKeluar && (elKeluar.textContent = fmtIDR(le), elKeluar.setAttribute('data-target', String(le)));
+            elKas && (elKas.textContent = fmtIDR(lb), elKas.setAttribute('data-target', String(lb)));
+          }
+        }
+      }catch(_){/* noop */}
+      // Also fetch iuran status to compute pending total
+      let iuranPending = 0;
+      try{
+        const periode = getCurrentMonth();
+        const apiDisabled = localStorage.getItem('disable_api') === '1';
+        if (komplekId && !apiDisabled) {
+          const iuranUrl = `/api/public/iuran/status?komplek_id=${encodeURIComponent(komplekId)}&periode=${encodeURIComponent(periode)}`;
+          console.debug('[Dashboard] Fetching iuran status:', iuranUrl);
+          const iuran = await fetchJson(iuranUrl);
+          const amount = Number(iuran?.amount || iuran?.nominal || 0);
+          let pendingCount = 0;
+          if (Array.isArray(iuran?.pending)) pendingCount = iuran.pending.length;
+          else if (typeof iuran?.unpaidCount === 'number') pendingCount = Number(iuran.unpaidCount);
+          else if (Array.isArray(iuran?.residents) && Array.isArray(iuran?.paid)) pendingCount = Math.max(0, iuran.residents.length - iuran.paid.length);
+          iuranPending = Math.max(0, amount * pendingCount);
+          if (elIuranPending) { elIuranPending.textContent = fmtIDR(iuranPending); elIuranPending.setAttribute('data-target', String(iuranPending)); }
+        }
+        // Reconcile with local demo data to avoid stale API values
+        try{
+          const cfgMap = JSON.parse(localStorage.getItem('dues_configs')||'{}');
+          let amountLocal = 0;
+          if (cfgMap && cfgMap[periode] && typeof cfgMap[periode].amount !== 'undefined') {
+            amountLocal = Number(cfgMap[periode].amount||0);
+          } else {
+            const cfg = JSON.parse(localStorage.getItem('dues_config')||'{}');
+            amountLocal = Number(cfg?.amount||0);
+          }
+          const payments = JSON.parse(localStorage.getItem('dues_payments')||'{}');
+          const paid = Array.isArray(payments?.[periode]?.paid) ? payments[periode].paid : [];
+          const residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+          const pendingCountLocal = Math.max(0, Math.max(0, residents.length) - paid.length);
+          const localPending = Math.max(0, amountLocal * pendingCountLocal);
+          try { console.debug('[iuran-debug] reconcile', { periode, amountLocal, residents: residents.length, paid: paid.length, closed: !!cfgMap?.[periode]?.closed, localPending }); } catch(_){}
+          if (Number.isFinite(localPending) && localPending !== iuranPending) {
+            iuranPending = localPending;
+            if (elIuranPending) { elIuranPending.textContent = fmtIDR(iuranPending); elIuranPending.setAttribute('data-target', String(iuranPending)); }
+          }
+        }catch(_){/* noop */}
+        // If still zero, check local demo dues
+        if(iuranPending===0){
+          try{
+            const periode = getCurrentMonth();
+            const cfgMap = JSON.parse(localStorage.getItem('dues_configs')||'{}');
+            let amountLocal = 0;
+            if (cfgMap && cfgMap[periode] && typeof cfgMap[periode].amount !== 'undefined') {
+              amountLocal = Number(cfgMap[periode].amount||0);
+            } else {
+              const cfg = JSON.parse(localStorage.getItem('dues_config')||'{}');
+              amountLocal = Number(cfg?.amount||0);
+            }
+            const payments = JSON.parse(localStorage.getItem('dues_payments')||'{}');
+            const paid = Array.isArray(payments?.[periode]?.paid) ? payments[periode].paid : [];
+            const residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+            const pendingCountLocal = Math.max(0, Math.max(0, residents.length) - paid.length);
+            const localPending = Math.max(0, amountLocal * pendingCountLocal);
+            try { console.debug('[iuran-debug] zero-check', { periode, amountLocal, residents: residents.length, paid: paid.length, closed: !!cfgMap?.[periode]?.closed, localPending }); } catch(_){}
+            if(localPending>0 && elIuranPending){ elIuranPending.textContent = fmtIDR(localPending); elIuranPending.setAttribute('data-target', String(localPending)); iuranPending = localPending; }
+          }catch(_){/* noop */}
+        }
+      }catch(e){
+        console.warn('Gagal memuat iuran status dari API, menggunakan demo fallback jika tersedia.', e);
+        try{
+          const periode = getCurrentMonth();
+          const cfgMap = JSON.parse(localStorage.getItem('dues_configs')||'{}');
+          let amount = 0;
+          if (cfgMap && cfgMap[periode] && typeof cfgMap[periode].amount !== 'undefined') {
+            amount = Number(cfgMap[periode].amount||0);
+          } else {
+            const cfg = JSON.parse(localStorage.getItem('dues_config')||'{}');
+            amount = Number(cfg?.amount||0);
+          }
+          const payments = JSON.parse(localStorage.getItem('dues_payments')||'{}');
+          const paid = Array.isArray(payments?.[periode]?.paid) ? payments[periode].paid : [];
+          const residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+          const pendingCount = Math.max(0, Math.max(0, residents.length) - paid.length);
+          iuranPending = Math.max(0, amount * pendingCount);
+          try { console.debug('[iuran-debug] api-catch-fallback', { periode, amountLocal: amount, residents: residents.length, paid: paid.length, closed: !!cfgMap?.[periode]?.closed, pending: iuranPending }); } catch(_){}
+          if (elIuranPending) { elIuranPending.textContent = fmtIDR(iuranPending); elIuranPending.setAttribute('data-target', String(iuranPending)); }
+        }catch(_){ /* noop */ }
+      }
+      // If the month is marked closed but local data still shows unpaid, prefer showing local pending (avoid misleading zero)
+      try {
+        const periodeNow = getCurrentMonth();
+        const cfgMap = JSON.parse(localStorage.getItem('dues_configs')||'{}');
+        if (cfgMap && cfgMap[periodeNow] && cfgMap[periodeNow].closed) {
+          const payments = JSON.parse(localStorage.getItem('dues_payments')||'{}');
+          const paid = Array.isArray(payments?.[periodeNow]?.paid) ? payments[periodeNow].paid : [];
+          const residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+          const pendingCountLocal = Math.max(0, Math.max(0, residents.length) - paid.length);
+          const amountLocal = Number((cfgMap?.[periodeNow]?.amount)||0);
+          const localPending = Math.max(0, amountLocal * pendingCountLocal);
+          if (localPending > 0) {
+            try { console.debug('[iuran-debug] month-closed-ignored', { periode: periodeNow, closed: true, residents: residents.length, paid: paid.length, amountLocal, localPending }); } catch(_){ }
+            iuranPending = localPending;
+            if (elIuranPending) { elIuranPending.textContent = fmtIDR(iuranPending); elIuranPending.setAttribute('data-target', String(iuranPending)); }
+          } else {
+            try { console.debug('[iuran-debug] month-closed', { periode: periodeNow, closed: true }); } catch(_){ }
+            iuranPending = 0;
+            if (elIuranPending) { elIuranPending.textContent = fmtIDR(0); elIuranPending.setAttribute('data-target', '0'); }
+          }
+        }
+      } catch(_) { /* noop */ }
+      localStorage.setItem(DASH_SNAP_KEY, JSON.stringify({ komplekId, totalKas, totalMasuk, totalKeluar, iuranPending, ts: now }));
+      lastDashFetch = now;
+    }catch(err){
+      // On invalid komplek_id (422), permanently switch to local-only mode
+      try {
+        const msg = String(err && err.message || '');
+        if (msg.includes('HTTP 422') && msg.toLowerCase().includes('komplek')) {
+          localStorage.removeItem('komplek_id');
+          localStorage.setItem('disable_api','1');
+        }
+      } catch(_) {}
+      console.warn('Gagal memuat summary dashboard dari API, menggunakan snapshot jika ada.', err);
+      try{
+        const snap = JSON.parse(localStorage.getItem(DASH_SNAP_KEY)||'null');
+        if(snap && String(snap.komplekId)===String(komplekId)){
+          elKas && (elKas.textContent = fmtIDR(Number(snap.totalKas||0)), elKas.setAttribute('data-target', String(Number(snap.totalKas||0))));
+          elMasuk && (elMasuk.textContent = fmtIDR(Number(snap.totalMasuk||0)), elMasuk.setAttribute('data-target', String(Number(snap.totalMasuk||0))));
+          elKeluar && (elKeluar.textContent = fmtIDR(Number(snap.totalKeluar||0)), elKeluar.setAttribute('data-target', String(Number(snap.totalKeluar||0))));
+          if (elIuranPending) { const v = Number(snap.iuranPending||0); elIuranPending.textContent = fmtIDR(v); elIuranPending.setAttribute('data-target', String(v)); }
+        }
+        // Additionally, align with laporan.ts demo data if available
+        const local = computeLocalSummary();
+        if(local){
+          const { income, expense, balance } = local;
+          elMasuk && (elMasuk.textContent = fmtIDR(income), elMasuk.setAttribute('data-target', String(income)));
+          elKeluar && (elKeluar.textContent = fmtIDR(expense), elKeluar.setAttribute('data-target', String(expense)));
+          elKas && (elKas.textContent = fmtIDR(balance), elKas.setAttribute('data-target', String(balance)));
+        }
+      }catch(_){ /* noop */ }
+    }
   }
 
   function initSidebar() {
@@ -716,6 +1035,16 @@
       gradient.addColorStop(1, toRGBA(color, 0));
       return gradient;
     };
+    // Load compact series from laporan to keep charts in sync
+    let lapSeries = null;
+    try { const raw = localStorage.getItem('laporan_chart_series'); lapSeries = raw ? JSON.parse(raw) : null; } catch(_) { lapSeries = null }
+    const fallbackLabels = ['Jan','Feb','Mar','Apr','May','Jun'];
+    const labels = Array.isArray(lapSeries?.labels) && lapSeries.labels.length ? lapSeries.labels : fallbackLabels;
+    const dailyIncome = Array.isArray(lapSeries?.dailyIncome) && lapSeries.dailyIncome.length ? lapSeries.dailyIncome : [900000,1200000,1150000,1400000,1500000,1600000];
+    const dailyExpense = Array.isArray(lapSeries?.dailyExpense) && lapSeries.dailyExpense.length ? lapSeries.dailyExpense : [500000,700000,650000,800000,900000,850000];
+    const cumulativeBalance = Array.isArray(lapSeries?.cumulativeBalance) && lapSeries.cumulativeBalance.length ? lapSeries.cumulativeBalance : dailyIncome.map((_,i)=> dailyIncome.slice(0,i+1).reduce((s,v)=>s+v,0) - dailyExpense.slice(0,i+1).reduce((s,v)=>s+v,0));
+    const compLabels = lapSeries?.composition ? Object.keys(lapSeries.composition) : ['Operasional','Keamanan','Kebersihan','Perbaikan','Lainnya'];
+    const compValues = lapSeries?.composition ? Object.values(lapSeries.composition) : [1200000,800000,600000,400000,200000];
     const cashFlowCtx = document.getElementById('chartKas');
     if (cashFlowCtx) {
       try {
@@ -730,7 +1059,7 @@
         }
       } catch (e) {}
       const ctx = cashFlowCtx.getContext ? cashFlowCtx.getContext('2d') : null;
-      const cashFlowChart = new Chart(cashFlowCtx, { type: 'line', data: { labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], datasets:[{ label:'Total Kas', data:[1000000,1200000,1350000,1500000,1800000,2000000,2200000,2400000,2600000,2800000,3000000,3200000], borderColor: palette.primary, backgroundColor: ctx ? makeGradient(ctx, palette.primary) : palette.primarySoft, borderWidth:2, tension:0.4, fill:true, pointBackgroundColor:'#ffffff', pointBorderColor: palette.primary, pointBorderWidth:2, pointRadius:4, pointHoverRadius:6 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ display:false }, tooltip:{ mode:'index', intersect:false, backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:function(context){ let label=context.dataset.label||''; if(label){label+=': ';} if(context.parsed.y!==null){ label+=formatIDRCurrency(context.parsed.y);} return label; } } } }, scales:{ x:{ grid:{ display:false }, ticks:{ color: palette.grayTick } }, y:{ beginAtZero:true, grid:{ color: palette.grid }, ticks:{ color: palette.grayTick, callback:function(value){ return new Intl.NumberFormat('id-ID',{ style:'currency', currency:'IDR', maximumSignificantDigits:3 }).format(value); } } } } } });
+      const cashFlowChart = new Chart(cashFlowCtx, { type: 'line', data: { labels: labels, datasets:[{ label:'Saldo', data: cumulativeBalance, borderColor: palette.primary, backgroundColor: ctx ? makeGradient(ctx, palette.primary) : palette.primarySoft, borderWidth:2, tension:0.4, fill:true, pointBackgroundColor:'#ffffff', pointBorderColor: palette.primary, pointBorderWidth:2, pointRadius:4, pointHoverRadius:6 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ display:false }, tooltip:{ mode:'index', intersect:false, backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:function(context){ let label=context.dataset.label||''; if(label){label+=': ';} if(context.parsed.y!==null){ label+=formatIDRCurrency(context.parsed.y);} return label; } } } }, scales:{ x:{ grid:{ display:false }, ticks:{ color: palette.grayTick } }, y:{ beginAtZero:true, grid:{ color: palette.grid }, ticks:{ color: palette.grayTick, callback:function(value){ return new Intl.NumberFormat('id-ID',{ style:'currency', currency:'IDR', maximumSignificantDigits:3 }).format(value); } } } } } });
       window.dashboardCharts.set('chartKas', cashFlowChart);
     }
 
@@ -743,7 +1072,7 @@
           if (prev && typeof prev.destroy === 'function') prev.destroy();
         }
       } catch (e) {}
-      const compositionChart = new Chart(compositionCtx, { type:'doughnut', data:{ labels:['Pemasukan','Pengeluaran'], datasets:[{ data:[65,35], backgroundColor:[palette.green, palette.red], borderColor:[palette.green, palette.red], borderWidth:1 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ animateRotate:true, animateScale:true, duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ position:'bottom', labels:{ padding:20, usePointStyle:true, pointStyle:'circle' } }, tooltip:{ backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:function(context){ const label=context.label||''; const value=context.raw||0; const total=context.dataset.data.reduce((a,b)=>a+b,0); const percentage=Math.round((value/total)*100); return `${label}: ${percentage}%`; } } } }, cutout:'70%' } });
+      const compositionChart = new Chart(compositionCtx, { type:'doughnut', data:{ labels: compLabels, datasets:[{ data: compValues, backgroundColor:['#06d6a0','#ef476f','#ffd166','#4cc9f0','#f9c74f'], borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ animateRotate:true, animateScale:true, duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ position:'bottom', labels:{ padding:20, usePointStyle:true, pointStyle:'circle' } }, tooltip:{ backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:function(context){ const label=context.label||''; const value=context.raw||0; const total=context.dataset.data.reduce((a,b)=>a+b,0); const percentage = total? Math.round((value/total)*100): 0; return `${label}: ${percentage}%`; } } } }, cutout:'70%' } });
       window.dashboardCharts.set('chartPie', compositionChart);
     }
 
@@ -759,11 +1088,11 @@
       const expenseCategoriesChart = new Chart(expenseCategoriesCtx, {
         type: 'bar',
         data: {
-          labels: ['Operasional', 'Keamanan', 'Kebersihan', 'Perbaikan', 'Lainnya'],
+          labels: compLabels,
           datasets: [
             {
               label: 'Pengeluaran per Kategori',
-              data: [1200000, 800000, 600000, 400000, 200000],
+              data: compValues,
               backgroundColor: [
                 'rgba(67, 97, 238, 0.7)',
                 'rgba(76, 201, 240, 0.7)',
@@ -827,11 +1156,11 @@
       const monthlyComparisonChart = new Chart(monthlyComparisonCtx, {
         type: 'bar',
         data: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          labels: labels,
           datasets: [
             {
               label: 'Pemasukan',
-              data: [800000, 900000, 1000000, 1100000, 1200000, 1300000],
+              data: dailyIncome,
               backgroundColor: 'rgba(6, 214, 160, 0.7)',
               borderColor: 'rgba(6, 214, 160, 1)',
               borderWidth: 1,
@@ -840,7 +1169,7 @@
             },
             {
               label: 'Pengeluaran',
-              data: [500000, 600000, 550000, 700000, 650000, 800000],
+              data: dailyExpense,
               backgroundColor: 'rgba(239, 71, 111, 0.7)',
               borderColor: 'rgba(239, 71, 111, 1)',
               borderWidth: 1,
@@ -900,11 +1229,11 @@
       const areaChart = new Chart(areaCtx, {
         type: 'line',
         data: {
-          labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
+          labels: labels,
           datasets: [
             {
               label: 'Pemasukan',
-              data: [900000,950000,1200000,1150000,1400000,1500000,1600000,1700000],
+              data: dailyIncome,
               borderColor: palette.green,
               backgroundColor: ctx ? makeGradient(ctx, palette.green) : 'rgba(6, 214, 160, 0.15)',
               fill: true,
@@ -913,7 +1242,7 @@
             },
             {
               label: 'Pengeluaran',
-              data: [600000,500000,700000,650000,800000,900000,850000,950000],
+              data: dailyExpense,
               borderColor: palette.red,
               backgroundColor: ctx ? makeGradient(ctx, palette.red) : 'rgba(239, 71, 111, 0.15)',
               fill: true,
@@ -1390,24 +1719,41 @@
   min-width: 180px;
 }
 .search-input {
-  width: 100%; height: 36px;
+  width: 100%; height: 40px;
   border: 1px solid var(--outline);
   border-radius: 999px;
   background: var(--surface-2);
-  padding: 0 34px 0 12px; color: var(--text);
+  padding: 0 12px 0 38px; color: var(--text);
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.search-input::placeholder { color: var(--text-muted); }
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-600);
+  box-shadow: 0 0 0 3px rgba(8, 88, 149, 0.15);
+  background: #fff;
 }
 .search-icon {
-  position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted);
+  position: absolute; top: 50%; transform: translateY(-50%); color: var(--text-muted);
 }
+.search-icon.left { left: 12px; }
 
-.table-container { 
-  width: 100%; 
-  overflow-x: auto; 
+/* Buttons polish */
+.action-button { transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .06s ease; }
+.action-button:hover { filter: brightness(0.98); box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+.action-button:active { transform: translateY(1px); }
+.action-button.primary { background: var(--primary); color: #fff; border-color: #0a5699; }
+.action-button.primary:hover { background: var(--primary-600); }
+.action-button.icon { border-radius: 10px; }
+
+/* Scrollbar polish (keep inside <style>) */
+.table-container {
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   scrollbar-width: thin; /* Firefox */
 }
 .table-container::-webkit-scrollbar { height: 8px; } /* Chrome/Safari/Edge */
 .table-container::-webkit-scrollbar-thumb { background: var(--outline); border-radius: 4px; }
+
 .data-table { width: 100%; min-width: 650px; border-collapse: collapse; }
 .data-table thead th {
   position: sticky; top: 0; z-index: 2;

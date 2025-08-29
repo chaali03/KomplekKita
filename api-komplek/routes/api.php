@@ -19,6 +19,7 @@ use App\Http\Controllers\WargaController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\TransaksiKeuanganController;
 use App\Http\Controllers\PengaturanController;
+use App\Http\Controllers\IuranController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -89,7 +90,7 @@ Route::post('/import/keuangan/preview', [KeuanganImportController::class, 'uploa
 // -----------------------------
 // Admin endpoints (require komplek_id)
 // -----------------------------
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     // Warga
     Route::get('/warga', [WargaController::class, 'index']);
     Route::post('/warga', [WargaController::class, 'store']);
@@ -137,6 +138,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Pengaturan (key/value per komplek)
     Route::get('/pengaturan', [PengaturanController::class, 'index']);
     Route::put('/pengaturan', [PengaturanController::class, 'update']);
+
+    // Iuran Bulanan (admin)
+    Route::post('/iuran/generate', [IuranController::class, 'generate']);
+    Route::post('/iuran/mark', [IuranController::class, 'mark']);
 });
 
 // -----------------------------
@@ -147,3 +152,4 @@ Route::get('/public/transaksi/summary', [TransaksiKeuanganController::class, 'su
 Route::get('/public/anggaran/summary', [AnggaranController::class, 'summary']);
 Route::get('/public/program', [ProgramController::class, 'publicIndex']);
 Route::get('/public/informasi', [InformasiController::class, 'publicIndex']);
+Route::get('/public/iuran/status', [IuranController::class, 'status']);

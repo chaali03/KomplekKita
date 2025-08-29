@@ -2,117 +2,226 @@
 const nama = "Duta Bijaksana"
 ---
 
-
-<header class="main-header">
-    <div class="header-content">
+<header class="main-header" data-aos="fade-down" data-aos-duration="800">
+    <div class="header-content container">
+        <div class="logo-container">
             <img src="/images/hero-app.png" alt="Komplek Kita Logo" class="logo-image" />
+        </div>
         <div class="login-button-container">
-            <a href="#" class="login-button">
-                Login Admin
+            <a href="/admin" class="login-button">
+                <i class="fas fa-user-shield"></i> Login Admin
             </a>
         </div>
     </div>
 </header>
 
+<section class="hero-section">
+  <div class="container">
+    <div class="selamat-datang" data-aos="fade-up" data-aos-delay="200">
+      <h1 class="welcome-text">Selamat Datang</h1>
+      <h1 class="komplek-text">
+        Di Komplek <span class="highlight">{nama}</span>
+      </h1>
+      <p class="welcome-subtitle">Sistem informasi terpadu untuk warga komplek</p>
+    </div>
 
-<section>
+    <nav class="parent-nav" data-aos="fade-up" data-aos-delay="400">
+      <button class="burgir" aria-label="Toggle nav">
+        <span class="line"></span>
+        <span class="line"></span>
+        <span class="line"></span>
+      </button>
 
-  <div class="selamat-datang">
-    <h1 class="blue">Selamat Datang</h1>
-    <h1 class="komplek">
-      Di Komplek {nama}
-    </h1>
+      <ul class="links">
+        <li><a href="/user" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="/userlaporan" class="nav-link"><i class="fas fa-chart-bar"></i> Laporan</a></li>
+        <li><a href="/userprogram" class="nav-link"><i class="fas fa-calendar-alt"></i> Program</a></li>
+        <li><a href="/userinfo" class="nav-link"><i class="fas fa-info-circle"></i> Informasi</a></li>
+      </ul>
+    </nav>
+
+    <div class="divider" data-aos="fade-up" data-aos-delay="600"></div>
   </div>
-
-  <nav class="parent-nav">
-
-    <button class="burgir" aria-label="Toggle nav">
-      <span class="line"></span>
-      <span class="line"></span>
-      <span class="line"></span>
-    </button>
-
-    <ul class="links">
-      <li><a href="/user">Home</a></li>
-      <li><a href="/userlaporan">Laporan</a></li>
-      <li><a href="/userprogram">Program</a></li>
-      <li><a href="/userinfo">Informasi</a></li>
-    </ul>
-  </nav>
-
-  <div class="divider"></div>
 </section>
 
 <style>
+  /* Hero Section */
+  .hero-section {
+    padding: 2rem 0;
+    background-color: #f8f9fa;
+    position: relative;
+    overflow: hidden;
+  }
   
-  section {
-    padding: 2rem 1rem;
-    font-family: sans-serif;
-     background-color: white;
+  /* Ripple effect for buttons and links */
+  .ripple-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
   }
 
-  /* Header shi */
-.main-header {
-  padding: 1rem;
-  font-family: sans-serif;
-  background-color: white;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  max-width: screen;
-  margin: 0 auto;
-  flex-wrap: wrap; 
-}
-
-.logo-image {
-  max-width: 100%;
-  height: auto;
-  margin-right: ;
-}
-
-
-.login-button {
-  text-decoration: none;
-  background-color: transparent;
-  padding: 0.5rem 1.5rem;
-  border-radius: 20px;
-  font-size: 1rem;
-  font-weight: bold;
-  transition: color 0.3s ease;
-  color: #000;
-}
-
-.login-button:hover {
-    color: #FFB61D;
-}
-
-    /* uphere is header */
-
-
-  .selamat-datang {
-    text-align: left; 
-    margin-bottom: 2rem;
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+    background-color: rgba(8, 88, 149, 0.3);
+    z-index: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
   }
 
-  .selamat-datang h1 {
-    font-size: 2rem;
-    line-height: 1.2;
+  @keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(5);
+        opacity: 0;
+    }
+  }
+  
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(8, 88, 149, 0.1) 0%, rgba(0, 180, 216, 0.05) 100%);
+    border-radius: 0 0 0 100%;
+    z-index: 0;
+  }
+
+  /* Header Styles */
+  .main-header {
+    padding: 1rem 0;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: all 0.3s ease;
+  }
+  
+  .main-header.scrolled {
+    padding: 0.6rem 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .logo-image {
+    max-width: 180px;
+    height: auto;
+    transition: transform 0.3s ease;
+  }
+  
+  .logo-image:hover {
+    transform: scale(1.05);
+  }
+
+  .login-button {
+    text-decoration: none;
+    background-color: #085895;
+    color: white;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
     font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 6px rgba(8, 88, 149, 0.2);
   }
 
-  .selamat-datang .blue {
-    color: #007bff;
-    font-size: 3rem;
+  .login-button:hover {
+    background-color: #064a77;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(8, 88, 149, 0.3);
   }
 
- 
+  /* Welcome Section */
+  .selamat-datang {
+    text-align: left;
+    margin: 3rem 0;
+    position: relative;
+  }
+
+  .welcome-text {
+    color: #085895;
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #085895, #00b4d8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .komplek-text {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin: 0.5rem 0 1rem;
+    color: #333;
+  }
+  
+  .highlight {
+    color: #FFB61D;
+    position: relative;
+  }
+  
+  .highlight::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #FFB61D;
+    border-radius: 2px;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-top: 1rem;
+    max-width: 80%;
+  }
+
+  /* Navigation */
   .parent-nav {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 5rem;
+    margin: 2rem 0;
+    position: relative;
+    z-index: 5;
   }
   
   .links {
@@ -121,60 +230,154 @@ const nama = "Duta Bijaksana"
     margin: 0;
     display: flex;
     justify-content: center;
-    gap: 2rem;
+    gap: 2.5rem;
+    background-color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
   }
 
-  .parent-nav a {
+  .nav-link {
     text-decoration: none;
-    color: #000;
+    color: #333;
     font-weight: 500;
-    font-size: 1.1rem;
-    padding: 0.5rem 0;
-    transition: color 0.3s ease;
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    border-radius: 50px;
+    overflow: hidden;
+  }
+  
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #085895;
+    transition: width 0.3s ease;
+  }
+  
+  .nav-link:hover {
+    color: #085895;
+  }
+  
+  .nav-link:hover::after {
+    width: 100%;
   }
 
-
- 
+  /* Burger Menu */
   .burgir {
-    display: none; 
+    display: none;
     flex-direction: column;
     justify-content: space-around;
-    width: 2rem;
-    height: 2rem;
-    background: transparent;
+    width: 2.8rem;
+    height: 2.8rem;
+    background: rgba(255, 255, 255, 0.9);
     border: none;
+    border-radius: 50%;
     cursor: pointer;
     z-index: 10;
+    padding: 0.7rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    transform-origin: center;
+  }
+
+  .burgir:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
   .burgir .line {
-    width: 2rem;
-    height: 0.25rem;
-    background: #333;
+    width: 100%;
+    height: 0.2rem;
+    background: #085895;
     border-radius: 10px;
-    transition: all 0.3s linear;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
-    transform-origin: 1px;
+    transform-origin: center;
   }
-
   
+  .burgir:hover .line {
+    background: #064a77;
+    transform: scaleX(0.9);
+  }
+  
+  .burgir.is-active .line:nth-child(1) {
+    transform: rotate(45deg) translate(0.3rem, 0.5rem) scaleX(1.1);
+    width: 110%;
+  }
+  
+  .burgir.is-active .line:nth-child(2) {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.5);
+  }
+  
+  .burgir.is-active .line:nth-child(3) {
+    transform: rotate(-45deg) translate(0.3rem, -0.5rem) scaleX(1.1);
+    width: 110%;
+  }
+  
+  /* Divider */
   .divider {
-    border-bottom: 5px solid #000; 
-    margin-top: 2rem;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 7rem;
+    border-bottom: 3px solid #085895;
+    margin: 2rem auto 5rem;
+    max-width: 80%;
+    position: relative;
+    border-radius: 2px;
+  }
+  
+  .divider::before {
+    content: '';
+    position: absolute;
+    width: 30%;
+    height: 3px;
+    background-color: #FFB61D;
+    left: 0;
+    top: 0;
+    border-radius: 2px;
   }
 
-    body.no-scroll {
+  body.no-scroll {
     overflow: hidden;
   }
 
- 
+  /* Responsive Styles */
+  @media (max-width: 992px) {
+    .welcome-text {
+      font-size: 3rem;
+    }
+    
+    .komplek-text {
+      font-size: 2rem;
+    }
+  }
+
   @media (max-width: 768px) {
-
-
+    .hero-section::before {
+      width: 100%;
+      height: 40%;
+      border-radius: 0 0 50% 50%;
+    }
+    
+    .welcome-text {
+      font-size: 2.5rem;
+    }
+    
+    .komplek-text {
+      font-size: 1.8rem;
+    }
+    
+    .welcome-subtitle {
+      max-width: 100%;
+    }
 
     .parent-nav {
       flex-direction: column;
@@ -184,46 +387,226 @@ const nama = "Duta Bijaksana"
     .burgir {
       display: flex;
       position: fixed;
-      top: 3rem;
-      left: 1rem;
+      top: 1rem;
+      right: 1rem;
       z-index: 9999;
+      margin: 0;
+      transform: scale(1);
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    
+    .burgir:active {
+      transform: scale(0.9);
+      background-color: rgba(240, 240, 240, 0.95);
     }
 
     .links {
-      display: none; 
-      flex-direction: column;
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100vh;
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       z-index: 5;
       padding-top: 5rem;
+      border-radius: 0;
+      box-shadow: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-20px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                  visibility 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
     .links.is-active {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    
+    .nav-link {
+      font-size: 1.2rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                  color 0.3s ease;
+      will-change: opacity, transform;
+    }
+    
+    .links.is-active .nav-link {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .links.is-active .nav-link:nth-child(1) { transition-delay: 0.12s; }
+    .links.is-active .nav-link:nth-child(2) { transition-delay: 0.18s; }
+    .links.is-active .nav-link:nth-child(3) { transition-delay: 0.24s; }
+    .links.is-active .nav-link:nth-child(4) { transition-delay: 0.30s; }
+    
+    .links.is-active .nav-link:hover {
+      transform: translateY(-2px);
     }
   }
 
+  @media (max-width: 480px) {
+    .welcome-text {
+      font-size: 2rem;
+    }
+    
+    .komplek-text {
+      font-size: 1.5rem;
+    }
+    
+    .login-button {
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+    }
+  }
 </style>
 
 <script>
-
   document.addEventListener('DOMContentLoaded', () => {
     const burgerMenu = document.querySelector('.burgir');
     const navLinks = document.querySelector('.links');
     const body = document.body;
+    const navItems = document.querySelectorAll('.nav-link');
+
+    // Add animation delay to nav items for initial page load
+    navItems.forEach((item, index) => {
+      item.setAttribute('data-aos', 'fade-down');
+      item.setAttribute('data-aos-delay', `${(index + 1) * 100}`);
+    });
+
+    // Enhanced ripple effect for nav links
+    function createRipple(event) {
+      const button = event.currentTarget;
+      const ripple = document.createElement('span');
+      const rect = button.getBoundingClientRect();
+      
+      const diameter = Math.max(rect.width, rect.height) * 2; // Larger ripple for better coverage
+      const radius = diameter / 2;
+      
+      ripple.style.width = ripple.style.height = `${diameter}px`;
+      ripple.style.left = `${event.clientX - rect.left - radius}px`;
+      ripple.style.top = `${event.clientY - rect.top - radius}px`;
+      ripple.classList.add('ripple');
+      
+      const rippleContainer = button.querySelector('.ripple-container');
+      if (!rippleContainer) {
+        const container = document.createElement('div');
+        container.classList.add('ripple-container');
+        button.appendChild(container);
+        container.appendChild(ripple);
+      } else {
+        // Remove existing ripples before adding new one for cleaner effect
+        const existingRipples = rippleContainer.querySelectorAll('.ripple');
+        if (existingRipples.length > 0) {
+          existingRipples.forEach(r => r.remove());
+        }
+        rippleContainer.appendChild(ripple);
+      }
+      
+      setTimeout(() => {
+        ripple.remove();
+      }, 800);
+    }
+
+    // Add ripple effect to all nav links
+    navItems.forEach(item => {
+      item.addEventListener('click', createRipple);
+    });
 
     if (burgerMenu && navLinks) {
       burgerMenu.addEventListener('click', () => {
         navLinks.classList.toggle('is-active');
         burgerMenu.classList.toggle('is-active');
-        body.classList.toggle('no-scroll'); 
+        body.classList.toggle('no-scroll');
+        
+        // Reset and re-trigger animations when menu opens
+        if (navLinks.classList.contains('is-active')) {
+          setTimeout(() => {
+            AOS.refresh();
+          }, 150); // Increased delay for smoother animation
+        }
       });
+    }
+    
+    // Close mobile menu when clicking on a link
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        if (window.innerWidth <= 768 && navLinks.classList.contains('is-active')) {
+          // Add a small delay before closing the menu for better UX
+          setTimeout(() => {
+            navLinks.classList.remove('is-active');
+            burgerMenu.classList.remove('is-active');
+            body.classList.remove('no-scroll');
+          }, 400); // Increased delay for smoother transition
+        }
+      });
+    });
+    
+    // Add scroll effect to header with smooth transition and debounce
+    const header = document.querySelector('.main-header');
+    let lastScrollTop = 0;
+    let scrollTimer;
+    const scrollThreshold = 30; // Lower threshold for faster response
+    
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      
+      // Clear the previous timer for better performance
+      clearTimeout(scrollTimer);
+      
+      // Set a new timer with debounce
+      scrollTimer = setTimeout(() => {
+        if (scrollTop > scrollThreshold) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+      }, 30); // Faster response time
+      
+      lastScrollTop = scrollTop;
+    });
+    
+    // Enhanced touch swipe to close menu with better sensitivity
+    let touchStartX = 0;
+    let touchStartY = 0; // Track vertical movement too
+    let touchEndY = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true }); // Use passive for better performance
+    
+    document.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
+      handleSwipe();
+    }, { passive: true });
+    
+    function handleSwipe() {
+      const horizontalDistance = touchStartX - touchEndX;
+      const verticalDistance = Math.abs(touchStartY - touchEndY);
+      
+      // Only trigger if horizontal swipe is significant and not a diagonal swipe
+      if (navLinks.classList.contains('is-active') && 
+          horizontalDistance > 40 && 
+          verticalDistance < horizontalDistance) {
+        navLinks.classList.remove('is-active');
+        burgerMenu.classList.remove('is-active');
+        body.classList.remove('no-scroll');
+      }
     }
   });
 </script>

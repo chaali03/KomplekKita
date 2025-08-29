@@ -28,9 +28,9 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           <i class="fas fa-print"></i>
           <span>Cetak</span>
         </button>
-        <button class="action-btn secondary" id="btn-export-csv">
-          <i class="fas fa-file-csv"></i>
-          <span>Export CSV</span>
+        <button class="action-btn secondary" id="btn-export">
+          <i class="fas fa-file-export"></i>
+          <span>Ekspor</span>
         </button>
         <button class="action-btn primary" id="btn-open-drawer">
           <i class="fas fa-plus-circle"></i>
@@ -44,37 +44,48 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
   <section class="card-container dues-section">
     <div class="card-header">
       <h3><i class="fas fa-coins"></i> Iuran Bulanan</h3>
+      <p class="card-subtext">Atur nominal dan periode iuran. Hanya bulan berjalan yang dapat disimpan.</p>
     </div>
     <div class="card-content">
       <div class="dues-config">
         <div class="input-group">
           <label>Nominal Iuran/Bulan</label>
-          <input type="number" id="iuran-amount" min="0" step="1000" placeholder="0" class="form-input" />
+          <div class="input-affix">
+            <span class="affix prefix">Rp</span>
+            <input type="number" id="iuran-amount" min="0" step="1000" placeholder="0" class="form-input" />
+            <span class="affix suffix">/bulan</span>
+          </div>
+          <div class="help-text">Contoh: 200000 • masukkan angka tanpa titik/koma</div>
         </div>
         <div class="input-group">
           <label>Periode Bulan</label>
-          <input type="month" id="iuran-month" class="form-input" />
+          <div class="field-pill">
+            <button type="button" class="icon-btn calendar-btn" aria-label="Pilih bulan">
+              <i class="far fa-calendar-alt"></i>
+            </button>
+            <input type="month" id="iuran-month" class="month-input" />
+          </div>
+          <div class="help-text">Hanya bulan berjalan yang bisa disimpan</div>
         </div>
         <div class="input-group">
           <label aria-hidden="true">&nbsp;</label>
-          <button class="action-btn secondary" id="iuran-save">
+          <button class="action-btn primary" id="iuran-save">
             <i class="fas fa-save"></i>
             <span>Simpan</span>
           </button>
         </div>
       </div>
+      <div class="section-divider" aria-hidden="true"></div>
       <div class="dues-grid">
         <div class="dues-column">
           <h4 class="column-title success">
-            <i class="fas fa-check-circle"></i> 
-            Pembayaran Minggu Ini
+            <span class="pill success"><i class="fas fa-check-circle"></i> Pembayaran Bulan Ini</span>
           </h4>
           <div id="iuran-paid" class="status-grid"></div>
         </div>
         <div class="dues-column">
           <h4 class="column-title warning">
-            <i class="fas fa-clock"></i> 
-            Menunda (Belum Bayar)
+            <span class="pill warning"><i class="fas fa-clock"></i> Menunda (Belum Bayar)</span>
           </h4>
           <div id="iuran-pending" class="status-grid"></div>
         </div>
@@ -91,7 +102,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           <div class="chip-container">
             <button class="filter-chip active" data-preset="bulan-ini">Bulan ini</button>
             <button class="filter-chip" data-preset="bulan-lalu">Bulan lalu</button>
-            <button class="filter-chip" data-preset="30-hari">30 Hari</button>
+            <button class="filter-chip" data-preset="qtd">QTD</button>
             <button class="filter-chip" data-preset="ytd">YTD</button>
             <button class="filter-chip" data-preset="semua">Semua</button>
           </div>
@@ -253,17 +264,6 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
   <!-- Analysis Section -->
   <section class="analysis-grid">
-    <div class="card-container analysis-card">
-      <div class="card-header">
-        <h3><i class="fas fa-triangle-exclamation"></i> Deteksi Anomali</h3>
-      </div>
-      <div class="card-content">
-        <ul class="anomaly-list" id="anom-list">
-          <li class="loading-state">Menganalisis data transaksi...</li>
-        </ul>
-      </div>
-    </div>
-
     <div class="card-container reports-card">
       <div class="card-header">
         <h3><i class="fas fa-folder-open"></i> Riwayat Laporan</h3>
@@ -275,15 +275,16 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
               <tr>
                 <th>Laporan</th>
                 <th>Periode</th>
-                <th class="text-right">Saldo</th>
-                <th class="text-right">Masuk</th>
-                <th class="text-right">Keluar</th>
+                <th>Tipe</th>
+                <th>Keterangan</th>
+                <th class="text-right">Jumlah</th>
+                <th class="text-right">Saldo Sekarang</th>
                 <th>Aksi</th>
               </tr>
             </thead>
             <tbody id="report-tbody">
               <tr class="empty-row">
-                <td colspan="6" class="empty-state">
+                <td colspan="7" class="empty-state">
                   <div class="empty-content">
                     <i class="fas fa-inbox"></i>
                     <p>Belum ada laporan tersimpan</p>
@@ -312,110 +313,73 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     </div>
   </section>
 
+  <!-- Anomaly Detection (moved) -->
+  <section class="anomaly-section">
+    <div class="card-container">
+      <div class="card-header">
+        <h3><i class="fas fa-triangle-exclamation"></i> Deteksi Anomali</h3>
+      </div>
+      <div class="card-content">
+        <ul class="anomaly-list" id="anom-list">
+          <li class="loading-state">Menganalisis data transaksi...</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <!-- Report Creation Drawer -->
   <aside class="drawer" id="drawer">
     <div class="drawer-header">
-      <h3><i class="fas fa-file-signature"></i> Buat Laporan Baru</h3>
+      <h3><i class="fas fa-file-alt"></i> Buat Laporan</h3>
       <button class="close-btn" id="btn-close-drawer">
         <i class="fas fa-times"></i>
       </button>
     </div>
     <form id="form-report" class="drawer-content">
       <div class="form-section">
-        <div class="input-group">
-          <label for="rep-title">Judul Laporan</label>
-          <input id="rep-title" type="text" placeholder="Contoh: Laporan Keuangan Agustus 2025" required class="form-input" />
-          <div class="error-message" id="err-title"></div>
-        </div>
-
-        <div class="form-row">
-          <div class="input-group">
-            <label for="rep-start">Periode Dari</label>
-            <input id="rep-start" type="date" required class="form-input" />
-            <div class="error-message" id="err-start"></div>
-          </div>
-          <div class="input-group">
-            <label for="rep-end">Periode Sampai</label>
-            <input id="rep-end" type="date" required class="form-input" />
-            <div class="error-message" id="err-end"></div>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="input-group">
-            <label for="rep-type">Tipe Laporan</label>
-            <select id="rep-type" class="form-input">
-              <option value="Bulanan">Bulanan</option>
-              <option value="Triwulan">Triwulan</option>
-              <option value="Tahunan">Tahunan</option>
-              <option value="Khusus">Khusus</option>
-            </select>
-          </div>
-          <div class="input-group">
-            <label for="rep-source">Sumber Dana</label>
-            <select id="rep-source" class="form-input">
-              <option value="Kas">Kas</option>
-              <option value="Bank">Bank</option>
-              <option value="Gabungan">Gabungan</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="input-group">
-            <label for="rep-owner">Penyusun Laporan</label>
-            <input id="rep-owner" type="text" placeholder="Nama penyusun" class="form-input" />
-          </div>
-          <div class="input-group">
-            <label for="rep-ref">Nomor Referensi</label>
-            <input id="rep-ref" type="text" placeholder="No. referensi dokumen" class="form-input" />
-          </div>
-        </div>
-
-        <div class="input-group">
-          <label for="rep-tags">Tag Laporan</label>
-          <input id="rep-tags" type="text" placeholder="Pisahkan dengan koma: audit, triwulan-3, review" class="form-input" />
-        </div>
-
-        <div class="checkbox-group">
-          <input id="rep-include-zero" type="checkbox" />
-          <label for="rep-include-zero">Tampilkan transaksi bernilai 0</label>
-        </div>
-
-        <div class="input-group">
-          <label for="rep-note">Catatan Tambahan</label>
-          <textarea id="rep-note" rows="3" placeholder="Tambahkan catatan atau penjelasan..." class="form-input"></textarea>
-        </div>
-      </div>
-
-      <div class="form-divider"></div>
-
-      <div class="adjustments-section">
         <div class="section-header">
-          <h4><i class="fas fa-sliders"></i> Penyesuaian Manual</h4>
-          <button type="button" class="action-btn secondary" id="btn-add-adj">
-            <i class="fas fa-plus"></i>
-            <span>Tambah Penyesuaian</span>
-          </button>
+          <h4><i class="fas fa-receipt"></i> Data Laporan (Gaya Transaksi)</h4>
         </div>
-        <div id="adj-list" class="adjustments-list"></div>
-      </div>
 
-      <div class="preview-section" id="rep-preview">
-        <h4>Ringkasan Laporan</h4>
-        <div class="preview-stats">
-          <div class="stat-item">
-            <span class="label">Pemasukan:</span>
-            <span class="value" id="pv-in">Rp0</span>
+        <div class="form-row">
+          <div class="input-group">
+            <label for="tx-type">Tipe</label>
+            <select id="tx-type" class="form-input">
+              <option value="Masuk">Pemasukan</option>
+              <option value="Keluar">Pengeluaran</option>
+              <option value="Masuk">Transaksi</option>
+            </select>
           </div>
-          <div class="stat-item">
-            <span class="label">Pengeluaran:</span>
-            <span class="value" id="pv-out">Rp0</span>
+          <div class="input-group">
+            <label for="tx-date">Tanggal</label>
+            <input id="tx-date" type="date" class="form-input" />
           </div>
-          <div class="stat-item">
-            <span class="label">Saldo Akhir:</span>
-            <span class="value" id="pv-bal">Rp0</span>
+        </div>
+
+        <div class="form-row">
+          <div class="input-group">
+            <label for="tx-category">Kategori</label>
+            <select id="tx-category" class="form-input">
+              <option value="Iuran">Iuran</option>
+              <option value="Keamanan">Keamanan</option>
+              <option value="Donasi">Donasi</option>
+              <option value="Donatur">Donatur</option>
+              <option value="Lingkungan">Lingkungan</option>
+              <option value="Kebersihan">Kebersihan</option>
+              <option value="Sosial">Sosial</option>
+              <option value="Fasilitas">Fasilitas</option>
+              <option value="Administrasi">Administrasi</option>
+            </select>
           </div>
+          <div class="input-group">
+            <label for="tx-amount">Jumlah (Rp)</label>
+            <input id="tx-amount" type="number" min="0" step="1000" placeholder="0" class="form-input" />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="tx-desc">Keterangan</label>
+          <input id="tx-desc" type="text" placeholder="Contoh: Iuran Bulanan / Pembelian ATK" class="form-input" />
         </div>
       </div>
 
@@ -432,6 +396,44 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
   <!-- Toast Container -->
   <div id="toast-wrap" class="toast-container"></div>
+
+  <!-- Export Modal -->
+  <div id="export-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="export-title">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="export-title"><i class="fas fa-file-export"></i> Ekspor Laporan</h3>
+        <button class="btn soft pressable" id="btn-close-export" aria-label="Tutup"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Format</label>
+          <div class="chip-group" role="group" aria-label="Pilih format ekspor">
+            <button class="chip active" data-format="xlsx"><i class="fas fa-file-excel"></i> Excel (.xlsx)</button>
+            <button class="chip" data-format="pdf"><i class="fas fa-file-pdf"></i> PDF</button>
+            <button class="chip" data-format="doc"><i class="fas fa-file-word"></i> Word (.doc)</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Pemisahan</label>
+          <select id="export-split">
+            <option value="none" selected>Satu tabel (gabung)</option>
+            <option value="type">Pisah per Tipe (Masuk/Keluar)</option>
+            <option value="category">Pisah per Kategori</option>
+          </select>
+        </div>
+        <div class="template-actions">
+          <button class="btn soft pressable" id="btn-template-excel"><i class="fas fa-table"></i><span>Template Excel</span></button>
+          <button class="btn soft pressable" id="btn-template-word"><i class="fas fa-file-word"></i><span>Template Word</span></button>
+        </div>
+        <div id="export-summary" class="muted" style="margin-top:10px">Data mengikuti filter saat ini.</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn soft pressable" id="btn-cancel-export"><i class="fas fa-ban"></i><span>Batal</span></button>
+        <button class="btn primary pressable" id="btn-do-export"><i class="fas fa-download"></i><span>Unduh</span></button>
+      </div>
+    </div>
+  </div>
 
   <style>
     * {
@@ -529,7 +531,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       /* Z-Index Scale */
       --z-dropdown: 10;
       --z-overlay: 20;
-      --z-modal: 30;
+      --z-modal: 1000;
       --z-toast: 50;
     }
 
@@ -642,6 +644,23 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       color: var(--text-primary);
     }
 
+    /* Dues section header layout: title on the left, description on the right */
+    .dues-section .card-header {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: var(--space-6);
+      align-items: center;
+    }
+    .dues-section .card-header h3 { margin: 0; }
+    .dues-section .card-header .card-subtext {
+      margin: 0;
+      color: var(--text-secondary);
+      line-height: var(--line-height-normal);
+    }
+    @media (max-width: 640px) {
+      .dues-section .card-header { grid-template-columns: 1fr; row-gap: var(--space-2); }
+    }
+
     .card-content {
       padding: var(--space-6);
     }
@@ -688,6 +707,104 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       outline-offset: 2px;
     }
 
+    /* Fancy buttons for iuran actions */
+    .btn-pay {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--success-500), var(--success-600));
+      color: #fff;
+      border: none;
+      box-shadow: 0 6px 16px rgba(34,197,94,0.25);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: .2px;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-pay i { font-size: 12px; }
+    .btn-pay:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(34,197,94,0.35); }
+    .btn-pay:active { transform: translateY(0); }
+    .btn-pay:disabled { opacity: .75; cursor: not-allowed; box-shadow: none; }
+
+    .btn-unpay {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--warning-500), var(--warning-600));
+      color: #fff;
+      border: none;
+      box-shadow: 0 6px 16px rgba(245,158,11,0.25);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: .2px;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-unpay i { font-size: 12px; }
+    .btn-unpay:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(245,158,11,0.35); }
+    .btn-unpay:active { transform: translateY(0); }
+    .btn-unpay:disabled { opacity: .75; cursor: not-allowed; box-shadow: none; }
+
+    /* Ripple effect for action buttons */
+    .btn-pay .ripple, .btn-unpay .ripple {
+      position: absolute;
+      width: 12px; height: 12px;
+      pointer-events: none;
+      border-radius: 999px;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.5);
+      animation: ripple-fade 450ms ease-out;
+    }
+    @keyframes ripple-fade {
+      from { opacity: .6; transform: translate(-50%, -50%) scale(1); }
+      to   { opacity: 0; transform: translate(-50%, -50%) scale(14); }
+    }
+
+    /* Month navigation controls */
+    .month-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+    }
+    .btn-month {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      background: var(--surface-tertiary);
+      color: var(--text-primary);
+      transition: all var(--transition-fast);
+    }
+    .btn-month:hover { background: var(--primary-50); border-color: var(--primary-500); color: var(--primary-700); }
+    .btn-month:active { transform: translateY(1px); }
+
+    /* Status pills layout */
+    .status-grid .status-pill{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      background: linear-gradient(180deg, #fff, var(--surface-secondary));
+    }
+    .status-grid .pill-name{ font-weight: 600; color: var(--text-primary); }
+
     /* Form Components */
     .input-group {
       display: flex;
@@ -718,10 +835,38 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
     }
 
+    /* Input with prefix/suffix (currency) */
+    .input-affix {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-affix .form-input {
+      width: 100%;
+      padding-left: 56px; /* space for Rp */
+      padding-right: 72px; /* space for /bulan */
+    }
+    .affix {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--surface);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: var(--radius-lg);
+      font-weight: 700;
+      font-size: var(--font-size-xs);
+      pointer-events: none;
+    }
+    .affix.prefix { left: 6px; }
+    .affix.suffix { right: 6px; }
+
     .search-input {
       position: relative;
       display: flex;
       align-items: center;
+      width: 100%;
     }
 
     .search-input i {
@@ -734,6 +879,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     .search-input .form-input {
       padding-left: calc(var(--space-4) + var(--space-6));
+      width: 100%;
     }
 
     .checkbox-group {
@@ -754,6 +900,12 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       font-weight: 500;
     }
 
+    .help-text {
+      margin-top: var(--space-1);
+      color: var(--text-secondary);
+      font-size: var(--font-size-xs);
+    }
+
     /* Filter Section */
     .filter-section {
       margin-bottom: var(--space-8);
@@ -762,9 +914,10 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     .filter-toolbar {
       display: flex;
       justify-content: space-between;
-      align-items: end;
+      align-items: flex-end;
       gap: var(--space-6);
       padding: var(--space-6);
+      flex-wrap: wrap; /* allow wrapping to avoid collisions */
     }
 
     .filter-grid {
@@ -779,6 +932,14 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       display: flex;
       gap: var(--space-2);
       flex-wrap: wrap;
+    }
+
+    .filter-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex: 0 0 auto; /* don't shrink */
+      margin-left: auto; /* keep to the right on wide screens */
     }
 
     .filter-chip {
@@ -937,6 +1098,10 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       gap: var(--space-6);
       margin-bottom: var(--space-8);
     }
+    /* Make the report history card occupy full width */
+    .analysis-grid .reports-card {
+      grid-column: 1 / -1;
+    }
 
     .anomaly-list {
       list-style: none;
@@ -1050,8 +1215,57 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       z-index: 1;
     }
 
+    /* Table polish: consistent vertical alignment and spacing */
+    .data-table th,
+    .data-table td {
+      vertical-align: middle;
+    }
+    .data-table td:first-child .cell-main {
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+    .data-table td:first-child .cell-sub {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .data-table td:first-child .cell-sub.quote {
+      margin-top: 2px;
+      color: #334155;
+      font-style: italic;
+    }
+    .data-table td:first-child .cell-hint {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .data-table tbody tr[data-active-row="true"] {
+      background-color: rgba(59, 130, 246, 0.05);
+    }
+    /* Make action cell content aligned nicely */
+    .data-table td:last-child {
+      white-space: nowrap;
+    }
+    .btn.small { padding: 6px 10px; font-size: 12px; }
+
+    /* Precise numeric alignment (left-aligned per request) */
+    .data-table td.num-col,
     .data-table th.text-right {
-      text-align: right;
+      text-align: left;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums lining-nums;
+      font-feature-settings: 'tnum' 1, 'lnum' 1;
+    }
+    .data-table td.num-col .amount {
+      display: inline-block;
+      font-variant-numeric: tabular-nums lining-nums;
+      font-feature-settings: 'tnum' 1, 'lnum' 1;
+      letter-spacing: 0;
+    }
+
+    .data-table th.text-right {
+      text-align: left;
     }
 
     .data-table td {
@@ -1085,12 +1299,136 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       margin-bottom: var(--space-8);
     }
 
+    /* Dues card header polish */
+    .dues-section .card-header {
+      background: linear-gradient(180deg, var(--surface-secondary), transparent);
+    }
+    .dues-section .card-header i {
+      color: var(--primary-500);
+    }
+
+    /* Divider between config and lists */
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: var(--space-4) 0 var(--space-6);
+      border-radius: 1px;
+    }
+
     .dues-config {
       display: grid;
       grid-template-columns: 1fr 1fr auto;
       gap: var(--space-4);
       align-items: end;
       margin-bottom: var(--space-6);
+      background: var(--surface-secondary);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-4);
+    }
+
+    /* Clean pill month field */
+    .field-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+    }
+    .field-pill:focus-within {
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 4px rgb(59 130 246 / 0.12);
+    }
+    .field-pill i { color: var(--text-tertiary); }
+    .field-pill .chevron { margin-left: auto; }
+    .field-pill .month-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      padding: 6px 0;
+      color: var(--text-primary);
+      font-weight: 600;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+    /* Hide native indicator but keep it clickable */
+    .field-pill .month-input::-webkit-calendar-picker-indicator {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .field-pill .month-input::-webkit-inner-spin-button,
+    .field-pill .month-input::-webkit-clear-button { display: none; }
+
+    /* Icon button (calendar) */
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-secondary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .icon-btn:hover { background: var(--surface); }
+    .icon-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgb(59 130 246 / 0.3); border-color: var(--primary-500); }
+    .calendar-btn i { pointer-events: none; }
+    /* Month input with left calendar icon */
+    .input-with-icon {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-with-icon i {
+      position: absolute;
+      left: 12px;
+      color: var(--text-tertiary);
+      pointer-events: none;
+    }
+    .input-with-icon .month-input {
+      padding-left: 40px;
+    }
+    /* Improve native month picker hit area */
+    .month-input::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: 0.85;
+    }
+
+    /* Primary button polish (scoped) */
+    .dues-section .action-btn.primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: linear-gradient(180deg, var(--primary-500), var(--primary-600));
+      color: #fff;
+      border: 1px solid var(--primary-600);
+      border-radius: 10px;
+      box-shadow: 0 6px 14px rgba(29, 78, 216, 0.25);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+    }
+    .dues-section .action-btn.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(29, 78, 216, 0.3);
+      filter: brightness(1.02);
+    }
+    .dues-section .action-btn.primary:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 10px rgba(29, 78, 216, 0.22);
     }
 
     .dues-grid {
@@ -1103,6 +1441,47 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       display: flex;
       flex-direction: column;
       gap: var(--space-4);
+    }
+
+    /* Dues column title badges */
+    .dues-column .column-title.success i { color: var(--success-600); }
+    .dues-column .column-title.warning i { color: var(--warning-600); }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--surface-secondary);
+      color: var(--text-secondary);
+    }
+    .pill.success {
+      background: var(--success-50, #f0fdf4);
+      border-color: var(--success-200, #bbf7d0);
+      color: var(--success-700, #15803d);
+    }
+    .pill.warning {
+      background: var(--warning-50, #fffbeb);
+      border-color: var(--warning-200, #fde68a);
+      color: var(--warning-700, #b45309);
+    }
+
+    /* Empty state for iuran lists */
+    #iuran-paid.status-grid:empty::before,
+    #iuran-pending.status-grid:empty::before {
+      content: 'Belum ada data untuk periode ini';
+      display: block;
+      text-align: center;
+      padding: calc(var(--space-6) + 4px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      color: var(--text-secondary);
+      background: linear-gradient(180deg, var(--surface), var(--surface-secondary));
+      text-align: center;
+      font-weight: 600;
     }
 
     .column-title {
@@ -1154,6 +1533,106 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     .pill-status.warning {
       color: var(--warning-600);
     }
+
+    /* Pending Dues — Enhanced UI */
+    /* Column differentiation */
+    .dues-column .column-title.warning {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    /* Make pending list visually distinct without changing markup */
+    #iuran-pending.status-grid {
+      background: linear-gradient(180deg, var(--warning-50), transparent 60%);
+      border: 1px dashed var(--warning-100);
+      border-radius: var(--radius-xl);
+      padding: var(--space-4);
+    }
+    /* Card styling for each pending resident */
+    #iuran-pending .status-pill {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--warning-100);
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+      overflow: hidden;
+    }
+    /* Left accent bar */
+    #iuran-pending .status-pill::before {
+      content: '';
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 6px;
+      background: linear-gradient(180deg, var(--warning-500), var(--warning-600));
+      opacity: 0.9;
+    }
+    /* Soft background glow */
+    #iuran-pending .status-pill::after {
+      content: '';
+      position: absolute;
+      top: -20%;
+      right: -20%;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(closest-side, rgba(245, 158, 11, 0.1), transparent);
+      pointer-events: none;
+    }
+    /* Name styling */
+    #iuran-pending .pill-name {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    /* Action button emphasis for pending */
+    #iuran-pending .btn-pay {
+      background: linear-gradient(135deg, var(--success-500), var(--success-600));
+      color: #fff;
+      border: none;
+      box-shadow: 0 6px 16px rgba(34,197,94,0.25);
+    }
+    #iuran-pending .btn-pay:hover { box-shadow: 0 10px 22px rgba(34,197,94,0.35); }
+    /* Hover interactions */
+    #iuran-pending .status-pill:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      background: linear-gradient(0deg, var(--surface), var(--warning-50));
+    }
+    /* Paid list keeps neutral styling */
+    #iuran-paid .status-pill {
+      border-left: 6px solid var(--success-500);
+    }
+
+    /* Dues actions — button polish */
+    .dues-section .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: calc(var(--space-2) + 2px) var(--space-4);
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      line-height: 1;
+      transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+      box-shadow: 0 0 0 0 rgba(0,0,0,0);
+    }
+    .dues-section .action-btn i {
+      font-size: 0.95em;
+    }
+    .dues-section .action-btn:focus-visible {
+      outline: 2px solid var(--primary-400);
+      outline-offset: 2px;
+    }
+    .dues-section .action-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Paid list: undo to pending ("Tandai Belum Bayar") */
+    #iuran-paid .btn-unpay {
+      background: linear-gradient(135deg, var(--warning-500), var(--warning-600));
+      color: #fff;
+      border: none;
+      box-shadow: 0 6px 16px rgba(245,158,11,0.25);
+    }
+    #iuran-paid .btn-unpay:hover { box-shadow: 0 10px 22px rgba(245,158,11,0.35); }
 
     /* Insights Section */
     .insights-section {
@@ -1466,6 +1945,31 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       color: var(--text-primary);
     }
 
+    /* Simple Modal */
+    .modal { position: fixed; inset: 0; display: none; z-index: var(--z-modal); }
+    .modal.show { display: block; }
+    .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); }
+    .modal-card { position: relative; margin: 8vh auto; width: min(640px, 94vw); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-2xl); box-shadow: var(--shadow-xl); overflow: hidden; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--border); background: var(--surface-secondary); }
+    .modal-body { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-5); }
+    .modal-footer { display: flex; justify-content: flex-end; gap: var(--space-3); padding: var(--space-5) var(--space-6); border-top: 1px solid var(--border); }
+    .chip-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+    .chip.active { background: var(--primary-500); color: #fff; border-color: var(--primary-500); }
+    .template-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* Buttons (match transaksi page) */
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; padding:8px 14px;
+      border-radius:999px; border:1px solid var(--outline); font-weight:900;
+      background: var(--surface-2); color: var(--text); box-shadow: 0 6px 18px rgba(0,0,0,.06);
+      white-space: nowrap;
+    }
+    .btn.primary{ background:#2563eb; color:#fff; border-color:#1d4ed8; box-shadow:0 10px 22px rgba(37,99,235,.25); }
+    .btn.soft{ background: var(--surface-2); color: var(--text); }
+    .btn.ghost{ background: transparent; }
+    .pressable:active{ transform: translateY(1px); }
+
     @keyframes slideIn {
       from {
         transform: translateX(100%);
@@ -1526,6 +2030,12 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       .filter-toolbar {
         flex-direction: column;
         align-items: stretch;
+      }
+      
+      .filter-actions {
+        width: 100%;
+        justify-content: flex-end;
+        margin-left: 0;
       }
       
       .charts-grid,
