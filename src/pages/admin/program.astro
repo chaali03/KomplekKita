@@ -54,7 +54,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       <div class="input-group">
         <label for="image-program">Gambar (opsional)</label>
         <input id="image-program" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="input-field" />
-        <small style="color:#64748b">Maks 2MB. Format: PNG, JPG, WEBP, SVG.</small>
+        <small style="color:#64748b">Maks 2MB, akan di-resize maksimal 800×800 px. Format: PNG, JPG, WEBP, SVG.</small>
       </div>
 
       <div class="input-group full">
@@ -125,7 +125,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         <label class="pm-field">
           <span>Gambar (opsional)</span>
           <input id="pm-image" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="input-field" />
-          <small style="color:#64748b">Maks 2MB. Format: PNG, JPG, WEBP, SVG.</small>
+          <small style="color:#64748b">Maks 2MB, akan di-resize maksimal 800×800 px. Format: PNG, JPG, WEBP, SVG.</small>
         </label>
         <label class="pm-field full">
           <span>Alamat Link (WA atau QRIS) - Wajib</span>
@@ -160,6 +160,23 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     </div>
   </div>
 </div>
+
+<!-- Image Viewer Modal -->
+<div class="pm-modal" id="program-image-modal" aria-hidden="true">
+  <div class="pm-modal__overlay" data-close></div>
+  <div class="pm-modal__content img-viewer" role="dialog" aria-modal="true" aria-labelledby="pimg-title">
+    <div class="pm-modal__header">
+      <h3 id="pimg-title">Gambar Program</h3>
+      <button class="pm-btn icon" data-close aria-label="Tutup">✕</button>
+    </div>
+    <div class="img-wrap">
+      <img id="pimg-src" alt="Gambar Program" />
+    </div>
+    <div class="pm-actions">
+      <button type="button" class="input-button light" data-close>Tutup</button>
+    </div>
+  </div>
+  </div>
 
 <!-- Informasi sections removed as requested -->
 
@@ -547,6 +564,18 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     font-weight: 700;
   }
 
+  /* Thumbnail for program image */
+  .program-thumb{
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    cursor: zoom-in;
+    background:#f8fafc;
+  }
+
   .chip{
     display:inline-flex;
     align-items:center;
@@ -729,6 +758,11 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
   .input-button.secondary:hover{ background:#e3f0ff; }
   .input-button.light:hover{ background:#e7f0fb; }
   .input-button.danger:hover{ background:#ffe2df; }
+
+  /* Image viewer modal */
+  .pm-modal__content.img-viewer{ width: min(860px, 96vw); }
+  .pm-modal__content.img-viewer .img-wrap{ display:grid; place-items:center; padding:8px; }
+  .pm-modal__content.img-viewer img{ max-width:100%; max-height: 70vh; border-radius:12px; border:1px solid #e2e8f0; box-shadow: var(--shadow-md); background:#fff; }
 </style>
 
 <!-- Global styles for dynamically injected elements -->
@@ -772,11 +806,13 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     .program-actions {
       gap: 0.4rem;
     }
+    .program-thumb{ width: 36px; height: 36px; border-radius:6px; }
     .input-button.sm {
       height: 32px;
       min-width: auto;
       padding: 0 10px !important;
       font-size: 0.8rem;
+      border-radius: 6px;
     }
     .close-icon {
       width: 28px;
@@ -809,6 +845,8 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
   const pmImage = $('#pm-image');
   const confirmModal = $('#program-confirm');
   const confirmDeleteBtn = $('#pc-delete');
+  const imgModal = $('#program-image-modal');
+  const imgModalImg = $('#pimg-src');
 
   // Live auto-detect when typing URL (moved from <style> to <script>)
   $('#link-url')?.addEventListener('input', (e) => {
@@ -846,6 +884,48 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     const okTypes = new Set(['image/png','image/jpeg','image/webp','image/svg+xml']);
     const max = 2 * 1024 * 1024; // 2MB
     return okTypes.has(file.type) && file.size <= max;
+  }
+  async function processImageFile(file: File): Promise<string>{
+    // For SVG, return as-is
+    if (file.type === 'image/svg+xml'){
+      return await readFileAsDataURL(file);
+    }
+    // Resize raster images using canvas to max 800x800, compress to JPEG/WebP
+    const dataUrl = await readFileAsDataURL(file);
+    const img = new Image();
+    const maxW = 800, maxH = 800;
+    const quality = 0.85;
+    return await new Promise((resolve, reject) => {
+      img.onload = () => {
+        let { width, height } = img;
+        const ratio = Math.min(1, maxW / width, maxH / height);
+        const outW = Math.max(1, Math.round(width * ratio));
+        const outH = Math.max(1, Math.round(height * ratio));
+        if (ratio === 1){
+          // no resize needed
+          resolve(dataUrl);
+          return;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = outW; canvas.height = outH;
+        const ctx = canvas.getContext('2d');
+        if (!ctx){ resolve(dataUrl); return; }
+        ctx.drawImage(img, 0, 0, outW, outH);
+        // Prefer WebP if supported by browser, else JPEG
+        const targetType = 'image/webp';
+        try{
+          const out = canvas.toDataURL(targetType, quality);
+          resolve(out || dataUrl);
+        }catch(_){
+          try{
+            const out2 = canvas.toDataURL('image/jpeg', quality);
+            resolve(out2 || dataUrl);
+          }catch(__){ resolve(dataUrl); }
+        }
+      };
+      img.onerror = reject;
+      img.src = dataUrl;
+    });
   }
 
   const formatDate = (val: string): string => {
@@ -923,9 +1003,19 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         const nominalChip = item.nominal ? `<span class="chip">${formatIDR(item.nominal)}</span>` : '';
         const infoChip = item.info ? `<span class="chip" title="${item.info}">Info</span>` : '';
         const linkTypeChip = item.linkType ? `<span class="chip" title="${item.linkUrl || ''}">${String(item.linkType).toUpperCase()}</span>` : '';
-        name.innerHTML = `${item.desc || 'Tanpa Deskripsi'} ${nominalChip} ${infoChip} ${linkTypeChip}`;
+        const imageChip = item.image ? `<span class="chip" title="Ada gambar terlampir">IMG</span>` : '';
+        const descChip = item.desc ? `<span>${item.desc}</span>` : '';
+        name.innerHTML = `${nominalChip} ${infoChip} ${linkTypeChip} ${imageChip} ${descChip}`;
+        if (item.image){
+          const thumb = document.createElement('img');
+          thumb.className = 'program-thumb';
+          thumb.src = item.image;
+          thumb.alt = 'Gambar Program';
+          thumb.addEventListener('click', () => openImageModal(item.image));
+          name.insertAdjacentElement('afterbegin', thumb);
+        }
       } else {
-        const descChip = item.desc ? `<span class="chip" title="${item.desc}">Detail</span>` : '';
+        const descChip = item.desc ? `<span>${item.desc}</span>` : '';
         name.innerHTML = `${item.title || 'Tanpa Judul'} ${descChip}`;
       }
 
@@ -1028,7 +1118,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         return;
       }
       try{
-        imageData = await readFileAsDataURL(f);
+        imageData = await processImageFile(f);
       }catch{
         alert('Gagal membaca file gambar.');
         return;
@@ -1160,7 +1250,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         return;
       }
       try{
-        payload.image = await readFileAsDataURL(f2);
+        payload.image = await processImageFile(f2);
       }catch{
         alert('Gagal membaca file gambar.');
         return;
@@ -1226,4 +1316,18 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       setTimeout(()=> item.classList.remove('added'), 1200);
     }
   }
+
+  function openImageModal(src: string){
+    if (!imgModal || !imgModalImg) return;
+    (imgModalImg as HTMLImageElement).src = src;
+    imgModal.classList.add('show');
+    imgModal.setAttribute('aria-hidden','false');
+  }
+  function closeImageModal(){
+    if (!imgModal || !imgModalImg) return;
+    (imgModalImg as HTMLImageElement).src = '';
+    imgModal.classList.remove('show');
+    imgModal.setAttribute('aria-hidden','true');
+  }
+  imgModal?.addEventListener('click', (e) => { if (e.target?.closest?.('[data-close]')) closeImageModal(); });
 </script>

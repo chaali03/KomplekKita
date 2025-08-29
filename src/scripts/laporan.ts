@@ -2095,6 +2095,15 @@ btnDoExport?.addEventListener('click', async ()=>{
   closeExport();
 });
 
+function addAdminNotif(type: 'info'|'success'|'warning'|'error', title: string, message: string){
+  try {
+    const api = (window as any)?.KKNotif;
+    if (api && typeof api.add === 'function') {
+      api.add(type, title, message);
+    }
+  } catch {}
+}
+
 function handleReportSubmit(event: Event) {
   event.preventDefault();
   const inputTitle = (document.getElementById('rep-title') as HTMLInputElement | null)?.value?.trim() || '';
@@ -2210,6 +2219,7 @@ function handleReportSubmit(event: Event) {
   if (adjList) adjList.innerHTML = '';
   closeDrawer();
   showToast('Laporan berhasil dibuat dan disimpan', 'success');
+  try { addAdminNotif('info', 'Laporan Keuangan Baru', `Laporan "${title}" berhasil dibuat.`) } catch {}
 }
 
 // New: Handle transaction creation from the drawer form

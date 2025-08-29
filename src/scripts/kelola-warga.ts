@@ -94,6 +94,15 @@ const iconForFile = (type?: string | null): string => {
   return "fa-file";
 };
 
+// Safe notification hook shared with admin topbar
+type NotifType = 'info' | 'success' | 'warning';
+function addAdminNotif(type: NotifType, title: string, message: string): void {
+  try {
+    const api = (window as any).KKNotif;
+    if (api && typeof api.add === 'function') api.add(type, title, message);
+  } catch {}
+}
+
 // -------------------- Storage --------------------
 function load(): void {
   try {
@@ -610,6 +619,12 @@ function bindEvents(): void {
     persistRow();
     renderAll();
     toast(row.verified ? "Terverifikasi" : "Verifikasi dibatalkan", row.verified ? "success" : "info");
+    // Send admin notification
+    if (row.verified) {
+      addAdminNotif('success', 'Warga Terverifikasi', `Data ${row.nama || '-'} telah ditandai terverifikasi.`);
+    } else {
+      addAdminNotif('warning', 'Verifikasi Dibatalkan', `Status verifikasi untuk ${row.nama || '-'} dibatalkan.`);
+    }
   });
 
   // Delete row (open confirm modal)

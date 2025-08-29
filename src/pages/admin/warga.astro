@@ -1319,6 +1319,14 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       chartMap: new Map(), // id -> chart instance
     };
 
+    // Admin notification helper (safe wrapper around global KKNotif API)
+    function addAdminNotif(type, title, message){
+      try{
+        const api = window && window.KKNotif;
+        if(api && typeof api.add === 'function') api.add(type, title, message);
+      }catch(_){/* noop */}
+    }
+
     // Global Chart registry to avoid canvas reuse across navigations/rerenders
     ;(function initChartRegistry(){
       // plain JS (no TS casts in this file)
@@ -1475,6 +1483,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       if(!form) return;
       if(!validateForm(form)) return;
 
+      const isUpdate = Boolean(state.editingId);
       const data = serializeForm(form);
       const now = Date.now();
 
@@ -1513,6 +1522,23 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       save();
       renderTable();
       if(window.Chart){ renderCharts(); }
+
+      // Send admin notification and dispatch event for new registrations
+      if(!isUpdate){
+        addAdminNotif('info', 'Pendaftaran Warga Baru', `Warga ${rec.nama || '-'} berhasil didaftarkan.`);
+        
+        // Dispatch custom event for real-time notification
+        window.dispatchEvent(new CustomEvent('kk-new-resident', {
+          detail: {
+            name: rec.nama,
+            id: rec.id,
+            address: rec.alamat,
+            rt: rec.rt,
+            rw: rec.rw,
+            time: new Date().toISOString()
+          }
+        }));
+      }
 
       // Close dialog and reset
       try {
@@ -1930,6 +1956,9 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       if(!header){ header = document.createElement('div'); header.className = 'preview-header'; preview.prepend(header); }
       let actions = header.querySelector('.preview-actions');
       if(!actions){ actions = document.createElement('div'); actions.className = 'preview-actions'; header.appendChild(actions); }
+      
+      // Clear existing actions to avoid duplicates
+      actions.innerHTML = '';
 
       // Build buttons if not present
       if(!actions.querySelector('#btnWargaChange')){
@@ -1981,6 +2010,78 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         btnCancel.addEventListener('click', resetWargaImport);
         actions.appendChild(btnCancel);
       }
+      // Add Save button
+      const btnSave = document.createElement('button');
+      btnSave.type = 'button';
+      btnSave.id = 'btnWargaSave';
+      btnSave.className = 'action-button is-primary';
+      btnSave.setAttribute('aria-label', 'Simpan data warga');
+      btnSave.innerHTML = '<i class="fas fa-save"></i><span>Simpan</span>';
+      // Hard inline styles
+      btnSave.style.whiteSpace = 'nowrap';
+      btnSave.style.display = 'inline-flex';
+      btnSave.style.alignItems = 'center';
+      btnSave.style.justifyContent = 'center';
+      btnSave.style.marginRight = '20px';
+      btnSave.addEventListener('click', async () => {
+        try {
+          const previewTable = document.querySelector('#wargaTable tbody');
+          const rows = Array.from(previewTable.querySelectorAll('tr')).map(row => ({
+            Nama: row.cells[1]?.textContent || '',
+            NIK: row.cells[2]?.textContent || '',
+            Telepon: row.cells[3]?.textContent || '',
+            Alamat: row.cells[4]?.textContent || '',
+            Blok: row.cells[5]?.textContent || '',
+            NoRumah: row.cells[6]?.textContent || ''
+          }));
+          
+          // Add each resident to the state
+          rows.forEach(resident => {
+            state.warga.push({
+              id: 'warga-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+              name: resident.Nama,
+              nik: resident.NIK,
+              phone: resident.Telepon,
+              address: resident.Alamat,
+              rt: '',
+              rw: '',
+              blok: resident.Blok,
+              no_rumah: resident.NoRumah,
+              status: 'aktif',
+              verified: false,
+              created_at: new Date().toISOString()
+            });
+            
+            // Dispatch event for each imported resident
+            window.dispatchEvent(new CustomEvent('kk-new-resident', { 
+              detail: { 
+                name: resident.Nama,
+                nik: resident.NIK,
+                address: resident.Alamat,
+                blok: resident.Blok,
+                no_rumah: resident.NoRumah
+              } 
+            }));
+          });
+          
+          // Save to local storage
+          save();
+          renderTable();
+          if(window.Chart) { renderCharts(); }
+          
+          // Reset import UI
+          resetWargaImport();
+          
+          // Show success message
+          alert(`Berhasil mengimpor ${rows.length} data warga`);
+          
+        } catch (error) {
+          console.error('Error saving imported data:', error);
+          showImportError('Gagal Menyimpan Data', ['Terjadi kesalahan saat menyimpan data. Silakan coba lagi.']);
+        }
+      });
+      actions.insertBefore(btnSave, actions.firstChild);
+      
       // Ensure container also declares spacing inline
       actions.style.gap = '20px';
       actions.style.whiteSpace = 'nowrap';
