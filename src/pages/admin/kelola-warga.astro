@@ -211,37 +211,6 @@ import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
       </div>
 
       <div class="grid grid-2">
-        <!-- Anggota Keluarga -->
-        <div class="card">
-          <div class="card-header">
-            <h3><i class="fas fa-users"></i> Anggota Keluarga</h3>
-            <div class="card-tools">
-              <button id="btn-add-member" class="btn btn-soft btn-sm">
-                <i class="fas fa-user-plus"></i> Tambah Anggota
-              </button>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-modern" id="tbl-members">
-                <thead>
-                  <tr>
-                    <th>Nama</th>
-                    <th>NIK</th>
-                    <th>Relasi</th>
-                    <th class="text-right">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-              <div id="members-empty" class="empty hidden">
-                <i class="fas fa-user-friends"></i>
-                <div>Belum ada anggota keluarga</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- Dokumen -->
         <div class="card">
           <div class="card-header">
@@ -269,57 +238,7 @@ import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
         </div>
       </div>
 
-      <!-- Member Modal -->
-      <div id="modal-member" class="modal" aria-hidden="true">
-        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="member-title">
-          <div class="modal-header">
-            <h3 id="member-title"><i class="fas fa-user-edit"></i> Anggota Keluarga</h3>
-            <button class="btn btn-icon btn-ghost" data-close-modal>
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form id="form-member" class="form-grid single" novalidate>
-              <div class="form-field">
-                <label for="m-nama">Nama</label>
-                <input id="m-nama" name="nama" placeholder="Nama lengkap" required />
-                <div class="error" data-err-for="m-nama"></div>
-              </div>
-              <div class="form-field">
-                <label for="m-nik">NIK</label>
-                <input
-                  id="m-nik"
-                  name="nik"
-                  inputmode="numeric"
-                  pattern="\\d{8,20}"
-                  maxlength="20"
-                  placeholder="Hanya angka, 8-20 digit"
-                  required
-                />
-                <div class="error" data-err-for="m-nik"></div>
-              </div>
-              <div class="form-field">
-                <label for="m-relasi">Relasi</label>
-                <select id="m-relasi" name="relasi" required>
-                  <option value="">Pilih relasi</option>
-                  <option value="Kepala Keluarga">Kepala Keluarga</option>
-                  <option value="Istri">Istri</option>
-                  <option value="Anak">Anak</option>
-                  <option value="Ayah">Ayah</option>
-                  <option value="Ibu">Ibu</option>
-                  <option value="Saudara">Saudara</option>
-                  <option value="Lainnya">Lainnya</option>
-                </select>
-                <div class="error" data-err-for="m-relasi"></div>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-ghost" data-close-modal>Batal</button>
-            <button id="btn-save-member" class="btn btn-primary">Simpan</button>
-          </div>
-        </div>
-      </div>
+      
 
       <!-- Confirm Modal -->
       <div id="modal-confirm" class="modal" aria-hidden="true">
@@ -876,36 +795,6 @@ import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
     }
     .table-modern tbody tr:hover {
       background: rgba(99, 102, 241, 0.05);
-    }
-
-    /* Mobile card rows for members */
-    @media (max-width: 720px) {
-      #tbl-members thead {
-        display: none;
-      }
-      #tbl-members tbody tr {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 6px;
-        padding: 12px;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        margin-bottom: 10px;
-      }
-      #tbl-members tbody td {
-        border: none;
-        padding: 2px 0;
-      }
-      #tbl-members tbody td[data-label]::before {
-        content: attr(data-label) " ";
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 700;
-        display: block;
-      }
-      #tbl-members tbody td.actions {
-        margin-top: 6px;
-      }
     }
 
     .doc-list {

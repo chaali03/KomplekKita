@@ -26,23 +26,11 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           <i class="fas fa-bullhorn"></i>
           <span>Buat Informasi</span>
         </button>
-        <button class="btn soft pressable">
+        <button id="btn-manage-cats" class="btn soft pressable">
           <i class="fas fa-tags"></i>
           <span>Kelola Kategori</span>
         </button>
       </div>
-    </section>
-
-    <!-- Upgrade Compact Banner (baseline) -->
-    <section class="upgrade-compact pre-anim">
-      <div class="uc-left">
-        <div class="uc-icon"><i class="fas fa-lock"></i></div>
-        <div class="uc-text">
-          <strong>Fitur Plus</strong>
-          <div class="uc-sub">Naikkan paket untuk melihat perbandingan bulanan.</div>
-        </div>
-      </div>
-      <a href="/upgrade" class="uc-btn">Upgrade</a>
     </section>
 
     <!-- Overview Stats -->
@@ -177,6 +165,28 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       </div>
     </div>
 
+    <!-- Modal: Kelola Kategori -->
+    <div id="cats-modal" class="kk-modal" aria-hidden="true">
+      <div class="kk-modal__overlay" data-close></div>
+      <div class="kk-modal__content kk-modal__content--md" role="dialog" aria-modal="true" aria-labelledby="cats-modal-title">
+        <div class="kk-modal__header">
+          <h3 id="cats-modal-title"><i class="fas fa-tags"></i> Kelola Kategori</h3>
+          <button class="kk-modal__close pressable" data-close aria-label="Tutup"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="kk-modal__body">
+          <div class="cats-add-row">
+            <input id="cat-input" type="text" placeholder="Tambah kategori baru" />
+            <button id="cat-add" class="btn primary pressable"><i class="fas fa-plus"></i> Tambah</button>
+          </div>
+          <div id="cats-list" class="cats-list"></div>
+          <div class="cats-hint">Kategori "Umum" tidak dapat dihapus.</div>
+        </div>
+        <div class="kk-modal__footer">
+          <button type="button" class="btn light pressable" data-close>Batal</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Confirm Delete Modal -->
     <div id="confirm-modal" class="kk-modal" aria-hidden="true">
       <div class="kk-modal__overlay" data-close></div>
@@ -186,7 +196,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           <button class="kk-modal__close pressable" data-close aria-label="Tutup"><i class="fas fa-times"></i></button>
         </div>
         <div class="kk-modal__body">
-          <p>Yakin ingin menghapus informasi ini? Tindakan ini tidak dapat dibatalkan.</p>
+          <p id="confirm-body">Yakin ingin menghapus informasi ini? Tindakan ini tidak dapat dibatalkan.</p>
         </div>
         <div class="kk-modal__footer">
           <button type="button" class="btn light pressable" data-close>Batal</button>
@@ -261,14 +271,6 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     .section-title h1 { margin: 0; font-size: 1.25rem; font-weight: 800; letter-spacing: .2px; }
     .section-title p { margin: 2px 0 0; color: var(--text-muted); }
 
-    /* Upgrade compact banner */
-    .upgrade-compact{ display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--surface); border:1px solid var(--outline); border-radius:12px; padding:10px 12px; box-shadow: var(--shadow-sm); }
-    .uc-left{ display:flex; align-items:center; gap:10px; }
-    .uc-icon{ width:28px; height:28px; display:grid; place-items:center; border-radius:8px; background:#eef4fb; color:#0b5fad; border:1px solid var(--outline); }
-    .uc-text strong{ font-weight:900; }
-    .uc-sub{ color:var(--text-muted); font-weight:600; font-size:.92rem; margin-top:2px; }
-    .uc-btn{ display:inline-flex; align-items:center; justify-content:center; height:32px; padding:0 12px; border-radius:999px; background:#0d66b3; color:#fff; font-weight:800; border:1px solid #0a5699; text-decoration:none; }
-
     /* BUTTONS */
     .btn {
       display: inline-flex; align-items: center; gap: 8px;
@@ -307,9 +309,10 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     .card.block {
       background: var(--surface); border: 1px solid var(--outline); border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm); overflow: hidden;
+      container-type: inline-size; /* enable container queries */
     }
     .card-header {
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
       padding: 14px 16px; border-bottom: 1px solid var(--outline);
     }
     .card-title { display: flex; align-items: center; gap: 8px; }
@@ -321,13 +324,13 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     .card-title h2 { margin: 0; font-size: 1rem; font-weight: 900; }
     .actions-wrap {
       display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
-      justify-content: flex-end;
+      justify-content: flex-start; width: 100%;
     }
     .actions-wrap > * { flex: 0 0 auto; position: relative; z-index: 0; }
     .card-subheader { padding: 10px 12px; border-bottom: 1px solid var(--outline); }
 
     /* INPUT GROUP */
-    .input-group { position: relative; width: 260px; flex: 0 0 260px; min-width: 200px; margin-right: 12px; z-index: 0; }
+    .input-group { position: relative; width: auto; flex: 1 1 480px; min-width: 200px; margin-right: 0; z-index: 0; }
     .input-group input {
       width: 100%; height: 40px; border-radius: 999px; border: 1px solid var(--outline);
       background: linear-gradient(180deg, var(--surface-2), var(--surface)); padding: 0 12px 0 40px; color: var(--text); font-weight: 600; outline: none;
@@ -350,16 +353,47 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     }
     .seg-btn.active { background: var(--surface); border: 1px solid var(--outline); }
 
-    /* Spacing between search and select (not attached) */
-    .actions-wrap .input-group + .select-box { margin-left: 40px; }
-    .actions-wrap .input-group input { border-top-right-radius: 999px; border-bottom-right-radius: 999px; }
-    .actions-wrap .input-group + .select-box .select { border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-left: 1px solid var(--outline); }
+    /* Attach look only on wide screens */
+    @media (min-width: 1024px){
+      .actions-wrap .input-group + .select-box { margin-left: 40px; }
+      .actions-wrap .input-group input { border-top-right-radius: 999px; border-bottom-right-radius: 999px; }
+      .actions-wrap .input-group + .select-box .select { border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-left: 1px solid var(--outline); }
+    }
 
     /* Responsive tweak to avoid collisions */
     @media (max-width: 900px){
-      .actions-wrap{ gap: 12px; }
-      .input-group{ width: 100%; flex: 1 1 100%; margin-right: 0; }
+      .card-header{ flex-wrap: wrap; row-gap: 10px; }
+      .actions-wrap{ width: 100%; gap: 12px; justify-content: flex-start; }
+      .input-group{ order: -1; width: 100%; flex: 1 1 100%; min-width: 0; margin-right: 0; }
       .select-box, .segmented{ flex: 0 0 auto; }
+      .actions-wrap .input-group + .select-box{ margin-left: 0; }
+    }
+
+    /* Ensure wrap also in tablet widths */
+    @media (max-width: 1024px){
+      /* Switch to grid so search can be forced to the first full-width row */
+      .card-header{ display: grid; grid-template-columns: 1fr; row-gap: 10px; }
+      .actions-wrap{ grid-row: 1; justify-self: stretch; width: 100%; justify-content: flex-start; display: grid; grid-template-columns: 1fr auto auto; column-gap: 8px; }
+      .card-title{ grid-row: 2; }
+      .input-group{ order: 0; width: 100%; flex: 1 1 100%; min-width: 0; grid-column: 1 / -1; }
+      .actions-wrap .input-group + .select-box{ margin-left: 0; }
+      .segmented{ margin-left: 0; }
+    }
+
+    /* Compact search for small screens */
+    @media (max-width: 640px){
+      .card-header{ align-items: stretch; }
+      .actions-wrap{ width: 100%; gap: 10px; }
+      .actions-wrap .input-group{ order: -1; width: 100%; flex: 1 1 100%; min-width: 0; margin-right: 0; }
+      .actions-wrap .input-group + .select-box{ margin-left: 0; }
+      .segmented{ margin-left: 0; }
+
+      .input-group input{ height: 36px; padding-left: 36px; font-size: .95rem; }
+      .input-icon{ left: 10px; }
+
+      .select-box .select{ height: 36px; border-radius: 10px; padding: 0 10px; }
+      .segmented{ height: 36px; border-radius: 10px; }
+      .seg-btn{ height: 32px; padding: 0 10px; gap: 4px; font-size: .94rem; }
     }
 
     /* CHIPS */
@@ -516,7 +550,16 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       .row-thumb { width: 72px; height: 56px; }
     }
 
-    
+    /* Categories modal */
+    .cats-add-row{ display:grid; grid-template-columns:1fr auto; gap:8px; }
+    #cat-input{ border:1px solid var(--outline); border-radius:10px; background:var(--surface-2); padding:.6rem .7rem; color:var(--text); font-weight:600; outline:none; }
+    #cat-input:focus-visible{ box-shadow:0 0 0 3px var(--ring); }
+    .cats-list{ display:grid; gap:8px; margin-top:10px; }
+    .cat-row{ display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; border:1px solid var(--outline); border-radius:10px; background:var(--surface); padding:8px 10px; }
+    .cat-name{ font-weight:800; color:var(--text); }
+    .cat-meta{ color:var(--text-subtle); font-weight:700; font-size:.86rem; }
+    .cat-actions{ display:inline-flex; gap:6px; }
+    .cats-hint{ margin-top:8px; color:var(--text-subtle); font-size:.86rem; font-weight:700; }
 
     /* REDUCED MOTION */
     @media (prefers-reduced-motion: reduce){
@@ -528,83 +571,6 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     }
   </style>
 
-  <!-- Global styles to apply to JS-rendered elements (Astro scope-safe) -->
-  <style is:global>
-    /* Buttons */
-    .btn{ display:inline-flex; align-items:center; gap:8px; height:38px; padding:0 14px; border-radius:10px; border:1px solid #e6eef7; background:#f7fbff; color:#0d3f66; font-weight:800; box-shadow: 0 3px 10px rgba(0,0,0,.04); }
-    .btn.light{ background:#eef5fd; color:#085895; border-color:#d6e6f7; }
-    .btn.soft{ background:#eaf3ff; color:#0a6bb2; border-color:#cfe0f2; }
-    .btn.danger{ background:#fff1f0; color:#e74c3c; border-color:#ffd6d6; }
-    .btn.sm{ height:32px; padding:0 12px; border-radius:8px; }
-
-    /* Chips and segmented */
-    .chips{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
-    .chip{ display:inline-flex; align-items:center; gap:8px; height:34px; padding:0 12px; border-radius:999px; border:1px solid #d9e7f8; background:#eef5ff; color:#0a5fb3; font-weight:800; white-space:nowrap; }
-    .segmented{ display:inline-flex; background:#f0f5fb; border:1px solid #e1eaf6; border-radius:12px; padding:2px; }
-    .segmented .seg-btn{ display:inline-flex; align-items:center; gap:6px; height:34px; padding:0 12px; border:0; background:transparent; color:#24303f; font-weight:800; border-radius:10px; }
-    .segmented .seg-btn.active{ background:#fff; border:1px solid #e6eef7; }
-
-    /* Stats */
-    .stats-row{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
-    .stat-box{ display:grid; grid-template-columns:auto 1fr; gap:10px; align-items:center; background:#fff; border:1px solid #e6eef7; border-radius:14px; padding:12px 14px; box-shadow:0 4px 14px rgba(0,0,0,.05); }
-    .stat-icon{ width:42px; height:42px; display:grid; place-items:center; border-radius:12px; border:1px solid #e6eef7; background:#f7fbff; color:#085895; }
-
-    /* Grid/List containers */
-    .info-grid.grid-mode{ display:grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap:12px; }
-    .info-grid.list-mode{ display:grid; gap:8px; }
-
-    /* Cards */
-    .info-card{ position:relative; background:#fff; border:1px solid #e6eef7; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.06); overflow:hidden; }
-    .info-card .thumb{ width:100%; height:160px; object-fit:cover; background:#f2f6fb; display:block; }
-    .info-card .pad{ padding:.85rem .95rem; display:grid; gap:.55rem; }
-    .info-card .info-meta{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; color:#5b6778; font-size:.85rem; }
-    .info-card .badge{ display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 10px; border-radius:999px; border:1px solid #e6eef7; font-weight:800; }
-    .info-card .badge.pill{ background:#eef5ff; color:#0a5fb3; border-color:#d9e7f8; }
-    .info-card .badge.new{ background:#e8f6ee; color:#0c6b2f; border-color:#d7eadf; }
-    .info-card h3{ margin:.1rem 0 0; font-size:1.02rem; font-weight:900; color:#24303f; line-height:1.25; }
-    .info-card p{ margin:0; color:#6b7686; font-size:.93rem; line-height:1.35; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-    .info-card .info-actions{ display:flex; gap:.5rem; margin-top:.4rem; }
-
-    /* Rows */
-    .info-row{ display:grid; grid-template-columns:96px 1fr auto; gap:12px; align-items:center; background:#fff; border:1px solid #e6eef7; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.06); padding:8px; }
-    .info-row .row-thumb{ width:96px; height:64px; object-fit:cover; background:#f2f6fb; border-radius:8px; border:1px solid #e6eef7; }
-    .info-row .row-content{ display:grid; gap:4px; }
-    .info-row .row-title{ display:flex; align-items:center; gap:8px; font-weight:900; }
-    .info-row .row-meta{ display:flex; gap:8px; flex-wrap:wrap; color:#5b6778; font-size:.85rem; }
-    .info-row .row-actions{ display:inline-flex; gap:6px; }
-
-    /* Diagonal pinned ribbon (global, mirrors .harga-card-badge) */
-    .pin-ribbon,
-    .info-card > .pin-ribbon,
-    .info-row > .pin-ribbon{
-      position:absolute;
-      top:1rem !important;
-      right:-3rem !important;
-      background: var(--primary-blue, #2563eb) !important;
-      color:#fff !important;
-      padding:0.5rem 3rem !important;
-      font-size:.8rem !important;
-      font-weight:800 !important;
-      text-transform:uppercase !important;
-      transform:rotate(45deg) !important;
-      box-shadow:0 2px 10px rgba(37,99,235,0.3) !important;
-      letter-spacing:.3px !important;
-      z-index:5 !important;
-      pointer-events:none !important;
-      user-select:none !important;
-      display:inline-block !important;
-    }
-
-    /* Category color pills (light + dark handled in page CSS already) */
-    .cat-Umum{ background:#eef5ff; color:#0a5fb3; border-color:#d9e7f8; }
-    .cat-Keamanan{ background:#fff2f2; color:#b22234; border-color:#f4c7ce; }
-    .cat-Lingkungan{ background:#ebfaef; color:#0c6b2f; border-color:#cfe9d9; }
-    .cat-Acara{ background:#fff7e6; color:#b87300; border-color:#f1e0b9; }
-
-    @media (max-width:980px){ .stats-row{ grid-template-columns:1fr; } }
-    @media (max-width:780px){ .info-row{ grid-template-columns:72px 1fr auto; } .info-row .row-thumb{ width:72px; height:56px; } }
-  </style>
-
   <script>
     // @ts-nocheck
     (() => {
@@ -614,6 +580,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       // Elements
       const grid = document.getElementById('info-grid');
       const btnOpenCreate = document.getElementById('btn-open-create');
+      const btnManageCats = document.getElementById('btn-manage-cats');
       const searchInput = document.getElementById('info-search');
       const chips = document.getElementById('info-chips');
 
@@ -637,8 +604,15 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
       const confirmModal = document.getElementById('confirm-modal');
       const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+      const confirmTitle = document.getElementById('confirm-title');
+      const confirmBody = document.querySelector('#confirm-modal .kk-modal__body p');
 
       const toast = document.getElementById('kk-toast');
+
+      const catsModal = document.getElementById('cats-modal');
+      const catsList = document.getElementById('cats-list');
+      const catInput = document.getElementById('cat-input');
+      const catAddBtn = document.getElementById('cat-add');
 
       const statTotal = document.getElementById('stat-total');
       const statPinned = document.getElementById('stat-pinned');
@@ -648,6 +622,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
       // State
       const STORAGE_KEY = 'kk_infos_v3';
+      const CATS_KEY = 'kk_info_categories_v1';
       let activeCat = 'all';
       let pinnedOnly = false;
       let isLoading = true;
@@ -660,6 +635,8 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
       };
       const writeData = (items) => localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      const readCats = () => { try { return JSON.parse(localStorage.getItem(CATS_KEY) || '[]'); } catch { return []; } };
+      const writeCats = (arr) => localStorage.setItem(CATS_KEY, JSON.stringify(arr));
       const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
       const fmtDate = (iso) => {
         if (!iso) return '-';
@@ -687,6 +664,14 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         }, 1600);
       }
 
+      // Ensure default categories exist on first load
+      (function seedDefaultCategories(){
+        const current = readCats();
+        if (!Array.isArray(current) || current.length === 0) {
+          writeCats(['Umum','Keamanan','Lingkungan','Acara']);
+        }
+      })();
+
       // Seed data first time
       if (readData().length === 0) {
         writeData([
@@ -703,6 +688,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         modalTitleText.textContent = mode === 'edit' ? 'Edit Informasi' : 'Buat Informasi';
 
         if (mode === 'edit' && data) {
+          renderCategorySelect(data.category || 'Umum');
           inputId.value = data.id;
           inputTitle.value = data.title || '';
           inputCategory.value = data.category || 'Umum';
@@ -712,6 +698,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           if (data.banner && bannerImg && bannerPreview) { bannerImg.src = data.banner; bannerPreview.hidden = false; }
           else if (bannerPreview && bannerImg) { bannerPreview.hidden = true; bannerImg.removeAttribute('src'); }
         } else {
+          renderCategorySelect('Umum');
           inputId.value = '';
           infoForm.reset();
           if (bannerPreview && bannerImg) { bannerPreview.hidden = true; bannerImg.removeAttribute('src'); }
@@ -728,16 +715,20 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       });
 
       // Confirm modal
-      function openConfirm(onConfirm) {
+      function openConfirm(onConfirm, opts = {}) {
         deleteHook = onConfirm;
         confirmModal.classList.add('show');
         confirmModal.setAttribute('aria-hidden', 'false');
+        if (opts.title && confirmTitle) confirmTitle.textContent = opts.title;
+        if (opts.body && confirmBody) confirmBody.textContent = opts.body;
         confirmDeleteBtn.onclick = () => { deleteHook && deleteHook(); closeConfirm(); };
       }
       function closeConfirm() {
         confirmModal.classList.remove('show');
         confirmModal.setAttribute('aria-hidden', 'true');
         deleteHook = null;
+        if (confirmTitle) confirmTitle.textContent = 'Konfirmasi Hapus';
+        if (confirmBody) confirmBody.textContent = 'Yakin ingin menghapus informasi ini? Tindakan ini tidak dapat dibatalkan.';
       }
       confirmModal?.addEventListener('click', (e) => {
         const target = e.target;
@@ -983,6 +974,17 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       });
 
       // Chips
+      function renderChips(){
+        if (!chips) return;
+        const cats = readCats();
+        const chipHtml = [
+          `<button class="chip pressable" data-cat="all" aria-pressed="${activeCat==='all'}"><i class="fas fa-layer-group"></i> Semua</button>`,
+          ...cats.map(c => `<button class="chip pressable" data-cat="${c}"><i class="fas fa-circle"></i> ${c}</button>`),
+          `<button class="chip pressable" data-pinned="only" aria-pressed="${pinnedOnly}"><i class="fas fa-thumbtack"></i> Pinned</button>`
+        ].join('');
+        chips.innerHTML = chipHtml;
+        setActiveChips();
+      }
       function setActiveChips() {
         chips?.querySelectorAll('.chip').forEach((ch) => {
           const isActive =
@@ -1000,6 +1002,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         if (btn.hasAttribute('data-pinned')) pinnedOnly = !pinnedOnly;
         setActiveChips();
       });
+      // Categories UI
       chips?.addEventListener('keydown', (e) => {
         const target = e.target;
         if ((e.key === 'Enter' || e.key === ' ') && target?.classList.contains('chip')) {
@@ -1008,32 +1011,120 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         }
       });
 
-      // Sort + View toggle
-      sortSelect?.addEventListener('change', () => {
-        sortMode = sortSelect.value;
-        localStorage.setItem('info_sort', sortMode);
-        render(searchInput?.value || '');
-      });
-      viewToggle?.addEventListener('click', (e) => {
-        const btn = e.target?.closest?.('.seg-btn');
-        if (!btn) return;
-        viewMode = btn.getAttribute('data-view') || 'grid';
-        localStorage.setItem('info_view', viewMode);
-        viewToggle.querySelectorAll('.seg-btn').forEach(b => {
-          b.classList.toggle('active', b === btn);
-          b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+      // Render category <select> options from categories
+      function renderCategorySelect(selectedValue){
+        if (!inputCategory) return;
+        const cats = readCats();
+        if (!cats.length) return;
+        inputCategory.innerHTML = cats.map(c => `<option${c===selectedValue ? ' selected' : ''}>${c}</option>`).join('');
+      }
+
+      // Wire Manage Categories button (bound later once)
+
+      // Refresh UI after category CRUD
+      function openCatsModal() {
+        if (!catsModal) return;
+        catsModal.classList.add('show');
+        catsModal.setAttribute('aria-hidden', 'false');
+        renderCats();
+        setTimeout(() => catInput?.focus?.(), 20);
+      }
+      function closeCatsModal() {
+        catsModal?.classList.remove('show');
+        catsModal?.setAttribute('aria-hidden', 'true');
+      }
+      catsModal?.addEventListener('click', (e) => { const t = e.target; if (t?.closest('[data-close]')) closeCatsModal(); });
+      function normalizeCat(name){ return String(name || '').trim(); }
+      function renderCats(){
+        if (!catsList) return;
+        const cats = readCats();
+        const items = readData();
+        if (cats.length === 0) { catsList.innerHTML = '<div class="empty-state">Belum ada kategori</div>'; return; }
+        catsList.innerHTML = '';
+        const frag = document.createDocumentFragment();
+        cats.forEach((c) => {
+          const count = items.filter(i => i.category === c).length;
+          const row = document.createElement('div');
+          row.className = 'cat-row';
+          row.innerHTML = `
+            <div>
+              <div class="cat-name">${c}</div>
+              <div class="cat-meta">${count} item</div>
+            </div>
+            <div class="cat-actions">
+              <button class="btn soft sm pressable" data-edit><i class="fas fa-edit"></i> Ubah</button>
+              <button class="btn danger sm pressable" data-del><i class="fas fa-trash"></i> Hapus</button>
+            </div>`;
+          row.querySelector('[data-edit]')?.addEventListener('click', () => {
+            const inp = document.createElement('input');
+            inp.type = 'text'; inp.value = c; inp.className = 'kk-input-edit';
+            inp.style.cssText = 'border:1px solid var(--outline);border-radius:10px;padding:.4rem .6rem;font-weight:700;';
+            const nameDiv = row.querySelector('.cat-name');
+            if (!nameDiv) return;
+            nameDiv.replaceWith(inp);
+            inp.focus(); inp.select();
+            const commit = () => {
+              const nv = normalizeCat(inp.value);
+              if (!nv) { showToast('Nama tidak boleh kosong'); renderCats(); return; }
+              const list = readCats();
+              if (list.includes(nv) && nv !== c) { showToast('Kategori sudah ada'); renderCats(); return; }
+              // update categories
+              const updated = list.map(x => x === c ? nv : x);
+              writeCats(updated);
+              // update items
+              const arr = readData().map(i => i.category === c ? { ...i, category: nv } : i);
+              writeData(arr);
+              showToast('Kategori diubah');
+              renderCats();
+              render(searchInput?.value || '');
+              renderChips();
+              renderCategorySelect(nv);
+            };
+            inp.addEventListener('blur', commit);
+            inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') renderCats(); });
+          });
+          row.querySelector('[data-del]')?.addEventListener('click', () => {
+            if (c === 'Umum') { showToast('Kategori "Umum" tidak dapat dihapus'); return; }
+            openConfirm(() => {
+              // move items to Umum and delete category
+              const list = readCats().filter(x => x !== c);
+              writeCats(list);
+              const arr = readData().map(i => i.category === c ? { ...i, category: 'Umum' } : i);
+              writeData(arr);
+              showToast('Kategori dihapus');
+              // fix active filter if needed
+              if (activeCat === c) activeCat = 'all';
+              renderCats();
+              render(searchInput?.value || '');
+              setActiveChips();
+              renderChips();
+              renderCategorySelect('Umum');
+            }, { title: 'Hapus Kategori', body: `Hapus kategori "${c}"? Item akan dipindah ke "Umum".` });
+          });
+          frag.appendChild(row);
         });
+        catsList.appendChild(frag);
+      }
+      catAddBtn?.addEventListener('click', () => {
+        const nv = normalizeCat(catInput?.value);
+        if (!nv) { showToast('Nama tidak boleh kosong'); return; }
+        const list = readCats();
+        if (list.includes(nv)) { showToast('Kategori sudah ada'); return; }
+        writeCats([...list, nv]);
+        catInput.value = '';
+        showToast('Kategori ditambahkan');
+        renderCats();
         render(searchInput?.value || '');
+        renderChips();
+        renderCategorySelect(nv);
       });
-      // init segmented UI
-      viewToggle?.querySelectorAll('.seg-btn').forEach(b => {
-        const isActive = b.getAttribute('data-view') === viewMode;
-        b.classList.toggle('active', isActive);
-        b.setAttribute('aria-selected', isActive ? 'true' : 'false');
-      });
-      sortSelect && (sortSelect.value = sortMode);
+      catInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); catAddBtn?.click(); } });
+      btnManageCats?.addEventListener('click', openCatsModal);
 
       // Initial render with skeleton then data
+      // Initial UI render
+      renderCategorySelect('Umum');
+      renderChips();
       render();
       setTimeout(() => { isLoading = false; render(searchInput?.value || ''); }, 450);
 
