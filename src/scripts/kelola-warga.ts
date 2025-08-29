@@ -236,8 +236,10 @@ function renderHistory(): void {
 
 function renderMembers(): void {
   if (!row) return;
-  const tbody = $("#tbl-members tbody") as HTMLTableSectionElement;
-  const empty = $("#members-empty") as HTMLElement;
+  const tbody = document.querySelector<HTMLTableSectionElement>("#tbl-members tbody");
+  const empty = document.getElementById("members-empty") as HTMLElement | null;
+  // If members UI is removed from the page, safely no-op
+  if (!tbody || !empty) return;
   tbody.innerHTML = "";
 
   const members = (row.anggota_keluarga ?? []) as WargaMember[];
@@ -693,8 +695,18 @@ function bindEvents(): void {
     }
   });
 
-  // Add member
-  on($("#btn-add-member") as HTMLElement, "click", () => openMemberModal());
+  // Add member (disabled & hidden)
+  const addBtnEl = document.getElementById("btn-add-member") as HTMLButtonElement | null;
+  const addBtnSel = $("#btn-add-member") as HTMLButtonElement | null;
+  if (addBtnSel) {
+    addBtnSel.disabled = true;
+    addBtnSel.title = "Fitur tambah anggota dinonaktifkan";
+    addBtnSel.style.display = "none"; // hide button entirely
+    on(addBtnSel, "click", (e: Event) => {
+      e.preventDefault();
+      toast("Fitur tambah anggota dinonaktifkan", "warn");
+    });
+  }
 
   // Members table actions
   onDelegated(document, "click", "button[data-edit]", (e: Event) => {
@@ -720,7 +732,8 @@ function bindEvents(): void {
     showModal("#modal-confirm", true);
   });
 
-  on($("#btn-save-member") as HTMLElement, "click", () => {
+  const saveMemberBtn = document.getElementById("btn-save-member") as HTMLElement | null;
+  if (saveMemberBtn) on(saveMemberBtn, "click", () => {
     if (!validateMemberForm(true)) return;
     const nm = document.getElementById("m-nama") as HTMLInputElement;
     const nk = document.getElementById("m-nik") as HTMLInputElement;
@@ -745,13 +758,9 @@ function bindEvents(): void {
         detail: m.nama,
       });
     } else {
-      row.anggota_keluarga.push(m);
-      row.history = (row.history ?? []).concat({
-        time: Date.now(),
-        action: "add-member",
-        by: "admin",
-        detail: m.nama,
-      });
+      // Block creating new members
+      toast("Fitur tambah anggota dinonaktifkan", "warn");
+      return;
     }
     row.updated_at = Date.now();
     memberEditIndex = null;
@@ -760,7 +769,7 @@ function bindEvents(): void {
     renderMembers();
     renderHistory();
     renderHeader();
-    toast(isEdit ? "Anggota diperbarui" : "Anggota ditambahkan", "success");
+    toast("Anggota diperbarui", "success");
   });
 
   // Dropzone & file input

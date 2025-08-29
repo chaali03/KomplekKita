@@ -29,6 +29,66 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       </div>
     </div>
 
+    <!-- Import Data Warga (Modern UI) -->
+    <div class="section-card import-warga-card" data-step="warga" data-animate>
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fa-solid fa-file-excel"></i>
+        </div>
+        <div class="section-text">
+          <h2>Import Data Warga</h2>
+          <p>Upload file Excel dengan format: <strong>Nama, NIK, Telepon, Alamat, Blok, NoRumah</strong></p>
+        </div>
+      </div>
+
+      <div class="import-section">
+        <div class="import-area" id="wargaDropArea">
+          <div class="import-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <div class="import-text">
+            <h3>Drop file Excel di sini</h3>
+            <p>atau klik untuk browse file</p>
+            <input type="file" id="excelWarga" accept=".xlsx,.xls" hidden />
+          </div>
+          <div class="import-actions">
+            <button type="button" class="browse-btn">
+              <i class="fas fa-folder-open"></i>
+              Pilih File
+            </button>
+            <button type="button" id="downloadTemplateWarga" class="template-btn">
+              <i class="fas fa-download"></i>
+              Download Template
+            </button>
+          </div>
+          <div class="import-hint" aria-hidden="true">Format: .xlsx / .xls · Maks 5MB</div>
+        </div>
+
+        <div class="data-preview" id="wargaPreview" style="display: none;">
+          <div class="preview-header">
+            <h3>Preview Data Warga</h3>
+            <span class="data-count" id="wargaCount">0 data</span>
+          </div>
+          <div class="table-container">
+            <table class="data-table modern" id="wargaTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nama</th>
+                  <th>NIK</th>
+                  <th>Telepon</th>
+                  <th>Alamat</th>
+                  <th>Blok</th>
+                  <th>No Rumah</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Filters -->
     <div class="filters card" data-animate>
       <div class="row g">
@@ -293,6 +353,21 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     }
     
     @media (max-width: 480px) {
+      .section-card .section-header { padding: var(--space-3) var(--space-4); flex-direction: column; text-align: center; }
+      .section-card .section-text { text-align: center; }
+      .section-card .section-text p { margin: 0 auto; }
+      
+      .import-section { padding: var(--space-4); }
+      .import-area { padding: 24px 16px; min-height: 160px; }
+      .import-icon { width: 52px; height: 52px; }
+      .import-icon i { font-size: 22px; }
+      
+      .browse-btn, .template-btn { 
+        padding: 12px 16px; 
+        font-size: 14px; 
+        min-height: 46px;
+      }
+      
       .page {
         padding-inline: clamp(6px, 1.5vw, 12px);
         padding-block: 10px;
@@ -453,7 +528,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     .input-icon input { padding-left: 34px; }
 
     .btn {
-      display: inline-flex; align-items: center; gap: 8px;
+      display: inline-flex; align-items: center; gap: 4px;
       padding: 10px 12px; border: 1px solid var(--border);
       border-radius: var(--radius-10); background: #fff; color: var(--text);
       cursor: pointer; font-weight: 700; transition: none;
@@ -471,7 +546,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       .col label { margin-bottom: 3px; }
       .input-icon i { left: 8px; font-size: 12px; }
       .input-icon input { padding-left: 28px; }
-      .btn { padding: 6px 8px; gap: 6px; font-size: 12px; border-radius: var(--radius-8); }
+      .btn { padding: 6px 8px; gap: 3px; font-size: 12px; border-radius: var(--radius-8); }
       .btn.small { padding: 3px 5px; font-size: 10px; border-radius: var(--radius-6); }
     }
 
@@ -905,6 +980,162 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     @media (prefers-reduced-motion: reduce) {
       * { animation: none !important; transition: none !important; }
     }
+
+    /* ========== Import Data Warga (Modern UI) ========== */
+    .section-card.import-warga-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-16);
+      box-shadow: var(--shadow-2);
+      margin: var(--space-5) 0;
+      overflow: hidden;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .section-card.import-warga-card:hover { border-color: #dfe5f1; box-shadow: var(--shadow-3); }
+    .section-card .section-header {
+      display: flex; align-items: center; gap: 24px;
+      padding: var(--space-5) var(--space-6);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to right, rgba(249, 250, 251, 0.9), rgba(248, 250, 252, 0.2));
+    }
+    .section-card .section-icon {
+      width: 64px; height: 64px; border-radius: 18px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: linear-gradient(180deg, #eef2ff, #e0e7ff);
+      color: #4f46e5; font-size: 24px; border: 1px solid #e3e8f5;
+      box-shadow: 0 3px 2px rgba(15,23,42,.06), 0 10px 20px rgba(79,70,229,.15);
+      flex-shrink: 0;
+    }
+    .section-card .section-text h2 { margin: 0 0 8px; font-size: 24px; font-weight: 800; letter-spacing: .3px; }
+    .section-card .section-text p { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.6; max-width: 90%; }
+    .section-card .section-text p strong { color: var(--text); font-weight: 700; }
+
+    .import-section { padding: var(--space-6) var(--space-7); }
+    .import-area {
+      border: 2px dashed #d1ddf0;
+      background: var(--surface-2);
+      border-radius: var(--radius-20);
+      padding: 48px 40px;
+      display: grid; gap: 24px; place-items: center; text-align: center;
+      transition: all .28s ease;
+      position: relative; min-height: 240px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    /* soft pattern */
+    .import-area::after {
+      content: ""; position: absolute; inset: 10px; border-radius: inherit; pointer-events: none;
+      background: radial-gradient(circle at 20% 30%, rgba(37,99,235,.05), transparent 40%),
+                  radial-gradient(circle at 80% 70%, rgba(37,99,235,.04), transparent 45%);
+      mask: linear-gradient(#000, transparent 85%);
+    }
+    .import-area:hover { border-color: var(--primary); background: #f8fbff; box-shadow: var(--shadow-3); transform: translateY(-3px); }
+    .import-area.drag-active { border-color: var(--primary); background: #f8fbff; box-shadow: var(--shadow-3); transform: translateY(-3px); }
+    .import-icon { 
+      color: var(--primary); margin-bottom: 16px; 
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 80px; height: 80px; border-radius: 20px;
+      background: linear-gradient(180deg, #eef6ff, #dbeafe);
+      border: 1px solid #e3e8f5; box-shadow: 0 8px 20px rgba(37,99,235,.2);
+    }
+    .import-icon i { font-size: 32px; }
+    .import-text h3 { margin: 10px 0 8px; font-size: 22px; font-weight: 800; letter-spacing: .3px; }
+    .import-text p { margin: 0; color: var(--muted); font-size: 16px; }
+    .import-actions { display: inline-flex; gap: 24px; flex-wrap: wrap; margin-top: 24px; align-items: center; justify-content: center; }
+    .browse-btn, .template-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+      padding: 16px 24px; border-radius: var(--radius-14); cursor: pointer;
+      border: 1px solid var(--border); font-weight: 700; min-height: 56px;
+      min-width: 180px; transition: all .28s ease;
+      letter-spacing: 0.4px;
+    }
+    .browse-btn { 
+      background: linear-gradient(180deg, #3b82f6, #2563eb); 
+      color: #fff; 
+      border-color: transparent; 
+      box-shadow: 0 4px 8px rgba(37,99,235,.3);
+      font-size: 16px;
+    }
+    .browse-btn:hover { 
+      filter: brightness(1.08); 
+      box-shadow: 0 12px 28px rgba(37,99,235,.25); 
+      transform: translateY(-3px);
+    }
+    .browse-btn:active {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 6px rgba(37,99,235,.25);
+    }
+    .template-btn { 
+      background: #fff; 
+      box-shadow: 0 3px 6px rgba(15,23,42,.1);
+      font-size: 16px;
+    }
+    .template-btn:hover { 
+      background: #f7faff; 
+      border-color: var(--primary); 
+      color: var(--primary); 
+      box-shadow: 0 8px 20px rgba(37,99,235,.15);
+      transform: translateY(-3px);
+    }
+    .template-btn:active {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 6px rgba(15,23,42,.1);
+    }
+    .browse-btn i, .template-btn i {
+      font-size: 18px;
+    }
+    .browse-btn:focus-visible, .template-btn:focus-visible { box-shadow: var(--focus); outline: none; }
+    .import-hint { color: var(--muted); font-size: 14px; margin-top: 16px; font-weight: 500; }
+
+    .data-preview { margin-top: 16px; display: block; }
+    .preview-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .preview-header h3 { margin: 0; font-size: 14px; font-weight: 800; }
+    .data-count { color: var(--muted); font-size: 12px; }
+    .data-table.modern { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .data-table.modern th, .data-table.modern td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; }
+    .data-table.modern thead th { background: var(--surface); color: var(--muted); font-size: 12px; font-weight: 800; position: sticky; top: 0; z-index: 1; }
+    .data-table.modern tbody tr:nth-child(odd) { background: #fafbfd; }
+
+    @media (max-width: 768px) {
+      .section-card.import-warga-card { max-width: 100%; }
+      .import-area { max-width: 100%; padding: 40px 32px; }
+    }
+
+    @media (max-width: 640px) {
+      .section-card.import-warga-card { border-radius: var(--radius-12); }
+      .section-card .section-header { padding: var(--space-4) var(--space-5); gap: 16px; }
+      .section-card .section-icon { width: 48px; height: 48px; font-size: 18px; border-radius: 12px; }
+      .section-card .section-text h2 { font-size: 20px; margin-bottom: 6px; }
+      .section-card .section-text p { font-size: 14px; max-width: 100%; }
+      
+      .import-section { padding: var(--space-5); }
+      .import-area { padding: 32px 24px; min-height: 180px; gap: 20px; }
+      .import-icon { width: 60px; height: 60px; margin-bottom: 12px; }
+      .import-icon i { font-size: 24px; }
+      .import-text h3 { font-size: 20px; margin: 6px 0; }
+      .import-text p { font-size: 14px; }
+      
+      .import-actions { display: grid; grid-template-columns: 1fr; gap: 16px; width: 100%; }
+      .browse-btn, .template-btn { 
+          padding: 14px 20px; 
+          font-size: 15px; 
+          width: 100%; 
+          min-height: 52px;
+          justify-content: center; 
+      }
+      .browse-btn i, .template-btn i { font-size: 15px; }
+      .data-table.modern { font-size: 12px; }
+      .import-hint { font-size: 12px; margin-top: 8px; }
+    }
+    
+    @media (max-width: 480px) {
+      .section-card .section-header { flex-direction: column; align-items: flex-start; text-align: center; }
+      .section-card .section-icon { margin: 0 auto 8px; }
+      .section-card .section-text { text-align: center; width: 100%; }
+      .import-area { padding: 20px 12px; }
+    }
   </style>
 
   <script>
@@ -1180,56 +1411,113 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     }
 
     // -----------------------------
-    // Modal (dialog)
+    // Import Data Warga (Excel)
     // -----------------------------
-    function openDialog(mode, row){
-      const dlg = document.getElementById('dlg-warga');
-      const form = document.getElementById('form-warga');
-      document.getElementById('dlg-title').textContent = mode==='edit'?'Edit Warga':'Tambah Warga';
-      form.reset();
-      form.classList.remove('was-validated');
-      state.editingId = null;
-      if(row){
-        state.editingId = row.id;
-        ['nama','nik','kk','alamat','rt','rw','no_rumah','telepon','email','status'].forEach(k=>{
-          form.elements[k].value = row[k]||'';
-        });
-      }
-      dlg.showModal();
+    async function fetchWithFallback(path, options = {}){
+      try {
+        const res = await fetch(path, options);
+        if (res.status !== 404) return res;
+      } catch(_){}
+      const directUrl = path.startsWith('/api') ? `http://127.0.0.1:8000${path}` : path;
+      return fetch(directUrl, options);
     }
 
-    function submitForm(e){
-      e.preventDefault();
-      const form = e.target;
-      const data = Object.fromEntries(new FormData(form).entries());
-      data.verified = false;
+    function preventDefaults(e){ e.preventDefault(); e.stopPropagation(); }
 
-      if(!form.checkValidity()){
-        form.classList.add('was-validated');
-        [...form.elements].some(el=>{
-          if(el.willValidate && !el.checkValidity()){ el.focus(); return true; }
-        });
+    function handleWargaDrop(e){
+      preventDefaults(e);
+      const dt = e.dataTransfer; const files = dt?.files || [];
+      if(files.length>0){
+        const wargaInput = document.getElementById('excelWarga');
+        if(wargaInput){ wargaInput.files = files; handleWargaFile({ target:{ files } }); }
+      }
+    }
+
+    async function handleWargaFile(e){
+      const file = e.target?.files?.[0];
+      if(!file) return;
+      if(!/\.(xlsx|xls)$/i.test(file.name||'')){
+        alert('File harus .xlsx atau .xls');
         return;
       }
-
-      if(state.editingId){
-        const idx = state.warga.findIndex(x=>x.id===state.editingId);
-        state.warga[idx] = { ...state.warga[idx], ...data };
-        state.warga[idx].history = (state.warga[idx].history||[]).concat({time:Date.now(), action:'update', by:'admin'});
-      }else{
-        const id = String(Math.max(0,...state.warga.map(x=>+x.id))+1);
-        state.warga.push({
-          id, ...data,
-          tanggal_masuk:new Date().toISOString().slice(0,10),
-          tanggal_keluar:'', anggota_keluarga:[], documents:[],
-          verified:false,
-          history:[{time:Date.now(), action:'create', by:'admin'}]
-        });
+      if(file.size > 5*1024*1024){
+        alert('Ukuran file maksimum 5MB');
+        return;
       }
-      save();
-      renderTable();
-      renderCharts();
-      document.getElementById('dlg-warga').close();
+      try{
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await fetchWithFallback('/api/import/warga/preview', { method:'POST', body: fd, credentials:'include' });
+        const payload = await res.json().catch(()=>({ status:'error', message:'Response tidak valid' }));
+        if(!res.ok){ alert(payload?.message || 'Gagal memproses file'); return; }
+        const { status, data, errors, summary } = payload || {};
+        const ok = status === 'ok';
+        renderWargaData(Array.isArray(data)?data:[]);
+        if(!ok){
+          const total = (errors||[]).length;
+          console.warn('Validasi gagal:', total, errors);
+          alert(`Validasi gagal: ${total} isu. Periksa file Anda atau gunakan template.`);
+        } else if(summary){
+          console.log('Preview:', summary);
+        }
+      }catch(err){
+        console.error('Import error', err);
+        alert('Terjadi kesalahan saat mengunggah/validasi file');
+      }
+    }
+
+    function renderWargaData(rows){
+      const preview = document.getElementById('wargaPreview');
+      const tbody = document.querySelector('#wargaTable tbody');
+      const count = document.getElementById('wargaCount');
+      if(!preview || !tbody) return;
+      tbody.innerHTML = '';
+      (rows||[]).forEach((r,i)=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i+1}</td>
+          <td>${r?.Nama ?? ''}</td>
+          <td>${r?.NIK ?? ''}</td>
+          <td>${r?.Telepon ?? ''}</td>
+          <td>${r?.Alamat ?? ''}</td>
+          <td>${r?.Blok ?? ''}</td>
+          <td>${r?.NoRumah ?? ''}</td>`;
+        tbody.appendChild(tr);
+      });
+      if(count) count.textContent = `${rows?.length||0} data`;
+      preview.style.display = 'block';
+    }
+
+    async function downloadWargaTemplate(){
+      try{
+        const res = await fetchWithFallback('/api/templates/warga', { credentials:'include' });
+        if(!res.ok){ throw new Error('Gagal menyiapkan template'); }
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'template-warga.xlsx';
+        a.click();
+      }catch(err){
+        console.error(err);
+        alert('Gagal mengunduh template warga');
+      }
+    }
+
+    function setupWargaImport(){
+      const drop = document.getElementById('wargaDropArea');
+      const input = document.getElementById('excelWarga');
+      const browseBtn = drop?.querySelector('.browse-btn');
+      const templateBtn = document.getElementById('downloadTemplateWarga');
+      if(browseBtn && input){ browseBtn.addEventListener('click', (e)=>{ e.stopPropagation(); input.click(); }); }
+      if(drop && input){
+        drop.addEventListener('click', ()=> input.click());
+        ['dragenter','dragover','dragleave','drop'].forEach(ev=> drop.addEventListener(ev, preventDefaults, false));
+        ['dragenter','dragover'].forEach(ev=> drop.addEventListener(ev, ()=> drop.classList.add('drag-active'), false));
+        ['dragleave','drop'].forEach(ev=> drop.addEventListener(ev, ()=> drop.classList.remove('drag-active'), false));
+        drop.addEventListener('drop', handleWargaDrop, false);
+      }
+      if(input){ input.addEventListener('change', handleWargaFile); }
+      if(templateBtn){ templateBtn.addEventListener('click', (e)=>{ e.stopPropagation(); downloadWargaTemplate(); }); }
     }
 
     // -----------------------------
@@ -1293,6 +1581,8 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       });
       bind();
       handleResponsiveView();
+      // Initialize Warga import section
+      setupWargaImport();
     }
     
     // Handle responsive view switching
