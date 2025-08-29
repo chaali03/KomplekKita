@@ -17,7 +17,34 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       <div class="section-icon">
         <i class="fas fa-exchange-alt"></i>
       </div>
-
+      <div class="section-title">
+        <h1>Transaksi</h1>
+        <p class="subtitle">
+          Ringkasan arus kas harian. Semua fitur aktif.
+        </p>
+      </div>
+    </div>
+    <div class="section-actions">
+      <button class="btn soft pressable" id="btn-import" aria-label="Import CSV">
+        <i class="fas fa-file-import"></i>
+        <span>Import CSV</span>
+      </button>
+      <button class="btn soft pressable" id="btn-rollback" aria-label="Batalkan import terakhir">
+        <i class="fas fa-rotate-left"></i>
+        <span>Rollback Import</span>
+      </button>
+      
+      <button class="btn soft pressable" id="btn-print" aria-label="Cetak halaman">
+        <i class="fas fa-print"></i>
+        <span>Cetak</span>
+      </button>
+      <button class="btn soft pressable" id="btn-export" aria-label="Ekspor data">
+        <i class="fas fa-file-export"></i>
+        <span>Ekspor</span>
+      </button>
+    </div>
+  </section>
+  
   <!-- Export Modal -->
   <div id="export-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="export-title">
     <div class="modal-backdrop" data-close></div>
@@ -55,33 +82,6 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       </div>
     </div>
   </div>
-      <div class="section-title">
-        <h1>Transaksi</h1>
-        <p class="subtitle">
-          Ringkasan arus kas harian. Semua fitur aktif.
-        </p>
-      </div>
-    </div>
-    <div class="section-actions">
-      <button class="btn soft pressable" id="btn-import" aria-label="Import CSV">
-        <i class="fas fa-file-import"></i>
-        <span>Import CSV</span>
-      </button>
-      <button class="btn soft pressable" id="btn-rollback" aria-label="Batalkan import terakhir">
-        <i class="fas fa-rotate-left"></i>
-        <span>Rollback Import</span>
-      </button>
-      
-      <button class="btn soft pressable" id="btn-print" aria-label="Cetak halaman">
-        <i class="fas fa-print"></i>
-        <span>Cetak</span>
-      </button>
-      <button class="btn soft pressable" id="btn-export" aria-label="Ekspor data">
-        <i class="fas fa-file-export"></i>
-        <span>Ekspor</span>
-      </button>
-    </div>
-  </section>
 
   <!-- KPI Summary -->
   <section class="grid-summary pre-anim" aria-label="Ringkasan">
@@ -127,14 +127,16 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           </div>
         </div>
 
-        <div class="field">
-          <label for="filter-start">Dari</label>
-          <input type="date" id="filter-start" />
-        </div>
+        <div class="field-row">
+          <div class="field field-half">
+            <label for="filter-start">Dari</label>
+            <input type="date" id="filter-start" />
+          </div>
 
-        <div class="field">
-          <label for="filter-end">Sampai</label>
-          <input type="date" id="filter-end" />
+          <div class="field field-half">
+            <label for="filter-end">Sampai</label>
+            <input type="date" id="filter-end" />
+          </div>
         </div>
 
         <div class="field">
@@ -153,29 +155,31 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           </div>
         </div>
 
-        <div class="field">
-          <label for="filter-sort">Urutkan</label>
-          <select id="filter-sort">
-            <option value="tanggal-desc">Tanggal • Terbaru</option>
-            <option value="tanggal-asc">Tanggal • Terlama</option>
-            <option value="jumlah-desc">Jumlah • Terbesar</option>
-            <option value="jumlah-asc">Jumlah • Terkecil</option>
-          </select>
-        </div>
+        <div class="field-row">
+          <div class="field field-half">
+            <label for="filter-sort">Urutkan</label>
+            <select id="filter-sort">
+              <option value="tanggal-desc">Tanggal • Terbaru</option>
+              <option value="tanggal-asc">Tanggal • Terlama</option>
+              <option value="jumlah-desc">Jumlah • Terbesar</option>
+              <option value="jumlah-asc">Jumlah • Terkecil</option>
+            </select>
+          </div>
 
-        <div class="field">
-          <label for="filter-perpage">Per Halaman</label>
-          <select id="filter-perpage">
-            <option>10</option>
-            <option selected>20</option>
-            <option>50</option>
-            <option>100</option>
-          </select>
+          <div class="field field-half">
+            <label for="filter-perpage">Per Halaman</label>
+            <select id="filter-perpage">
+              <option>10</option>
+              <option selected>20</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </div>
         </div>
       </div>
 
       <div class="toolbar-actions">
-        <button id="btn-reset" class="btn soft pressable" aria-label="Reset filter">
+        <button id="btn-reset" class="btn soft pressable btn-reset" aria-label="Reset filter">
           <i class="fas fa-undo"></i><span>Reset</span>
         </button>
       </div>
@@ -393,8 +397,9 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       border:1px solid var(--outline);
       border-radius:14px; padding:16px 18px; margin-bottom:14px;
       box-shadow: 0 6px 18px rgba(0,0,0,.06);
+      flex-wrap: wrap; gap: 16px;
     }
-    .section-header-left{ display:flex; gap:12px; align-items:center; }
+    .section-header-left{ display:flex; gap:12px; align-items:center; flex: 1; min-width: 280px; }
     .section-icon{
       display:grid; place-items:center;
       width:44px; height:44px; border-radius:12px;
@@ -402,17 +407,18 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       border:1px solid var(--outline);
       box-shadow: 0 4px 12px rgba(0,0,0,.05);
       font-size:18px;
+      flex-shrink: 0;
     }
-    .section-title h1{ margin:0; font-weight:900; letter-spacing:.2px; }
+    .section-title h1{ margin:0; font-weight:900; letter-spacing:.2px; font-size: clamp(1.5rem, 4vw, 2rem); }
     .subtitle{ color:var(--text-subtle); font-weight:600; margin:2px 0 0; }
 
-    .section-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .section-actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content: flex-end; }
 
     .grid-summary{
-      display:grid; grid-template-columns: repeat(4, minmax(0,1fr));
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap:16px; margin:16px 0;
     }
-    @media (max-width: 1024px){ .grid-summary{ grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 1024px){ .grid-summary{ grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); } }
     @media (max-width: 640px){ .grid-summary{ grid-template-columns: 1fr; } }
 
     .kpi-card{
@@ -424,6 +430,11 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       min-height:80px;
       transform: translateY(6px);
       animation: float-in .7s cubic-bezier(.2,.7,.2,1) forwards;
+    }
+    @media (max-width: 480px) {
+      .kpi-card { padding: 10px 12px; }
+      .kpi-icon { width: 38px; height: 38px; font-size: 16px; }
+      .kpi-content .kpi-value { font-size: 18px; }
     }
     .kpi-icon{
       width:44px; height:44px; border-radius:12px; display:grid; place-items:center;
@@ -448,51 +459,111 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     .card-header {
       display:flex; align-items:center; justify-content:space-between;
       padding:14px 16px; border-bottom:1px solid var(--outline);
+      flex-wrap: wrap; gap: 8px;
     }
     .card-header h3{ margin:0; display:flex; gap:10px; align-items:center; font-weight:900; letter-spacing:.2px; }
-    .card-body{ padding:14px 16px; }
-    .chart-body{ height: 280px; display:grid; position:relative; }
+    .card-body{ padding:14px 16px; overflow-x: auto; }
+    .chart-body{ height: 280px; display:grid; position:relative; min-height: 220px; }
     .chart-body canvas{ width:100% !important; height:100% !important; }
+    @media (max-width: 480px) {
+      .card-header { padding: 12px; }
+      .card-body { padding: 12px; }
+      .chart-body { height: 240px; }
+    }
 
     .toolbar{
       display:flex; gap:16px; justify-content:space-between; align-items:end; flex-wrap:wrap;
+      padding: 4px;
     }
     .toolbar-group{
-      display:grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap:12px; align-items:end;
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:12px; align-items:end;
       width:100%;
     }
     @media (max-width: 1200px){
-      .toolbar-group{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .toolbar-group{ grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
     }
     @media (max-width: 720px){
-      .toolbar-group{ grid-template-columns: 1fr; }
+      .toolbar-group{ grid-template-columns: 1fr; gap: 10px; }
+      .toolbar { gap: 12px; }
     }
-    .toolbar-actions{ display:flex; align-items:center; gap:10px; }
+    @media (max-width: 480px){
+      .toolbar-group{ gap: 8px; }
+      .toolbar { padding: 2px; gap: 8px; }
+    }
+    .toolbar-actions{ display:flex; align-items:center; gap:10px; width: 100%; justify-content: flex-end; }
 
-    .field{ display:flex; flex-direction:column; gap:6px; }
+    .field{ display:flex; flex-direction:column; gap:6px; margin-bottom: 2px; }
     .field label{ font-size:12px; font-weight:800; color:var(--text-subtle); }
-    .input-wrap{ display:flex; align-items:center; gap:8px; background: var(--surface-2); border:1px solid var(--outline); border-radius:10px; padding:8px 10px; }
-    .input-wrap i{ color:var(--text-subtle); }
-    .input-wrap input{ outline:none; border:none; background:transparent; color:var(--text); width:100%; }
+    .field-row { display: flex; gap: 10px; width: 100%; }
+    .field-half { flex: 1; min-width: 0; }
+    .input-wrap{ display:flex; align-items:center; gap:8px; background: var(--surface-2); border:1px solid var(--outline); border-radius:10px; padding:8px 10px; width: 100%; box-sizing: border-box; max-height: 40px; }
+    .input-wrap i{ color:var(--text-subtle); flex-shrink: 0; }
+    .input-wrap input{ outline:none; border:none; background:transparent; color:var(--text); width:100%; font-size: 1rem; }
+    @media (max-width: 480px) {
+      .field { margin-bottom: 0; }
+      .field label { font-size: 11px; margin-bottom: -2px; }
+      .field-row { flex-direction: column; gap: 8px; }
+      .input-wrap { padding: 6px 8px; max-height: 36px; }
+      .input-wrap input { font-size: 0.9rem; }
+    }
 
     select, input[type="date"], .chip{
       background: var(--surface-2); border:1px solid var(--outline); color: var(--text);
       border-radius:10px; padding:8px 10px; font-weight:700;
+      width: 100%; box-sizing: border-box;
+      font-size: 1rem;
+      -webkit-appearance: none;
+      appearance: none;
+      max-height: 40px;
+    }
+    select {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 16px;
+      padding-right: 30px;
+      text-overflow: ellipsis;
+    }
+    @media (max-width: 480px) {
+      select, input[type="date"], .chip {
+        padding: 6px 8px;
+        font-size: 0.9rem;
+        max-height: 36px;
+      }
+      select {
+        background-size: 14px;
+        padding-right: 26px;
+      }
+      select option {
+        font-size: 0.9rem;
+      }
     }
 
-    .chip-group{ display:flex; gap:8px; }
-    .chip{ font-weight:800; }
+    .chip-group{ display:flex; gap:8px; flex-wrap: wrap; width: 100%; }
+    .chip{ font-weight:800; flex: 1; text-align: center; min-width: 70px; }
     .chip.active{ background:#0f172a; color:#fff; border-color:#0f172a; }
+    @media (max-width: 480px) {
+      .chip { padding: 6px 8px; font-size: 0.9rem; min-height: 36px; display: flex; align-items: center; justify-content: center; }
+      .chip-group { gap: 6px; }
+    }
 
     .btn{
       display:inline-flex; align-items:center; gap:8px; padding:8px 14px;
       border-radius:999px; border:1px solid var(--outline); font-weight:900;
       background: var(--surface-2); color: var(--text); box-shadow: 0 6px 18px rgba(0,0,0,.06);
+      white-space: nowrap;
     }
     .btn.primary{ background:#2563eb; color:#fff; border-color:#1d4ed8; box-shadow:0 10px 22px rgba(37,99,235,.25); }
     .btn.soft{ background: var(--surface-2); color: var(--text); }
     .btn.ghost{ background: transparent; }
     .pressable:active{ transform: translateY(1px); }
+    .btn-reset { width: 100%; justify-content: center; max-width: 120px; }
+    @media (max-width: 480px) {
+      .btn { padding: 6px 10px; font-size: 0.9rem; }
+      .btn span { display: none; }
+      .section-actions .btn span { display: inline; }
+      .btn-reset span { display: inline; }
+    }
 
     .readonly-pill{
       display:inline-flex; gap:6px; align-items:center; padding:6px 10px;
@@ -501,9 +572,11 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     /* Charts grid */
     .grid-charts{
-      display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:16px; align-items:stretch; margin:16px 0;
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap:16px; margin:16px 0;
     }
-    @media (max-width: 1024px){ .grid-charts{ grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 1024px){ .grid-charts{ grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); } }
+    @media (max-width: 480px){ .grid-charts{ grid-template-columns: 1fr; gap: 12px; margin: 12px 0; } }
     @media (max-width: 720px){ .grid-charts{ grid-template-columns: 1fr; } }
 
     /* Premium */
@@ -532,12 +605,17 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     .premium-placeholder i{ font-size:32px; margin-bottom:8px; }
 
     /* Table */
-    .table-wrap{ overflow:auto; border:1px solid var(--outline); border-radius:10px; }
+    .table-wrap{ overflow:auto; border:1px solid var(--outline); border-radius:10px; max-width: 100%; -webkit-overflow-scrolling: touch; }
     table.kk-table{ width:100%; border-collapse:collapse; }
     .kk-table th,.kk-table td{ padding:10px 12px; border-bottom:1px solid var(--outline); text-align:left; }
     .kk-table th{ background: var(--surface-2); color: var(--text); font-weight:900; position:sticky; top:0; z-index:1; }
     .kk-table td.num{ text-align:right; font-weight:800; white-space:nowrap; }
     .right-meta{ display:flex; gap:10px; align-items:center; color:var(--text-subtle); font-weight:700; }
+    @media (max-width: 640px) {
+      .kk-table th, .kk-table td { padding: 8px 6px; font-size: 0.9rem; }
+      .card-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .right-meta { margin-top: 4px; }
+    }
     .muted{ color:var(--text-subtle); }
 
     .pill{
@@ -553,14 +631,25 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     /* Pagination */
     .pagination{
       display:flex; gap:10px; justify-content:center; align-items:center; padding-top:12px;
+      flex-wrap: wrap;
     }
     .page-indicator{ font-weight:900; }
+    @media (max-width: 480px) {
+      .pagination { gap: 6px; }
+      .pagination .btn { padding: 6px 10px; }
+    }
 
     /* Modal */
     .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:9999; }
     .modal.show{ display:flex; }
     .modal-backdrop{ position:absolute; inset:0; background:rgba(2,6,23,.55); opacity:0; }
     .modal-card{ position:relative; width:min(920px, 92vw); max-height:88vh; margin:16px; overflow:hidden; display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--outline); border-radius:16px; box-shadow:0 18px 34px rgba(0,0,0,.25); transform:scale(.96) translateY(8px); opacity:0; }
+    @media (max-width: 640px) {
+      .modal-card { width: 95vw; margin: 10px; max-height: 92vh; }
+      .modal-body { padding: 12px; }
+      .modal-footer { padding: 12px; flex-wrap: wrap; gap: 8px; }
+      .modal-footer .btn { flex: 1; justify-content: center; }
+    }
     .modal.show .modal-backdrop{ animation: fadeIn .18s ease forwards; }
     .modal.show .modal-card{ animation: popIn .22s cubic-bezier(.2,.8,.2,1) forwards; }
     .modal.hiding .modal-backdrop{ animation: fadeOut .16s ease forwards; }
@@ -589,10 +678,15 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     .dz-hint{ margin-top:8px; color:var(--text-subtle); font-size:.9em; }
     .dz-fileinfo{ margin-top:8px; font-weight:800; }
     .template-actions{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
-    .modal-header{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--outline); }
-    .modal-header h3{ margin:0; display:flex; gap:10px; align-items:center; font-weight:900; }
+    .modal-header{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--outline); flex-wrap: wrap; gap: 8px; }
+    .modal-header h3{ margin:0; display:flex; gap:10px; align-items:center; font-weight:900; flex: 1; min-width: 200px; }
     .modal-body{ padding:14px 16px; overflow:auto; }
-    .modal-footer{ display:flex; gap:10px; justify-content:flex-end; padding:14px 16px; border-top:1px solid var(--outline); }
+    .modal-footer{ display:flex; gap:10px; justify-content:flex-end; padding:14px 16px; border-top:1px solid var(--outline); flex-wrap: wrap; }
+    @media (max-width: 480px) {
+      .modal-header { padding: 12px; }
+      .modal-header h3 { font-size: 1.1rem; }
+      .template-actions { justify-content: center; }
+    }
 
     /* Skeleton (no gradient) */
     .skeleton{

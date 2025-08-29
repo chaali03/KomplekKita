@@ -35,6 +35,20 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="/js/admin-dashboard.js" defer></script>
 
+  <!-- Dispatch a global 'charts-ready' event once Chart.js is available -->
+  <script>
+    (function waitForChart(retry) {
+      retry = retry || 0;
+      try {
+        if (typeof window !== 'undefined' && typeof window.Chart !== 'undefined') {
+          window.dispatchEvent(new Event('charts-ready'));
+          return;
+        }
+      } catch (e) { /* no-op */ }
+      if (retry < 60) setTimeout(() => waitForChart(retry + 1), 100);
+    })(0);
+  </script>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // Reduce motion if user prefers
@@ -44,7 +58,6 @@
       }
     });
   </script>
-
 
   <style>
     :root {

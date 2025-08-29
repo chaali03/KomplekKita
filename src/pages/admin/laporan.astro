@@ -554,6 +554,9 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       background: var(--surface-secondary);
       margin: 0;
       padding: 0;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      hyphens: auto;
     }
 
     /* Layout Components */
@@ -766,7 +769,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     .filter-grid {
       display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: var(--space-4);
       flex: 1;
       align-items: end;
@@ -804,7 +807,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     /* KPI Cards */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: var(--space-6);
       margin-bottom: var(--space-8);
     }
@@ -873,7 +876,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     /* Charts Section */
     .charts-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: var(--space-6);
       margin-bottom: var(--space-8);
     }
@@ -1021,13 +1024,16 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     /* Table Styles */
     .table-container {
-      overflow: hidden;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
+      max-width: 100%;
     }
 
     .data-table {
       width: 100%;
+      min-width: 650px;
       border-collapse: collapse;
       font-size: var(--font-size-sm);
     }
@@ -1202,6 +1208,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       display: flex;
       flex-direction: column;
       transition: right var(--transition-normal);
+      overflow-x: hidden;
     }
 
     .drawer.open {
@@ -1309,6 +1316,13 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       grid-template-columns: 1fr 120px 160px 40px;
       gap: var(--space-3);
       align-items: end;
+    }
+    
+    @media (max-width: 480px) {
+      .adjustment-row {
+        grid-template-columns: 1fr 80px 100px 40px;
+        font-size: var(--font-size-sm);
+      }
     }
 
     .delete-btn {
@@ -1479,15 +1493,30 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     }
 
     @media (max-width: 768px) {
+      .header-section {
+        padding: var(--space-4);
+      }
+      
       .header-content {
         flex-direction: column;
-        align-items: stretch;
-        text-align: center;
+        align-items: flex-start;
+        gap: var(--space-4);
       }
       
       .header-info {
-        flex-direction: column;
-        text-align: center;
+        width: 100%;
+        justify-content: flex-start;
+        gap: var(--space-3);
+      }
+      
+      .title-group {
+        flex: 1;
+      }
+      
+      .header-actions {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: var(--space-2);
       }
       
       .filter-grid {
@@ -1524,6 +1553,14 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       .drawer {
         width: 100%;
         right: -100%;
+      }
+      
+      .drawer-header {
+        padding: var(--space-4);
+      }
+      
+      .drawer-content {
+        padding: var(--space-4);
       }
       
       .status-grid {
@@ -1570,6 +1607,60 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       .action-btn {
         width: 100%;
         justify-content: center;
+        min-height: 44px;
+      }
+      
+      /* Meningkatkan ukuran touch target untuk mobile */
+      button, 
+      .action-button,
+      .filter-chip,
+      .form-input,
+      .search-input,
+      select,
+      input[type="checkbox"] + label {
+        min-height: 44px;
+        min-width: 44px;
+        touch-action: manipulation;
+      }
+      
+      .form-input,
+      .search-input input {
+        font-size: 16px; /* Mencegah zoom otomatis di iOS */
+        padding: 10px 12px;
+      }
+      
+      .filter-actions,
+      .card-actions,
+      .header-actions {
+        gap: 12px;
+      }
+      
+      /* Text wrapping untuk layar kecil */
+      .card-title,
+      .section-title,
+      .kpi-label,
+      .table-header,
+      .table-cell,
+      .drawer-title,
+      .form-label,
+      .filter-label,
+      .stat-label,
+      .insight-title,
+      .insight-text,
+      .report-title,
+      .report-description {
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        max-width: 100%;
+      }
+      
+      /* Truncate text dengan ellipsis jika terlalu panjang */
+      .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
       }
     }
 

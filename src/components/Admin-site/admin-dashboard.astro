@@ -2,11 +2,14 @@
 /*
   Admin Dashboard Component (Astro)
   Modern UI/UX — No gradient, No hover
+  Responsive design for all screen sizes
 */
 ---
+<!-- Ensure proper viewport settings for responsive design -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <div class="admin-dashboard">
   <!-- Dashboard Hero Section -->
-  <div class="dashboard-hero pre-animation">
+  <div class="dashboard-hero pre-animation" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
     <div class="hero-content">
       <h1 class="hero-title">
         <span class="hero-icon"><i class="fas fa-chart-line"></i></span>
@@ -26,7 +29,7 @@
   
 
   <!-- Stats Cards -->
-  <div class="stats-grid">
+  <div class="stats-grid" style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
     <div class="stat-card pre-animation">
       <div class="stat-icon primary">
         <i class="fas fa-wallet"></i>
@@ -85,7 +88,7 @@
   </div>
 
   <!-- Charts Section -->
-  <div class="charts-grid">
+  <div class="charts-grid" style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
     <!-- Cash Flow Trend Chart -->
     <div class="chart-card pre-animation">
       <div class="card-header">
@@ -1370,8 +1373,15 @@
   position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted);
 }
 
-.table-container { width: 100%; overflow: auto; }
-.data-table { width: 100%; border-collapse: collapse; }
+.table-container { 
+  width: 100%; 
+  overflow-x: auto; 
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scrollbar-width: thin; /* Firefox */
+}
+.table-container::-webkit-scrollbar { height: 8px; } /* Chrome/Safari/Edge */
+.table-container::-webkit-scrollbar-thumb { background: var(--outline); border-radius: 4px; }
+.data-table { width: 100%; min-width: 650px; border-collapse: collapse; }
 .data-table thead th {
   position: sticky; top: 0; z-index: 2;
   background: #fbfcff;
@@ -1435,11 +1445,151 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
   background: var(--primary); border-color: #0a5699; color: #fff;
 }
 
-/* Mobile card table layout */
-@media (max-width: 560px){
+/* ============ RESPONSIVE DESIGN SYSTEM ============ */
+/* A comprehensive responsive system for all screen sizes */
+
+/* Base styles for all devices */
+.admin-dashboard {
+  display: grid;
+  gap: 24px;
+  width: 100%;
+  font-size: 16px; /* Base font size */
+  line-height: 1.5;
+}
+
+/* Ensure all images and icons are responsive */
+.admin-dashboard img, .admin-dashboard svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Ensure all cards have proper padding on all devices */
+.admin-dashboard .chart-card, 
+.admin-dashboard .stat-card,
+.admin-dashboard .quick-action-card,
+.admin-dashboard .table-section,
+.admin-dashboard .notification-item {
+  box-sizing: border-box;
+}
+
+/* Ensure tables are responsive */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  max-width: 100vw; /* Prevent horizontal overflow */
+  margin: 0 auto;
+}
+
+.data-table {
+  min-width: 650px; /* Ensures table doesn't shrink too much */
+  width: 100%;
+}
+
+.data-table thead th {
+  white-space: nowrap;
+}
+
+/* Add responsive wrapper for all overflow content */
+.overflow-container {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Large Desktop (1440px and up) */
+@media (min-width: 1440px) {
+  .admin-dashboard { gap: 28px; }
+  .charts-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Desktop (1024px to 1439px) */
+@media (max-width: 1439px) {
+  .admin-dashboard { gap: 24px; }
+  .charts-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Tablet Landscape (960px to 1023px) */
+@media (max-width: 1023px) {
+  .admin-dashboard { gap: 20px; }
+  .charts-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .section-header { padding: 12px 14px; }
+  .section-actions { gap: 8px; }
+  .card-header { padding: 12px 14px; }
+  .chart-card .card-body { padding: calc(var(--frame-padding) + 2px); }
+  .quick-actions-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Tablet Portrait (720px to 959px) */
+@media (max-width: 959px) {
+  .admin-dashboard { gap: 18px; }
+  .charts-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-hero { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .plan-info { align-self: flex-start; }
+  .hero-title { font-size: 1.5rem; }
+  .hero-subtitle { font-size: 0.9rem; }
+  
+  /* Stack section headers and make actions full-width */
+  .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .section-actions { width: 100%; }
+  .section-actions .action-button, .section-actions .search-container { flex: 1 1 auto; }
+  .search-container { min-width: 0; }
+  
+  /* Adjust card headers */
+  .card-header { flex-direction: row; flex-wrap: wrap; }
+  .card-header h3 { font-size: 1rem; }
+}
+
+/* Mobile Large (640px to 719px) */
+@media (max-width: 719px) {
+  .admin-dashboard { gap: 16px; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .quick-actions-grid { grid-template-columns: 1fr; }
+  .data-table-container { overflow-x: auto; }
+  .data-table { min-width: 500px; }
+  
+  /* Adjust buttons and inputs for better touch targets */
+  .action-button, .icon-button, .pagination-button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 12px;
+    touch-action: manipulation;
+  }
+  
+  .search-input { 
+    height: 44px;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  /* Improve touch targets for all interactive elements */
+  button, a, input, select, .card-link {
+    touch-action: manipulation;
+  }
+  
+  /* Add more space between interactive elements */
+  .section-actions, .card-actions {
+    gap: 12px;
+  }
+}
+
+/* Mobile Small (up to 639px) */
+@media (max-width: 639px) {
+  .admin-dashboard { gap: 14px; padding: 10px; }
+  
+  /* Ensure proper text wrapping */
+  .hero-title, .hero-subtitle, .section-header h2, .section-header h3, .card-header h3 {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  /* Card table layout for mobile */
   .table-container { overflow: visible; }
   .data-table thead { display: none; }
-  .data-table { border-collapse: separate; border-spacing: 0 10px; }
+  .data-table { border-collapse: separate; border-spacing: 0 10px; min-width: auto; }
   .data-table tbody tr {
     display: grid; grid-template-columns: 1fr; gap: 8px;
     background: var(--surface);
@@ -1457,20 +1607,25 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
     font-weight: 800; color: var(--text-muted);
   }
   .data-table tbody td .action-buttons { justify-content: flex-end; }
-}
-
-/* Tablet and down: stack section headers and make actions full-width when needed */
-@media (max-width: 768px){
-  .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .section-actions { width: 100%; }
-  .section-actions .action-button, .section-actions .search-container { flex: 1 1 auto; }
-  .search-container { min-width: 0; }
-}
-
-/* Small laptops: slightly more breathing room */
-@media (max-width: 1024px){
-  .admin-dashboard { gap: 20px; }
-  .chart-card .card-body { padding: calc(var(--frame-padding) + 2px); }
+  
+  /* Adjust typography for small screens */
+  .stat-value { font-size: 1.25rem; }
+  .stat-trend { font-size: 0.8rem; }
+  .stat-icon { width: 40px; height: 40px; }
+  .hero-icon { width: 32px; height: 32px; }
+  
+  /* Adjust other elements */
+  .upgrade-chip { height: 32px; }
+  .plan-badge { height: 24px; padding: 0 8px; font-size: 0.8rem; }
+  
+  /* Adjust quick action cards */
+  .quick-action-icon { width: 36px; height: 36px; }
+  .quick-action-content h4 { font-size: 0.9rem; }
+  .quick-action-content p { font-size: 0.8rem; }
+  
+  /* Adjust notification items */
+  .notification-item { padding: 10px; }
+  .notification-actions { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
 
 /* ============ QUICK ACTIONS ============ */
@@ -1483,7 +1638,7 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
 }
 .quick-actions-grid {
   display: grid; gap: 14px;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 .quick-action-card {
   position: relative;
@@ -1575,32 +1730,207 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
 
 /* Tooltips removed */
 
-/* Responsive small tweaks */
-@media (max-width: 720px){
-  .dashboard-hero { flex-direction: column; gap: 10px; align-items: flex-start; }
-  .plan-info { width: 100%; justify-content: space-between; }
+/* Responsive Design System - Enhanced for all screen sizes */
+
+/* Large Desktop (1200px+) */
+@media (min-width: 1201px) {
+  .admin-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .charts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
-/* Extra responsiveness */
-@media (max-width: 960px){
-  .section-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .section-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .section-actions .search-container { grid-column: 1 / -1; }
-  .card-header { flex-wrap: wrap; gap: 8px; }
+/* Desktop (960px - 1200px) */
+@media (max-width: 1200px) {
+  .admin-dashboard {
+    max-width: 100%;
+    padding: 0 16px;
+  }
+  .charts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
 }
-@media (max-width: 640px){
-  .admin-dashboard { width: 96vw; gap: 16px; }
-  .search-input { height: 40px; }
-  .data-table thead th, .data-table tbody td { padding: 10px 10px; }
-  .pagination { flex-wrap: wrap; }
-  .notification-item { grid-template-columns: auto 1fr; }
-  .notification-actions { justify-self: end; }
-  .action-button, .icon-button, .pagination-button { height: 40px; min-width: 40px; }
+
+/* Tablet Landscape (768px - 960px) */
+@media (max-width: 960px) {
+  .admin-dashboard {
+    padding: 0 12px;
+    gap: 20px;
+  }
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .section-header { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 10px; 
+  }
+  .section-actions { 
+    width: 100%; 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 8px; 
+  }
+  .section-actions .search-container { 
+    grid-column: 1 / -1; 
+  }
+  .card-header { 
+    flex-wrap: wrap; 
+    gap: 8px; 
+  }
+  .quick-actions-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
 }
-@media (max-width: 480px){
-  .section-actions { grid-template-columns: 1fr; }
-  .action-button, .pagination-button { width: 100%; }
-  .data-table thead th, .data-table tbody td { font-size: 13px; }
+
+/* Tablet Portrait (640px - 768px) */
+@media (max-width: 768px) {
+  .admin-dashboard {
+    width: 100%;
+    padding: 0 10px;
+    gap: 18px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  .dashboard-hero { 
+    flex-direction: column; 
+    gap: 10px; 
+    align-items: flex-start; 
+    padding: 16px;
+  }
+  .plan-info { 
+    width: 100%; 
+    justify-content: space-between; 
+  }
+  .hero-title {
+    font-size: 1.1rem;
+  }
+  .hero-subtitle {
+    font-size: 0.9rem;
+  }
+  .data-table {
+    overflow-x: auto;
+  }
+  .data-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Mobile Large (480px - 640px) */
+@media (max-width: 640px) {
+  .admin-dashboard { 
+    width: 100%; 
+    gap: 16px; 
+    padding: 0 8px;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .search-input { 
+    height: 40px; 
+  }
+  .data-table thead th, .data-table tbody td { 
+    padding: 10px 8px; 
+    font-size: 0.85rem;
+  }
+  .pagination { 
+    flex-wrap: wrap; 
+    justify-content: center;
+    gap: 6px;
+  }
+  .notification-item { 
+    grid-template-columns: auto 1fr; 
+  }
+  .notification-actions { 
+    justify-self: end; 
+  }
+  .action-button, .icon-button, .pagination-button { 
+    height: 40px; 
+    min-width: 40px; 
+  }
+  .card-header h3 {
+    font-size: 1rem;
+  }
+  .stat-card {
+    padding: 14px;
+  }
+  .stat-content h3 {
+    font-size: 0.9rem;
+  }
+  .stat-value {
+    font-size: 1.2rem;
+  }
+  .stat-trend {
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile Small (320px - 480px) */
+@media (max-width: 480px) {
+  .admin-dashboard {
+    width: 100%;
+    padding: 0 6px;
+    gap: 14px;
+  }
+  .section-actions { 
+    grid-template-columns: 1fr; 
+  }
+  .action-button, .pagination-button { 
+    width: 100%; 
+  }
+  .data-table thead th, .data-table tbody td { 
+    font-size: 0.8rem; 
+    padding: 8px 6px;
+  }
+  .card-header {
+    padding: 12px 10px;
+  }
+  .card-body {
+    padding: 10px 8px;
+  }
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+  .hero-icon {
+    width: 30px;
+    height: 30px;
+  }
+  .upgrade-chip {
+    height: 28px;
+    padding: 0 8px;
+    font-size: 0.8rem;
+  }
+  .plan-badge {
+    height: 24px;
+    padding: 0 8px;
+    font-size: 0.75rem;
+  }
+  .quick-action-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .quick-action-content h3 {
+    font-size: 0.9rem;
+  }
+  .quick-action-content p {
+    font-size: 0.8rem;
+  }
 }
 
 /* Motion accessibility */
