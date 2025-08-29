@@ -314,14 +314,19 @@
 
     /** @type {any} */
     const winAny = /** @type {any} */ (window);
+    if (!winAny.dashboardCharts) winAny.dashboardCharts = new Map();
     // @ts-ignore Chart is attached by the CDN script at runtime
     const ChartRef = winAny && winAny['Chart'];
     if (ChartRef && ctxLine) {
+      try {
+        const ex = winAny.dashboardCharts.get('chartKas');
+        ex && typeof ex.destroy === 'function' && ex.destroy();
+      } catch (e) {}
       // Gradient fill for line chart
       const gradient = ctxLine.createLinearGradient(0, 0, 0, 280);
       gradient.addColorStop(0, 'rgba(37, 99, 235, 0.35)');
       gradient.addColorStop(1, 'rgba(37, 99, 235, 0.05)');
-      new ChartRef(ctxLine, {
+      const kasChart = new ChartRef(ctxLine, {
         type: 'line',
         data: {
           labels: monthLabels,
@@ -353,13 +358,18 @@
           }
         }
       });
+      try { winAny.dashboardCharts.set('chartKas', kasChart); } catch (e) {}
     }
 
     // Doughnut chart: Pemasukan vs Pengeluaran bulan ini
     if (ChartRef && ctxPie) {
+      try {
+        const ex = winAny.dashboardCharts.get('chartPie');
+        ex && typeof ex.destroy === 'function' && ex.destroy();
+      } catch (e) {}
       const pemasukanBulanan = Number(pemasukan?.getAttribute('data-value') || '0');
       const pengeluaranBulanan = Number(pengeluaran?.getAttribute('data-value') || '0');
-      new ChartRef(ctxPie, {
+      const pieChart = new ChartRef(ctxPie, {
         type: 'doughnut',
         data: {
           labels: ['Pemasukan', 'Pengeluaran'],
@@ -380,6 +390,7 @@
           cutout: '62%'
         }
       });
+      try { winAny.dashboardCharts.set('chartPie', pieChart); } catch (e) {}
     }
 
     // Reveal on scroll

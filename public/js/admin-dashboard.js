@@ -269,6 +269,12 @@ function initCharts() {
   // Cash Flow Trend Chart
   const cashFlowCtx = document.getElementById('chartKas');
   if (cashFlowCtx) {
+    try {
+      if (window.dashboardCharts && window.dashboardCharts.has('chartKas')) {
+        const ex = window.dashboardCharts.get('chartKas');
+        ex && typeof ex.destroy === 'function' && ex.destroy();
+      }
+    } catch (e) {}
     const ctx = cashFlowCtx.getContext ? cashFlowCtx.getContext('2d') : null;
     const cashFlowChart = new Chart(cashFlowCtx, {
       type: 'line',
@@ -354,6 +360,12 @@ function initCharts() {
   // Composition Pie Chart
   const compositionCtx = document.getElementById('chartPie');
   if (compositionCtx) {
+    try {
+      if (window.dashboardCharts && window.dashboardCharts.has('chartPie')) {
+        const ex = window.dashboardCharts.get('chartPie');
+        ex && typeof ex.destroy === 'function' && ex.destroy();
+      }
+    } catch (e) {}
     const compositionChart = new Chart(compositionCtx, {
       type: 'doughnut',
       data: {
@@ -411,6 +423,12 @@ function initCharts() {
   // Expense Categories Chart (Premium Feature)
   const expenseCategoriesCtx = document.getElementById('chartExpenseCategories');
   if (expenseCategoriesCtx) {
+    try {
+      if (window.dashboardCharts && window.dashboardCharts.has('chartExpenseCategories')) {
+        const ex = window.dashboardCharts.get('chartExpenseCategories');
+        ex && typeof ex.destroy === 'function' && ex.destroy();
+      }
+    } catch (e) {}
     const expenseCategoriesChart = new Chart(expenseCategoriesCtx, {
       type: 'bar',
       data: {
@@ -497,6 +515,12 @@ function initCharts() {
   // Monthly Comparison Chart (Premium Feature)
   const monthlyComparisonCtx = document.getElementById('chartMonthlyComparison');
   if (monthlyComparisonCtx) {
+    try {
+      if (window.dashboardCharts && window.dashboardCharts.has('chartMonthlyComparison')) {
+        const ex = window.dashboardCharts.get('chartMonthlyComparison');
+        ex && typeof ex.destroy === 'function' && ex.destroy();
+      }
+    } catch (e) {}
     const monthlyComparisonChart = new Chart(monthlyComparisonCtx, {
       type: 'bar',
       data: {
@@ -593,6 +617,12 @@ function initCharts() {
   // Optional: Stacked Area Chart (Pemasukan vs Pengeluaran)
   const areaCtx = document.getElementById('chartIncomeExpenseArea');
   if (areaCtx) {
+    try {
+      if (window.dashboardCharts && window.dashboardCharts.has('chartIncomeExpenseArea')) {
+        const ex = window.dashboardCharts.get('chartIncomeExpenseArea');
+        ex && typeof ex.destroy === 'function' && ex.destroy();
+      }
+    } catch (e) {}
     const ctx = areaCtx.getContext ? areaCtx.getContext('2d') : null;
     const areaChart = new Chart(areaCtx, {
       type: 'line',

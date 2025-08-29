@@ -5,6 +5,37 @@ declare global {
 }
 export {};
 
+// Global Chart registry to avoid canvas reuse across navigations/rerenders
+;(function initChartRegistry(){
+  (window as any).dashboardCharts = (window as any).dashboardCharts || new Map();
+})();
+
+function destroyChartForCanvasId(id: string){
+  try{
+    const w: any = window as any;
+    const canvas = document.getElementById(id) as HTMLCanvasElement | null;
+    if(!canvas) return;
+    const reg: Map<string, any> = w.dashboardCharts;
+    const prev = reg?.get?.(id);
+    if(prev && typeof prev.destroy === 'function'){
+      prev.destroy();
+      reg.delete(id);
+    }
+    if(w.Chart && typeof w.Chart.getChart === 'function'){
+      const bound = w.Chart.getChart(canvas);
+      if(bound && typeof bound.destroy === 'function'){
+        bound.destroy();
+      }
+    }
+  }catch{ /* noop */ }
+}
+
+function getCtxPrepared(id: string): CanvasRenderingContext2D | null{
+  destroyChartForCanvasId(id);
+  const el = document.getElementById(id) as HTMLCanvasElement | null;
+  return el ? el.getContext('2d') : null;
+}
+
 // Utilities
 const fmtIDR = (n: number): string => new Intl.NumberFormat('id-ID', {
   style: 'currency',
@@ -496,6 +527,8 @@ function destroyCharts() {
   try { (state.charts.pr as any)?.destroy?.(); } catch {}
   try { (state.charts.pie as any)?.destroy?.(); } catch {}
   try { (state.charts.prog as any)?.destroy?.(); } catch {}
+  // Also ensure canvases are freed in case untracked
+  ['bud-plan-real','bud-pie','bud-progress'].forEach(destroyChartForCanvasId);
   state.charts.pr = null; state.charts.pie = null; state.charts.prog = null;
 }
 
@@ -526,7 +559,7 @@ function renderCharts(_retry: number = 0) {
   const elPR = document.getElementById('bud-plan-real');
   if (elPR && elPR instanceof HTMLCanvasElement) {
     hideSkel('sk-b1');
-    const ctx = elPR.getContext('2d');
+    const ctx = getCtxPrepared('bud-plan-real');
     if (ctx) {
       try { (state.charts.pr as any)?.destroy?.(); } catch {}
       state.charts.pr = new Chart(ctx, {
@@ -550,6 +583,7 @@ function renderCharts(_retry: number = 0) {
           }
         }
       });
+      (window as any).dashboardCharts.set('bud-plan-real', state.charts.pr);
     }
   }
 
@@ -557,7 +591,7 @@ function renderCharts(_retry: number = 0) {
   const elPie = document.getElementById('bud-pie');
   if (elPie && elPie instanceof HTMLCanvasElement) {
     hideSkel('sk-b2');
-    const ctx = elPie.getContext('2d');
+    const ctx = getCtxPrepared('bud-pie');
     if (ctx) {
       try { (state.charts.pie as any)?.destroy?.(); } catch {}
       state.charts.pie = new Chart(ctx, {
@@ -576,6 +610,7 @@ function renderCharts(_retry: number = 0) {
           cutout: '60%'
         }
       });
+      (window as any).dashboardCharts.set('bud-pie', state.charts.pie);
     }
   }
 
@@ -583,7 +618,7 @@ function renderCharts(_retry: number = 0) {
   const elProg = document.getElementById('bud-progress');
   if (elProg && elProg instanceof HTMLCanvasElement) {
     hideSkel('sk-b3');
-    const ctx = elProg.getContext('2d');
+    const ctx = getCtxPrepared('bud-progress');
     if (ctx) {
       try { (state.charts.prog as any)?.destroy?.(); } catch {}
       const pctVals = cats.map((c) => {
@@ -611,6 +646,7 @@ function renderCharts(_retry: number = 0) {
           }
         }
       });
+      (window as any).dashboardCharts.set('bud-progress', state.charts.prog);
     }
   }
 }
