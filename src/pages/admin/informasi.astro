@@ -724,6 +724,21 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         });
       }
 
+      // Ensure chips reflect current activeCat and pinnedOnly, then re-render
+      function setActiveChips() {
+        if (!chips) { render(searchInput?.value || ''); return; }
+        chips.querySelectorAll('.chip').forEach((b) => {
+          const hasPinned = b.hasAttribute('data-pinned');
+          const cat = b.getAttribute('data-cat');
+          const isAll = cat === 'all';
+          const isCat = !!cat && cat === activeCat;
+          const pressed = hasPinned ? pinnedOnly : (isAll ? activeCat === 'all' : isCat);
+          b.classList.toggle('active', pressed);
+          b.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+        });
+        render(searchInput?.value || '');
+      }
+
       function renderTagChips() {
         if (!tagChipsHost) return;
         const tags = readTags();

@@ -5,992 +5,1019 @@
 ---
 
 <div class="document-format-section" data-aos="fade-up">
-    <div class="section-header">
-        <h1 class="main-title">Format Surat Warga</h1>
-        <p class="subtitle">Mohon digunakan secara bijaksana*</p>
-    </div>
-    
-    <div class="button-grid">
-        <button class="format-button format-button1" data-aos="zoom-in" data-aos-delay="100">
-            <i class="fas fa-file-alt"></i>
-            <span>Surat Pengantar</span>
-        </button>
-        <button class="format-button format-button2" data-aos="zoom-in" data-aos-delay="200">
-            <i class="fas fa-file-signature"></i>
-            <span>Surat Keterangan</span>
-        </button>
-        <button class="format-button format-button3" data-aos="zoom-in" data-aos-delay="300">
-            <i class="fas fa-file-invoice"></i>
-            <span>Surat Permohonan</span>
-        </button>
-        <button class="format-button format-button1" data-aos="zoom-in" data-aos-delay="400">
-            <i class="fas fa-file-contract"></i>
-            <span>Surat Undangan</span>
-        </button>
-    </div>
+  <div class="section-header">
+      <h1 class="main-title">Format Surat Warga</h1>
+      <p class="subtitle">Mohon digunakan secara bijaksana*</p>
+  </div>
+  
+  <div class="button-grid">
+      <button class="format-button format-button1" data-aos="zoom-in" data-aos-delay="100">
+          <i class="fas fa-file-alt"></i>
+          <span>Surat Pengantar</span>
+      </button>
+      <button class="format-button format-button2" data-aos="zoom-in" data-aos-delay="200">
+          <i class="fas fa-file-signature"></i>
+          <span>Surat Keterangan</span>
+      </button>
+      <button class="format-button format-button3" data-aos="zoom-in" data-aos-delay="300">
+          <i class="fas fa-file-invoice"></i>
+          <span>Surat Permohonan</span>
+      </button>
+      <button class="format-button format-button1" data-aos="zoom-in" data-aos-delay="400">
+          <i class="fas fa-file-contract"></i>
+          <span>Surat Undangan</span>
+      </button>
+  </div>
 </div>
 
-<script is:inline>
-  // Client-side rendering of Warga list from admin storage
-  (function(){
-    const STORAGE_KEY = 'warga_data_v1';
-    const PAGE_SIZE = 10;
-    let currentPage = 1;
-    let allDataCache = [];
+<!-- Informasi Komplek (moved from userinfo.astro) -->
+<section class="user-informasi-ui" data-aos="fade-up" data-aos-delay="150">
+<div class="section-header pre-anim">
+  <div>
+    <h2 class="section-title">Informasi Komplek</h2>
+    <p class="section-subtitle">Update terbaru dari pengurus dan lingkungan komplek</p>
+  </div>
+</div>
 
-    function safeParse(json, fallback){
-      try { return JSON.parse(json); } catch { return fallback; }
+<div class="card-subheader">
+  <div id="uinfo-chips" class="chips">
+    <button class="chip pressable" data-cat="all" aria-pressed="true"><i class="fas fa-layer-group"></i> Semua</button>
+    <span id="uinfo-tag-host"></span>
+  </div>
+</div>
+
+<div class="card-body">
+  <div id="uinfo-grid" class="info-grid grid-mode stagger-container" aria-live="polite"></div>
+</div>
+</section>
+
+<style>
+.user-informasi-ui { 
+  --primary: #085895; --outline:#e6eaf0; --outline-2:#d8dde5; --surface:#fff; --surface-2:#f7f9fc; --text:#0f172a; --text-muted:#64748b; --ring:#93c5fd;
+  display:grid; gap:12px; margin: 28px 0; padding: 0 16px;
+}
+.sr-only{ position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
+.pre-anim{ opacity:0; transform:translateY(8px); }
+@keyframes kk-fade-up { to{ opacity:1; transform:none; } }
+.section-header-card{ display:grid; grid-template-columns:1fr auto; align-items:center; gap:14px; background:var(--surface); border:1px solid var(--outline); border-radius:16px; padding:12px 14px; }
+.section-header-left{ display:grid; grid-template-columns:auto 1fr; gap:10px; align-items:center; min-width:0; }
+.section-icon{ width:42px; height:42px; display:grid; place-items:center; border:1px solid var(--outline); border-radius:12px; background:#eef5ff; color:var(--primary); }
+.section-title h2{ margin:0; font-size:1.08rem; font-weight:900; }
+.section-title p{ margin:3px 0 0; color:var(--text-muted); font-weight:700; }
+.section-actions{ display:inline-grid; grid-auto-flow:column; gap:10px; align-items:center; }
+.input-group{ position:relative; width:100%; max-width:420px; min-width:220px; }
+.input-group input{ width:100%; height:40px; border-radius:999px; border:1px solid var(--outline); background:linear-gradient(180deg,var(--surface-2),var(--surface)); padding:0 12px 0 40px; font-weight:600; color:var(--text); outline:none; }
+.input-icon{ position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#7c8aa3; }
+.select-box .select{ height:40px; border-radius:12px; border:1px solid var(--outline); background:var(--surface-2); padding:0 10px; font-weight:800; color:var(--text); }
+
+.card-subheader{ padding:8px 0; }
+.chips{ display:flex; gap:8px; overflow-x:auto; padding:4px 2px 8px; }
+
+.card-body{ padding: 0; }
+
+/* Title style consistent with info.astro */
+.section-header{ display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:8px; }
+.section-title{ font-size:2rem; font-weight:800; color:#1e293b; margin:0; position:relative; letter-spacing:.2px; }
+.section-title::after{ content:""; position:absolute; bottom:-8px; left:0; width:60px; height:3px; background:linear-gradient(90deg, #085895, #00b4d8); border-radius:3px; }
+.section-subtitle{ margin:.6rem 0 0; color:#64748b; font-weight:600; font-size:.95rem; }
+
+/* info card/list visuals pulled from global styles */
+.sk-line.lg{ height:16px; border-radius:8px; }
+@keyframes shimmer{ 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+
+/* Entrance + hover micro interactions */
+@keyframes cardIn { from { opacity:0; transform: translateY(10px) scale(.98); } to { opacity:1; transform:none; } }
+.info-card{ transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; }
+.info-card.enter-anim{ animation: cardIn .5s cubic-bezier(.22,.61,.36,1) both; animation-delay: calc(var(--d, 0) * 65ms); }
+.info-card:hover{ transform: translateY(-4px); box-shadow: 0 10px 24px rgba(2,6,23,.12); }
+.info-card .thumb{ transition: transform .3s ease, opacity .3s ease; }
+.info-card:hover .thumb{ transform: scale(1.02); }
+
+/* Chip states */
+.chip{ transition: background-color .18s ease, color .18s ease, border-color .18s ease, transform .06s ease; }
+.chip:focus-visible{ outline: none; box-shadow: 0 0 0 3px rgba(2,132,199,.35); }
+.chip:active{ transform: scale(.98); }
+.chip.active{ background:#0a5fb3; color:#fff; border-color:#0a5fb3; }
+
+/* Ribbon gentle float */
+@keyframes floaty { from { transform: rotate(45deg) translateY(0); } to { transform: rotate(45deg) translateY(-2px); } }
+.pin-ribbon{ animation: floaty 2.6s ease-in-out infinite alternate; }
+
+@media (max-width:780px){ .info-row{ grid-template-columns:72px 1fr; } }
+</style>
+
+<!-- Shared global primitives from Admin Informasi (ensures design parity) -->
+<style is:global>
+/* Buttons */
+.btn{ display:inline-flex; align-items:center; gap:8px; height:38px; padding:0 14px; border-radius:10px; border:1px solid #e6eef7; background:#f7fbff; color:#0d3f66; font-weight:800; box-shadow: 0 3px 10px rgba(0,0,0,.04); }
+.btn.light{ background:#eef5fd; color:#085895; border-color:#d6e6f7; }
+.btn.soft{ background:#eaf3ff; color:#0a6bb2; border-color:#cfe0f2; }
+.btn.danger{ background:#fff1f0; color:#e74c3c; border-color:#ffd6d6; }
+.btn.sm{ height:32px; padding:0 12px; border-radius:8px; }
+
+/* Chips and segmented */
+.chips{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
+.chip{ display:inline-flex; align-items:center; gap:8px; height:34px; padding:0 12px; border-radius:999px; border:1px solid #d9e7f8; background:#eef5ff; color:#0a5fb3; font-weight:800; white-space:nowrap; }
+.segmented{ display:inline-flex; background:#f0f5fb; border:1px solid #e1eaf6; border-radius:12px; padding:2px; }
+.segmented .seg-btn{ display:inline-flex; align-items:center; gap:6px; height:34px; padding:0 12px; border:0; background:transparent; color:#24303f; font-weight:800; border-radius:10px; }
+.segmented .seg-btn.active{ background:#fff; border:1px solid #e6eef7; }
+
+/* Grid/List containers */
+.info-grid.grid-mode{ display:grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap:12px; }
+.info-grid.list-mode{ display:grid; gap:8px; }
+
+/* Cards */
+.info-card{ position:relative; background:#fff; border:1px solid #e6eef7; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.06); overflow:hidden; }
+.info-card .thumb{ width:100%; height:160px; object-fit:cover; background:#f2f6fb; display:block; }
+.info-card .pad{ padding:.85rem .95rem; display:grid; gap:.55rem; }
+.info-card .info-meta{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; color:#5b6778; font-size:.85rem; }
+.info-card .badge{ display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 10px; border-radius:999px; border:1px solid #e6eef7; font-weight:800; }
+.info-card .badge.pill{ background:#eef5ff; color:#0a5fb3; border-color:#d9e7f8; }
+.info-card .badge.new{ background:#e8f6ee; color:#0c6b2f; border-color:#d7eadf; }
+.info-card h3{ margin:.1rem 0 0; font-size:1.02rem; font-weight:900; color:#24303f; line-height:1.25; }
+.info-card p{ margin:0; color:#6b7686; font-size:.93rem; line-height:1.35; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+
+/* Rows */
+.info-row{ display:grid; grid-template-columns:96px 1fr auto; gap:12px; align-items:center; background:#fff; border:1px solid #e6eef7; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.06); padding:8px; }
+.info-row .row-thumb{ width:96px; height:64px; object-fit:cover; background:#f2f6fb; border-radius:8px; border:1px solid #e6eef7; }
+.info-row .row-content{ display:grid; gap:4px; }
+.info-row .row-title{ display:flex; align-items:center; gap:8px; font-weight:900; }
+.info-row .row-meta{ display:flex; gap:8px; flex-wrap:wrap; color:#5b6778; font-size:.85rem; }
+.info-row .row-actions{ display:inline-flex; gap:6px; }
+
+/* Diagonal pinned ribbon */
+.pin-ribbon,
+.info-card > .pin-ribbon,
+.info-row > .pin-ribbon{
+  position:absolute; top:1rem !important; right:-3rem !important; background:#2563eb !important; color:#fff !important;
+  padding:.5rem 3rem !important; font-size:.8rem !important; font-weight:800 !important; text-transform:uppercase !important;
+  transform:rotate(45deg) !important; box-shadow:0 2px 10px rgba(37,99,235,0.3) !important; letter-spacing:.3px !important; z-index:5 !important;
+  pointer-events:none !important; user-select:none !important; display:inline-block !important;
+}
+
+/* Category color pills */
+.cat-Umum{ background:#eef5ff; color:#0a5fb3; border-color:#d9e7f8; }
+.cat-Keamanan{ background:#fff2f2; color:#b22234; border-color:#f4c7ce; }
+.cat-Lingkungan{ background:#ebfaef; color:#0c6b2f; border-color:#cfe9d9; }
+.cat-Acara{ background:#fff7e6; color:#b87300; border-color:#f1e0b9; }
+
+@media (max-width:780px){ .info-row{ grid-template-columns:72px 1fr auto; } .info-row .row-thumb{ width:72px; height:56px; } }
+</style>
+
+<script>
+// @ts-nocheck
+(() => {
+  function init(){
+    const root = document.querySelector('.user-informasi-ui');
+    if (!root) return;
+    const grid = document.getElementById('uinfo-grid');
+    const chips = document.getElementById('uinfo-chips');
+    const tagHost = document.getElementById('uinfo-tag-host');
+
+    const STORAGE_KEY = 'kk_infos_v3';
+    const TAGS_KEY = 'kk_info_tags_v1';
+    let activeCat = 'all';
+    let isLoading = true;
+    let sortMode = 'newest'; // fixed per design
+
+    const readData = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; } };
+    const readTags = () => { try { return JSON.parse(localStorage.getItem(TAGS_KEY) || '[]'); } catch { return []; } };
+    const fmtDate = (iso) => { if (!iso) return '-'; try { const d = new Date(iso + 'T00:00:00'); return d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' }); } catch { return iso; } };
+    const isNewInfo = (iso) => { if (!iso) return false; const d = new Date(iso + 'T00:00:00').getTime(); return (Date.now() - d) / 86400000 <= 3; };
+
+    function renderTagChips(){
+      if (!tagHost) return;
+      const tags = readTags();
+      tagHost.innerHTML = '';
+      tags.forEach(tag => {
+        const btn = document.createElement('button');
+        btn.className = 'chip pressable';
+        btn.setAttribute('data-cat', tag);
+        btn.innerHTML = `<i class="fas fa-tag"></i> ${tag}`;
+        tagHost.appendChild(btn);
+      });
+      setActiveChips();
+    }
+    function setActiveChips(){
+      if (!chips) { render(); return; }
+      chips.querySelectorAll('.chip').forEach((b) => {
+        const cat = b.getAttribute('data-cat');
+        const isAll = cat === 'all';
+        const isCat = !!cat && cat === activeCat;
+        const pressed = isAll ? activeCat === 'all' : isCat;
+        b.classList.toggle('active', pressed);
+        b.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+      });
+      render();
     }
 
-    function load(){
-      const raw = localStorage.getItem(STORAGE_KEY);
-      const data = safeParse(raw, []);
-      const arr = Array.isArray(data) ? data : [];
-      allDataCache = arr;
-      return arr;
-    }
+    function render(){
+      if (!grid) return;
+      const items = readData();
+      grid.innerHTML = '';
+      grid.classList.add('grid-mode');
+      grid.classList.remove('list-mode');
 
-    function matchesQuery(w, q){
-      if(!q) return true;
-      const t = q.toLowerCase();
-      const fields = [w.nama, w.nik, w.kk, w.alamat, w.rt, w.rw, w.no_rumah, w.telepon];
-      return fields.some(v => String(v||'').toLowerCase().includes(t));
-    }
-
-    function render(items){
-      const listEl = document.querySelector('.data-warga-section .data-list');
-      if(!listEl) return;
-      listEl.innerHTML = '';
-      if(!items.length){
-        const empty = document.createElement('div');
-        empty.className = 'data-item';
-        empty.innerHTML = `
-          <div class="data-icon"><i class="fas fa-info-circle"></i></div>
-          <div class="data-content">
-            <p class="data-block">Belum ada data warga</p>
-            <p class="data-family">Silakan hubungi pengurus atau cek halaman admin.</p>
-          </div>
-        `;
-        listEl.appendChild(empty);
+      if (isLoading){
+        const sk = () => `<div class="card-skeleton"><div class=\"skeleton sk-thumb\"></div><div class=\"skeleton sk-line lg\" style=\"width:60%; margin:.5rem 0\"></div><div class=\"skeleton sk-line\" style=\"width:90%; margin-bottom:.9rem;\"></div></div>`;
+        grid.innerHTML = sk()+sk()+sk()+sk();
         return;
       }
 
-      items.sort((a,b)=>{
+      let filtered = items.filter(x => (activeCat === 'all' || x.category === activeCat));
+
+      filtered = filtered.sort((a,b) => (b.date||'').localeCompare(a.date||''));
+
+      if (filtered.length === 0){
+        grid.innerHTML = `<div class=\"empty-state\"><i class=\"fas fa-inbox\"></i><div>Tidak ada informasi ditemukan</div></div>`;
+        return;
+      }
+
+      const frag = document.createDocumentFragment();
+      filtered.forEach((item, idx) => {
+        const card = document.createElement('article');
+        card.className = 'info-card enter-anim' + (item.pinned ? ' pinned' : '');
+        card.style.setProperty('--d', String(idx));
+        card.innerHTML = `
+          ${item.pinned ? `<div class=\"pin-ribbon\">Pinned</div>` : ``}
+          ${item.banner ? `<img class=\"thumb\" src=\"${item.banner}\" alt=\"${item.title}\" />` : `<div class=\"thumb\"></div>`}
+          <div class=\"pad\">
+            <div class=\"info-meta\">
+              <span class=\"badge pill cat-${item.category || 'Umum'}\"><i class=\"fas fa-tag\"></i> ${item.category || 'Umum'}</span>
+              <div>${isNewInfo(item.date) ? `<span class=\"badge new\"><i class=\"fas fa-bolt\"></i> Baru</span>` : ``} <time>${fmtDate(item.date)}</time></div>
+            </div>
+            <h3>${item.title || '-'}</h3>
+            <p>${item.content || ''}</p>
+          </div>`;
+        frag.appendChild(card);
+      });
+      grid.appendChild(frag);
+    }
+
+    // events
+    chips?.addEventListener('click', (e) => { const btn = e.target?.closest?.('.chip'); if (!btn) return; if (btn.hasAttribute('data-cat')) { activeCat = btn.getAttribute('data-cat') || 'all'; } setActiveChips(); });
+    chips?.addEventListener('keydown', (e) => { const t = e.target; if ((e.key==='Enter' || e.key===' ') && t?.classList.contains('chip')){ e.preventDefault(); t.click(); } });
+
+    // header reveal
+    const header = root.querySelector('.section-header');
+    setTimeout(()=>{ if(header){ header.style.animation = 'kk-fade-up .5s ease-out forwards'; }}, 50);
+
+    // initial render
+    renderTagChips();
+    render();
+    setTimeout(() => { isLoading = false; render(); }, 450);
+
+    // live update when admin changes localStorage
+    window.addEventListener('storage', (e) => { if (e.key === STORAGE_KEY || e.key === TAGS_KEY){ renderTagChips(); render(); } });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+<script is:inline>
+// Client-side rendering of Warga list from admin storage
+(function(){
+  const STORAGE_KEY = 'warga_data_v1';
+  const PAGE_SIZE = 10;
+  let currentPage = 1;
+  let allDataCache = [];
+
+  function safeParse(json, fallback){
+    try { return JSON.parse(json); } catch { return fallback; }
+  }
+
+  function load(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const data = safeParse(raw, []);
+    const arr = Array.isArray(data) ? data : [];
+    allDataCache = arr;
+    return arr;
+  }
+
+  function matchesQuery(w, q){
+    if(!q) return true;
+    const t = q.toLowerCase();
+    const fields = [w.nama, w.nik, w.kk, w.alamat, w.rt, w.rw, w.no_rumah, w.telepon];
+    return fields.some(v => String(v||'').toLowerCase().includes(t));
+  }
+
+  function render(items){
+    const listEl = document.querySelector('.data-warga-section .data-list');
+    if(!listEl) return;
+    listEl.innerHTML = '';
+    if(!items.length){
+      const empty = document.createElement('div');
+      empty.className = 'data-item';
+      empty.innerHTML = `
+        <div class="data-icon"><i class="fas fa-info-circle"></i></div>
+        <div class="data-content">
+          <p class="data-block">Belum ada data warga</p>
+          <p class="data-family">Silakan hubungi pengurus atau cek halaman admin.</p>
+        </div>
+      `;
+      listEl.appendChild(empty);
+      return;
+    }
+
+    items.sort((a,b)=>{
+      const rw = String(a.rw||'').localeCompare(String(b.rw||''));
+      if(rw!==0) return rw;
+      const rt = String(a.rt||'').localeCompare(String(b.rt||''));
+      if(rt!==0) return rt;
+      return String(a.alamat||'').localeCompare(String(b.alamat||''));
+    });
+
+    // compute pagination window
+    const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+    if(currentPage > totalPages) currentPage = totalPages;
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+    const pageItems = items.slice(startIndex, endIndex);
+
+    const frag = document.createDocumentFragment();
+    pageItems.forEach((w, idx)=>{
+      const item = document.createElement('div');
+      item.className = 'data-item';
+      item.setAttribute('data-aos','fade-right');
+      item.setAttribute('data-aos-delay', String(100 + (idx%5)*50));
+      const blok = w.alamat || `RT ${w.rt||'-'} / RW ${w.rw||'-'}`;
+      const keluarga = w.nama ? `Keluarga ${w.nama}` : 'Nama tidak tersedia';
+      const status = String(w.status||'').toLowerCase();
+      const verified = Boolean(w.verified);
+      const statusClass = status === 'aktif' ? 'badge-success' : (status === 'pindah' ? 'badge-warning' : 'badge-muted');
+      const tel = w.telepon ? String(w.telepon).replace(/\s|-/g,'') : '';
+      const wa = tel ? `https://wa.me/${encodeURIComponent(tel)}?text=${encodeURIComponent('Halo ' + (w.nama||'Warga') + ', saya dari pengurus komplek.')}` : '';
+      const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(blok)}`;
+      const copyText = [blok, (w.nama?('Keluarga '+w.nama):''), `RT ${w.rt||'-'} / RW ${w.rw||'-'}`, (w.no_rumah?('No. '+w.no_rumah):''), (w.telepon?('Tel '+w.telepon):'')].filter(Boolean).join(' | ');
+      item.innerHTML = `
+        <div class=\"data-icon\"><i class=\"fas fa-home\"></i></div>
+        <div class=\"data-content\">
+          <div class=\"data-header\">
+            <p class=\"data-block\">${blok}</p>
+            <div class=\"badges\">
+              <span class=\"badge ${statusClass}\">${status ? status.charAt(0).toUpperCase()+status.slice(1) : 'Tidak diketahui'}</span>
+              ${verified ? '<span class=\"badge badge-verify\"><i class=\"fas fa-check\"></i> Terverifikasi</span>' : '<span class=\"badge badge-unverify\"><i class=\"fas fa-exclamation\"></i> Belum Verif</span>'}
+            </div>
+          </div>
+          <p class=\"data-family\">${keluarga}</p>
+          <div class=\"chips\">
+            <span class=\"chip\"><i class=\"fas fa-map-signs\"></i> RT ${w.rt||'-'} / RW ${w.rw||'-'}</span>
+            ${w.no_rumah ? '<span class=\"chip\"><i class=\"fas fa-door-closed\"></i> No. '+w.no_rumah+'</span>' : ''}
+            ${w.telepon ? '<a href=\"tel:'+tel+'\" class=\"chip chip-link\"><i class=\"fas fa-phone\"></i> '+w.telepon+'</a>' : ''}
+          </div>
+          <div class=\"card-actions\">
+            ${tel ? '<a class=\"action-btn call\" href=\"tel:'+tel+'\" title=\"Telepon\"><i class=\"fas fa-phone\"></i></a>' : ''}
+            ${wa ? '<a class=\"action-btn wa\" href=\"'+wa+'\" target=\"_blank\" rel=\"noopener\" title=\"WhatsApp\"><i class=\"fab fa-whatsapp\"></i></a>' : ''}
+            <button class=\"action-btn copy\" data-copy=\"${copyText.replace(/\"/g,'\\\"')}\" title=\"Salin\"><i class=\"fas fa-copy\"></i></button>
+            <a class=\"action-btn map\" href=\"${maps}\" target=\"_blank\" rel=\"noopener\" title=\"Maps\"><i class=\"fas fa-location-arrow\"></i></a>
+          </div>
+        </div>
+      `;
+      frag.appendChild(item);
+    });
+    listEl.appendChild(frag);
+
+    renderPagination(totalPages);
+  }
+
+  function apply(){
+    const section = document.querySelector('.data-warga-section');
+    const searchInput = section?.querySelector('.search-input');
+    const rtSel = section?.querySelector('.ctrl.rt');
+    const rwSel = section?.querySelector('.ctrl.rw');
+    const stSel = section?.querySelector('.ctrl.status');
+    const vfSel = section?.querySelector('.ctrl.verif');
+    const sortSel = section?.querySelector('.ctrl.sort');
+
+    // ensure cache loaded at least once
+    const all = allDataCache.length ? allDataCache : load();
+    const q = (searchInput && searchInput.value || '').trim();
+    let rows = all.filter(w => matchesQuery(w, q));
+    if(rtSel && rtSel.value) rows = rows.filter(r => String(r.rt||'') === rtSel.value);
+    if(rwSel && rwSel.value) rows = rows.filter(r => String(r.rw||'') === rwSel.value);
+    if(stSel && stSel.value) rows = rows.filter(r => String(r.status||'').toLowerCase() === stSel.value);
+    if(vfSel && vfSel.value !== '') rows = rows.filter(r => String(!!r.verified) === vfSel.value);
+
+    // sort
+    const mode = sortSel && sortSel.value || 'rw_rt';
+    if(mode === 'nama'){
+      rows.sort((a,b)=> String(a.nama||'').localeCompare(String(b.nama||'')));
+    } else if(mode === 'status'){
+      rows.sort((a,b)=> String(a.status||'').localeCompare(String(b.status||'')));
+    } else {
+      rows.sort((a,b)=>{
         const rw = String(a.rw||'').localeCompare(String(b.rw||''));
         if(rw!==0) return rw;
         const rt = String(a.rt||'').localeCompare(String(b.rt||''));
         if(rt!==0) return rt;
         return String(a.alamat||'').localeCompare(String(b.alamat||''));
       });
+    }
 
-      // compute pagination window
-      const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
-      if(currentPage > totalPages) currentPage = totalPages;
-      const startIndex = (currentPage - 1) * PAGE_SIZE;
-      const endIndex = startIndex + PAGE_SIZE;
-      const pageItems = items.slice(startIndex, endIndex);
+    // update count
+    const cnt = document.getElementById('dw-count');
+    if(cnt) cnt.textContent = rows.length ? `(${rows.length})` : '';
 
-      const frag = document.createDocumentFragment();
-      pageItems.forEach((w, idx)=>{
-        const item = document.createElement('div');
-        item.className = 'data-item';
-        item.setAttribute('data-aos','fade-right');
-        item.setAttribute('data-aos-delay', String(100 + (idx%5)*50));
-        const blok = w.alamat || `RT ${w.rt||'-'} / RW ${w.rw||'-'}`;
-        const keluarga = w.nama ? `Keluarga ${w.nama}` : 'Nama tidak tersedia';
-        const status = String(w.status||'').toLowerCase();
-        const verified = Boolean(w.verified);
-        const statusClass = status === 'aktif' ? 'badge-success' : (status === 'pindah' ? 'badge-warning' : 'badge-muted');
-        item.innerHTML = `
-          <div class=\"data-icon\"><i class=\"fas fa-home\"></i></div>
-          <div class=\"data-content\">
-            <div class=\"data-header\">
-              <p class=\"data-block\">${blok}</p>
-              <div class=\"badges\">
-                <span class=\"badge ${statusClass}\">${status ? status.charAt(0).toUpperCase()+status.slice(1) : 'Tidak diketahui'}</span>
-                ${verified ? '<span class=\"badge badge-verify\"><i class=\"fas fa-check\"></i> Terverifikasi</span>' : '<span class=\"badge badge-unverify\"><i class=\"fas fa-exclamation\"></i> Belum Verif</span>'}
-              </div>
-            </div>
-            <p class=\"data-family\">${keluarga}</p>
-            <div class=\"chips\">
-              <span class=\"chip\"><i class=\"fas fa-map-signs\"></i> RT ${w.rt||'-'} / RW ${w.rw||'-'}</span>
-              ${w.no_rumah ? '<span class=\"chip\"><i class=\"fas fa-door-closed\"></i> No. '+w.no_rumah+'</span>' : ''}
-              ${w.telepon ? '<a href=\"tel:'+w.telepon+'\" class=\"chip chip-link\"><i class=\"fas fa-phone\"></i> '+w.telepon+'</a>' : ''}
-            </div>
-          </div>
-          <div class=\"data-arrow\"><i class=\"fas fa-chevron-right\"></i></div>
-        `;
-        frag.appendChild(item);
+    render(rows);
+  }
+
+  function renderPagination(totalPages){
+    const pag = document.querySelector('.data-warga-section .pagination');
+    if(!pag) return;
+    const numbers = pag.querySelector('.page-numbers');
+    const prev = pag.querySelector('.prev');
+    const next = pag.querySelector('.next');
+    if(numbers) numbers.innerHTML = '';
+    if(totalPages <= 1){
+      pag.style.display = 'none';
+      return;
+    }
+    pag.style.display = 'flex';
+    const frag = document.createDocumentFragment();
+    for(let p=1;p<=totalPages;p++){
+      const btn = document.createElement('button');
+      btn.className = 'page-btn' + (p===currentPage ? ' active' : '');
+      btn.textContent = String(p);
+      btn.addEventListener('click', ()=>{
+        if(p===currentPage) return;
+        currentPage = p;
+        apply();
+        const section = document.querySelector('.data-warga-section');
+        section && section.scrollIntoView({behavior:'smooth', block:'start'});
       });
-      listEl.appendChild(frag);
-
-      renderPagination(totalPages);
+      frag.appendChild(btn);
     }
-
-    function apply(){
-      const section = document.querySelector('.data-warga-section');
-      const searchInput = section?.querySelector('.search-input');
-      const rtSel = section?.querySelector('.ctrl.rt');
-      const rwSel = section?.querySelector('.ctrl.rw');
-      const stSel = section?.querySelector('.ctrl.status');
-      const vfSel = section?.querySelector('.ctrl.verif');
-      const sortSel = section?.querySelector('.ctrl.sort');
-
-      // ensure cache loaded at least once
-      const all = allDataCache.length ? allDataCache : load();
-      const q = (searchInput && searchInput.value || '').trim();
-      let rows = all.filter(w => matchesQuery(w, q));
-      if(rtSel && rtSel.value) rows = rows.filter(r => String(r.rt||'') === rtSel.value);
-      if(rwSel && rwSel.value) rows = rows.filter(r => String(r.rw||'') === rwSel.value);
-      if(stSel && stSel.value) rows = rows.filter(r => String(r.status||'').toLowerCase() === stSel.value);
-      if(vfSel && vfSel.value !== '') rows = rows.filter(r => String(!!r.verified) === vfSel.value);
-
-      // sort
-      const mode = sortSel && sortSel.value || 'rw_rt';
-      if(mode === 'nama'){
-        rows.sort((a,b)=> String(a.nama||'').localeCompare(String(b.nama||'')));
-      } else if(mode === 'status'){
-        rows.sort((a,b)=> String(a.status||'').localeCompare(String(b.status||'')));
-      } else {
-        rows.sort((a,b)=>{
-          const rw = String(a.rw||'').localeCompare(String(b.rw||''));
-          if(rw!==0) return rw;
-          const rt = String(a.rt||'').localeCompare(String(b.rt||''));
-          if(rt!==0) return rt;
-          return String(a.alamat||'').localeCompare(String(b.alamat||''));
-        });
-      }
-
-      // update count
-      const cnt = document.getElementById('dw-count');
-      if(cnt) cnt.textContent = rows.length ? `(${rows.length})` : '';
-
-      render(rows);
+    if(numbers) numbers.appendChild(frag);
+    if(prev){
+      prev.disabled = currentPage === 1;
+      prev.onclick = ()=>{ if(currentPage>1){ currentPage--; apply(); }}
     }
+    if(next){
+      next.disabled = currentPage === totalPages;
+      next.onclick = ()=>{ if(currentPage<totalPages){ currentPage++; apply(); }}
+    }
+  }
 
-    function renderPagination(totalPages){
-      const pag = document.querySelector('.data-warga-section .pagination');
-      if(!pag) return;
-      const numbers = pag.querySelector('.page-numbers');
-      const prev = pag.querySelector('.prev');
-      const next = pag.querySelector('.next');
-      if(numbers) numbers.innerHTML = '';
-      if(totalPages <= 1){
-        pag.style.display = 'none';
-        return;
+  function populateFilterOptions(){
+    const section = document.querySelector('.data-warga-section');
+    const rtSel = section?.querySelector('.ctrl.rt');
+    const rwSel = section?.querySelector('.ctrl.rw');
+    const rts = Array.from(new Set(allDataCache.map(x=>String(x.rt||'')).filter(Boolean))).sort();
+    const rws = Array.from(new Set(allDataCache.map(x=>String(x.rw||'')).filter(Boolean))).sort();
+    if(rtSel){
+      const cur = rtSel.value;
+      rtSel.innerHTML = '<option value="">RT: Semua</option>' + rts.map(v=>`<option value="${v}">${v}</option>`).join('');
+      if(cur) rtSel.value = cur;
+    }
+    if(rwSel){
+      const cur = rwSel.value;
+      rwSel.innerHTML = '<option value="">RW: Semua</option>' + rws.map(v=>`<option value="${v}">${v}</option>`).join('');
+      if(cur) rwSel.value = cur;
+    }
+  }
+
+  function init(){
+    load();
+    populateFilterOptions();
+    apply();
+    const searchInput = document.querySelector('.data-warga-section .search-input');
+    const section = document.querySelector('.data-warga-section');
+    const rtSel = section?.querySelector('.ctrl.rt');
+    const rwSel = section?.querySelector('.ctrl.rw');
+    const stSel = section?.querySelector('.ctrl.status');
+    const vfSel = section?.querySelector('.ctrl.verif');
+    const sortSel = section?.querySelector('.ctrl.sort');
+    const btnClear = section?.querySelector('.btn.clear');
+    const btnRefresh = section?.querySelector('.btn.refresh');
+    const btnSearch = section?.querySelector('.search-button');
+    if(searchInput){
+      let t;
+      searchInput.addEventListener('input', ()=>{
+        clearTimeout(t);
+        currentPage = 1;
+        t = setTimeout(apply, 150);
+      });
+      searchInput.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter'){ e.preventDefault(); currentPage = 1; apply(); }
+      });
+    }
+    [rtSel,rwSel,stSel,vfSel,sortSel].forEach(sel=>{
+      sel && sel.addEventListener('change', ()=>{ currentPage = 1; apply(); });
+    });
+    if(btnClear){
+      btnClear.addEventListener('click', ()=>{
+        if(rtSel) rtSel.value=''; if(rwSel) rwSel.value=''; if(stSel) stSel.value=''; if(vfSel) vfSel.value=''; if(searchInput) searchInput.value='';
+        currentPage = 1; apply();
+      });
+    }
+    if(btnRefresh){
+      btnRefresh.addEventListener('click', ()=>{ load(); populateFilterOptions(); currentPage=1; apply(); });
+    }
+    if(btnSearch){
+      btnSearch.addEventListener('click', ()=>{ currentPage=1; apply(); });
+    }
+    // Delegated copy handler
+    document.addEventListener('click', (e)=>{
+      const t = e.target;
+      const btn = t && (t.closest ? t.closest('.action-btn.copy') : null);
+      if(btn){
+        const text = btn.getAttribute('data-copy') || '';
+        if(text){
+          navigator.clipboard?.writeText(text).then(()=>{
+            btn.classList.add('copied');
+            setTimeout(()=>btn.classList.remove('copied'), 800);
+          }).catch(()=>{});
+        }
       }
-      pag.style.display = 'flex';
-      const frag = document.createDocumentFragment();
-      for(let p=1;p<=totalPages;p++){
-        const btn = document.createElement('button');
-        btn.className = 'page-btn' + (p===currentPage ? ' active' : '');
-        btn.textContent = String(p);
-        btn.addEventListener('click', ()=>{
-          if(p===currentPage) return;
-          currentPage = p;
+    });
+    const scrollBtn = section?.querySelector('.scroll');
+    if(scrollBtn){
+      scrollBtn.addEventListener('click', ()=>{
+        const all = allDataCache.length ? allDataCache : load();
+        const totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
+        if(currentPage < totalPages){
+          currentPage++;
           apply();
-          const section = document.querySelector('.data-warga-section');
-          section && section.scrollIntoView({behavior:'smooth', block:'start'});
-        });
-        frag.appendChild(btn);
-      }
-      if(numbers) numbers.appendChild(frag);
-      if(prev){
-        prev.disabled = currentPage === 1;
-        prev.onclick = ()=>{ if(currentPage>1){ currentPage--; apply(); }}
-      }
-      if(next){
-        next.disabled = currentPage === totalPages;
-        next.onclick = ()=>{ if(currentPage<totalPages){ currentPage++; apply(); }}
-      }
-    }
-
-    function populateFilterOptions(){
-      const section = document.querySelector('.data-warga-section');
-      const rtSel = section?.querySelector('.ctrl.rt');
-      const rwSel = section?.querySelector('.ctrl.rw');
-      const rts = Array.from(new Set(allDataCache.map(x=>String(x.rt||'')).filter(Boolean))).sort();
-      const rws = Array.from(new Set(allDataCache.map(x=>String(x.rw||'')).filter(Boolean))).sort();
-      if(rtSel){
-        const cur = rtSel.value;
-        rtSel.innerHTML = '<option value="">RT: Semua</option>' + rts.map(v=>`<option value="${v}">${v}</option>`).join('');
-        if(cur) rtSel.value = cur;
-      }
-      if(rwSel){
-        const cur = rwSel.value;
-        rwSel.innerHTML = '<option value="">RW: Semua</option>' + rws.map(v=>`<option value="${v}">${v}</option>`).join('');
-        if(cur) rwSel.value = cur;
-      }
-    }
-
-    function init(){
-      load();
-      populateFilterOptions();
-      apply();
-      const searchInput = document.querySelector('.data-warga-section .search-input');
-      const section = document.querySelector('.data-warga-section');
-      const rtSel = section?.querySelector('.ctrl.rt');
-      const rwSel = section?.querySelector('.ctrl.rw');
-      const stSel = section?.querySelector('.ctrl.status');
-      const vfSel = section?.querySelector('.ctrl.verif');
-      const sortSel = section?.querySelector('.ctrl.sort');
-      const btnClear = section?.querySelector('.btn.clear');
-      const btnRefresh = section?.querySelector('.btn.refresh');
-      const btnSearch = section?.querySelector('.search-button');
-      if(searchInput){
-        let t;
-        searchInput.addEventListener('input', ()=>{
-          clearTimeout(t);
-          currentPage = 1;
-          t = setTimeout(apply, 150);
-        });
-        searchInput.addEventListener('keydown', (e)=>{
-          if(e.key === 'Enter'){ e.preventDefault(); currentPage = 1; apply(); }
-        });
-      }
-      [rtSel,rwSel,stSel,vfSel,sortSel].forEach(sel=>{
-        sel && sel.addEventListener('change', ()=>{ currentPage = 1; apply(); });
-      });
-      if(btnClear){
-        btnClear.addEventListener('click', ()=>{
-          if(rtSel) rtSel.value=''; if(rwSel) rwSel.value=''; if(stSel) stSel.value=''; if(vfSel) vfSel.value=''; if(searchInput) searchInput.value='';
-          currentPage = 1; apply();
-        });
-      }
-      if(btnRefresh){
-        btnRefresh.addEventListener('click', ()=>{ load(); populateFilterOptions(); currentPage=1; apply(); });
-      }
-      if(btnSearch){
-        btnSearch.addEventListener('click', ()=>{ currentPage=1; apply(); });
-      }
-      const scrollBtn = section?.querySelector('.scroll');
-      if(scrollBtn){
-        scrollBtn.addEventListener('click', ()=>{
-          const all = allDataCache.length ? allDataCache : load();
-          const totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
-          if(currentPage < totalPages){
-            currentPage++;
-            apply();
-            const list = section?.querySelector('.data-list');
-            list && list.scrollIntoView({behavior:'smooth', block:'start'});
-          } else {
-            // bounce animation when at end
-            scrollBtn.classList.add('bounce');
-            setTimeout(()=>scrollBtn.classList.remove('bounce'), 600);
-          }
-        });
-      }
-      window.addEventListener('storage', (e)=>{
-        if(e.key === STORAGE_KEY){ load(); populateFilterOptions(); apply(); }
+          const list = section?.querySelector('.data-list');
+          list && list.scrollIntoView({behavior:'smooth', block:'start'});
+        } else {
+          // bounce animation when at end
+          scrollBtn.classList.add('bounce');
+          setTimeout(()=>scrollBtn.classList.remove('bounce'), 600);
+        }
       });
     }
+    window.addEventListener('storage', (e)=>{
+      if(e.key === STORAGE_KEY){ load(); populateFilterOptions(); apply(); }
+    });
+  }
 
-    if(document.readyState === 'loading'){
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
-  })();
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 </script>
 
 <div class="data-warga-section" data-aos="fade-up" data-aos-delay="200">
-    <div class="section-header">
-        <h2 class="section-title">Data Warga <span class="section-count" id="dw-count"></span></h2>
-        <div class="search-container">
-            <input type="text" placeholder="Cari warga..." class="search-input" aria-label="Cari warga">
-            <button class="search-button" title="Cari"><i class="fas fa-search"></i></button>
-        </div>
-    </div>
-    <div class="controls">
-        <div class="filters">
-            <select class="ctrl rt" aria-label="Filter RT">
-              <option value="">RT: Semua</option>
-            </select>
-            <select class="ctrl rw" aria-label="Filter RW">
-              <option value="">RW: Semua</option>
-            </select>
-            <select class="ctrl status" aria-label="Filter Status">
-              <option value="">Status: Semua</option>
-              <option value="aktif">Aktif</option>
-              <option value="pindah">Pindah</option>
-              <option value="nonaktif">Nonaktif</option>
-            </select>
-            <select class="ctrl verif" aria-label="Filter Verifikasi">
-              <option value="">Verifikasi: Semua</option>
-              <option value="true">Terverifikasi</option>
-              <option value="false">Belum Verif</option>
-            </select>
-        </div>
-        <div class="actions">
-            <select class="ctrl sort" aria-label="Urutkan">
-              <option value="rw_rt">Urut: RW, RT, Alamat</option>
-              <option value="nama">Urut: Nama</option>
-              <option value="status">Urut: Status</option>
-            </select>
-            <button class="btn clear" title="Reset filter"><i class="fas fa-undo"></i> Reset</button>
-            <button class="btn refresh" title="Muat ulang"><i class="fas fa-sync"></i></button>
-        </div>
-    </div>
-    
-    <div class="data-list">
-        <!-- Will be populated dynamically from localStorage('warga_data_v1') -->
-    </div>
+  <div class="section-header">
+      <h2 class="section-title">Data Warga <span class="section-count" id="dw-count"></span></h2>
+      <div class="search-container">
+          <input type="text" placeholder="Cari warga..." class="search-input" aria-label="Cari warga">
+          <button class="search-button" title="Cari"><i class="fas fa-search"></i></button>
+      </div>
+  </div>
+  <div class="controls">
+      <div class="filters">
+          <select class="ctrl rt" aria-label="Filter RT">
+            <option value="">RT: Semua</option>
+          </select>
+          <select class="ctrl rw" aria-label="Filter RW">
+            <option value="">RW: Semua</option>
+          </select>
+          <select class="ctrl status" aria-label="Filter Status">
+            <option value="">Status: Semua</option>
+            <option value="aktif">Aktif</option>
+            <option value="pindah">Pindah</option>
+            <option value="nonaktif">Nonaktif</option>
+          </select>
+          <select class="ctrl verif" aria-label="Filter Verifikasi">
+            <option value="">Verifikasi: Semua</option>
+            <option value="true">Terverifikasi</option>
+            <option value="false">Belum Verif</option>
+          </select>
+      </div>
+      <div class="actions">
+          <select class="ctrl sort" aria-label="Urutkan">
+            <option value="rw_rt">Urut: RW, RT, Alamat</option>
+            <option value="nama">Urut: Nama</option>
+            <option value="status">Urut: Status</option>
+          </select>
+          <button class="btn clear" title="Reset filter"><i class="fas fa-undo"></i> Reset</button>
+          <button class="btn refresh" title="Muat ulang"><i class="fas fa-sync"></i></button>
+      </div>
+  </div>
+  
+  <div class="data-list">
+      <!-- Will be populated dynamically from localStorage('warga_data_v1') -->
+  </div>
 
-    <div class="scroll" data-aos="fade-up" data-aos-delay="400">
-        <div class="line"></div>
-        <div class="arrow-down">&lt;</div>
-        <div class="line"></div>
-    </div>
+  <div class="scroll" data-aos="fade-up" data-aos-delay="400">
+      <div class="line"></div>
+      <div class="arrow-down">&lt;</div>
+      <div class="line"></div>
+  </div>
 
-    <div class="pagination" data-aos="fade-up" data-aos-delay="450">
-        <button class="page-btn nav prev" title="Sebelumnya"><i class="fas fa-chevron-left"></i></button>
-        <div class="page-numbers"></div>
-        <button class="page-btn nav next" title="Berikutnya"><i class="fas fa-chevron-right"></i></button>
-    </div>
+  <div class="pagination" data-aos="fade-up" data-aos-delay="450">
+      <button class="page-btn nav prev" title="Sebelumnya"><i class="fas fa-chevron-left"></i></button>
+      <div class="page-numbers"></div>
+      <button class="page-btn nav next" title="Berikutnya"><i class="fas fa-chevron-right"></i></button>
+  </div>
 </div>
 
-
-<div class="komplek-info-section" data-aos="fade-up" data-aos-delay="300">
-    <div class="section-header">
-        <h2 class="info-title">Informasi Komplek</h2>
-        <div class="filter-container">
-            <button class="filter-btn active">Semua</button>
-            <button class="filter-btn">Pengumuman</button>
-            <button class="filter-btn">Kegiatan</button>
-            <button class="filter-btn">Lainnya</button>
-        </div>
-    </div>
-    
-    <div class="info-grid">
-        <div class="info-card" data-aos="fade-up" data-aos-delay="100">
-            <div class="info-badge">Pengumuman</div>
-            <div class="info-image-placeholder">
-                <i class="fas fa-trash-alt info-icon"></i>
-            </div>
-            <div class="info-content">
-                <h3 class="info-heading">Pengangkutan Sampah</h3>
-                <p class="info-text">Senin & Sabtu setiap 2 minggu sekali</p>
-                <div class="info-meta">
-                    <span class="info-date"><i class="fas fa-calendar-alt"></i> 10 Juni 2023</span>
-                    <button class="info-share"><i class="fas fa-share-alt"></i></button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="info-card" data-aos="fade-up" data-aos-delay="200">
-            <div class="info-badge">Lainnya</div>
-            <div class="info-image-placeholder">
-                <i class="fas fa-home info-icon"></i>
-            </div>
-            <div class="info-content">
-                <h3 class="info-heading">Tanah di Jual, Blok H no 08</h3>
-                <p class="info-text">Pemilik sebelumnya Pak Tanyo, Info selanjutrnya Hub : 0899999999</p>
-                <div class="info-meta">
-                    <span class="info-date"><i class="fas fa-calendar-alt"></i> 15 Juni 2023</span>
-                    <button class="info-share"><i class="fas fa-share-alt"></i></button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="info-card" data-aos="fade-up" data-aos-delay="300">
-            <div class="info-badge">Kegiatan</div>
-            <div class="info-image-placeholder">
-                <i class="fas fa-broom info-icon"></i>
-            </div>
-            <div class="info-content">
-                <h3 class="info-heading">Kegiatan Kerja Bakti</h3>
-                <p class="info-text">15, Agustus, 2025. Infromasi Untuk seluruh warga agar membersihkan area komplek dalam rangka HUT RI ke-80</p>
-                <div class="info-meta">
-                    <span class="info-date"><i class="fas fa-calendar-alt"></i> 20 Juni 2023</span>
-                    <button class="info-share"><i class="fas fa-share-alt"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="load-more-container" data-aos="fade-up" data-aos-delay="400">
-        <button class="load-more-btn">Muat Lebih Banyak <i class="fas fa-chevron-down"></i></button>
-    </div>
-</div>
 
 <style>
-
-/* infokomplek */
-
-.komplek-info-section {
-    background-color: #F7F2E9;
-    padding: 40px;
-    font-family: Arial, sans-serif;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    margin-bottom: 2rem;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.info-title {
-    font-size: 1.8em;
-    font-weight: bold;
-    color: #333;
-    margin: 0;
-    text-align: left;
-    position: relative;
-}
-
-.info-title::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, #085895, #00b4d8);
-    border-radius: 3px;
-}
-
-.filter-container {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.filter-btn {
-    background-color: transparent;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.filter-btn.active {
-    background-color: #085895;
-    color: white;
-    border-color: #085895;
-}
-
-.filter-btn:hover:not(.active) {
-    background-color: #f0f0f0;
-    border-color: #ccc;
-}
-
-.info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-.info-card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-.info-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-}
-
-.info-badge {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background-color: rgba(8, 88, 149, 0.9);
-    color: white;
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    z-index: 2;
-}
-
-.info-image-placeholder {
-    background: linear-gradient(135deg, rgba(8, 88, 149, 0.1) 0%, rgba(0, 180, 216, 0.2) 100%);
-    height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 0;
-}
-
-.info-icon {
-    font-size: 3rem;
-    color: #085895;
-    opacity: 0.7;
-}
-
-.info-content {
-    text-align: left;
-    padding: 1.5rem;
-    background-color: #fff;
-    flex: 1;
-}
-
-.info-heading {
-    font-size: 1.2em;
-    font-weight: 600;
-    color: #333;
-    margin-top: 0;
-    margin-bottom: 0.8rem;
-    transition: color 0.3s ease;
-}
-
-.info-card:hover .info-heading {
-    color: #085895;
-}
-
-.info-text {
-    font-size: 0.9em;
-    color: #666;
-    margin: 0 0 1rem 0;
-    line-height: 1.5;
-}
-
-.info-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid #eee;
-}
-
-.info-date {
-    font-size: 0.8rem;
-    color: #888;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.info-share {
-    background-color: #f5f5f5;
-    border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.info-share:hover {
-    background-color: #085895;
-    color: white;
-}
-
-.load-more-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 2rem;
-}
-
-.load-more-btn {
-    background-color: transparent;
-    border: 1px solid #085895;
-    color: #085895;
-    padding: 0.8rem 1.5rem;
-    border-radius: 30px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.load-more-btn:hover {
-    background-color: #085895;
-    color: white;
-}
-
-
 /* data Warga */
 .data-warga-section {
-    padding: 40px;
-    font-family: Arial, sans-serif;
-    background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    margin-bottom: 2rem;
+  padding: 40px;
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
 }
 
 .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .section-title {
-    font-size: 1.8em;
-    font-weight: bold;
-    color: #333;
-    margin: 0;
-    text-align: left;
-    position: relative;
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  text-align: left;
+  position: relative;
 }
 
 .section-title::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, #085895, #00b4d8);
-    border-radius: 3px;
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #085895, #00b4d8);
+  border-radius: 3px;
 }
 
 .search-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    max-width: 300px;
-    width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 300px;
+  width: 100%;
 }
 
 .search-input {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    border: 1px solid #ddd;
-    border-radius: 30px;
-    font-size: 0.9rem;
-    outline: none;
-    transition: all 0.3s ease;
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.3s ease;
 }
 
 .search-input:focus {
-    border-color: #085895;
-    box-shadow: 0 0 0 2px rgba(8, 88, 149, 0.1);
+  border-color: #085895;
+  box-shadow: 0 0 0 2px rgba(8, 88, 149, 0.1);
 }
 
 .search-button {
-    background-color: #085895;
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  background-color: #085895;
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .search-button:hover {
-    background-color: #064a7e;
-    transform: scale(1.05);
+  background-color: #064a7e;
+  transform: scale(1.05);
 }
 
 .data-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 980px){
+.data-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 .data-item {
-    background-color: #fff;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    transition: all 0.3s ease;
-    border-left: 4px solid #085895;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  padding: 1rem 1.2rem;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(12, 31, 60, 0.06);
+  border: 1px solid #e7eef6;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  column-gap: 12px;
+  row-gap: 6px;
+  transition: box-shadow .22s ease, transform .14s ease, border-color .22s ease;
 }
 
 .data-item:hover {
-    transform: translateX(10px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(12, 31, 60, 0.10);
+  border-color: #d9e7f8;
 }
 
 .data-icon {
-    background-color: rgba(8, 88, 149, 0.1);
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #085895;
-    font-size: 1.2rem;
+  background-color: rgba(8, 88, 149, 0.1);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #085895;
+  font-size: 1.2rem;
 }
 
-.data-content {
-    flex: 1;
-}
+.data-content { min-width: 0; }
 
 .data-block {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #333;
-    margin: 0 0 0.3rem 0;
-    transition: color 0.3s ease;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.3rem 0;
+  transition: color 0.3s ease;
 }
 
 .data-item:hover .data-block {
-    color: #085895;
+  color: #085895;
 }
 
 .data-family {
-    font-size: 0.9rem;
-    color: #666;
-    margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
 }
 
+.chips { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.4rem; }
+
+.chip {
+display:inline-flex; align-items:center; gap:.4rem;
+padding:.25rem .6rem; border-radius:999px; font-size:.8rem; font-weight:700;
+border:1px solid #e6eef7; background:#f3f7fc; color:#0a5fb3;
+}
+
+.chip i { opacity:.85; }
+
+.chip-link { text-decoration:none; }
+
 .data-arrow {
-    color: #ccc;
-    transition: all 0.3s ease;
+  color: #ccc;
+  transition: all 0.3s ease;
 }
 
 .data-item:hover .data-arrow {
-    color: #085895;
-    transform: translateX(5px);
+  color: #085895;
+  transform: translateX(5px);
 }
 
 .pagination {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
 }
 
 .page-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: transparent;
-    border: 1px solid #ddd;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
 }
 
 .page-btn.active {
-    background-color: #085895;
-    color: white;
-    border-color: #085895;
+  background-color: #085895;
+  color: white;
+  border-color: #085895;
 }
 
 .page-btn:hover:not(.active) {
-    background-color: #f0f0f0;
-    border-color: #ccc;
+  background-color: #f0f0f0;
+  border-color: #ccc;
 }
-    
+
+/* Action toolbar buttons */
+.card-actions { display:flex; gap:.4rem; margin-top:.6rem; }
+.action-btn {
+width:34px; height:34px; border-radius:999px; display:grid; place-items:center;
+border:1px solid #e6eef7; background:#f7fbff; color:#0d3f66; cursor:pointer;
+transition: transform .12s ease, box-shadow .2s ease, background .2s ease, color .2s ease, border-color .2s ease;
+}
+.action-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(0,0,0,.06); border-color:#d9e7f8; }
+.action-btn.call { background:#e8f6ee; color:#0c6b2f; border-color:#d7eadf; }
+.action-btn.wa { background:#e8f6ee; color:#128c7e; border-color:#cfe9d9; }
+.action-btn.map { background:#eef5ff; color:#0a5fb3; border-color:#d9e7f8; }
+.action-btn.copy { background:#f8f9fb; color:#455468; }
+.action-btn.copied { background:#e8f6ee; color:#0c6b2f; border-color:#cfe0d6; }
+  
 
 /* Surat */
 .document-format-section {
-    padding: 40px;
-    font-family: Arial, sans-serif;
-    background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    margin-bottom: 2rem;
+  padding: 40px;
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
 }
 
 .section-header {
-    margin-bottom: 2rem;
-    text-align: center;
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
 .main-title {
-    font-size: 2em;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 0.5rem;
-    position: relative;
-    display: inline-block;
+  font-size: 2em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+  position: relative;
+  display: inline-block;
 }
 
 .main-title::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 3px;
-    background: linear-gradient(90deg, #085895, #00b4d8);
-    border-radius: 3px;
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, #085895, #00b4d8);
+  border-radius: 3px;
 }
 
 .subtitle {
-    font-size: 1em;
-    color: #666;
-    margin-top: 1rem;
-    font-style: italic;
+  font-size: 1em;
+  color: #666;
+  margin-top: 1rem;
+  font-style: italic;
 }
 
 .button-grid {
-    display: flex;
-    flex-wrap: wrap; 
-    gap: 1.5rem; 
-    justify-content: center;
-    align-items: stretch;
-    margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 1.5rem; 
+  justify-content: center;
+  align-items: stretch;
+  margin-top: 2rem;
 }
 
 .format-button {
-    width: 250px;
-    height: auto;
-    min-height: 80px;
-    border-radius: 16px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    color: white;
-    border: none;
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden;
+  width: 250px;
+  height: auto;
+  min-height: 80px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+  border: none;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
 .format-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(-100%);
-    transition: transform 0.5s ease;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
 }
 
 .format-button:hover::before {
-    transform: translateX(0);
+  transform: translateX(0);
 }
 
 .format-button i {
-    font-size: 1.5rem;
+  font-size: 1.5rem;
 }
 
 .format-button span {
-    text-align: center;
-    line-height: 1.2;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .format-button1 {
-    background: linear-gradient(135deg, #2895BB, #1a6b8a);
+  background: linear-gradient(135deg, #2895BB, #1a6b8a);
 }
 
 .format-button1:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 20px rgba(40, 149, 187, 0.3);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(40, 149, 187, 0.3);
 }
 
 .format-button2 {
-    background: linear-gradient(135deg, #DD8669, #c56a4f);
+  background: linear-gradient(135deg, #DD8669, #c56a4f);
 }
 
 .format-button2:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 20px rgba(221, 134, 105, 0.3);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(221, 134, 105, 0.3);
 }
 
 .format-button3 {
-    background: linear-gradient(135deg, #6EAB8E, #4e8a6e);
+  background: linear-gradient(135deg, #6EAB8E, #4e8a6e);
 }
 
 .format-button3:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 20px rgba(110, 171, 142, 0.3);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(110, 171, 142, 0.3);
 }
 
-    
-    @media (max-width: 600px) {
-        .button-grid {
-            flex-direction: column;
-        }
-    }
+  
+  @media (max-width: 600px) {
+      .button-grid {
+          flex-direction: column;
+      }
+  }
 
-    .scroll {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 3rem;
-  cursor: pointer;
+  .scroll {
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 1rem;
+margin-top: 3rem;
+cursor: pointer;
 }
 
 .scroll .line{
-    background-color: #ccc;
-    margin: 5rem 0 5rem 0;
+  background-color: #ccc;
+  margin: 5rem 0 5rem 0;
 }
 
 .line{
-    width: 100px;
-    height: 2px;
+  width: 100px;
+  height: 2px;
 }
 
 .arrow-down {
-  font-size: 1.5rem;
-  color: #999;
-  transform: rotate(270deg);
+font-size: 1.5rem;
+color: #999;
+transform: rotate(270deg);
 }
 
 /* Controls (filters + actions) */
 .controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 1rem;
+flex-wrap: wrap;
+margin-bottom: 1rem;
 }
 .controls .filters,
 .controls .actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+display: flex;
+gap: 0.5rem;
+flex-wrap: wrap;
 }
 .controls .ctrl {
-  appearance: none;
-  padding: 0.6rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  background: #fff;
-  font-size: 0.9rem;
+appearance: none;
+padding: 0.6rem 1rem;
+border: 1px solid #ddd;
+border-radius: 10px;
+background: #fff;
+font-size: 0.9rem;
 }
 .controls .btn {
-  padding: 0.6rem 1rem;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  background: #f8f9fb;
-  color: #333;
-  cursor: pointer;
-  transition: all .2s ease;
+padding: 0.6rem 1rem;
+border-radius: 10px;
+border: 1px solid #ddd;
+background: #f8f9fb;
+color: #333;
+cursor: pointer;
+transition: all .2s ease;
 }
 .controls .btn:hover { background:#eef3f8; }
 .controls .btn.refresh { border-color:#085895; color:#085895; }
@@ -999,9 +1026,9 @@
 /* Badges and Chips */
 .badges { display:flex; gap:.4rem; flex-wrap:wrap; }
 .badge {
-  display:inline-flex; align-items:center; gap:.35rem;
-  padding:.25rem .6rem; border-radius:999px;
-  font-size:.75rem; font-weight:600;
+display:inline-flex; align-items:center; gap:.35rem;
+padding:.25rem .6rem; border-radius:999px;
+font-size:.75rem; font-weight:600;
 }
 .badge-success { background:#e9f7ef; color:#1e7e34; border:1px solid #cdebd7; }
 .badge-warning { background:#fff8e6; color:#b07600; border:1px solid #f5e3b8; }
@@ -1011,9 +1038,9 @@
 
 .chips { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.5rem; }
 .chip {
-  display:inline-flex; align-items:center; gap:.35rem;
-  background:#f6f7f9; color:#555; border:1px solid #e6e8eb;
-  padding:.3rem .6rem; border-radius:999px; font-size:.78rem;
+display:inline-flex; align-items:center; gap:.35rem;
+background:#f6f7f9; color:#555; border:1px solid #e6e8eb;
+padding:.3rem .6rem; border-radius:999px; font-size:.78rem;
 }
 .chip-link { color:#085895; border-color:#d6e8f7; background:#eef6fd; text-decoration:none; }
 

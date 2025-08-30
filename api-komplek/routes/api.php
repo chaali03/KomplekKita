@@ -14,7 +14,6 @@ use App\Http\Controllers\Komplek\WargaImportController;
 use App\Http\Controllers\Komplek\KeuanganImportController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\InformasiController;
-use App\Http\Controllers\AnggaranController;
 use App\Http\Controllers\WargaController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\TransaksiKeuanganController;
@@ -106,14 +105,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/transaksi/{id}', [TransaksiKeuanganController::class, 'destroy']);
     Route::get('/transaksi/summary', [TransaksiKeuanganController::class, 'summary']);
 
-    // Anggaran
-    Route::get('/anggaran', [AnggaranController::class, 'index']);
-    Route::post('/anggaran', [AnggaranController::class, 'store']);
-    Route::put('/anggaran/{id}', [AnggaranController::class, 'update']);
-    Route::patch('/anggaran/{id}', [AnggaranController::class, 'update']);
-    Route::delete('/anggaran/{id}', [AnggaranController::class, 'destroy']);
-    Route::get('/anggaran/summary', [AnggaranController::class, 'summary']);
-
     // Program
     Route::get('/program', [ProgramController::class, 'index']);
     Route::post('/program', [ProgramController::class, 'store']);
@@ -149,7 +140,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 // -----------------------------
 Route::get('/public/warga/stats', [WargaController::class, 'publicStats']);
 Route::get('/public/transaksi/summary', [TransaksiKeuanganController::class, 'summary']);
-Route::get('/public/anggaran/summary', [AnggaranController::class, 'summary']);
 Route::get('/public/program', [ProgramController::class, 'publicIndex']);
 Route::get('/public/informasi', [InformasiController::class, 'publicIndex']);
 Route::get('/public/iuran/status', [IuranController::class, 'status']);
