@@ -7,7 +7,25 @@
 ---
 <!-- Ensure proper viewport settings for responsive design -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<div class="admin-dashboard">
+
+<!-- Authentication Check -->
+<div id="auth-check" style="display: none;">
+  <div style="text-align: center; padding: 2rem; color: #666;">
+    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+    <p>Memeriksa autentikasi...</p>
+  </div>
+</div>
+
+<div id="unauthorized-access" style="display: none;">
+  <div style="text-align: center; padding: 2rem; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; margin: 1rem;">
+    <i class="fas fa-exclamation-triangle" style="color: #856404; font-size: 2rem; margin-bottom: 1rem;"></i>
+    <h3 style="color: #856404; margin-bottom: 0.5rem;">Akses Tidak Diizinkan</h3>
+    <p style="color: #856404; margin-bottom: 1rem;">Anda harus login dan menyelesaikan registrasi komplek untuk mengakses dashboard admin.</p>
+    <a href="/login" style="background: #667eea; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none;">Login Sekarang</a>
+  </div>
+</div>
+
+<div class="admin-dashboard" id="dashboard-content" style="display: none;">
   <!-- Dashboard Hero Section -->
   <div class="dashboard-hero pre-animation" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
     <div class="hero-content">
@@ -2599,5 +2617,19 @@ th.sortable[aria-sort="descending"] { color: var(--primary); }
   (root.querySelectorAll('button, .upgrade-chip, .btn-upgrade, .icon-button, .action-button, .pagination-button, .card-link') as NodeListOf<HTMLElement>).forEach((el) => {
     el.classList.add('pressable');
   });
+})();
+
+// Demo mode - show dashboard content directly without authentication
+(function showDemoContent() {
+  const authCheckEl = document.getElementById('auth-check');
+  const unauthorizedEl = document.getElementById('unauthorized-access');
+  const dashboardContent = document.getElementById('dashboard-content');
+  
+  // Hide loading and unauthorized messages
+  if (authCheckEl) authCheckEl.style.display = 'none';
+  if (unauthorizedEl) unauthorizedEl.style.display = 'none';
+  
+  // Show dashboard content immediately for demo
+  if (dashboardContent) dashboardContent.style.display = 'block';
 })();
 </script>

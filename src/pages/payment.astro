@@ -1,0 +1,704 @@
+---
+import Layout from "~/layouts/admin-layout.astro";
+import AdminSidebar from '../components/Admin-site/admin-sidebar.astro';
+import AdminTopbar from '../components/Admin-site/admin-topbar.astro';
+---
+
+<Layout>
+  <AdminSidebar slot="sidebar" />
+  <AdminTopbar slot="topbar" />
+  
+  <!-- Responsive CSS -->
+  <link rel="stylesheet" href="/css/payment-responsive.css" slot="head" />
+  
+  <script is:inline src="/js/midtrans-integration.js" slot="head"></script>
+
+  <div class="payment-page">
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+    </div>
+
+    <section class="payment-hero">
+      <a href="/admin/upgrade" class="back-button">
+        <i class="fas fa-arrow-left"></i> Kembali ke Pilihan Paket
+      </a>
+      <div class="hero-inner">
+        <div class="hero-content">
+          <div class="hero-badge">Pembayaran</div>
+          <h1>Selesaikan Pembayaran</h1>
+          <p class="hero-description">Anda hampir selesai! Lengkapi pembayaran untuk mengaktifkan fitur premium pada akun Anda.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="payment-details">
+      <div class="container">
+        <div class="payment-grid">
+          <div class="order-summary">
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-shopping-cart"></i> Ringkasan Pesanan</h3>
+              </div>
+              <div class="card-body">
+                <div class="order-item" id="selected-plan">
+                  <div class="item-details">
+                    <div class="item-name">Paket Premium</div>
+                    <div class="item-description">Langganan 1 bulan</div>
+                  </div>
+                  <div class="item-price">Rp 99.000</div>
+                </div>
+                <div class="order-total">
+                  <div class="total-label">Total Pembayaran</div>
+                  <div class="total-price" id="total-amount">Rp 99.000</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="payment-methods">
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-credit-card"></i> Metode Pembayaran</h3>
+              </div>
+              <div class="card-body">
+                <div class="payment-tabs">
+                  <div class="tab-headers">
+                    <button class="tab-header active" data-tab="bank-transfer">
+                      <i class="fas fa-university"></i> Transfer Bank
+                    </button>
+                    <button class="tab-header" data-tab="e-wallet">
+                      <i class="fas fa-wallet"></i> E-Wallet
+                    </button>
+                    <button class="tab-header" data-tab="credit-card">
+                      <i class="fas fa-credit-card"></i> Kartu Kredit
+                    </button>
+                  </div>
+
+                  <div class="tab-content">
+                    <div class="tab-pane active" id="bank-transfer">
+                      <div class="payment-options">
+                        <div class="payment-option">
+                          <input type="radio" name="payment-method" id="bca" value="bca" checked>
+                          <label for="bca">
+                            <div class="option-icon">
+                              <img src="/images/payment-logos/bca.svg" alt="BCA" class="payment-logo">
+                            </div>
+                            <div class="option-details">
+                              <div class="option-name">Bank BCA</div>
+                              <div class="option-description">Pembayaran melalui transfer bank BCA</div>
+                            </div>
+                          </label>
+                        </div>
+                        <div class="payment-option">
+                          <input type="radio" name="payment-method" id="bni" value="bni">
+                          <label for="bni">
+                            <div class="option-icon">
+                              <img src="/images/payment-logos/bni.svg" alt="BNI" class="payment-logo">
+                            </div>
+                            <div class="option-details">
+                              <div class="option-name">Bank BNI</div>
+                              <div class="option-description">Pembayaran melalui transfer bank BNI</div>
+                            </div>
+                          </label>
+                        </div>
+                        <div class="payment-option">
+                          <input type="radio" name="payment-method" id="mandiri" value="mandiri">
+                          <label for="mandiri">
+                            <div class="option-icon">
+                              <img src="/images/payment-logos/mandiri.svg" alt="Mandiri" class="payment-logo">
+                            </div>
+                            <div class="option-details">
+                              <div class="option-name">Bank Mandiri</div>
+                              <div class="option-description">Pembayaran melalui transfer bank Mandiri</div>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="tab-pane" id="e-wallet">
+                      <div class="payment-options">
+                        <div class="payment-option">
+                          <input type="radio" name="payment-method" id="gopay" value="gopay">
+                          <label for="gopay">
+                            <div class="option-icon">
+                              <img src="/images/payment-logos/gopay.svg" alt="GoPay" class="payment-logo">
+                            </div>
+                            <div class="option-details">
+                              <div class="option-name">GoPay</div>
+                              <div class="option-description">Pembayaran melalui GoPay</div>
+                            </div>
+                          </label>
+                        </div>
+                        <div class="payment-option">
+                          <input type="radio" name="payment-method" id="ovo" value="ovo">
+                          <label for="ovo">
+                            <div class="option-icon">
+                              <img src="/images/payment-logos/ovo.svg" alt="OVO" class="payment-logo">
+                            </div>
+                            <div class="option-details">
+                              <div class="option-name">OVO</div>
+                              <div class="option-description">Pembayaran melalui OVO</div>
+                            </div>
+                          </label>
+                        </div>
+                        <div class="payment-option">
+                          <input type="radio" name="payment-method" id="dana" value="dana">
+                          <label for="dana">
+                            <div class="option-icon">
+                              <img src="/images/payment-logos/dana.svg" alt="DANA" class="payment-logo">
+                            </div>
+                            <div class="option-details">
+                              <div class="option-name">DANA</div>
+                              <div class="option-description">Pembayaran melalui DANA</div>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="tab-pane" id="credit-card">
+                      <div class="credit-card-form">
+                        <div class="form-group">
+                          <label for="card-number">Nomor Kartu</label>
+                          <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19">
+                        </div>
+                        <div class="form-row">
+                          <div class="form-group">
+                            <label for="expiry-date">Tanggal Kadaluarsa</label>
+                            <input type="text" id="expiry-date" placeholder="MM/YY" maxlength="5">
+                          </div>
+                          <div class="form-group">
+                            <label for="cvv">CVV</label>
+                            <input type="text" id="cvv" placeholder="123" maxlength="3">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="card-name">Nama pada Kartu</label>
+                          <input type="text" id="card-name" placeholder="Nama Lengkap">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="payment-actions">
+                  <button id="pay-button" class="pay-button">
+                    <i class="fas fa-lock"></i> Bayar Sekarang
+                  </button>
+                  <div class="secure-payment">
+                    <i class="fas fa-shield-alt"></i> Pembayaran aman melalui Midtrans
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Midtrans Integration -->
+  <script is:inline src="/js/midtrans-integration.js"></script>
+
+  <script is:inline>
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const planType = urlParams.get('plan') || 'premium';
+    const planPrices = {
+      'premium': 99000,
+      'plus': 119000
+    };
+    
+    // Update order summary based on selected plan
+    const selectedPlan = document.getElementById('selected-plan');
+    const totalAmount = document.getElementById('total-amount');
+    const price = planPrices[planType] || planPrices.premium;
+    
+    if (planType === 'premium') {
+      selectedPlan.querySelector('.item-name').textContent = 'Paket Premium';
+      selectedPlan.querySelector('.item-price').textContent = `Rp ${price.toLocaleString('id-ID')}`;
+    } else if (planType === 'plus') {
+      selectedPlan.querySelector('.item-name').textContent = 'Paket Plus';
+      selectedPlan.querySelector('.item-price').textContent = `Rp ${price.toLocaleString('id-ID')}`;
+    }
+    
+    totalAmount.textContent = `Rp ${price.toLocaleString('id-ID')}`;
+    
+    // Payment method tabs
+    const tabHeaders = document.querySelectorAll('.tab-header');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    
+    tabHeaders.forEach(header => {
+      header.addEventListener('click', () => {
+        // Remove active class from all headers and panes
+        tabHeaders.forEach(h => h.classList.remove('active'));
+        tabPanes.forEach(p => p.classList.remove('active'));
+        
+        // Add active class to clicked header and corresponding pane
+        header.classList.add('active');
+        const tabId = header.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+    
+    // Handle payment button click
+    document.getElementById('pay-button').addEventListener('click', function() {
+      // Get selected payment method
+      const selectedMethod = document.querySelector('input[name="payment-method"]:checked');
+      const paymentMethod = selectedMethod ? selectedMethod.value : 'bca';
+      
+      // Create order ID
+      const orderId = 'ORDER-' + Math.floor(Math.random() * 1000000);
+      
+      // Create payment details object
+      const paymentDetails = {
+        order_id: orderId,
+        gross_amount: price,
+        payment_method: paymentMethod,
+        customer_details: {
+          first_name: 'John',
+          last_name: 'Doe',
+          email: 'john.doe@example.com',
+          phone: '08123456789'
+        },
+        item_details: [{
+          id: planType,
+          price: price,
+          quantity: 1,
+          name: planType === 'premium' ? 'Paket Premium' : 'Paket Plus',
+          category: 'Subscription'
+        }]
+      };
+      
+      // Process payment using Midtrans integration
+      window.MidtransIntegration.processPayment(paymentDetails);
+    });
+  </script>
+
+  <style>
+    /* Payment Page Styles */
+    .payment-logo {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    
+    .payment-page {
+      position: relative;
+      padding: 1rem;
+      overflow: hidden;
+    }
+    
+    .floating-shapes {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+      filter: blur(40px);
+    }
+    
+    .shape-1 {
+      top: 10%;
+      left: 10%;
+      width: 300px;
+      height: 300px;
+      background: linear-gradient(45deg, #4f46e5, #8b5cf6);
+      animation: float 20s ease-in-out infinite alternate;
+    }
+    
+    .shape-2 {
+      top: 60%;
+      right: 10%;
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(45deg, #3b82f6, #06b6d4);
+      animation: float 25s ease-in-out infinite alternate-reverse;
+    }
+    
+    .shape-3 {
+      bottom: 10%;
+      left: 20%;
+      width: 250px;
+      height: 250px;
+      background: linear-gradient(45deg, #8b5cf6, #ec4899);
+      animation: float 18s ease-in-out infinite alternate;
+    }
+    
+    .shape-4 {
+      top: 30%;
+      right: 30%;
+      width: 200px;
+      height: 200px;
+      background: linear-gradient(45deg, #06b6d4, #3b82f6);
+      animation: float 22s ease-in-out infinite alternate-reverse;
+    }
+    
+    @keyframes float {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+      100% {
+        transform: translate(50px, 50px) rotate(360deg);
+      }
+    }
+    
+    .payment-hero {
+      padding: 2rem 0;
+      position: relative;
+    }
+    
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 2rem;
+      color: #6b7280;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+    
+    .back-button:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #4f46e5;
+    }
+    
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    
+    .hero-content {
+      max-width: 600px;
+    }
+    
+    .hero-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: linear-gradient(45deg, #4f46e5, #8b5cf6);
+      border-radius: 2rem;
+      color: white;
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+    
+    .hero-content h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #1f2937;
+    }
+    
+    .hero-description {
+      font-size: 1.125rem;
+      color: #6b7280;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    
+    .payment-details {
+      padding: 2rem 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    
+    .payment-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .payment-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 15px rgba(0, 0, 0, 0.03);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid #f3f4f6;
+      background-color: #f9fafb;
+    }
+    
+    .card-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1f2937;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+    
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .item-details .item-name {
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 0.25rem;
+    }
+    
+    .item-details .item-description {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    
+    .item-price {
+      font-weight: 600;
+      color: #1f2937;
+    }
+    
+    .order-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .total-label {
+      font-size: 1.125rem;
+      color: #1f2937;
+    }
+    
+    .total-price {
+      font-size: 1.25rem;
+      color: #4f46e5;
+    }
+    
+    .payment-tabs {
+      margin-bottom: 1.5rem;
+    }
+    
+    .tab-headers {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #f3f4f6;
+      padding-bottom: 1rem;
+    }
+    
+    .tab-header {
+      padding: 0.75rem 1.25rem;
+      background-color: #f9fafb;
+      border: 1px solid #f3f4f6;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      color: #6b7280;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .tab-header:hover {
+      background-color: #f3f4f6;
+      color: #4f46e5;
+    }
+    
+    .tab-header.active {
+      background-color: #4f46e5;
+      color: white;
+      border-color: #4f46e5;
+    }
+    
+    .tab-pane {
+      display: none;
+    }
+    
+    .tab-pane.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .payment-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .payment-option {
+      position: relative;
+    }
+    
+    .payment-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .payment-option label {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border: 1px solid #f3f4f6;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .payment-option input[type="radio"]:checked + label {
+      border-color: #4f46e5;
+      background-color: rgba(79, 70, 229, 0.05);
+    }
+    
+    .option-icon {
+      width: 60px;
+      height: 40px;
+      background-color: rgba(79, 70, 229, 0.1);
+      color: #4f46e5;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 5px;
+    }
+    
+    .option-details .option-name {
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 0.25rem;
+    }
+    
+    .option-details .option-description {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    
+    .credit-card-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    .form-group label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #4b5563;
+    }
+    
+    .form-group input {
+      padding: 0.75rem 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    
+    .payment-actions {
+      margin-top: 2rem;
+    }
+    
+    .pay-button {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(45deg, #4f46e5, #8b5cf6);
+      border: none;
+      border-radius: 0.5rem;
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .pay-button:hover {
+      background: linear-gradient(45deg, #4338ca, #7c3aed);
+      transform: translateY(-2px);
+    }
+    
+    .pay-button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .secure-payment {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+  </style>
+</Layout>

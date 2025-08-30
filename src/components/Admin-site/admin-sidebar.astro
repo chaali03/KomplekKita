@@ -171,31 +171,24 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
       });
     }
     
-    // Section toggles
+    // Section toggles (no animation)
     const sectionToggles = document.querySelectorAll('.section-toggle');
 
-    // Initialize all sections to be expanded by default
+    // Initialize all sections expanded by default
     sectionToggles.forEach((btn) => {
       const targetId = btn.getAttribute('aria-controls');
       const targetList = targetId ? document.getElementById(targetId) : null;
       const icon = btn.querySelector('.toggle-icon');
-      
-      // Force all sections to be expanded by default
+
       btn.setAttribute('aria-expanded', 'true');
-      
-      if (targetList) {
-        targetList.style.overflow = 'hidden';
-        targetList.style.maxHeight = targetList.scrollHeight + 'px';
-        targetList.classList.remove('collapsed');
-        
-        // Set all icons to up (expanded) state
-        if (icon) {
-          icon.classList.remove('fa-chevron-down');
-          icon.classList.add('fa-chevron-up');
-        }
+      if (targetList) targetList.classList.remove('collapsed');
+      if (icon) {
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
       }
     });
 
+    // Click to instantly toggle
     sectionToggles.forEach((toggle) => {
       if (toggle.getAttribute('data-bound')) return;
       toggle.setAttribute('data-bound', '1');
@@ -206,25 +199,18 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
 
         const targetId = btn.getAttribute('aria-controls');
         const targetList = targetId ? document.getElementById(targetId) : null;
+        if (targetList) targetList.classList.toggle('collapsed', expanded);
 
-        if (targetList) {
-          targetList.style.overflow = 'hidden';
-          if (expanded) {
-            targetList.style.maxHeight = '0';
-            targetList.classList.add('collapsed');
-          } else {
-            targetList.style.maxHeight = targetList.scrollHeight + 'px';
-            targetList.classList.remove('collapsed');
-          }
-        }
-
-        // Update chevron icon to indicate state (down = collapsed, up = expanded)
+        // Update chevron icon (no animation)
         const icon = btn.querySelector('.toggle-icon');
         if (icon) {
-          const isExpanding = !expanded;
-          icon.classList.remove(isExpanding ? 'fa-chevron-down' : 'fa-chevron-up');
-          icon.classList.add(isExpanding ? 'fa-chevron-up' : 'fa-chevron-down');
-          icon.style.transform = '';
+          if (expanded) {
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+          } else {
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+          }
         }
       });
     });
@@ -491,15 +477,10 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
     padding: 4px;
     margin: 0 4px 8px;
     border-radius: 12px;
-    transition: max-height 360ms cubic-bezier(0.4, 0, 0.2, 1), opacity 280ms cubic-bezier(0.4, 0, 0.2, 1), transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: max-height, opacity, transform;
     background: transparent;
-    opacity: 1;
-    transform-origin: top center;
   }
   .admin-sidebar .nav-list.collapsed { 
-    opacity: 0.6; 
-    transform: scaleY(0.95);
+    display: none;
   }
 
   .admin-sidebar .nav-item { margin: 2px 0; }

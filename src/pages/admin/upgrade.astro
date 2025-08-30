@@ -5,8 +5,11 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
 ---
 
 <Layout>
-  <AdminSidebar slot="sidebar" />
-  <AdminTopbar slot="topbar" />
+  <AdminSidebar slot="sidebar" complexName="Komplek Anggrek Asri" complexImage="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=100&h=100&fit=crop&crop=center" />
+  <AdminTopbar slot="topbar" complexName="Komplek Anggrek Asri" complexImage="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=100&h=100&fit=crop&crop=center" />
+  
+  <!-- Responsive CSS -->
+  <link rel="stylesheet" href="/css/payment-responsive.css" slot="head" />
 
   <div class="upgrade-page">
     <div class="floating-shapes">
@@ -100,7 +103,7 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
           </ul>
         </div>
         <div class="plan-footer">
-          <a href="/kontak" class="upgrade-button premium-btn">
+          <a href="/payment?plan=premium" class="upgrade-button premium-btn">
             <i class="fas fa-arrow-up"></i> Upgrade ke Premium
           </a>
         </div>
@@ -136,7 +139,7 @@ import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
           </ul>
         </div>
         <div class="plan-footer">
-          <a href="/kontak" class="upgrade-button plus-btn">
+          <a href="/payment?plan=plus" class="upgrade-button plus-btn">
             <i class="fas fa-arrow-up"></i> Upgrade ke Plus
           </a>
         </div>

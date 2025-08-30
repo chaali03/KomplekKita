@@ -1,0 +1,150 @@
+---
+import Layout from "~/layouts/Layout.astro";
+---
+
+<Layout title="Dashboard - KomplekKita">
+  <main class="dashboard-container">
+    <div class="dashboard-header">
+      <h1>Dashboard</h1>
+      <p>Selamat datang di dashboard KomplekKita!</p>
+    </div>
+    
+    <div class="dashboard-content">
+      <div class="welcome-card">
+        <h2>Registrasi Komplek Berhasil!</h2>
+        <p>Anda telah berhasil menyelesaikan registrasi komplek. Sekarang Anda dapat mengakses semua fitur KomplekKita.</p>
+        <div class="action-buttons">
+          <a href="/admin" class="btn btn-primary">Panel Admin</a>
+          <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  // Demo dashboard - no authentication required
+  document.addEventListener('DOMContentLoaded', function() {
+    // Demo user info
+    const welcomeCard = document.querySelector('.welcome-card h2');
+    if (welcomeCard) {
+      welcomeCard.textContent = 'Selamat datang di Demo Dashboard!';
+    }
+    
+    const welcomeText = document.querySelector('.welcome-card p');
+    if (welcomeText) {
+      welcomeText.textContent = 'Ini adalah demo dashboard KomplekKita. Anda dapat menjelajahi semua fitur tanpa perlu login.';
+    }
+    
+    // Logout functionality (demo)
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function() {
+        alert('Ini adalah demo - logout tidak diperlukan');
+        window.location.href = '/';
+      });
+    }
+  });
+</script>
+
+<style>
+  .dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+  
+  .dashboard-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 2.5rem;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+  }
+  
+  .dashboard-header p {
+    font-size: 1.1rem;
+    color: #4a5568;
+  }
+  
+  .dashboard-content {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .welcome-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .welcome-card h2 {
+    color: #667eea;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+  }
+  
+  .welcome-card p {
+    color: #4a5568;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+  
+  .btn-secondary {
+    background: #e2e8f0;
+    color: #4a5568;
+  }
+  
+  .btn-secondary:hover {
+    background: #cbd5e0;
+  }
+  
+  @media (max-width: 640px) {
+    .dashboard-container {
+      padding: 1rem;
+    }
+    
+    .welcome-card {
+      padding: 1.5rem;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+    }
+  }
+</style>

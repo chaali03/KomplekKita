@@ -2084,8 +2084,17 @@ document.addEventListener('DOMContentLoaded', function () {
     submitBtn.disabled = true;
 
     try {
-      // Prepare payload mapping to backend fields
-      const body = {
+      // Import auth utility
+      const { completeComplexRegistration, getAuthStatus } = await import('/src/utils/auth.js');
+      
+      // Check if user is authenticated
+      const authStatus = getAuthStatus();
+      if (!authStatus.isAuthenticated) {
+        throw new Error('Anda perlu login terlebih dahulu.');
+      }
+
+      // Prepare complex registration data
+      const complexData = {
         nama: byId('namaKomplek')?.value?.trim() || '',
         deskripsi: byId('deskripsiKomplek')?.value?.trim() || '',
         profil: byId('profilKomplek')?.value?.trim() || '',
@@ -2097,46 +2106,25 @@ document.addEventListener('DOMContentLoaded', function () {
         bendahara_phone: normalizePhone(byId('bendaharaPhone')?.value || '' ) || null,
         banner_path: null,
         logo_path: null,
+        completed_at: new Date().toISOString()
       };
 
-      // Get CSRF cookie for Sanctum (if using cookie-based auth)
-      try { await fetchWithFallback('/sanctum/csrf-cookie', { credentials: 'include' }); } catch (_) {}
-
-      const res = await fetchWithFallback('/api/komplek', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-        credentials: 'include',
-      });
-
-      if (res.status === 201) {
+      // Complete complex registration
+      const result = completeComplexRegistration(complexData);
+      
+      if (result.success) {
         // Success: clear draft and redirect
         localStorage.removeItem('komplek_registration_draft');
         submitBtn.innerHTML = `
           <i class="fas fa-check-circle"></i>
           <span>Berhasil!</span>
         `;
-        showToast('Registrasi komplek berhasil!', 'success');
-        setTimeout(() => { window.location.href = '/login'; }, 1200);
+        showToast('Registrasi komplek berhasil! Mengarahkan ke dashboard...', 'success');
+        setTimeout(() => { window.location.href = '/dashboard'; }, 1200);
         return;
+      } else {
+        throw new Error(result.message || 'Gagal menyelesaikan registrasi komplek.');
       }
-
-      if (res.status === 401) {
-        throw new Error('Anda perlu login untuk mendaftarkan komplek.');
-      }
-
-      if (res.status === 422) {
-        const data = await res.json().catch(() => ({}));
-        const errs = data?.errors || {};
-        // gather first messages
-        const messages = Object.keys(errs).map(k => Array.isArray(errs[k]) ? errs[k][0] : String(errs[k]));
-        const msg = messages.length ? messages[0] : (data?.message || 'Validasi gagal. Periksa input Anda.');
-        throw new Error(msg);
-      }
-
-      // Other errors
-      const text = await res.text().catch(() => '');
-      throw new Error(text || `Gagal menyimpan (status ${res.status}).`);
     } catch (error) {
       // Error state
       submitBtn.classList.remove('loading');
