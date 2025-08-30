@@ -1453,19 +1453,48 @@ import Footer from '../components/sections/Footer.astro';
 <script>
     // Initialize AOS Animation Library
     document.addEventListener('DOMContentLoaded', function() {
-        AOS.init({
-            duration: 1000,
-            once: true
-        });
+        // Initialize AOS with error handling
+        if (typeof AOS !== 'undefined') {
+            try {
+                AOS.init({
+                    duration: 1000,
+                    once: true
+                });
+                console.log('AOS initialized successfully');
+            } catch (error) {
+                console.warn('AOS initialization failed:', error);
+            }
+        } else {
+            console.warn('AOS library not available');
+        }
 
-        // Initialize Lottie Animation
-        const registerAnimation = lottie.loadAnimation({
-            container: document.getElementById('lottie-register'),
-            renderer: 'svg',
-            loop: true,
-            autoplay: true,
-            path: '/animations/icon-morph.json'
-        });
+        // Initialize Lottie Animation with error handling
+        if (typeof lottie !== 'undefined') {
+            try {
+                const registerAnimation = lottie.loadAnimation({
+                    container: document.getElementById('lottie-register'),
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    path: '/animations/icon-morph.json'
+                });
+                console.log('Lottie animation initialized successfully');
+            } catch (error) {
+                console.warn('Lottie animation failed to load:', error);
+                // Hide the lottie container and show a fallback
+                const lottieContainer = document.getElementById('lottie-register');
+                if (lottieContainer) {
+                    lottieContainer.style.display = 'none';
+                }
+            }
+        } else {
+            console.warn('Lottie library not available');
+            // Hide the lottie container
+            const lottieContainer = document.getElementById('lottie-register');
+            if (lottieContainer) {
+                lottieContainer.style.display = 'none';
+            }
+        }
 
         // Toggle password visibility (eye open = masked, eye slash = visible)
         const togglePasswordButtons = document.querySelectorAll('.toggle-password');
@@ -1591,30 +1620,51 @@ import Footer from '../components/sections/Footer.astro';
             });
         }
 
-        // GSAP Animations
-        gsap.from('.register-form-container', {
-            y: 50,
-            opacity: 0,
-            duration: 1,
-            ease: 'power3.out'
-        });
+        // GSAP Animations with error handling
+        if (typeof gsap !== 'undefined') {
+            try {
+                gsap.from('.register-form-container', {
+                    y: 50,
+                    opacity: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                });
 
-        gsap.from('.form-group', {
-            y: 20,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.2,
-            ease: 'power3.out',
-            delay: 0.5
-        });
+                gsap.from('.form-group', {
+                    y: 20,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: 0.2,
+                    ease: 'power3.out',
+                    delay: 0.5
+                });
 
-        gsap.from('.feature-item', {
-            x: 50,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.2,
-            ease: 'power3.out',
-            delay: 1
-        });
+                gsap.from('.feature-item', {
+                    x: 50,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: 0.2,
+                    ease: 'power3.out',
+                    delay: 1
+                });
+                console.log('GSAP animations initialized successfully');
+            } catch (error) {
+                console.warn('GSAP animations failed:', error);
+                // Apply basic CSS animations as fallback
+                const elements = document.querySelectorAll('.register-form-container, .form-group, .feature-item');
+                elements.forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0) translateX(0)';
+                });
+            }
+        } else {
+            console.warn('GSAP library not available, using CSS fallback');
+            // Apply basic CSS animations as fallback
+            const elements = document.querySelectorAll('.register-form-container, .form-group, .feature-item');
+            elements.forEach(el => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0) translateX(0)';
+            });
+        }
     });
 </script>

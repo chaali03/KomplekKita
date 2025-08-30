@@ -28,18 +28,18 @@
 		<!-- AOS Animation Library -->
 		<link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet">
 		
-		<!-- Lenis Smooth Scroll (disabled during debugging upload flow) -->
-		<!-- <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.19/dist/lenis.min.js"></script> -->
+		<!-- Lenis Smooth Scroll -->
+		<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.19/dist/lenis.min.js"></script>
 		
-		<!-- AOS Animation Library (disabled during debugging upload flow) -->
-		<!-- <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js"></script> -->
+		<!-- AOS Animation Library -->
+		<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 		
 		<!-- Lottie Web for Animations -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+		<script src="https://unpkg.com/lottie-web@5.12.2/build/player/lottie.min.js"></script>
 		
-		<!-- GSAP for Advanced Animations (disabled during debugging upload flow) -->
-		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script> -->
-		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script> -->
+		<!-- GSAP for Advanced Animations -->
+		<script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+		<script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
 		<!-- Leaflet JS -->
 		<script
@@ -141,72 +141,89 @@
 			}
 
 			// Try to initialize Lenis with timeout fallback
-			setTimeout(() => {
-				if (typeof Lenis !== 'undefined') {
+			try {
+				setTimeout(() => {
 					try {
-						// Initialize Lenis smooth scroll
-						const lenis = new Lenis({
-							duration: 1.2,
-							easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-							direction: 'vertical',
-							gestureDirection: 'vertical',
-							smooth: true,
-							mouseMultiplier: 1,
-							smoothTouch: false,
-							touchMultiplier: 2,
-							infinite: false,
-						});
+						if (typeof window !== 'undefined' && window.Lenis && typeof window.Lenis === 'function') {
+							// Initialize Lenis smooth scroll
+							const lenis = new window.Lenis({
+								duration: 1.2,
+								easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+								direction: 'vertical',
+								gestureDirection: 'vertical',
+								smooth: true,
+								mouseMultiplier: 1,
+								smoothTouch: false,
+								touchMultiplier: 2,
+								infinite: false,
+							});
 
-						function raf(time) {
-							lenis.raf(time);
+							function raf(time) {
+								try {
+									lenis.raf(time);
+									requestAnimationFrame(raf);
+								} catch (e) {
+									// Stop animation loop on error
+									console.warn('Lenis animation frame error:', e);
+								}
+							}
+
 							requestAnimationFrame(raf);
+						} else {
+							// Quietly use fallback without warning
+							initSmoothScrollFallback();
 						}
-
-						requestAnimationFrame(raf);
 					} catch (error) {
-						console.warn('Lenis initialization failed:', error);
 						initSmoothScrollFallback();
 					}
-				} else {
-					console.warn('Lenis library not loaded, using fallback');
-					initSmoothScrollFallback();
-				}
-			}, 100);
+				}, 100);
+			} catch (error) {
+				initSmoothScrollFallback();
+			}
 			
 			// Try to initialize AOS with timeout fallback
-			setTimeout(() => {
-				if (typeof AOS !== 'undefined') {
+			try {
+				setTimeout(() => {
 					try {
-						// Initialize AOS
-						AOS.init({
-							duration: 1000,
-							easing: 'ease-out-cubic',
-							once: true,
-							offset: 120,
-							delay: 100,
-							disable: false,
-							startEvent: 'DOMContentLoaded',
-							initClassName: 'aos-init',
-							animatedClassName: 'aos-animate',
-							useClassNames: false,
-							disableMutationObserver: false,
-							debounceDelay: 50,
-							throttle: 99,
-						});
-						
-						// Refresh AOS on window resize
-						window.addEventListener('resize', function() {
-							AOS.refresh();
-						});
+						if (typeof window !== 'undefined' && window.AOS && typeof window.AOS.init === 'function') {
+							// Initialize AOS
+							window.AOS.init({
+								duration: 1000,
+								easing: 'ease-out-cubic',
+								once: true,
+								offset: 120,
+								delay: 100,
+								disable: false,
+								startEvent: 'DOMContentLoaded',
+								initClassName: 'aos-init',
+								animatedClassName: 'aos-animate',
+								useClassNames: false,
+								disableMutationObserver: false,
+								debounceDelay: 50,
+								throttle: 99,
+							});
+							
+							// Refresh AOS on window resize with error handling
+							window.addEventListener('resize', function() {
+								try {
+									if (window.AOS && window.AOS.refresh) {
+										window.AOS.refresh();
+									}
+								} catch (e) {
+									// Silently ignore AOS refresh errors
+								}
+							});
+						} else {
+							// Quietly use fallback without warning
+							initAnimationFallback();
+						}
 					} catch (error) {
-						console.warn('AOS initialization failed:', error);
 						initAnimationFallback();
 					}
-				} else {
-					console.warn('AOS library not loaded, using fallback');
-					initAnimationFallback();
-				}
-			}, 200);
+				}, 200);
+			} catch (error) {
+				initAnimationFallback();
+			}
 
 			// Initialize mobile navigation toggle
 			const navToggle = document.querySelector('.navbar-toggle');
