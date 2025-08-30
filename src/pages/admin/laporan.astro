@@ -18,6 +18,81 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         <div class="icon-container">
           <i class="fas fa-chart-bar"></i>
         </div>
+
+  <!-- Import Modal -->
+  <div id="import-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="import-title">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" style="max-width: 920px;">
+      <div class="modal-header">
+        <h3 id="import-title"><i class="fas fa-file-import"></i> Impor Transaksi</h3>
+        <button class="btn soft pressable" id="btn-close-import" aria-label="Tutup"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Template</label>
+          <div class="template-actions">
+            <button class="btn soft pressable" id="btn-open-template"><i class="fas fa-table"></i><span>Buka Template</span></button>
+            <button class="btn soft pressable" id="btn-template-keuangan" style="display:none"><i class="fas fa-table"></i><span>Unduh Template</span></button>
+          </div>
+        </div>
+        <div class="field">
+          <label>File CSV/Excel</label>
+          <div id="csv-dropzone" tabindex="0" class="status-grid" style="padding:16px; border:1px dashed var(--border); border-radius:12px; background: var(--surface-secondary); cursor: pointer;">
+            <div style="display:flex; gap:10px; align-items:center; color: var(--text-secondary);">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <div>
+                <div>Pilih atau tarik file ke sini</div>
+                <div id="csv-fileinfo" class="muted" style="font-size:12px"></div>
+              </div>
+            </div>
+            <input id="csv-file" type="file" accept=".csv,.xlsx,.xls" style="display:none" />
+          </div>
+          <div id="import-summary" class="muted" style="margin-top:10px">Belum ada file.</div>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label>Pratinjau (maks. 50 baris)</label>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Tipe</th>
+                  <th>Kategori</th>
+                  <th>Keterangan</th>
+                  <th class="text-right">Jumlah</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="import-tbody">
+                <tr><td colspan="6" class="empty">Pilih file untuk pratinjau.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn soft pressable" id="btn-cancel-import"><i class="fas fa-ban"></i><span>Batal</span></button>
+        <button class="btn primary pressable" id="btn-commit-import" disabled><i class="fas fa-check"></i><span>Impor</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Error Modal -->
+  <div id="import-error-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="import-error-title">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" style="max-width: 560px;">
+      <div class="modal-header">
+        <h3 id="import-error-title"><i class="fas fa-triangle-exclamation"></i> Gagal Memproses File</h3>
+        <button class="btn soft pressable" id="btn-close-import-error" aria-label="Tutup"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <p id="import-error-message" class="error-message">Format file tidak dikenali. Pastikan kolom: Tanggal, Keterangan, Kategori, Jumlah.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn primary pressable" id="btn-ok-import-error"><i class="fas fa-check"></i><span>Mengerti</span></button>
+      </div>
+    </div>
+  </div>
         <div class="title-group">
           <h1>Laporan Keuangan</h1>
           <p class="subtitle">Dashboard analisis pemasukan, pengeluaran, dan saldo terkini</p>
@@ -31,6 +106,14 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         <button class="action-btn secondary" id="btn-export">
           <i class="fas fa-file-export"></i>
           <span>Ekspor</span>
+        </button>
+        <button class="action-btn secondary" id="btn-import">
+          <i class="fas fa-file-import"></i>
+          <span>Impor</span>
+        </button>
+        <button class="action-btn secondary" id="btn-rollback">
+          <i class="fas fa-undo"></i>
+          <span>Batalkan Impor Terakhir</span>
         </button>
         <button class="action-btn primary" id="btn-open-drawer">
           <i class="fas fa-plus-circle"></i>

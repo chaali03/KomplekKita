@@ -1,0 +1,379 @@
+---
+// Features Section Component
+---
+
+<section class="section" id="features">
+    <div class="features-bg">
+        <div class="animated-gradient"></div>
+        <div class="particle-field">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="section-header" data-aos="fade-down">
+            <div class="section-badge">
+                <span class="badge-icon">✨</span>
+                <span class="badge-text">Fitur Revolusioner</span>
+            </div>
+            <h2 class="section-title">
+                <span class="title-line">Masa Depan</span>
+                <span class="title-line">Pengelolaan <span class="text-gradient">Komplek</span></span>
+            </h2>
+            <p class="section-subtitle">
+                Revolusi digital untuk komplek perumahan dengan AI, IoT, dan teknologi blockchain terdepan
+            </p>
+        </div>
+        
+        <div class="features-showcase">
+            <div class="central-hub" data-aos="zoom-in" data-aos-delay="200">
+                <div class="main-device">
+                    <div class="device-screen">
+                        <div class="screen-content">
+                            <div class="dashboard-grid">
+                                <div class="dashboard-card">
+                                    <div class="card-icon">🏠</div>
+                                    <div class="card-data">
+                                        <div class="data-number">91%</div>
+                                        <div class="data-label">Occupancy</div>
+                                    </div>
+                                </div>
+                                <div class="dashboard-card">
+                                    <div class="card-icon">💰</div>
+                                    <div class="card-data">
+                                        <div class="data-number">2.4M</div>
+                                        <div class="data-label">Revenue</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hub-label">
+                    <h3>Command Center</h3>
+                    <p>Kontrol penuh dalam genggaman</p>
+                </div>
+            </div>
+
+            <div class="feature-orbit">
+                <div class="orbit-node node-1" data-aos="fade-in" data-aos-delay="400">
+                    <div class="feature-node">
+                        <div class="node-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="node-content">
+                            <h4>AI Analytics</h4>
+                            <p>Prediksi cerdas untuk optimasi operasional</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="orbit-node node-2" data-aos="fade-in" data-aos-delay="500">
+                    <div class="feature-node">
+                        <div class="node-icon">
+                            <i class="fas fa-shield-virus"></i>
+                        </div>
+                        <div class="node-content">
+                            <h4>Quantum Security</h4>
+                            <p>Keamanan tingkat militer dengan enkripsi quantum</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="orbit-node node-3" data-aos="fade-in" data-aos-delay="600">
+                    <div class="feature-node">
+                        <div class="node-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="node-content">
+                            <h4>IoT Ecosystem</h4>
+                            <p>Integrasi seamless dengan 1000+ perangkat IoT</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .section {
+        position: relative;
+        padding: 120px 0;
+        overflow: hidden;
+    }
+
+    .features-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: -1;
+    }
+
+    .animated-gradient {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(45deg, #3B82F6, #8B5CF6, #EC4899, #F59E0B);
+        background-size: 400% 400%;
+        animation: gradientShift 8s ease infinite;
+        opacity: 0.8;
+    }
+
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .particle-field {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
+
+    .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { top: 60%; left: 80%; animation-delay: 2s; }
+    .particle:nth-child(3) { top: 80%; left: 20%; animation-delay: 4s; }
+    .particle:nth-child(4) { top: 30%; left: 70%; animation-delay: 1s; }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(180deg); }
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 80px;
+    }
+
+    .section-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 12px 24px;
+        border-radius: 50px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 24px;
+        color: white;
+        font-weight: 500;
+    }
+
+    .section-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 24px;
+        line-height: 1.1;
+    }
+
+    .title-line {
+        display: block;
+    }
+
+    .text-gradient {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .section-subtitle {
+        font-size: 1.25rem;
+        color: rgba(255, 255, 255, 0.8);
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    .features-showcase {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 600px;
+    }
+
+    .central-hub {
+        position: relative;
+        z-index: 2;
+    }
+
+    .main-device {
+        width: 300px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .device-screen {
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 16px;
+        padding: 20px;
+        overflow: hidden;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 20px;
+    }
+
+    .dashboard-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-icon {
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+
+    .data-number {
+        font-size: 24px;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 4px;
+    }
+
+    .data-label {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .hub-label {
+        text-align: center;
+        margin-top: 24px;
+        color: white;
+    }
+
+    .hub-label h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .hub-label p {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .feature-orbit {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
+
+    .orbit-node {
+        position: absolute;
+        width: 200px;
+    }
+
+    .node-1 { top: 10%; left: 10%; }
+    .node-2 { top: 10%; right: 10%; }
+    .node-3 { bottom: 10%; left: 50%; transform: translateX(-50%); }
+
+    .feature-node {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        text-align: center;
+        color: white;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-node:hover {
+        transform: translateY(-5px);
+    }
+
+    .node-icon {
+        font-size: 32px;
+        margin-bottom: 16px;
+        color: #FFD700;
+    }
+
+    .node-content h4 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .node-content p {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.4;
+    }
+
+    @media (max-width: 768px) {
+        .section-title {
+            font-size: 2.5rem;
+        }
+        
+        .features-showcase {
+            flex-direction: column;
+            min-height: auto;
+        }
+        
+        .main-device {
+            width: 280px;
+            height: 350px;
+        }
+        
+        .orbit-node {
+            position: relative;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .node-1, .node-2, .node-3 {
+            position: relative;
+            top: auto;
+            left: auto;
+            right: auto;
+            bottom: auto;
+            transform: none;
+        }
+    }
+</style>
