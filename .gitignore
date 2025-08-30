@@ -22,3 +22,18 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Laravel/PHP backend files
+api-komplek/
+vendor/
+composer.lock
+*.log
+
+# Supabase temp files
+supabase/.temp/
+
+# Development files
+.vscode/
+*.tmp
+*.cache
+.vercel
