@@ -67,14 +67,20 @@ export async function safeJsonParse(response: Response): Promise<any> {
 
 // Combined fetch and parse function
 export async function fetchJson(url: string, options: RequestInit = {}): Promise<any> {
-  const response = await safeFetch(url, options);
-  
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => '');
-    throw new Error(`HTTP ${response.status}: ${errorText || 'Request failed'}`);
+  try {
+    const response = await safeFetch(url, options);
+    
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '');
+      throw new Error(`HTTP ${response.status}: ${errorText || 'Request failed'}`);
+    }
+    
+    return safeJsonParse(response);
+  } catch (error) {
+    console.error(`fetchJson failed for ${url}:`, error);
+    // Return a safe fallback object instead of throwing
+    return { error: 'Request failed', url, details: error };
   }
-  
-  return safeJsonParse(response);
 }
 
 // POST helper
