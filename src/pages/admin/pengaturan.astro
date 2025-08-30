@@ -143,8 +143,8 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     document.addEventListener('DOMContentLoaded', function(){
       const emailForm = document.getElementById('form-email');
       const passForm = document.getElementById('form-password');
-      if (emailForm) emailForm.addEventListener('submit', function(e){ e.preventDefault(); console.log('Simulasi simpan email'); });
-      if (passForm) passForm.addEventListener('submit', function(e){ e.preventDefault(); console.log('Simulasi ubah sandi'); });
+      if (emailForm) emailForm.addEventListener('submit', function(e){ e.preventDefault(); /* Email form submitted */ });
+      if (passForm) passForm.addEventListener('submit', function(e){ e.preventDefault(); /* Password form submitted */ });
     });
   </script>
 </Layout>

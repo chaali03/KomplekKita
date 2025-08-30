@@ -14,8 +14,8 @@
 		<div class="footer-content">
 			<div class="footer-brand" data-aos="fade-right" data-aos-delay="200">
 				<div class="footer-logo">
-					<div class="logo-container">
-						<img src="/logo.svg" alt="KomplekKita Logo" width="40" height="40">
+					<div class="brand-icon">
+						<i class="fas fa-building"></i>
 						<div class="logo-glow"></div>
 					</div>
 					<h3>KomplekKita</h3>
@@ -43,46 +43,24 @@
 
 			<div class="footer-sections" data-aos="fade-up" data-aos-delay="400">
 				<div class="footer-section">
-					<h4>Produk</h4>
+					<h4>Navigasi</h4>
 					<div class="section-underline"></div>
 					<ul>
 						<li><a href="#background"><span class="link-icon"></span>Latar Belakang</a></li>
 						<li><a href="#problems"><span class="link-icon"></span>Masalah</a></li>
 						<li><a href="#solutions"><span class="link-icon"></span>Solusi</a></li>
-						<li><a href="#advantages"><span class="link-icon"></span>Keunggulan</a></li>
-					</ul>
-				</div>
-
-				<div class="footer-section">
-					<h4>Fitur</h4>
-					<div class="section-underline"></div>
-					<ul>
 						<li><a href="#demo"><span class="link-icon"></span>Demo Aplikasi</a></li>
-						<li><a href="#contact"><span class="link-icon"></span>Kontak</a></li>
-						<li><a href="#"><span class="link-icon"></span>Pricing</a></li>
-						<li><a href="#"><span class="link-icon"></span>API</a></li>
 					</ul>
 				</div>
 
 				<div class="footer-section">
-					<h4>Perusahaan</h4>
+					<h4>Kontak & Support</h4>
 					<div class="section-underline"></div>
 					<ul>
-						<li><a href="#"><span class="link-icon"></span>Tentang Kami</a></li>
-						<li><a href="#"><span class="link-icon"></span>Tim</a></li>
-						<li><a href="#"><span class="link-icon"></span>Karir</a></li>
-						<li><a href="#"><span class="link-icon"></span>Blog</a></li>
-					</ul>
-				</div>
-
-				<div class="footer-section">
-					<h4>Support</h4>
-					<div class="section-underline"></div>
-					<ul>
+						<li><a href="#contact"><span class="link-icon"></span>Hubungi Kami</a></li>
 						<li><a href="#"><span class="link-icon"></span>Dokumentasi</a></li>
 						<li><a href="#"><span class="link-icon"></span>FAQ</a></li>
-						<li><a href="#"><span class="link-icon"></span>Status</a></li>
-						<li><a href="#contact"><span class="link-icon"></span>Kontak</a></li>
+						<li><a href="#"><span class="link-icon"></span>Tentang Kami</a></li>
 					</ul>
 				</div>
 			</div>
@@ -238,10 +216,23 @@
 		margin-bottom: 1.5rem;
 	}
 
-	.logo-container {
+	.brand-icon {
 		position: relative;
 		width: 40px;
 		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: linear-gradient(135deg, #99CCE5, #99C2B8);
+		border-radius: 12px;
+		box-shadow: 0 4px 15px rgba(153, 204, 229, 0.3);
+		transition: all 0.3s ease;
+	}
+
+	.brand-icon i {
+		font-size: 1.5rem;
+		color: #ffffff;
+		transition: all 0.3s ease;
 	}
 
 	.logo-glow {
@@ -259,6 +250,17 @@
 
 	.footer-logo:hover .logo-glow {
 		opacity: 0.7;
+	}
+
+	.footer-logo:hover .brand-icon {
+		transform: translateY(-2px) scale(1.05);
+		box-shadow: 0 8px 25px rgba(153, 204, 229, 0.5);
+		background: linear-gradient(135deg, #ffffff, #99CCE5);
+	}
+
+	.footer-logo:hover .brand-icon i {
+		color: #334455;
+		transform: scale(1.1);
 	}
 
 	.footer-logo h3 {

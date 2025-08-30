@@ -50,11 +50,6 @@
       ]
     }
   ],
-  "functions": {
-    "api/index.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "env": {
     "NODE_ENV": "production",
     "ENABLE_MOCK_API": "true"

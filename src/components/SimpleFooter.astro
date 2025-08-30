@@ -8,7 +8,9 @@
         <!-- Logo dan Deskripsi -->
         <div class="footer-brand">
           <a href="/" class="footer-logo">
-            <img src="/nal.svg" alt="KomplekKita Logo" width="180" height="40">
+            <span class="brand-icon"><i class="fas fa-building"></i></span>
+            <span class="brand-text">KomplekKita</span>
+            <span class="brand-glow"></span>
           </a>
           <p class="footer-tagline">Solusi modern untuk pengelolaan kompleks perumahan yang efisien dan transparan.</p>
           <div class="social-links">
@@ -37,18 +39,6 @@
             <li><a href="/kontak" class="footer-link">Kontak</a></li>
             <li><a href="/login" class="footer-link">Login</a></li>
             <li><a href="/register" class="footer-link">Daftar</a></li>
-          </ul>
-        </div>
-
-        <!-- Layanan -->
-        <div class="footer-services">
-          <h3 class="footer-heading">Layanan</h3>
-          <ul class="footer-menu">
-            <li><a href="#" class="footer-link">Pengelolaan Iuran</a></li>
-            <li><a href="#" class="footer-link">Laporan Keuangan</a></li>
-            <li><a href="#" class="footer-link">Manajemen Warga</a></li>
-            <li><a href="#" class="footer-link">Pengumuman</a></li>
-            <li><a href="#" class="footer-link">Keamanan</a></li>
           </ul>
         </div>
 
@@ -132,8 +122,70 @@
   }
 
   .footer-logo {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
     margin-bottom: 0.5rem;
+    text-decoration: none;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .footer-logo:hover {
+    transform: scale(1.05);
+  }
+
+  .brand-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+    color: white;
+    border-radius: 10px;
+    font-size: 1.25rem;
+    box-shadow: 0 2px 10px rgba(56, 189, 248, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .brand-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    background: linear-gradient(135deg, #ffffff, #38bdf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+  }
+
+  .brand-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(56, 189, 248, 0.3) 0%, transparent 70%);
+    filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+  }
+
+  .footer-logo:hover .brand-icon {
+    transform: rotate(-10deg) scale(1.1);
+    background: linear-gradient(135deg, #38bdf8, #a855f7);
+    box-shadow: 0 5px 15px rgba(56, 189, 248, 0.5);
+  }
+
+  .footer-logo:hover .brand-text {
+    background: linear-gradient(135deg, #38bdf8, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .footer-logo:hover .brand-glow {
+    opacity: 1;
   }
 
   .footer-tagline {

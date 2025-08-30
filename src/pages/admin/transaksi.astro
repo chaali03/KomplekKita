@@ -91,7 +91,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       </div>
       <div class="kpi-details">
         <div class="kpi-label">Uang Kas</div>
-        <div class="kpi-value" id="kpi-saldo">Rp 13.858.792</div>
+        <div class="kpi-value" id="kpi-saldo">Rp0</div>
       </div>
     </div>
     <div class="kpi-card income">
@@ -100,7 +100,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       </div>
       <div class="kpi-details">
         <div class="kpi-label">Total Masuk</div>
-        <div class="kpi-value" id="kpi-masuk">Rp 19.340.529</div>
+        <div class="kpi-value" id="kpi-masuk">Rp0</div>
       </div>
     </div>
     <div class="kpi-card expense">
@@ -109,7 +109,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       </div>
       <div class="kpi-details">
         <div class="kpi-label">Total Keluar</div>
-        <div class="kpi-value" id="kpi-keluar">Rp 5.481.737</div>
+        <div class="kpi-value" id="kpi-keluar">Rp0</div>
       </div>
     </div>
     <div class="kpi-card transactions">
@@ -118,7 +118,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       </div>
       <div class="kpi-details">
         <div class="kpi-label">Transaksi</div>
-        <div class="kpi-value" id="kpi-count">90</div>
+        <div class="kpi-value" id="kpi-count">0</div>
       </div>
     </div>
   </section>
@@ -998,8 +998,42 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     // Import safe fetch wrapper
     const { fetchJson } = await import('/src/utils/fetch-wrapper.ts');
-    // Shared finance utils for consistent KPI calculations
-    const { calculateTotals, applyFilters: applyFiltersShared } = await import('/src/utils/finance.ts?v=' + Date.now());
+    // Inline shared finance utilities to avoid import issues
+    function calculateTotalsShared(rows) {
+      const income = rows.filter(t => String(t.type) === 'Masuk').reduce((s, t) => s + Number(t.amount || 0), 0);
+      const expense = rows.filter(t => String(t.type) === 'Keluar').reduce((s, t) => s + Number(t.amount || 0), 0);
+      const balance = income - expense;
+      const count = rows.length;
+      return { income, expense, balance, count };
+    }
+    
+    function applyFiltersShared(transactions, filters) {
+      let filtered = transactions.slice();
+      
+      if (filters.start) {
+        filtered = filtered.filter(t => t.date && t.date >= filters.start);
+      }
+      if (filters.end) {
+        filtered = filtered.filter(t => t.date && t.date <= filters.end);
+      }
+      if (filters.category && filters.category !== 'Semua') {
+        filtered = filtered.filter(t => t.category === filters.category);
+      }
+      if (filters.type && filters.type !== 'Semua') {
+        filtered = filtered.filter(t => String(t.type) === filters.type);
+      }
+      if (filters.search) {
+        const search = filters.search.toLowerCase().trim();
+        filtered = filtered.filter(t => {
+          const desc = (t.description || '').toLowerCase();
+          const cat = (t.category || '').toLowerCase();
+          const type = String(t.type || '').toLowerCase();
+          return desc.includes(search) || cat.includes(search) || type.includes(search);
+        });
+      }
+      
+      return filtered;
+    }
     
     async function fetchJsonSafe(url){
       try {
@@ -1127,6 +1161,31 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     function loadBatches(){ try{ return JSON.parse(localStorage.getItem('trx_batches')||'[]'); }catch(_){ return []; } }
     function saveBatches(b){ localStorage.setItem('trx_batches', JSON.stringify(b)); }
     state.data = loadData();
+
+    // Synchronize KPI values with laporan.astro using shared data
+    function updateKPIValues() {
+      try {
+        const sharedData = readShared();
+        if (Array.isArray(sharedData) && sharedData.length > 0) {
+          const totals = calculateTotalsShared(sharedData);
+          
+          // Update KPI elements with same IDs as laporan uses
+          const kpiSaldo = document.getElementById('kpi-saldo');
+          const kpiMasuk = document.getElementById('kpi-masuk');
+          const kpiKeluar = document.getElementById('kpi-keluar');
+          const kpiCount = document.getElementById('kpi-count');
+          
+          if (kpiSaldo) kpiSaldo.textContent = fmtIDR(totals.balance);
+          if (kpiMasuk) kpiMasuk.textContent = fmtIDR(totals.income);
+          if (kpiKeluar) kpiKeluar.textContent = fmtIDR(totals.expense);
+          if (kpiCount) kpiCount.textContent = totals.count.toLocaleString('id-ID');
+          
+          // KPI values updated successfully
+        }
+      } catch (error) {
+        console.error('[Transaksi] Error updating KPI values:', error);
+      }
+    }
 
     // Fill category filter options
     const selCat = document.getElementById('filter-cat');
@@ -1340,45 +1399,28 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     // Filtering + Sorting
     function applyFilters(){
-      // Use shared filtering logic for KPI parity with laporan page
-      const filterOptions = {
-        start: state.filters.start,
-        end: state.filters.end,
-        category: state.filters.cat,
-        type: state.filters.type,
-        search: state.filters.q
-      };
-      
-      // Convert transaksi format to shared format for filtering
-      const txForShared = state.data.map(r => ({
-        type: r.type,
-        amount: r.amount,
-        date: r.date,
-        category: r.cat,
-        description: r.note
-      }));
-      
-      const filtered = applyFiltersShared(txForShared, filterOptions);
-      
-      // Convert back to transaksi format and apply sorting
-      let rows = filtered.map(tx => {
-        const orig = state.data.find(r => 
-          r.type === tx.type && 
-          r.amount === tx.amount && 
-          r.date === tx.date && 
-          r.cat === tx.category &&
-          r.note === tx.description
+      // Temporarily bypass shared filtering to use original logic for debugging
+      let rows = state.data.slice();
+      if(state.filters.start){
+        rows = rows.filter(r => r.date >= state.filters.start);
+      }
+      if(state.filters.end){
+        rows = rows.filter(r => r.date <= state.filters.end);
+      }
+      if(state.filters.cat && state.filters.cat !== 'Semua'){
+        rows = rows.filter(r => r.cat === state.filters.cat);
+      }
+      if(state.filters.type !== 'Semua'){
+        rows = rows.filter(r => r.type === state.filters.type);
+      }
+      if(state.filters.q){
+        const q = state.filters.q.toLowerCase().trim();
+        rows = rows.filter(r =>
+          r.note.toLowerCase().includes(q) ||
+          r.cat.toLowerCase().includes(q) ||
+          r.type.toLowerCase().includes(q)
         );
-        return orig || {
-          type: tx.type,
-          amount: tx.amount,
-          date: tx.date,
-          cat: tx.category || '',
-          note: tx.description || ''
-        };
-      });
-      
-      // Apply sorting (this is UI-specific, not KPI-affecting)
+      }
       const [by, dir] = state.filters.sort.split('-');
       rows.sort((a,b)=>{
         let res = 0;
@@ -1386,6 +1428,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         if(by==='jumlah'){ res = a.amount - b.amount; }
         return dir==='asc' ? res : -res;
       });
+      // Applied filters to transaction data
       return rows;
     }
 
@@ -1464,23 +1507,30 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     function updateSummary(){
       const rows = applyFilters();
-      console.log('Transaksi updateSummary - filtered rows:', rows.length);
-      const totals = calculateTotals(rows.map(r=>({ type: r.type, amount: r.amount })));
-      console.log('Transaksi updateSummary - totals:', totals);
-      animateNumber(elSaldo, totals.balance, fmtIDR);
-      animateNumber(elMasuk, totals.income, fmtIDR);
-      animateNumber(elKeluar, totals.expense, fmtIDR);
-      animateNumber(elCount, totals.count, (v)=> String(v).toLocaleString('id-ID'));
+      // Processing filtered transaction data
+      
+      // Force recalculation using shared logic
+      const income = rows.filter(r => String(r.type) === 'Masuk').reduce((s, r) => s + Number(r.amount || 0), 0);
+      const expense = rows.filter(r => String(r.type) === 'Keluar').reduce((s, r) => s + Number(r.amount || 0), 0);
+      const balance = income - expense;
+      const count = rows.length;
+      
+      // Summary calculations completed
+      
+      animateNumber(elSaldo, balance, fmtIDR);
+      animateNumber(elMasuk, income, fmtIDR);
+      animateNumber(elKeluar, expense, fmtIDR);
+      animateNumber(elCount, count, (v)=> String(v).toLocaleString('id-ID'));
 
       // Mirror updates to laporan-style IDs if present on this page
       const sumIn = document.getElementById('sum-in');
       const sumOut = document.getElementById('sum-out');
       const sumBal = document.getElementById('sum-bal');
       const sumCount = document.getElementById('sum-count');
-      if(sumIn) (window).animateValue(sumIn, totals.income, fmtIDR);
-      if(sumOut) (window).animateValue(sumOut, totals.expense, fmtIDR);
-      if(sumBal) (window).animateValue(sumBal, totals.balance, fmtIDR);
-      if(sumCount) (window).animateValue(sumCount, totals.count, (n)=> new Intl.NumberFormat('id-ID').format(n));
+      if(sumIn) (window).animateValue(sumIn, income, fmtIDR);
+      if(sumOut) (window).animateValue(sumOut, expense, fmtIDR);
+      if(sumBal) (window).animateValue(sumBal, balance, fmtIDR);
+      if(sumCount) (window).animateValue(sumCount, count, (n)=> new Intl.NumberFormat('id-ID').format(n));
     }
 
     function animateNumber(el, to, format=(n)=>n){
@@ -1674,6 +1724,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     function refreshAll(){
       renderTable();
       updateSummary();
+      updateKPIValues(); // Sync KPI values with laporan.astro
       if(window.Chart) buildCharts();
       saveFilters();
     }

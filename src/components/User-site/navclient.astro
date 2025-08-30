@@ -33,6 +33,10 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     </div>
 
     <nav class="parent-nav" data-aos="fade-up" data-aos-delay="400">
+      <a href="/komplek" class="back-button" aria-label="Kembali ke Halaman Utama">
+        <i class="fas fa-arrow-left"></i>
+        <span>Kembali</span>
+      </a>
       <button class="burgir" aria-label="Toggle nav">
         <span class="line"></span>
         <span class="line"></span>
@@ -40,9 +44,7 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
       </button>
 
       <ul class="links">
-        <li><a href="/user" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
         <li><a href="/userlaporan" class="nav-link"><i class="fas fa-chart-bar"></i> Laporan</a></li>
-        <li><a href="/userprogram" class="nav-link"><i class="fas fa-calendar-alt"></i> Program</a></li>
         <li><a href="/userinfo" class="nav-link"><i class="fas fa-info-circle"></i> Informasi</a></li>
       </ul>
     </nav>
@@ -314,24 +316,43 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     width: 100%;
   }
 
+  .back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    margin-right: auto;
+  }
+  
+  .back-button:hover {
+    background-color: #f0f2f5;
+    transform: translateX(-4px);
+  }
+  
+  .back-button i {
+    font-size: 1rem;
+  }
+
   /* Burger Menu */
   .burgir {
     display: none;
     flex-direction: column;
     justify-content: space-around;
-    width: 2.8rem;
-    height: 2.8rem;
-    background: rgba(255, 255, 255, 0.9);
+    width: 2rem;
+    height: 2rem;
+    background: transparent;
     border: none;
-    border-radius: 50%;
     cursor: pointer;
+    padding: 0;
     z-index: 10;
-    padding: 0.7rem;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
-    transform-origin: center;
+    margin-left: 12px;
   }
+  
 
   .burgir:hover {
     transform: scale(1.05);

@@ -649,14 +649,18 @@
       }
       
       // If no localStorage data, try to get from laporan snapshot
-      const lapSnap = getLaporanSnapshot();
-      if (lapSnap && lapSnap.totals) {
-        return {
-          totalKas: lapSnap.totals.balance || 0,
-          totalMasuk: lapSnap.totals.income || 0,
-          totalKeluar: lapSnap.totals.expense || 0,
-          countTransaksi: 0
-        };
+      try {
+        const snap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
+        if (snap && snap.totals) {
+          return {
+            totalKas: snap.totals.balance || 0,
+            totalMasuk: snap.totals.income || 0,
+            totalKeluar: snap.totals.expense || 0,
+            countTransaksi: 0
+          };
+        }
+      } catch (error) {
+        console.warn('Failed to parse laporan snapshot:', error);
       }
       
       // If no laporan snapshot, use local summary

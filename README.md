@@ -1,8 +1,53 @@
-# KomplekKita - Landing Page Modern & Aesthetic 🚀✨
+# KomplekKita - Sistem Manajemen Komplek Perumahan 🏘️
 
-Landing page ultra-modern untuk platform manajemen komplek perumahan dengan desain yang aesthetic, penuh animasi, dan user experience yang luar biasa!
+Platform manajemen komplek perumahan modern dengan fitur lengkap untuk pengelolaan keuangan, informasi warga, dan administrasi RT/RW. Dibangun dengan teknologi terbaru untuk pengalaman pengguna yang optimal.
 
-## 🌟 **Fitur Utama yang Sudah Diupgrade**
+## 🚀 Cara Menjalankan Aplikasi
+
+### Prasyarat
+- Node.js (versi 16 atau lebih baru)
+- npm (versi 7 atau lebih baru) atau pnpm
+- Git (untuk mengklon repositori)
+
+### Langkah-langkah Instalasi
+
+1. **Clone repositori**
+   ```bash
+   git clone [URL_REPOSITORY]
+   cd KomplekKita
+   ```
+
+2. **Instal dependensi**
+   ```bash
+   npm install
+   # atau
+   pnpm install
+   ```
+
+3. **Jalankan server pengembangan**
+   ```bash
+   npm run dev
+   # atau
+   pnpm dev
+   ```
+
+4. **Buka di browser**
+   Buka [http://localhost:4321](http://localhost:4321) di browser favorit Anda.
+
+## 🎮 Cara Mencoba Demo
+
+### Demo Admin
+1. Klik tombol "Masuk" di pojok kanan atas
+2. Pilih "Login sebagai Admin"
+3. Gunakan kredensial demo yang tersedia
+
+### Demo User
+1. Kunjungi halaman "/komplek"
+2. Pilih komplek yang tersedia
+3. Klik tombol "Lihat Demo"
+4. Anda akan diarahkan ke dashboard user dengan akses penuh
+
+## 🌟 **Fitur Utama**
 
 ### 🎨 **Design System Modern**
 - **Color Palette Sesuai Logo**: Menggunakan warna-warna dari logo asli (light blue, muted green/teal, muted orange/peach, dark blue)
@@ -81,22 +126,45 @@ Landing page ultra-modern untuk platform manajemen komplek perumahan dengan desa
 - Wave decoration background
 - Enhanced typography dan spacing
 
+## 🎨 Tema dan Desain
+- **Warna**: Skema warna modern dengan aksen biru dan oranye
+- **Tipografi**: Menggunakan font Poppins & Inter untuk keterbacaan optimal
+- **Responsif**: Tampilan yang optimal di semua perangkat
+
 ## 🛠️ **Tech Stack yang Digunakan**
 
-### **Frontend Framework**
+### **Frontend**
 - **Astro**: Modern static site generator
-- **CSS Custom Properties**: Dynamic theming system
-- **CSS Grid & Flexbox**: Modern layout techniques
+- **Tailwind CSS**: Utility-first CSS framework
+- **Alpine.js**: JavaScript framework untuk interaktivitas
+- **GSAP**: Untuk animasi halus dan modern
 
-### **Animation Libraries**
-- **GSAP**: Professional-grade animations
-- **AOS**: Scroll-triggered animations
-- **Particles.js**: Interactive background effects
+### **Backend & API**
+- **Node.js**: Runtime JavaScript
+- **Express**: Framework web server
+- **Supabase**: Database dan autentikasi
+- **Midtrans**: Integrasi pembayaran
 
-### **Design Resources**
-- **Font Awesome**: Professional iconography
-- **Google Fonts**: Premium typography
-- **CSS Animations**: Custom keyframes dan transitions
+## 📱 Akses Cepat
+
+- **Halaman Utama**: `/`
+- **Dashboard Admin**: `/admin`
+- **Dashboard User**: `/user`
+- **Halaman Komplek**: `/komplek`
+- **Laporan Keuangan**: `/userlaporan`
+- **Informasi Komplek**: `/userinfo`
+
+## 🤝 Berkontribusi
+
+1. Fork repositori ini
+2. Buat branch fitur (`git checkout -b fitur/namafitur`)
+3. Commit perubahan Anda (`git commit -m 'Menambahkan fitur baru'`)
+4. Push ke branch (`git push origin fitur/namafitur`)
+5. Buat Pull Request
+
+## 📝 Lisensi
+
+Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 
 ### **Performance Features**
 - **Lazy Loading**: Optimized resource loading
