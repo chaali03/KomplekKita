@@ -1,31 +1,58 @@
 ---
-
-
-
+// Enhanced admin site info component with modern design
 ---
 
 <div class="document-format-section" data-aos="fade-up">
-  <div class="section-header">
+  <div class="hero-container">
+    <div class="hero-content">
+      <div class="hero-icon">
+        <i class="fas fa-file-text"></i>
+      </div>
       <h1 class="main-title">Format Surat Warga</h1>
-      <p class="subtitle">Mohon digunakan secara bijaksana*</p>
+      <p class="subtitle">Mohon digunakan secara bijaksana untuk keperluan resmi</p>
+    </div>
   </div>
   
   <div class="button-grid">
       <button class="format-button format-button1" data-aos="zoom-in" data-aos-delay="100">
-          <i class="fas fa-file-alt"></i>
-          <span>Surat Pengantar</span>
+          <div class="button-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <div class="button-content">
+            <span class="button-title">Surat Pengantar</span>
+            <span class="button-desc">Template surat pengantar resmi</span>
+          </div>
+          <div class="button-glow"></div>
       </button>
       <button class="format-button format-button2" data-aos="zoom-in" data-aos-delay="200">
-          <i class="fas fa-file-signature"></i>
-          <span>Surat Keterangan</span>
+          <div class="button-icon">
+            <i class="fas fa-file-signature"></i>
+          </div>
+          <div class="button-content">
+            <span class="button-title">Surat Keterangan</span>
+            <span class="button-desc">Template surat keterangan warga</span>
+          </div>
+          <div class="button-glow"></div>
       </button>
       <button class="format-button format-button3" data-aos="zoom-in" data-aos-delay="300">
-          <i class="fas fa-file-invoice"></i>
-          <span>Surat Permohonan</span>
+          <div class="button-icon">
+            <i class="fas fa-file-invoice"></i>
+          </div>
+          <div class="button-content">
+            <span class="button-title">Surat Permohonan</span>
+            <span class="button-desc">Template permohonan bantuan</span>
+          </div>
+          <div class="button-glow"></div>
       </button>
-      <button class="format-button format-button1" data-aos="zoom-in" data-aos-delay="400">
-          <i class="fas fa-file-contract"></i>
-          <span>Surat Undangan</span>
+      <button class="format-button format-button4" data-aos="zoom-in" data-aos-delay="400">
+          <div class="button-icon">
+            <i class="fas fa-file-contract"></i>
+          </div>
+          <div class="button-content">
+            <span class="button-title">Surat Undangan</span>
+            <span class="button-desc">Template undangan acara</span>
+          </div>
+          <div class="button-glow"></div>
       </button>
   </div>
 </div>
@@ -560,58 +587,101 @@
 </script>
 
 <div class="data-warga-section" data-aos="fade-up" data-aos-delay="200">
-  <div class="section-header">
-      <h2 class="section-title">Data Warga <span class="section-count" id="dw-count"></span></h2>
-      <div class="search-container">
-          <input type="text" placeholder="Cari warga..." class="search-input" aria-label="Cari warga">
-          <button class="search-button" title="Cari"><i class="fas fa-search"></i></button>
+  <div class="section-header-enhanced">
+    <div class="header-content">
+      <div class="header-icon">
+        <i class="fas fa-users"></i>
       </div>
+      <div class="header-text">
+        <h2 class="section-title-enhanced">Data Warga <span class="section-count" id="dw-count"></span></h2>
+        <p class="section-desc">Direktori lengkap warga komplek dengan sistem pencarian</p>
+      </div>
+    </div>
+    <div class="search-container-enhanced">
+        <div class="search-wrapper">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" placeholder="Cari nama, RT/RW, alamat..." class="search-input-enhanced" aria-label="Cari warga">
+          <button class="search-button-enhanced" title="Cari"><i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div>
   </div>
-  <div class="controls">
-      <div class="filters">
-          <select class="ctrl rt" aria-label="Filter RT">
-            <option value="">RT: Semua</option>
-          </select>
-          <select class="ctrl rw" aria-label="Filter RW">
-            <option value="">RW: Semua</option>
-          </select>
-          <select class="ctrl status" aria-label="Filter Status">
-            <option value="">Status: Semua</option>
-            <option value="aktif">Aktif</option>
-            <option value="pindah">Pindah</option>
-            <option value="nonaktif">Nonaktif</option>
-          </select>
-          <select class="ctrl verif" aria-label="Filter Verifikasi">
-            <option value="">Verifikasi: Semua</option>
-            <option value="true">Terverifikasi</option>
-            <option value="false">Belum Verif</option>
-          </select>
+  
+  <div class="controls-enhanced">
+      <div class="filters-enhanced">
+          <div class="filter-group">
+            <label class="filter-label">RT</label>
+            <select class="ctrl rt enhanced-select" aria-label="Filter RT">
+              <option value="">Semua RT</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">RW</label>
+            <select class="ctrl rw enhanced-select" aria-label="Filter RW">
+              <option value="">Semua RW</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Status</label>
+            <select class="ctrl status enhanced-select" aria-label="Filter Status">
+              <option value="">Semua Status</option>
+              <option value="aktif">Aktif</option>
+              <option value="pindah">Pindah</option>
+              <option value="nonaktif">Nonaktif</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Verifikasi</label>
+            <select class="ctrl verif enhanced-select" aria-label="Filter Verifikasi">
+              <option value="">Semua</option>
+              <option value="true">Terverifikasi</option>
+              <option value="false">Belum Verifikasi</option>
+            </select>
+          </div>
       </div>
-      <div class="actions">
-          <select class="ctrl sort" aria-label="Urutkan">
-            <option value="rw_rt">Urut: RW, RT, Alamat</option>
-            <option value="nama">Urut: Nama</option>
-            <option value="status">Urut: Status</option>
-          </select>
-          <button class="btn clear" title="Reset filter"><i class="fas fa-undo"></i> Reset</button>
-          <button class="btn refresh" title="Muat ulang"><i class="fas fa-sync"></i></button>
+      <div class="actions-enhanced">
+          <div class="sort-group">
+            <select class="ctrl sort enhanced-select" aria-label="Urutkan">
+              <option value="rw_rt">📍 RW, RT, Alamat</option>
+              <option value="nama">👤 Nama</option>
+              <option value="status">📊 Status</option>
+            </select>
+          </div>
+          <button class="btn-enhanced clear" title="Reset semua filter">
+            <i class="fas fa-undo"></i>
+            <span>Reset</span>
+          </button>
+          <button class="btn-enhanced refresh" title="Muat ulang data">
+            <i class="fas fa-sync"></i>
+            <span class="btn-text">Refresh</span>
+          </button>
       </div>
   </div>
   
-  <div class="data-list">
+  <div class="data-list-enhanced">
       <!-- Will be populated dynamically from localStorage('warga_data_v1') -->
   </div>
 
-  <div class="scroll" data-aos="fade-up" data-aos-delay="400">
-      <div class="line"></div>
-      <div class="arrow-down">&lt;</div>
-      <div class="line"></div>
+  <div class="scroll-enhanced" data-aos="fade-up" data-aos-delay="400">
+      <div class="scroll-content">
+        <div class="scroll-line"></div>
+        <div class="scroll-icon">
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="scroll-line"></div>
+      </div>
+      <p class="scroll-text">Scroll untuk melihat lebih banyak</p>
   </div>
 
-  <div class="pagination" data-aos="fade-up" data-aos-delay="450">
-      <button class="page-btn nav prev" title="Sebelumnya"><i class="fas fa-chevron-left"></i></button>
-      <div class="page-numbers"></div>
-      <button class="page-btn nav next" title="Berikutnya"><i class="fas fa-chevron-right"></i></button>
+  <div class="pagination-enhanced" data-aos="fade-up" data-aos-delay="450">
+      <button class="page-btn-enhanced nav prev" title="Halaman sebelumnya">
+        <i class="fas fa-chevron-left"></i>
+        <span>Sebelumnya</span>
+      </button>
+      <div class="page-numbers-enhanced"></div>
+      <button class="page-btn-enhanced nav next" title="Halaman berikutnya">
+        <span>Berikutnya</span>
+        <i class="fas fa-chevron-right"></i>
+      </button>
   </div>
 </div>
 
@@ -829,138 +899,292 @@ transition: transform .12s ease, box-shadow .2s ease, background .2s ease, color
 .action-btn.copied { background:#e8f6ee; color:#0c6b2f; border-color:#cfe0d6; }
   
 
-/* Surat */
+/* Document Format Section - Modern Design */
 .document-format-section {
-  padding: 40px;
-  font-family: Arial, sans-serif;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  margin-bottom: 2rem;
+  position: relative;
+  padding: 60px 40px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-radius: 24px;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.08),
+    0 8px 20px rgba(0, 0, 0, 0.04);
+  margin-bottom: 3rem;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  overflow: hidden;
 }
 
-.section-header {
-  margin-bottom: 2rem;
+.document-format-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #085895, #00b4d8, #0077be);
+}
+
+.hero-container {
+  margin-bottom: 3rem;
   text-align: center;
 }
 
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.hero-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #085895, #00b4d8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2rem;
+  box-shadow: 0 10px 30px rgba(8, 88, 149, 0.3);
+  animation: pulseGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  from { box-shadow: 0 10px 30px rgba(8, 88, 149, 0.3); }
+  to { box-shadow: 0 15px 40px rgba(8, 88, 149, 0.5); }
+}
+
 .main-title {
-  font-size: 2em;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0;
   position: relative;
-  display: inline-block;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .main-title::after {
   content: '';
   position: absolute;
-  bottom: -8px;
+  bottom: -12px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80px;
-  height: 3px;
-  background: linear-gradient(90deg, #085895, #00b4d8);
-  border-radius: 3px;
+  width: 120px;
+  height: 4px;
+  background: linear-gradient(90deg, #085895, #00b4d8, #0077be);
+  border-radius: 4px;
+  animation: slideIn 0.8s ease-out 0.3s both;
+}
+
+@keyframes slideIn {
+  from { width: 0; opacity: 0; }
+  to { width: 120px; opacity: 1; }
 }
 
 .subtitle {
-  font-size: 1em;
-  color: #666;
-  margin-top: 1rem;
-  font-style: italic;
+  font-size: 1.1rem;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+  max-width: 400px;
+  line-height: 1.6;
 }
 
 .button-grid {
-  display: flex;
-  flex-wrap: wrap; 
-  gap: 1.5rem; 
-  justify-content: center;
-  align-items: stretch;
-  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
 }
 
 .format-button {
-  width: 250px;
-  height: auto;
-  min-height: 80px;
-  border-radius: 16px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  color: white;
-  border: none;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   position: relative;
+  min-height: 140px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #fff;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   overflow: hidden;
 }
 
-.format-button::before {
-  content: '';
+.format-button:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.format-button:active {
+  transform: translateY(-4px) scale(1.01);
+}
+
+.button-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin: 1.5rem 0 0 1.5rem;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.format-button:hover .button-icon {
+  transform: rotate(5deg) scale(1.1);
+}
+
+.button-content {
+  flex: 1;
+  padding: 1.5rem 1.5rem 1.5rem 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.button-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.button-desc {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.button-glow {
   position: absolute;
   top: 0;
-  left: 0;
+  left: -100%;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateX(-100%);
-  transition: transform 0.5s ease;
+  background: linear-gradient(90deg, 
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: left 0.8s ease;
 }
 
-.format-button:hover::before {
-  transform: translateX(0);
+.format-button:hover .button-glow {
+  left: 100%;
 }
 
-.format-button i {
-  font-size: 1.5rem;
-}
-
-.format-button span {
-  text-align: center;
-  line-height: 1.2;
-}
-
-.format-button1 {
-  background: linear-gradient(135deg, #2895BB, #1a6b8a);
+/* Button Color Themes */
+.format-button1 .button-icon {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
 }
 
 .format-button1:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 20px rgba(40, 149, 187, 0.3);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
 }
 
-.format-button2 {
-  background: linear-gradient(135deg, #DD8669, #c56a4f);
+.format-button2 .button-icon {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
 }
 
 .format-button2:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 20px rgba(221, 134, 105, 0.3);
+  border-color: rgba(245, 158, 11, 0.3);
+  box-shadow: 0 20px 40px rgba(245, 158, 11, 0.2);
 }
 
-.format-button3 {
-  background: linear-gradient(135deg, #6EAB8E, #4e8a6e);
+.format-button3 .button-icon {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
 }
 
 .format-button3:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 20px rgba(110, 171, 142, 0.3);
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
 }
 
-  
-  @media (max-width: 600px) {
-      .button-grid {
-          flex-direction: column;
-      }
+.format-button4 .button-icon {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+}
+
+.format-button4:hover {
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .document-format-section {
+    padding: 40px 20px;
   }
+  
+  .button-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .main-title {
+    font-size: 2rem;
+  }
+  
+  .hero-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .document-format-section {
+    padding: 30px 15px;
+  }
+  
+  .format-button {
+    min-height: 120px;
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+  
+  .button-icon {
+    margin: 0;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+  
+  .button-content {
+    padding: 0;
+    text-align: center;
+  }
+  
+  .button-title {
+    font-size: 1.1rem;
+  }
+  
+  .button-desc {
+    font-size: 0.85rem;
+  }
+}
 
   .scroll {
 display: flex;
