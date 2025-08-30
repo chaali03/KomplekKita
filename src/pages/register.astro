@@ -104,7 +104,7 @@ import Footer from '../components/sections/Footer.astro';
                                 <label for="password" class="form-label">Password</label>
                                 <div class="input-container">
                                     <i class="fa-solid fa-lock input-icon"></i>
-                                    <input type="password" id="password" name="password" class="form-input" placeholder="Buat password" autocomplete="new-password" required />
+                                    <input type="password" id="password" name="password" class="form-input" placeholder="Buat password" required />
                                     <i class="fa-solid fa-eye toggle-password"></i>
                                 </div>
                                 <div class="password-strength">
@@ -119,7 +119,7 @@ import Footer from '../components/sections/Footer.astro';
                                 <label for="confirm-password" class="form-label">Konfirmasi Password</label>
                                 <div class="input-container">
                                     <i class="fa-solid fa-lock input-icon"></i>
-                                    <input type="password" id="confirm-password" name="confirm-password" class="form-input" placeholder="Konfirmasi password" autocomplete="new-password" required />
+                                    <input type="password" id="confirm-password" name="confirm-password" class="form-input" placeholder="Konfirmasi password" required />
                                     <i class="fa-solid fa-eye toggle-password"></i>
                                 </div>
                             </div>
@@ -1446,28 +1446,54 @@ import Footer from '../components/sections/Footer.astro';
         
         .feature-item {
             padding: 0.6rem;
+        }
+    }
 </style>
 
 <script>
     // Initialize AOS Animation Library
     document.addEventListener('DOMContentLoaded', function() {
-        // Check if AOS is available
+        // Initialize AOS with error handling
         if (typeof AOS !== 'undefined') {
-            AOS.init({
-                duration: 1000,
-                once: true
-            });
+            try {
+                AOS.init({
+                    duration: 1000,
+                    once: true
+                });
+                console.log('AOS initialized successfully');
+            } catch (error) {
+                console.warn('AOS initialization failed:', error);
+            }
+        } else {
+            console.warn('AOS library not available');
         }
 
-        // Initialize Lottie Animation
+        // Initialize Lottie Animation with error handling
         if (typeof lottie !== 'undefined') {
-            const registerAnimation = lottie.loadAnimation({
-                container: document.getElementById('lottie-register'),
-                renderer: 'svg',
-                loop: true,
-                autoplay: true,
-                path: '/animations/icon-morph.json'
-            });
+            try {
+                const registerAnimation = lottie.loadAnimation({
+                    container: document.getElementById('lottie-register'),
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    path: '/animations/icon-morph.json'
+                });
+                console.log('Lottie animation initialized successfully');
+            } catch (error) {
+                console.warn('Lottie animation failed to load:', error);
+                // Hide the lottie container and show a fallback
+                const lottieContainer = document.getElementById('lottie-register');
+                if (lottieContainer) {
+                    lottieContainer.style.display = 'none';
+                }
+            }
+        } else {
+            console.warn('Lottie library not available');
+            // Hide the lottie container
+            const lottieContainer = document.getElementById('lottie-register');
+            if (lottieContainer) {
+                lottieContainer.style.display = 'none';
+            }
         }
 
         // Toggle password visibility (eye open = masked, eye slash = visible)
@@ -1572,111 +1598,72 @@ import Footer from '../components/sections/Footer.astro';
         }
 
         if (registerForm && registerButton) {
-            registerForm.addEventListener('submit', async function(e) {
+            registerForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
                 // Prevent submit if disabled for any reason
                 if (registerButton.disabled) return;
                 
-                // Get form data
-                const formData = new FormData(registerForm);
-                const userData = {
-                    firstName: formData.get('first-name'),
-                    lastName: formData.get('last-name'),
-                    email: formData.get('email'),
-                    phone: formData.get('phone'),
-                    password: formData.get('password'),
-                    confirmPassword: formData.get('confirm-password')
-                };
-                
-                // Validate passwords match
-                if (userData.password !== userData.confirmPassword) {
-                    alert('Password dan konfirmasi password tidak cocok!');
-                    return;
-                }
-                
                 // Add loading state
                 registerButton.classList.add('loading');
                 registerButton.innerHTML = '<span class="button-text">Memproses...</span><i class="fa-solid fa-spinner fa-spin"></i>';
                 
-                try {
-                    // Save to localStorage (simulating database)
-                    const users = JSON.parse(localStorage.getItem('komplekKitaUsers') || '[]');
-                    
-                    // Check if email already exists
-                    if (users.find(user => user.email === userData.email)) {
-                        throw new Error('Email sudah terdaftar!');
-                    }
-                    
-                    // Create user object
-                    const newUser = {
-                        id: Date.now().toString(),
-                        firstName: userData.firstName,
-                        lastName: userData.lastName,
-                        email: userData.email,
-                        phone: userData.phone,
-                        password: userData.password, // In real app, this should be hashed
-                        hasKomplek: false,
-                        komplekId: null,
-                        createdAt: new Date().toISOString()
-                    };
-                    
-                    // Save user
-                    users.push(newUser);
-                    localStorage.setItem('komplekKitaUsers', JSON.stringify(users));
-                    
-                    // Set current user session
-                    localStorage.setItem('komplekKitaCurrentUser', JSON.stringify(newUser));
-                    
-                    // Success feedback
-                    registerButton.innerHTML = '<span class="button-text">Berhasil!</span><i class="fa-solid fa-check"></i>';
-                    
-                    // Redirect after success
-                    setTimeout(() => {
-                        // Check if user needs to register komplek
-                        if (!newUser.hasKomplek) {
-                            window.location.href = '/register-komplek';
-                        } else {
-                            window.location.href = '/dashboard';
-                        }
-                    }, 1500);
-                    
-                } catch (error) {
-                    // Error handling
-                    alert(error.message || 'Terjadi kesalahan saat mendaftar!');
-                    
+                // Simulate form submission (replace with actual form submission)
+                setTimeout(() => {
                     // Reset button state
                     registerButton.classList.remove('loading');
                     registerButton.innerHTML = '<span class="button-text">Daftar Sekarang</span><i class="fa-solid fa-user-plus"></i>';
-                }
+                    
+                    // Redirect or show success message
+                    // window.location.href = '/dashboard';
+                }, 2000);
             });
         }
 
-        // GSAP Animations (with fallback)
+        // GSAP Animations with error handling
         if (typeof gsap !== 'undefined') {
-            gsap.from('.register-form-container', {
-                y: 50,
-                opacity: 0,
-                duration: 1,
-                ease: 'power3.out'
-            });
+            try {
+                gsap.from('.register-form-container', {
+                    y: 50,
+                    opacity: 0,
+                    duration: 1,
+                    ease: 'power3.out'
+                });
 
-            gsap.from('.form-group', {
-                y: 20,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.2,
-                ease: 'power3.out',
-                delay: 0.5
-            });
+                gsap.from('.form-group', {
+                    y: 20,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: 0.2,
+                    ease: 'power3.out',
+                    delay: 0.5
+                });
 
-            gsap.from('.feature-item', {
-                x: 50,
-                opacity: 0,
-                duration: 0.8,
-                stagger: 0.2,
-                ease: 'power3.out',
-                delay: 1
+                gsap.from('.feature-item', {
+                    x: 50,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: 0.2,
+                    ease: 'power3.out',
+                    delay: 1
+                });
+                console.log('GSAP animations initialized successfully');
+            } catch (error) {
+                console.warn('GSAP animations failed:', error);
+                // Apply basic CSS animations as fallback
+                const elements = document.querySelectorAll('.register-form-container, .form-group, .feature-item');
+                elements.forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0) translateX(0)';
+                });
+            }
+        } else {
+            console.warn('GSAP library not available, using CSS fallback');
+            // Apply basic CSS animations as fallback
+            const elements = document.querySelectorAll('.register-form-container, .form-group, .feature-item');
+            elements.forEach(el => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0) translateX(0)';
             });
         }
     });

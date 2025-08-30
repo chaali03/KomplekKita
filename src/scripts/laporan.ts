@@ -290,19 +290,8 @@ function initializeData() {
     const stored = localStorage.getItem(storageKey);
     if (stored) appState.transactions = (JSON.parse(stored) || []) as Transaction[];
   } catch { appState.transactions = [] }
-
-  if (!Array.isArray(appState.transactions) || appState.transactions.length === 0) {
-    const currentDate = new Date();
-    const months = [-2, -1, 0, 1, 2, 3];
-    let allTransactions: Transaction[] = [];
-    months.forEach(offset => {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1);
-      const monthData = generateMonthData(date.getFullYear(), date.getMonth() + 1);
-      allTransactions = allTransactions.concat(monthData);
-    });
-    appState.transactions = allTransactions.sort((a, b) => a.date.localeCompare(b.date));
-    try { localStorage.setItem(storageKey, JSON.stringify(appState.transactions)) } catch {}
-  }
+  // Do NOT auto-generate demo data here to avoid divergence with transaksi.astro
+  if (!Array.isArray(appState.transactions)) appState.transactions = [];
 }
 
 // Create demo residents if none exist (used in demo mode only)

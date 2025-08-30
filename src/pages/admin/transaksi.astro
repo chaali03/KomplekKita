@@ -89,28 +89,28 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       <div class="kpi-icon kpi-blue"><i class="fas fa-wallet"></i></div>
       <div class="kpi-content">
         <div class="kpi-label">Uang Kas</div>
-        <div class="kpi-value" id="kpi-saldo" aria-live="polite">Rp 7.085.433</div>
+        <div class="kpi-value" id="kpi-saldo" aria-live="polite">Rp0</div>
       </div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-green"><i class="fas fa-arrow-down"></i></div>
       <div class="kpi-content">
         <div class="kpi-label">Total Masuk</div>
-        <div class="kpi-value" id="kpi-masuk" aria-live="polite">Rp 11.587.199</div>
+        <div class="kpi-value" id="kpi-masuk" aria-live="polite">Rp0</div>
       </div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-red"><i class="fas fa-arrow-up"></i></div>
       <div class="kpi-content">
         <div class="kpi-label">Total Keluar</div>
-        <div class="kpi-value" id="kpi-keluar" aria-live="polite">Rp 4.501.766</div>
+        <div class="kpi-value" id="kpi-keluar" aria-live="polite">Rp0</div>
       </div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-slate"><i class="fas fa-list"></i></div>
       <div class="kpi-content">
         <div class="kpi-label">Transaksi</div>
-        <div class="kpi-value" id="kpi-count" aria-live="polite">27</div>
+        <div class="kpi-value" id="kpi-count" aria-live="polite">0</div>
       </div>
     </div>
   </section>
@@ -1034,17 +1034,33 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     }
 
     // Data init (load from localStorage or seed)
+    function toSharedFormat(rows){
+      return (rows||[]).map(r=> ({ date: r.date, type: r.type, category: r.cat, description: r.note, amount: r.amount }));
+    }
+    function fromSharedFormat(rows){
+      return (rows||[]).map(r=> ({ date: r.date, type: r.type, cat: r.category, note: r.description||'', amount: r.amount }));
+    }
+    function readShared(){
+      try{ return JSON.parse(localStorage.getItem('financial_transactions_v2')||'[]'); }catch(_){ return []; }
+    }
+    function writeShared(rows){
+      try{ localStorage.setItem('financial_transactions_v2', JSON.stringify(toSharedFormat(rows))); }catch(_){ }
+    }
+
     function loadData(){
       try{
-        const saved = JSON.parse(localStorage.getItem('trx_data')||'[]');
-        if(Array.isArray(saved) && saved.length){ return saved; }
-      }catch(_){}
-      const seeded = [...seedBase(), ...generateMore('2025-08')].sort((a,b)=> a.date.localeCompare(b.date));
-      localStorage.setItem('trx_data', JSON.stringify(seeded));
-      localStorage.setItem('trx_batches', JSON.stringify([]));
-      return seeded;
+        // Single source of truth: read only the shared storage used by laporan.ts
+        const shared = readShared();
+        if(Array.isArray(shared)) return fromSharedFormat(shared);
+      }catch(_){ }
+      // Do NOT generate/seed here to avoid divergence with laporan.astro
+      return [];
     }
-    function saveData(){ localStorage.setItem('trx_data', JSON.stringify(state.data)); }
+    function saveData(){
+      localStorage.setItem('trx_data', JSON.stringify(state.data));
+      // Mirror to shared storage used by laporan.ts
+      writeShared(state.data);
+    }
     function loadBatches(){ try{ return JSON.parse(localStorage.getItem('trx_batches')||'[]'); }catch(_){ return []; } }
     function saveBatches(b){ localStorage.setItem('trx_batches', JSON.stringify(b)); }
     state.data = loadData();
@@ -1233,6 +1249,26 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       });
     }
     restoreFilters();
+    // Ensure default period matches laporan (bulan-ini) if no saved range
+    (function ensureDefaultPeriod(){
+      try{
+        const noRange = !state.filters.start && !state.filters.end;
+        if(noRange){
+          const now = new Date();
+          const start = new Date(now.getFullYear(), now.getMonth(), 1);
+          const end = new Date(now.getFullYear(), now.getMonth()+1, 0);
+          const toISO = (d)=> new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+          state.filters.start = toISO(start);
+          state.filters.end = toISO(end);
+          saveFilters();
+          // Reflect UI
+          const s = document.getElementById('filter-start');
+          const e = document.getElementById('filter-end');
+          if(s) s.value = state.filters.start;
+          if(e) e.value = state.filters.end;
+        }
+      }catch(_){ }
+    })();
 
     // Persist filters
     function saveFilters(){
@@ -1820,12 +1856,10 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     // When Chart.js ready
     script.onload = ()=> {
       refreshAll();
-      loadSummaryKPIs();
     };
 
     // First render (skeleton visible until Chart.js ready)
     refreshAll();
-    loadSummaryKPIs();
 
     // ===== Import CSV & Rollback =====
     const importModal = document.getElementById('import-modal');
