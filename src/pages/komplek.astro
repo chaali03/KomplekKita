@@ -1569,7 +1569,8 @@ import Footer from '../components/sections/Footer.astro';
     async function fetchAndRenderKomplek() {
       if (!komplekGrid) return;
       try {
-        const res = await fetch('/api/komplek');
+        const { safeFetch } = await import('/src/utils/fetch-wrapper.ts');
+        const res = await safeFetch('/api/komplek');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const items = await res.json();
 
@@ -1659,3 +1660,5 @@ import Footer from '../components/sections/Footer.astro';
     fetchAndRenderKomplek();
   });
 </script>
+
+<Footer />

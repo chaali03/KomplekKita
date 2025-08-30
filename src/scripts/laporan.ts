@@ -6,6 +6,9 @@ declare global {
   interface Window { Chart: any }
 }
 
+// Shared finance utilities for consistent KPI calculations across pages
+import { calculateTotals as calcShared, applyFilters as filterShared, type FilterOptions } from '~/utils/finance';
+
 // Quick-save current filtered period as a report snapshot
 function saveCurrentAsReport(){
   const start = appState.filters.start;
@@ -374,23 +377,22 @@ function applyFilterPreset(preset: string) {
 // Filter application
 function getFilteredTransactions(): Transaction[] {
   const f = appState.filters;
-  let filtered = appState.transactions.slice();
-  if (f.start) filtered = filtered.filter(t => t.date >= f.start);
-  if (f.end) filtered = filtered.filter(t => t.date <= f.end);
-  if (f.search) {
-    const search = f.search.toLowerCase().trim();
-    filtered = filtered.filter(t => (t.description || '').toLowerCase().includes(search) || t.category.toLowerCase().includes(search) || t.type.toLowerCase().includes(search));
-  }
-  if (f.minAmount && Number(f.minAmount) > 0) filtered = filtered.filter(t => t.amount >= Number(f.minAmount));
-  if (f.maxAmount && Number(f.maxAmount) > 0) filtered = filtered.filter(t => t.amount <= Number(f.maxAmount));
+  const filterOptions: FilterOptions = {
+    start: f.start,
+    end: f.end,
+    search: f.search,
+    minAmount: f.minAmount ? Number(f.minAmount) : undefined,
+    maxAmount: f.maxAmount ? Number(f.maxAmount) : undefined
+  };
+  const filtered = filterShared(appState.transactions, filterOptions);
   return filtered.sort((a, b) => a.date.localeCompare(b.date));
 }
 
 // Calculate totals
 function calculateTotals(transactions: Transaction[]) {
-  const income = transactions.filter(t => t.type === 'Masuk').reduce((sum, t) => sum + t.amount, 0);
-  const expense = transactions.filter(t => t.type === 'Keluar').reduce((sum, t) => sum + t.amount, 0);
-  return { income, expense, balance: income - expense, count: transactions.length } as ReportTotals & { count: number };
+  // Delegate to shared utility to ensure parity with transaksi page
+  const { income, expense, balance, count } = calcShared(transactions as any);
+  return { income, expense, balance, count } as ReportTotals & { count: number };
 }
 
 // Generate daily series for charts

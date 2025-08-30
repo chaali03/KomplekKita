@@ -86,7 +86,7 @@
 
         <!-- Floating hero image -->
         <div class="hero-image">
-            <img src="/images/hero-app.png" alt="KomplekKita App Dashboard" class="main-image" />
+            <img src="/images/payment-logos/dashboard-hero.png" alt="Komplek App Dashboard" class="main-image" />
             <div class="image-glow"></div>
 
             <!-- Floating notification cards -->
@@ -876,7 +876,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         // Set random particle movement directions
         const particles = document.querySelectorAll('.particle');
-        particles.forEach(particle => {
+        (particles as NodeListOf<HTMLElement>).forEach((particle) => {
             const tx = (Math.random() * 200 - 100) + 'px';
             const ty = (Math.random() * 200 - 100) + 'px';
             particle.style.setProperty('--tx', tx);
@@ -885,19 +885,19 @@
 
         // Ripple effect for buttons
         const buttons = document.querySelectorAll('.btn');
-        buttons.forEach(button => {
-            button.addEventListener('click', function(e) {
+        (buttons as NodeListOf<HTMLElement>).forEach((button) => {
+            button.addEventListener('click', (e: MouseEvent) => {
                 const rect = button.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
-                
+
                 const ripple = document.createElement('span');
                 ripple.classList.add('ripple');
-                ripple.style.left = `${x}px`;
-                ripple.style.top = `${y}px`;
-                
-                this.appendChild(ripple);
-                
+                (ripple.style as CSSStyleDeclaration).left = `${x}px`;
+                (ripple.style as CSSStyleDeclaration).top = `${y}px`;
+
+                button.appendChild(ripple);
+
                 setTimeout(() => {
                     ripple.remove();
                 }, 600);
@@ -905,22 +905,22 @@
         });
 
         // Hover effects for buttons
-        buttons.forEach(button => {
+        (buttons as NodeListOf<HTMLElement>).forEach((button) => {
             button.addEventListener('mouseenter', () => {
-                const icon = button.querySelector('.btn-icon');
+                const icon = button.querySelector('.btn-icon') as HTMLElement | null;
                 if (icon) {
                     if (button.classList.contains('btn-primary')) {
-                        icon.style.transform = 'translateX(3px)';
+                        (icon as HTMLElement).style.transform = 'translateX(3px)';
                     } else {
-                        icon.style.transform = 'rotate(10deg) scale(1.2)';
+                        (icon as HTMLElement).style.transform = 'rotate(10deg) scale(1.2)';
                     }
                 }
             });
             
             button.addEventListener('mouseleave', () => {
-                const icon = button.querySelector('.btn-icon');
+                const icon = button.querySelector('.btn-icon') as HTMLElement | null;
                 if (icon) {
-                    icon.style.transform = '';
+                    (icon as HTMLElement).style.transform = '';
                 }
             });
         });
@@ -928,14 +928,14 @@
         // Parallax effect on scroll
         window.addEventListener('scroll', () => {
             const scrollY = window.scrollY;
-            const heroImage = document.querySelector('.hero-image');
-            const shapes = document.querySelector('.shapes');
-            const waves = document.querySelector('.waves-container');
+            const heroImage = document.querySelector('.hero-image') as HTMLElement | null;
+            const shapes = document.querySelector('.shapes') as HTMLElement | null;
+            const waves = document.querySelector('.waves-container') as HTMLElement | null;
             
             if (heroImage && shapes && waves) {
-                heroImage.style.transform = `translateY(${scrollY * 0.1}px)`;
-                shapes.style.transform = `translateY(${scrollY * 0.05}px)`;
-                waves.style.transform = `translateY(${scrollY * 0.02}px)`;
+                (heroImage as HTMLElement).style.transform = `translateY(${scrollY * 0.1}px)`;
+                (shapes as HTMLElement).style.transform = `translateY(${scrollY * 0.05}px)`;
+                (waves as HTMLElement).style.transform = `translateY(${scrollY * 0.02}px)`;
             }
         });
     });

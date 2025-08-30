@@ -335,13 +335,15 @@
     setTimeout(()=>{ totalEl.textContent = currency(val); totalEl.style.opacity = '1'; }, 300);
   }
 
-  async function fetchJson(url){
-    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-    if(!res.ok){
-      const text = await res.text().catch(()=> '');
-      throw new Error(`Gagal fetch: ${url} [${res.status}] ${text?.slice(0,200)}`);
+  // Import safe fetch wrapper
+  const { fetchJson } = await import('/src/utils/fetch-wrapper.ts');
+  
+  async function fetchJsonSafe(url){
+    try {
+      return await fetchJson(url);
+    } catch (error) {
+      throw new Error(`Gagal fetch: ${url} - ${error.message}`);
     }
-    return res.json();
   }
 
   // Helpers to format
