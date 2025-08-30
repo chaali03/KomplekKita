@@ -1,0 +1,335 @@
+---
+---
+
+<footer class="professional-footer">
+  <div class="footer-top">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Logo dan Deskripsi -->
+        <div class="footer-brand">
+          <a href="/" class="footer-logo">
+            <img src="/nal.svg" alt="KomplekKita Logo" width="180" height="40">
+          </a>
+          <p class="footer-tagline">Solusi modern untuk pengelolaan kompleks perumahan yang efisien dan transparan.</p>
+          <div class="social-links">
+            <a href="#" class="social-link" aria-label="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="social-link" aria-label="Twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="social-link" aria-label="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="social-link" aria-label="LinkedIn">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Menu Navigasi -->
+        <div class="footer-nav">
+          <h3 class="footer-heading">Navigasi</h3>
+          <ul class="footer-menu">
+            <li><a href="/" class="footer-link">Beranda</a></li>
+            <li><a href="/harga" class="footer-link">Harga</a></li>
+            <li><a href="/komplek" class="footer-link">Komplek</a></li>
+            <li><a href="/kontak" class="footer-link">Kontak</a></li>
+            <li><a href="/login" class="footer-link">Login</a></li>
+            <li><a href="/register" class="footer-link">Daftar</a></li>
+          </ul>
+        </div>
+
+        <!-- Layanan -->
+        <div class="footer-services">
+          <h3 class="footer-heading">Layanan</h3>
+          <ul class="footer-menu">
+            <li><a href="#" class="footer-link">Pengelolaan Iuran</a></li>
+            <li><a href="#" class="footer-link">Laporan Keuangan</a></li>
+            <li><a href="#" class="footer-link">Manajemen Warga</a></li>
+            <li><a href="#" class="footer-link">Pengumuman</a></li>
+            <li><a href="#" class="footer-link">Keamanan</a></li>
+          </ul>
+        </div>
+
+        <!-- Kontak -->
+        <div class="footer-contact">
+          <h3 class="footer-heading">Hubungi Kami</h3>
+          <ul class="contact-list">
+            <li class="contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>Jl. Kompleks Perumahan No. 123, Jakarta</span>
+            </li>
+            <li class="contact-item">
+              <i class="fas fa-phone-alt"></i>
+              <span>+62 812 3456 7890</span>
+            </li>
+            <li class="contact-item">
+              <i class="fas fa-envelope"></i>
+              <span>info@komplekita.com</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Bottom -->
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="footer-bottom-content">
+        <p class="copyright">&copy; {new Date().getFullYear()} KomplekKita. Hak Cipta Dilindungi.</p>
+        <div class="footer-legal">
+          <a href="#" class="legal-link">Syarat & Ketentuan</a>
+          <a href="#" class="legal-link">Kebijakan Privasi</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* Footer Styles */
+  .professional-footer {
+    --footer-bg: #1a2942;
+    --footer-text: #e2e8f0;
+    --footer-muted: #94a3b8;
+    --footer-link: #e2e8f0;
+    --footer-link-hover: #38bdf8;
+    --footer-border: rgba(148, 163, 184, 0.2);
+    --footer-bottom-bg: #0f172a;
+    --heading-color: #ffffff;
+    --social-bg: rgba(255, 255, 255, 0.1);
+    --social-hover: #38bdf8;
+    
+    font-family: 'Inter', 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .footer-top {
+    background-color: var(--footer-bg);
+    padding: 4rem 0 3rem;
+    color: var(--footer-text);
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2.5rem;
+  }
+
+  /* Brand Section */
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-tagline {
+    color: var(--footer-muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--social-bg);
+    color: var(--footer-link);
+    transition: all 0.3s ease;
+  }
+
+  .social-link:hover {
+    background-color: var(--social-hover);
+    color: white;
+    transform: translateY(-3px);
+  }
+
+  /* Navigation Sections */
+  .footer-heading {
+    color: var(--heading-color);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    position: relative;
+    padding-bottom: 0.75rem;
+  }
+
+  .footer-heading::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color: var(--footer-link-hover);
+    border-radius: 2px;
+  }
+
+  .footer-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .footer-link {
+    color: var(--footer-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    display: inline-block;
+    position: relative;
+  }
+
+  .footer-link:hover {
+    color: var(--footer-link-hover);
+    transform: translateX(5px);
+  }
+
+  .footer-link::before {
+    content: '→';
+    opacity: 0;
+    margin-right: 0.5rem;
+    transform: translateX(-8px);
+    display: inline-block;
+    transition: all 0.3s ease;
+  }
+
+  .footer-link:hover::before {
+    opacity: 1;
+    transform: translateX(-3px);
+  }
+
+  /* Contact Section */
+  .contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    color: var(--footer-muted);
+    font-size: 0.95rem;
+  }
+
+  .contact-item i {
+    color: var(--footer-link-hover);
+    font-size: 1rem;
+    margin-top: 0.25rem;
+  }
+
+  /* Footer Bottom */
+  .footer-bottom {
+    background-color: var(--footer-bottom-bg);
+    padding: 1.5rem 0;
+    color: var(--footer-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-bottom-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .copyright {
+    margin: 0;
+  }
+
+  .footer-legal {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .legal-link {
+    color: var(--footer-muted);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .legal-link:hover {
+    color: var(--footer-link-hover);
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .footer-top {
+      padding: 3rem 0 2rem;
+    }
+    
+    .footer-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+
+    .footer-bottom-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+    }
+
+    .footer-legal {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .social-links {
+      justify-content: center;
+    }
+
+    .footer-heading {
+      text-align: center;
+    }
+
+    .footer-heading::after {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .footer-menu {
+      align-items: center;
+    }
+
+    .contact-item {
+      justify-content: center;
+    }
+  }
+</style>

@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-	<link rel="icon" type="image/png" href="/images/hero-app.png" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 	
     <!-- AOS Animation Library -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -34,8 +34,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize AOS animation with a delay
             setTimeout(() => {
-                if (typeof window.AOS !== 'undefined') {
-                    window.AOS.init({
+                if (typeof (window as any).AOS !== 'undefined') {
+                    (window as any).AOS.init({
                         duration: 800,
                         easing: 'ease-in-out',
                         once: false
@@ -50,13 +50,13 @@
             }
             
             // Add smooth scrolling
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
+            document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+                anchor.addEventListener('click', (e) => {
                     e.preventDefault();
-                    
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    
+
+                    const targetId = (anchor as HTMLAnchorElement).getAttribute('href');
+                    const targetElement = targetId ? document.querySelector(targetId) : null;
+
                     if (targetElement) {
                         targetElement.scrollIntoView({
                             behavior: 'smooth',

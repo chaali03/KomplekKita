@@ -83,34 +83,42 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     </div>
   </div>
 
-  <!-- KPI Summary -->
-  <section class="grid-summary pre-anim" aria-label="Ringkasan">
-    <div class="kpi-card">
-      <div class="kpi-icon kpi-blue"><i class="fas fa-wallet"></i></div>
-      <div class="kpi-content">
+  <!-- KPI Summary Cards -->
+  <section class="kpi-grid">
+    <div class="kpi-card balance">
+      <div class="kpi-icon">
+        <i class="fas fa-wallet"></i>
+      </div>
+      <div class="kpi-details">
         <div class="kpi-label">Uang Kas</div>
-        <div class="kpi-value" id="kpi-saldo" aria-live="polite">Rp0</div>
+        <div class="kpi-value" id="kpi-saldo">Rp 13.858.792</div>
       </div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-icon kpi-green"><i class="fas fa-arrow-down"></i></div>
-      <div class="kpi-content">
+    <div class="kpi-card income">
+      <div class="kpi-icon">
+        <i class="fas fa-arrow-trend-up"></i>
+      </div>
+      <div class="kpi-details">
         <div class="kpi-label">Total Masuk</div>
-        <div class="kpi-value" id="kpi-masuk" aria-live="polite">Rp0</div>
+        <div class="kpi-value" id="kpi-masuk">Rp 19.340.529</div>
       </div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-icon kpi-red"><i class="fas fa-arrow-up"></i></div>
-      <div class="kpi-content">
+    <div class="kpi-card expense">
+      <div class="kpi-icon">
+        <i class="fas fa-arrow-trend-down"></i>
+      </div>
+      <div class="kpi-details">
         <div class="kpi-label">Total Keluar</div>
-        <div class="kpi-value" id="kpi-keluar" aria-live="polite">Rp0</div>
+        <div class="kpi-value" id="kpi-keluar">Rp 5.481.737</div>
       </div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-icon kpi-slate"><i class="fas fa-list"></i></div>
-      <div class="kpi-content">
+    <div class="kpi-card transactions">
+      <div class="kpi-icon">
+        <i class="fas fa-receipt"></i>
+      </div>
+      <div class="kpi-details">
         <div class="kpi-label">Transaksi</div>
-        <div class="kpi-value" id="kpi-count" aria-live="polite">0</div>
+        <div class="kpi-value" id="kpi-count">90</div>
       </div>
     </div>
   </section>
@@ -442,50 +450,101 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     @media (max-width: 1024px){ .grid-summary{ grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); } }
     @media (max-width: 640px){ .grid-summary{ grid-template-columns: 1fr; } }
 
-    .kpi-card{
-      display:flex; gap:16px; align-items:center;
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin: 24px 0;
+    }
+
+    .kpi-card {
       background: var(--surface);
-      border:1px solid var(--outline);
-      border-radius:16px; padding:18px 20px;
+      border: 1px solid var(--outline);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
       box-shadow: 0 8px 22px rgba(0,0,0,.08);
-      min-height:90px;
-      transform: translateY(6px);
-      animation: float-in .7s cubic-bezier(.2,.7,.2,1) forwards;
+      position: relative;
+      overflow: hidden;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .kpi-card.income::before { background: #16a34a; }
+    .kpi-card.expense::before { background: #dc2626; }
+    .kpi-card.balance::before { background: #2563eb; }
+    .kpi-card.transactions::before { background: #f59e0b; }
+
     .kpi-card:hover {
-      transform: translateY(0);
+      transform: translateY(-2px);
       box-shadow: 0 12px 28px rgba(0,0,0,.12);
-      border-top: 3px solid var(--outline);
+    }
+
+    .kpi-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: white;
+      font-weight: 900;
+    }
+
+    .kpi-card.income .kpi-icon { background: linear-gradient(135deg, #16a34a, #15803d); }
+    .kpi-card.expense .kpi-icon { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+    .kpi-card.balance .kpi-icon { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+    .kpi-card.transactions .kpi-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+    .kpi-details {
+      flex: 1;
+    }
+
+    .kpi-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-subtle);
+      margin-bottom: 4px;
+    }
+
+    .kpi-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+      letter-spacing: 0.3px;
+    }
+
+    @media (max-width: 1024px) { 
+      .kpi-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); } 
+    }
+    @media (max-width: 640px) { 
+      .kpi-grid { grid-template-columns: 1fr; } 
     }
     @media (max-width: 480px) {
       .kpi-card { 
-        padding: 10px 12px; 
-        gap: 10px;
-        min-height: 70px;
+        padding: 16px; 
+        gap: 12px;
       }
       .kpi-icon { 
-        width: 36px; 
-        height: 36px; 
-        font-size: 15px;
-        border-radius: 10px;
+        width: 44px; 
+        height: 44px; 
+        font-size: 18px;
       }
-      .kpi-content .kpi-value { font-size: 17px; }
-      .kpi-content .kpi-label { font-size: 0.85rem; }
+      .kpi-value { font-size: 20px; }
+      .kpi-label { font-size: 13px; }
     }
-    .kpi-icon{
-      width:44px; height:44px; border-radius:12px; display:grid; place-items:center;
-      color:#fff; font-size:18px; font-weight:900;
-      box-shadow:0 8px 20px rgba(0,0,0,.12);
-    }
-    .kpi-blue{ background:#2563eb; }
-    .kpi-green{ background:#16a34a; }
-    .kpi-red{ background:#dc2626; }
-    .kpi-slate{ background:#334155; }
-
-    .kpi-content .kpi-label{ color:var(--text-subtle); font-weight:700; }
-    .kpi-content .kpi-value{ font-size:22px; font-weight:900; letter-spacing:.3px; }
 
     .card.block {
       background: var(--surface);
@@ -937,13 +996,17 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     const komplekId = parseInt(qs.get('komplek_id') || localStorage.getItem('komplek_id') || '1');
     localStorage.setItem('komplek_id', String(komplekId));
 
-    async function fetchJson(url){
-      const res = await fetch(url, { headers: { 'Accept':'application/json' } });
-      if(!res.ok){
-        const text = await res.text().catch(()=> '');
-        throw new Error(`Gagal fetch: ${url} [${res.status}] ${text?.slice(0,200)}`);
+    // Import safe fetch wrapper
+    const { fetchJson } = await import('/src/utils/fetch-wrapper.ts');
+    // Shared finance utils for consistent KPI calculations
+    const { calculateTotals, applyFilters: applyFiltersShared } = await import('/src/utils/finance.ts?v=' + Date.now());
+    
+    async function fetchJsonSafe(url){
+      try {
+        return await fetchJson(url);
+      } catch (error) {
+        throw new Error(`Gagal fetch: ${url} - ${error.message}`);
       }
-      return res.json();
     }
     const fmtDateID = (iso)=> new Date(iso+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
 
@@ -1277,37 +1340,45 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     // Filtering + Sorting
     function applyFilters(){
-      let rows = state.data.slice();
-
-      // Date range
-      if(state.filters.start){
-        rows = rows.filter(r => r.date >= state.filters.start);
-      }
-      if(state.filters.end){
-        rows = rows.filter(r => r.date <= state.filters.end);
-      }
-
-      // Category
-      if(state.filters.cat && state.filters.cat !== 'Semua'){
-        rows = rows.filter(r => r.cat === state.filters.cat);
-      }
-
-      // Type
-      if(state.filters.type !== 'Semua'){
-        rows = rows.filter(r => r.type === state.filters.type);
-      }
-
-      // Search
-      if(state.filters.q){
-        const q = state.filters.q.toLowerCase().trim();
-        rows = rows.filter(r =>
-          r.note.toLowerCase().includes(q) ||
-          r.cat.toLowerCase().includes(q) ||
-          r.type.toLowerCase().includes(q)
+      // Use shared filtering logic for KPI parity with laporan page
+      const filterOptions = {
+        start: state.filters.start,
+        end: state.filters.end,
+        category: state.filters.cat,
+        type: state.filters.type,
+        search: state.filters.q
+      };
+      
+      // Convert transaksi format to shared format for filtering
+      const txForShared = state.data.map(r => ({
+        type: r.type,
+        amount: r.amount,
+        date: r.date,
+        category: r.cat,
+        description: r.note
+      }));
+      
+      const filtered = applyFiltersShared(txForShared, filterOptions);
+      
+      // Convert back to transaksi format and apply sorting
+      let rows = filtered.map(tx => {
+        const orig = state.data.find(r => 
+          r.type === tx.type && 
+          r.amount === tx.amount && 
+          r.date === tx.date && 
+          r.cat === tx.category &&
+          r.note === tx.description
         );
-      }
-
-      // Sort
+        return orig || {
+          type: tx.type,
+          amount: tx.amount,
+          date: tx.date,
+          cat: tx.category || '',
+          note: tx.description || ''
+        };
+      });
+      
+      // Apply sorting (this is UI-specific, not KPI-affecting)
       const [by, dir] = state.filters.sort.split('-');
       rows.sort((a,b)=>{
         let res = 0;
@@ -1315,7 +1386,6 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         if(by==='jumlah'){ res = a.amount - b.amount; }
         return dir==='asc' ? res : -res;
       });
-
       return rows;
     }
 
@@ -1394,14 +1464,23 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     function updateSummary(){
       const rows = applyFilters();
-      const totalIn = rows.filter(x=>x.type==='Masuk').reduce((a,b)=>a+b.amount,0);
-      const totalOut = rows.filter(x=>x.type==='Keluar').reduce((a,b)=>a+b.amount,0);
-      const saldo = totalIn - totalOut;
+      console.log('Transaksi updateSummary - filtered rows:', rows.length);
+      const totals = calculateTotals(rows.map(r=>({ type: r.type, amount: r.amount })));
+      console.log('Transaksi updateSummary - totals:', totals);
+      animateNumber(elSaldo, totals.balance, fmtIDR);
+      animateNumber(elMasuk, totals.income, fmtIDR);
+      animateNumber(elKeluar, totals.expense, fmtIDR);
+      animateNumber(elCount, totals.count, (v)=> String(v).toLocaleString('id-ID'));
 
-      animateNumber(elSaldo, saldo, fmtIDR);
-      animateNumber(elMasuk, totalIn, fmtIDR);
-      animateNumber(elKeluar, totalOut, fmtIDR);
-      animateNumber(elCount, rows.length, (v)=> String(v).toLocaleString('id-ID'));
+      // Mirror updates to laporan-style IDs if present on this page
+      const sumIn = document.getElementById('sum-in');
+      const sumOut = document.getElementById('sum-out');
+      const sumBal = document.getElementById('sum-bal');
+      const sumCount = document.getElementById('sum-count');
+      if(sumIn) (window).animateValue(sumIn, totals.income, fmtIDR);
+      if(sumOut) (window).animateValue(sumOut, totals.expense, fmtIDR);
+      if(sumBal) (window).animateValue(sumBal, totals.balance, fmtIDR);
+      if(sumCount) (window).animateValue(sumCount, totals.count, (n)=> new Intl.NumberFormat('id-ID').format(n));
     }
 
     function animateNumber(el, to, format=(n)=>n){
@@ -1421,6 +1500,11 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         else el.dataset.val = String(to);
       }
       requestAnimationFrame(step);
+    }
+
+    // Compatibility: expose laporan-style animator if not available
+    if(!(window).animateValue){
+      (window).animateValue = (element, targetValue, formatter=(n)=>n)=> animateNumber(element, targetValue, formatter);
     }
 
     // Unified KPI loader from centralized API summary
@@ -1827,7 +1911,8 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     });
     document.getElementById('btn-template-keuangan')?.addEventListener('click', async ()=>{
       try{
-        const res = await fetch('/api/templates/keuangan', { credentials: 'include' });
+        const { safeFetch } = await import('/src/utils/fetch-wrapper.ts');
+        const res = await safeFetch('/api/templates/keuangan');
         if(!res.ok){ console.error('Gagal mengunduh template keuangan'); return; }
         const blob = await res.blob();
         const a = document.createElement('a');

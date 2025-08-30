@@ -574,15 +574,12 @@ import Footer from '../components/sections/Footer.astro';
 
 <script>
 // @ts-nocheck
-// Generic API fetch with fallback: try through Astro proxy first, then direct to Laravel if 404
+// Import safe fetch wrapper
+const { safeFetch } = await import('/src/utils/fetch-wrapper.ts');
+
+// Enhanced API fetch with automatic fallback
 async function fetchWithFallback(path, options = {}) {
-  try {
-    const res = await fetch(path, options);
-    if (res.status !== 404) return res;
-  } catch (_) {}
-  // retry direct to Laravel dev server
-  const directUrl = path.startsWith('/api') ? `http://127.0.0.1:8000${path}` : path;
-  return fetch(directUrl, options);
+  return safeFetch(path, options);
 }
 document.addEventListener('DOMContentLoaded', function () {
   // Enhanced selectors and utilities
@@ -934,7 +931,7 @@ document.addEventListener('DOMContentLoaded', function () {
       showToast('Mencari lokasi...', 'info');
       // Nominatim with jsonv2 and Indonesian language hint
       const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&accept-language=id&q=${encodeURIComponent(query)}&limit=1`;
-      const response = await fetch(url, { method: 'GET' });
+      const response = await safeFetch(url, { method: 'GET' });
       if (!response.ok) throw new Error('Network response was not ok');
       const results = await response.json();
       if (Array.isArray(results) && results.length > 0) {
@@ -1036,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   async function checkKomplekAvailability(lat, lng) {
     try {
-      const res = await fetch(`/api/komplek/check?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`);
+      const res = await safeFetch(`/api/komplek/check?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`);
       if (!res.ok) throw new Error('fail');
       return await res.json(); // expected { exists: boolean, name?: string }
     } catch (_) {

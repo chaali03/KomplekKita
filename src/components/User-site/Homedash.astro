@@ -245,15 +245,15 @@
   const komplekId = parseInt(qs.get('komplek_id') || localStorage.getItem('komplek_id') || '2');
   localStorage.setItem('komplek_id', String(komplekId));
 
-  async function fetchJson(url){
-    const res = await fetch(url, {
-      headers: { 'Accept': 'application/json' }
-    });
-    if(!res.ok){
-      const text = await res.text().catch(()=> '');
-      throw new Error(`Gagal fetch: ${url} [${res.status}] ${text?.slice(0,200)}`);
+  // Import safe fetch wrapper
+  const { fetchJson } = await import('/src/utils/fetch-wrapper.ts');
+  
+  async function fetchJsonSafe(url){
+    try {
+      return await fetchJson(url);
+    } catch (error) {
+      throw new Error(`Gagal fetch: ${url} - ${error.message}`);
     }
-    return res.json();
   }
 
   function renderKeuanganSummary(data){
