@@ -45,8 +45,13 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     </div>
   </section>
   
-  <!-- Toast Container -->
-  <div id="toast-wrap" class="toast-container"></div>
+  <!-- Export Modal -->
+  <div id="export-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="export-title">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="export-title"><i class="fas fa-file-export"></i> Ekspor Transaksi</h3>
+        <button class="btn soft pressable" id="btn-close-export" aria-label="Tutup"><i class="fas fa-times"></i></button>
       </div>
       <div class="modal-body">
         <div class="field">
@@ -84,28 +89,28 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       <div class="kpi-icon kpi-blue"><i class="fas fa-wallet"></i></div>
       <div class="kpi-content">
         <div class="kpi-label">Uang Kas</div>
-        <div class="kpi-value" id="kpi-saldo" aria-live="polite">Rp0</div>
+        <div class="kpi-value" id="kpi-saldo" aria-live="polite">Rp 7.085.433</div>
       </div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-green"><i class="fas fa-arrow-down"></i></div>
       <div class="kpi-content">
         <div class="kpi-label">Total Masuk</div>
-        <div class="kpi-value" id="kpi-masuk" aria-live="polite">Rp0</div>
+        <div class="kpi-value" id="kpi-masuk" aria-live="polite">Rp 11.587.199</div>
       </div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-red"><i class="fas fa-arrow-up"></i></div>
       <div class="kpi-content">
         <div class="kpi-label">Total Keluar</div>
-        <div class="kpi-value" id="kpi-keluar" aria-live="polite">Rp0</div>
+        <div class="kpi-value" id="kpi-keluar" aria-live="polite">Rp 4.501.766</div>
       </div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon kpi-slate"><i class="fas fa-list"></i></div>
       <div class="kpi-content">
         <div class="kpi-label">Transaksi</div>
-        <div class="kpi-value" id="kpi-count" aria-live="polite">0</div>
+        <div class="kpi-value" id="kpi-count" aria-live="polite">27</div>
       </div>
     </div>
   </section>
@@ -2008,430 +2013,4 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       .kk-table th{ position:static; }
     }
   </style>
-
-  <script>
-    // Transaction data structure matching laporan.astro
-    const appState = {
-      transactions: [],
-      filters: {
-        start: '',
-        end: '',
-        search: '',
-        category: 'Semua',
-        type: 'Semua',
-        sort: 'tanggal-desc',
-        perPage: 20,
-        currentPage: 1
-      },
-      totals: {
-        income: 0,
-        expense: 0,
-        balance: 0,
-        count: 0
-      }
-    };
-
-    // Utility functions
-    const formatIDR = (amount) => new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0
-    }).format(Math.round(amount || 0));
-
-    const formatDateID = (dateStr) => new Date(dateStr + 'T00:00:00').toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-
-    const toISODate = (date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-
-    // Generate sample transaction data (same as laporan.astro)
-    function generateMonthData(year, month) {
-      const monthStr = String(month).padStart(2, '0');
-      const daysInMonth = new Date(year, month, 0).getDate();
-      const transactions = [];
-
-      const vendors = [
-        'Warung Bu Sari', 'CV Cahaya Abadi', 'Tukang Kebun', 'Panitia RW', 'PT Prisma', 'UD Berkah Jaya'
-      ];
-
-      function randomBetween(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-      function randomChoice(array) { return array[Math.floor(Math.random() * array.length)]; }
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dayStr = String(day).padStart(2, '0');
-        const date = `${year}-${monthStr}-${dayStr}`;
-
-        // Iuran income (first week)
-        if (day <= 7 && Math.random() > 0.25) {
-          const unitAmount = randomBetween(200000, 350000);
-          const householdCount = randomBetween(3, 15);
-          transactions.push({
-            date,
-            type: 'Masuk',
-            category: 'Iuran',
-            description: `Iuran Warga (${householdCount} KK)`,
-            amount: unitAmount * householdCount
-          });
-        }
-
-        // Random donations
-        if (Math.random() > 0.93) {
-          transactions.push({
-            date,
-            type: 'Masuk',
-            category: 'Donasi',
-            description: 'Donasi Sukarela',
-            amount: randomBetween(100000, 900000)
-          });
-        }
-
-        // Security expenses (weekly)
-        if (day % 7 === 3) {
-          transactions.push({
-            date,
-            type: 'Keluar',
-            category: 'Keamanan',
-            description: 'Upah Jaga Malam',
-            amount: 250000
-          });
-        }
-
-        // Cleaning expenses (weekly)
-        if (day % 7 === 5) {
-          transactions.push({
-            date,
-            type: 'Keluar',
-            category: 'Kebersihan',
-            description: 'Kebersihan & Sampah',
-            amount: 180000
-          });
-        }
-
-        // Environment expenses (random)
-        if (Math.random() > 0.94) {
-          transactions.push({
-            date,
-            type: 'Keluar',
-            category: 'Lingkungan',
-            description: 'Perawatan Taman',
-            amount: randomBetween(150000, 450000)
-          });
-        }
-
-        // Administrative expenses (random)
-        if (Math.random() > 0.95) {
-          transactions.push({
-            date,
-            type: 'Keluar',
-            category: 'Administrasi',
-            description: `ATK ${randomChoice(vendors)}`,
-            amount: randomBetween(50000, 250000)
-          });
-        }
-
-        // Facility expenses (random)
-        if (Math.random() > 0.965) {
-          transactions.push({
-            date,
-            type: 'Keluar',
-            category: 'Fasilitas',
-            description: 'Pemeliharaan Fasilitas',
-            amount: randomBetween(200000, 700000)
-          });
-        }
-
-        // Social expenses (random)
-        if (Math.random() > 0.975) {
-          transactions.push({
-            date,
-            type: 'Keluar',
-            category: 'Sosial',
-            description: 'Bantuan Sosial',
-            amount: randomBetween(150000, 600000)
-          });
-        }
-      }
-
-      return transactions;
-    }
-
-    // Initialize data
-    function initializeData() {
-      const storageKey = 'financial_transactions_v2';
-      try {
-        const stored = localStorage.getItem(storageKey);
-        if (stored) appState.transactions = JSON.parse(stored) || [];
-      } catch { appState.transactions = []; }
-
-      if (!Array.isArray(appState.transactions) || appState.transactions.length === 0) {
-        const currentDate = new Date();
-        const months = [-2, -1, 0, 1, 2, 3];
-        let allTransactions = [];
-        months.forEach(offset => {
-          const date = new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1);
-          allTransactions = allTransactions.concat(generateMonthData(date.getFullYear(), date.getMonth() + 1));
-        });
-        appState.transactions = allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-        
-        try {
-          localStorage.setItem(storageKey, JSON.stringify(appState.transactions));
-        } catch {}
-      }
-    }
-
-    // Calculate totals
-    function calculateTotals(transactions = appState.transactions) {
-      const income = transactions.filter(t => t.type === 'Masuk').reduce((sum, t) => sum + t.amount, 0);
-      const expense = transactions.filter(t => t.type === 'Keluar').reduce((sum, t) => sum + t.amount, 0);
-      return {
-        income,
-        expense,
-        balance: income - expense,
-        count: transactions.length
-      };
-    }
-
-    // Filter transactions
-    function getFilteredTransactions() {
-      let filtered = [...appState.transactions];
-
-      // Date range filter
-      if (appState.filters.start) {
-        filtered = filtered.filter(t => t.date >= appState.filters.start);
-      }
-      if (appState.filters.end) {
-        filtered = filtered.filter(t => t.date <= appState.filters.end);
-      }
-
-      // Search filter
-      if (appState.filters.search) {
-        const search = appState.filters.search.toLowerCase();
-        filtered = filtered.filter(t => 
-          (t.description || '').toLowerCase().includes(search) ||
-          t.category.toLowerCase().includes(search)
-        );
-      }
-
-      // Category filter
-      if (appState.filters.category !== 'Semua') {
-        filtered = filtered.filter(t => t.category === appState.filters.category);
-      }
-
-      // Type filter
-      if (appState.filters.type !== 'Semua') {
-        filtered = filtered.filter(t => t.type === appState.filters.type);
-      }
-
-      // Sort
-      const [field, direction] = appState.filters.sort.split('-');
-      filtered.sort((a, b) => {
-        let aVal, bVal;
-        if (field === 'tanggal') {
-          aVal = new Date(a.date);
-          bVal = new Date(b.date);
-        } else if (field === 'jumlah') {
-          aVal = a.amount;
-          bVal = b.amount;
-        }
-        
-        if (direction === 'desc') {
-          return bVal > aVal ? 1 : -1;
-        } else {
-          return aVal > bVal ? 1 : -1;
-        }
-      });
-
-      return filtered;
-    }
-
-    // Update KPI cards
-    function updateKPIs() {
-      const filtered = getFilteredTransactions();
-      const totals = calculateTotals(filtered);
-      
-      document.getElementById('kpi-saldo').textContent = formatIDR(totals.balance);
-      document.getElementById('kpi-masuk').textContent = formatIDR(totals.income);
-      document.getElementById('kpi-keluar').textContent = formatIDR(totals.expense);
-      document.getElementById('kpi-count').textContent = totals.count.toString();
-    }
-
-    // Populate category filter
-    function populateCategoryFilter() {
-      const categories = [...new Set(appState.transactions.map(t => t.category))].sort();
-      const select = document.getElementById('filter-cat');
-      select.innerHTML = '<option value="Semua">Semua</option>';
-      categories.forEach(cat => {
-        const option = document.createElement('option');
-        option.value = cat;
-        option.textContent = cat;
-        select.appendChild(option);
-      });
-    }
-
-    // Render transactions table
-    function renderTransactionsTable() {
-      const filtered = getFilteredTransactions();
-      const startIndex = (appState.filters.currentPage - 1) * appState.filters.perPage;
-      const endIndex = startIndex + appState.filters.perPage;
-      const pageData = filtered.slice(startIndex, endIndex);
-      
-      const tbody = document.getElementById('trx-tbody');
-      
-      if (pageData.length === 0) {
-        tbody.innerHTML = `
-          <tr class="empty-row">
-            <td colspan="5" class="empty">
-              <div class="empty-state">
-                <i class="fas fa-box-open"></i>
-                <p>Tidak ada data sesuai filter.</p>
-              </div>
-            </td>
-          </tr>
-        `;
-      } else {
-        tbody.innerHTML = pageData.map(tx => `
-          <tr>
-            <td>${formatDateID(tx.date)}</td>
-            <td>${tx.description || '-'}</td>
-            <td>${tx.category}</td>
-            <td><span class="pill ${tx.type === 'Masuk' ? 'in' : 'out'}">${tx.type}</span></td>
-            <td class="num">${formatIDR(tx.amount)}</td>
-          </tr>
-        `).join('');
-      }
-      
-      // Update table info
-      const totalPages = Math.ceil(filtered.length / appState.filters.perPage);
-      document.getElementById('table-info').textContent = 
-        `Menampilkan ${startIndex + 1}-${Math.min(endIndex, filtered.length)} dari ${filtered.length}`;
-      
-      // Update pagination
-      document.getElementById('page-current').textContent = appState.filters.currentPage.toString();
-      document.getElementById('page-total').textContent = totalPages.toString();
-      
-      // Update pagination buttons
-      document.getElementById('page-first').disabled = appState.filters.currentPage === 1;
-      document.getElementById('page-prev').disabled = appState.filters.currentPage === 1;
-      document.getElementById('page-next').disabled = appState.filters.currentPage === totalPages;
-      document.getElementById('page-last').disabled = appState.filters.currentPage === totalPages;
-    }
-
-    // Event listeners
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeData();
-      populateCategoryFilter();
-      updateKPIs();
-      renderTransactionsTable();
-      
-      // Filter event listeners
-      document.getElementById('filter-q').addEventListener('input', function(e) {
-        appState.filters.search = e.target.value;
-        appState.filters.currentPage = 1;
-        renderTransactionsTable();
-        updateKPIs();
-      });
-      
-      document.getElementById('filter-start').addEventListener('change', function(e) {
-        appState.filters.start = e.target.value;
-        appState.filters.currentPage = 1;
-        renderTransactionsTable();
-        updateKPIs();
-      });
-      
-      document.getElementById('filter-end').addEventListener('change', function(e) {
-        appState.filters.end = e.target.value;
-        appState.filters.currentPage = 1;
-        renderTransactionsTable();
-        updateKPIs();
-      });
-      
-      document.getElementById('filter-cat').addEventListener('change', function(e) {
-        appState.filters.category = e.target.value;
-        appState.filters.currentPage = 1;
-        renderTransactionsTable();
-        updateKPIs();
-      });
-      
-      document.getElementById('filter-sort').addEventListener('change', function(e) {
-        appState.filters.sort = e.target.value;
-        renderTransactionsTable();
-      });
-      
-      document.getElementById('filter-perpage').addEventListener('change', function(e) {
-        appState.filters.perPage = parseInt(e.target.value);
-        appState.filters.currentPage = 1;
-        renderTransactionsTable();
-      });
-      
-      // Type filter chips
-      document.querySelectorAll('.chip[data-type]').forEach(chip => {
-        chip.addEventListener('click', function() {
-          document.querySelectorAll('.chip[data-type]').forEach(c => c.classList.remove('active'));
-          this.classList.add('active');
-          appState.filters.type = this.dataset.type;
-          appState.filters.currentPage = 1;
-          renderTransactionsTable();
-          updateKPIs();
-        });
-      });
-      
-      // Pagination
-      document.getElementById('page-first').addEventListener('click', function() {
-        appState.filters.currentPage = 1;
-        renderTransactionsTable();
-      });
-      
-      document.getElementById('page-prev').addEventListener('click', function() {
-        if (appState.filters.currentPage > 1) {
-          appState.filters.currentPage--;
-          renderTransactionsTable();
-        }
-      });
-      
-      document.getElementById('page-next').addEventListener('click', function() {
-        const filtered = getFilteredTransactions();
-        const totalPages = Math.ceil(filtered.length / appState.filters.perPage);
-        if (appState.filters.currentPage < totalPages) {
-          appState.filters.currentPage++;
-          renderTransactionsTable();
-        }
-      });
-      
-      document.getElementById('page-last').addEventListener('click', function() {
-        const filtered = getFilteredTransactions();
-        const totalPages = Math.ceil(filtered.length / appState.filters.perPage);
-        appState.filters.currentPage = totalPages;
-        renderTransactionsTable();
-      });
-      
-      // Reset filter
-      document.getElementById('btn-reset').addEventListener('click', function() {
-        appState.filters = {
-          start: '',
-          end: '',
-          search: '',
-          category: 'Semua',
-          type: 'Semua',
-          sort: 'tanggal-desc',
-          perPage: 20,
-          currentPage: 1
-        };
-        
-        document.getElementById('filter-q').value = '';
-        document.getElementById('filter-start').value = '';
-        document.getElementById('filter-end').value = '';
-        document.getElementById('filter-cat').value = 'Semua';
-        document.getElementById('filter-sort').value = 'tanggal-desc';
-        document.getElementById('filter-perpage').value = '20';
-        
-        document.querySelectorAll('.chip[data-type]').forEach(c => c.classList.remove('active'));
-        document.querySelector('.chip[data-type="Semua"]').classList.add('active');
-        
-        renderTransactionsTable();
-        updateKPIs();
-      });
-    });
-  </script>
 </Layout>
