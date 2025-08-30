@@ -1235,6 +1235,8 @@
     // TypeScript declarations for external libraries
     declare const gsap: any;
     
+    type TabType = 'all' | 'general' | 'technical' | 'pricing';
+    
     document.addEventListener('DOMContentLoaded', function() {
             // Initialize FAQ Tab Functionality
             initFAQTabs();
@@ -1257,26 +1259,28 @@
 
         // FAQ Tab Functionality
         function initFAQTabs() {
-            const tabs = document.querySelectorAll('.faq-tab');
-            const tabIndicator = document.querySelector('.tab-indicator');
-            const tabContainer = document.querySelector('.faq-tabs');
-            const allCards = document.querySelectorAll('.faq-card');
+            const tabContainer = document.querySelector('.faq-tabs') as HTMLElement | null;
+            const tabs = Array.from(document.querySelectorAll('.faq-tab')) as HTMLElement[];
+            const allCards = Array.from(document.querySelectorAll('.faq-card')) as HTMLElement[];
+            const tabIndicator = document.querySelector('.tab-indicator') as HTMLElement | null;
             
             // Set initial active tab
-            updateTabIndicator(tabs[0], tabIndicator);
-            showContentForTab('all', allCards);
+            if (tabs.length > 0) {
+                updateTabIndicator(tabs[0], tabIndicator);
+                showContentForTab('all', allCards);
+            }
             
-            tabs.forEach((tab, index) => {
+            tabs.forEach((tab: HTMLElement) => {
                 tab.addEventListener('click', () => {
-                    const tabType = tab.getAttribute('data-tab');
+                    const tabType = tab.getAttribute('data-tab') as TabType | null;
                     if (!tabType) return;
                     
                     // Add switching animation
-                    tabContainer.classList.add('switching');
-                    tabContainer.classList.add('loading');
+                    tabContainer?.classList.add('switching');
+                    tabContainer?.classList.add('loading');
                     
                     // Remove active class from all tabs
-                    tabs.forEach(t => t.classList.remove('active'));
+                    tabs.forEach((t: HTMLElement) => t.classList.remove('active'));
                     
                     // Add active class to clicked tab
                     tab.classList.add('active');
@@ -1292,14 +1296,14 @@
                     
                     // Remove switching classes after animation
                     setTimeout(() => {
-                        tabContainer.classList.remove('switching');
-                        tabContainer.classList.remove('loading');
+                        tabContainer?.classList.remove('switching');
+                        tabContainer?.classList.remove('loading');
                     }, 800);
                 });
             });
         }
 
-        function updateTabIndicator(activeTab: HTMLElement, indicator: HTMLElement) {
+        function updateTabIndicator(activeTab: HTMLElement, indicator: HTMLElement | null) {
             if (!indicator) return;
             const tabRect = activeTab.getBoundingClientRect();
             const containerRect = activeTab.parentElement?.getBoundingClientRect();
@@ -1316,7 +1320,7 @@
             indicator.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
         }
 
-        function showContentForTab(tabType: string, allCards: HTMLElement[]) {
+        function showContentForTab(tabType: TabType, allCards: HTMLElement[]) {
             const tabContentMap: Record<string, string> = {
                 'all': 'all',
                 'general': 'general',
@@ -1341,19 +1345,19 @@
             });
         }
 
-        function switchTabSmooth(tabType: string, allCards: HTMLElement[]) {
-            const grid = document.querySelector('.faq-cards');
+        function switchTabSmooth(tabType: TabType, allCards: HTMLElement[]) {
+            const grid = document.querySelector('.faq-cards') as HTMLElement | null;
             if (!grid) {
                 showContentForTab(tabType, allCards);
                 return;
             }
             
-            const map = { all: 'all', general: 'general', technical: 'technical', pricing: 'pricing' };
+            const map: Record<TabType, string> = { all: 'all', general: 'general', technical: 'technical', pricing: 'pricing' };
             const target = map[tabType];
             
-            const toShow = [];
-            const toHide = [];
-            allCards.forEach(card => {
+            const toShow: HTMLElement[] = [];
+            const toHide: HTMLElement[] = [];
+            allCards.forEach((card: HTMLElement) => {
                 const cat = card.getAttribute('data-category');
                 if (target === 'all' || cat === target) toShow.push(card); else toHide.push(card);
             });
@@ -1418,7 +1422,7 @@
             }
         }
 
-        function animateTabClick(tab) {
+        function animateTabClick(tab: HTMLElement) {
             // Add click animation
             tab.style.transform = 'scale(0.95) translateY(-2px)';
             setTimeout(() => {
@@ -1432,7 +1436,7 @@
             addTabRippleEffect(tab);
         }
 
-        function addTabRippleEffect(tab) {
+        function addTabRippleEffect(tab: HTMLElement) {
             const ripple = document.createElement('div');
             ripple.style.cssText = `
                 position: absolute;
@@ -1455,11 +1459,11 @@
 
         // Card Animations
         function initCardAnimations() {
-            const cards = document.querySelectorAll('.faq-card');
+            const cards = Array.from(document.querySelectorAll('.faq-card')) as HTMLElement[];
             
             // Initial animation for cards
             setTimeout(() => {
-                cards.forEach((card, index) => {
+                cards.forEach((card: HTMLElement, index: number) => {
                     setTimeout(() => {
                         card.classList.add('visible');
                     }, index * 150);
@@ -1469,22 +1473,23 @@
 
         // Card Toggle Functionality
         function initCardToggle() {
-            const faqCards = document.querySelectorAll('.faq-card');
+            const faqCards = Array.from(document.querySelectorAll('.faq-card')) as HTMLElement[];
             
-            faqCards.forEach(card => {
-                const toggle = card.querySelector('.card-toggle');
+            faqCards.forEach((card: HTMLElement) => {
+                const toggle = card.querySelector('.card-toggle') as HTMLElement | null;
                 if (!toggle) return;
                 
                 // Add click event to the entire card
-                card.addEventListener('click', (e) => {
+                card.addEventListener('click', (e: MouseEvent) => {
                     // Prevent click event when clicking on links or buttons inside the card content
-                    if (e.target.closest('a') || (e.target.closest('button') && !e.target.closest('.card-toggle'))) {
+                    const target = e.target as HTMLElement;
+                    if (target.closest('a') || (target.closest('button') && !target.closest('.card-toggle'))) {
                         return;
                     }
                     // Close all other cards with smooth animation
-                    faqCards.forEach(otherCard => {
+                    faqCards.forEach((otherCard: HTMLElement) => {
                         if (otherCard !== card && otherCard.classList.contains('active')) {
-                            const otherContent = otherCard.querySelector('.card-content');
+                            const otherContent = otherCard.querySelector('.card-content') as HTMLElement | null;
                             if (otherContent && typeof gsap !== 'undefined') {
                                 const tl = gsap.timeline();
                                 
@@ -1513,9 +1518,9 @@
                     
                     // Toggle current card with enhanced animation
                     const isActive = card.classList.contains('active');
-                    const content = card.querySelector('.card-content');
-                    
-                    if (isActive && content && typeof gsap !== 'undefined') {
+                    const content = card.querySelector('.card-content') as HTMLElement | null;
+                            
+                    if (isActive) {
                         // Closing animation
                         const tl = gsap.timeline();
                         
@@ -1563,21 +1568,22 @@
                     }
                     
                     // Add enhanced ripple effect only if toggle was clicked
-                     if (e.target.closest('.card-toggle')) {
+                     if (target.closest('.card-toggle')) {
+                         const rect = toggle.getBoundingClientRect();
+                         const x = e.clientX - rect.left;
+                         const y = e.clientY - rect.top;
                          const ripple = document.createElement('span');
                          ripple.classList.add('ripple');
                          ripple.style.position = 'absolute';
                          ripple.style.borderRadius = '50%';
                          ripple.style.transform = 'scale(0)';
-                         ripple.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
+                         ripple.style.animation = 'ripple 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                         ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+                         ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) * 2.5 + 'px';
+                         ripple.style.left = `${x - (Math.max(rect.width, rect.height) * 1.25)}px`;
+                         ripple.style.top = `${y - (Math.max(rect.width, rect.height) * 1.25)}px`;
                          ripple.style.pointerEvents = 'none';
-                         ripple.style.zIndex = '10';
-                         
-                         const rect = toggle.getBoundingClientRect();
-                         const size = Math.max(rect.width, rect.height) * 2.5;
-                         ripple.style.width = ripple.style.height = size + 'px';
-                         ripple.style.left = -size/2 + rect.width/2 + 'px';
-                         ripple.style.top = -size/2 + rect.height/2 + 'px';
+                         ripple.style.zIndex = '1';
                          
                          toggle.appendChild(ripple);
                          
@@ -1599,10 +1605,10 @@
 
         // 3D Hover Effects
         function init3DHoverEffects() {
-            const cards = document.querySelectorAll('.faq-card');
+            const cards = Array.from(document.querySelectorAll('.faq-card')) as HTMLElement[];
             
-            cards.forEach(card => {
-                card.addEventListener('mousemove', (e) => {
+            cards.forEach((card: HTMLElement) => {
+                card.addEventListener('mousemove', (e: MouseEvent) => {
                     const cardRect = card.getBoundingClientRect();
                     const cardWidth = cardRect.width;
                     const cardHeight = cardRect.height;
@@ -1626,7 +1632,7 @@
                         });
                         
                         // Enhanced shine effect
-                        const shine = card.querySelector('.card-shine');
+                        const shine = card.querySelector('.card-shine') as HTMLElement | null;
                         if (shine) {
                             const shineX = (mouseX / cardWidth) * 100 + 50;
                             const shineY = (mouseY / cardHeight) * 100 + 50;
@@ -1639,7 +1645,7 @@
                     } else {
                         card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
                         
-                        const shine = card.querySelector('.card-shine');
+                        const shine = card.querySelector('.card-shine') as HTMLElement | null;
                         if (shine) {
                             const shineX = (mouseX / cardWidth) * 100 + 50;
                             const shineY = (mouseY / cardHeight) * 100 + 50;
@@ -1660,23 +1666,23 @@
                             ease: 'power3.out'
                         });
                         
-                        const shine = card.querySelector('.card-shine');
+                        const shine = card.querySelector('.card-shine') as HTMLElement | null;
                         if (shine) {
                             gsap.to(shine, {
                                 opacity: 0,
                                 duration: 0.5,
                                 ease: 'power2.out',
                                 onComplete: () => {
-                                    shine.style.background = '';
-                                    shine.style.opacity = '';
+                                    (shine as HTMLElement).style.background = '';
+                                    (shine as HTMLElement).style.opacity = '';
                                 }
                             });
                         }
                     } else {
                         card.style.transform = '';
-                        const shine = card.querySelector('.card-shine');
+                        const shine = card.querySelector('.card-shine') as HTMLElement | null;
                         if (shine) {
-                            shine.style.background = '';
+                            (shine as HTMLElement).style.background = '';
                         }
                     }
                 });
@@ -1685,9 +1691,9 @@
 
         // Feature Tag Animations
         function initFeatureTagAnimations() {
-            const featureTags = document.querySelectorAll('.feature-tag');
+            const featureTags = Array.from(document.querySelectorAll('.feature-tag')) as HTMLElement[];
             
-            featureTags.forEach((tag, index) => {
+            featureTags.forEach((tag: HTMLElement, index: number) => {
                 const delay = index * 50;
                 tag.style.transitionDelay = `${delay}ms`;
                 
@@ -1696,11 +1702,11 @@
                     
                     const parent = tag.parentElement;
                     if (parent) {
-                        const siblings = parent.querySelectorAll('.feature-tag');
-                        siblings.forEach(sibling => {
+                        const siblings = Array.from(parent.querySelectorAll('.feature-tag')) as HTMLElement[];
+                        siblings.forEach((sibling: HTMLElement) => {
                             if (sibling !== tag) {
-                                sibling.style.transform = 'translateY(-2px) scale(0.98)';
-                                sibling.style.opacity = '0.7';
+                                (sibling as HTMLElement).style.transform = 'translateY(-2px) scale(0.98)';
+                                (sibling as HTMLElement).style.opacity = '0.7';
                             }
                         });
                     }
@@ -1711,11 +1717,11 @@
                     
                     const parent = tag.parentElement;
                     if (parent) {
-                        const siblings = parent.querySelectorAll('.feature-tag');
-                        siblings.forEach(sibling => {
+                        const siblings = Array.from(parent.querySelectorAll('.feature-tag')) as HTMLElement[];
+                        siblings.forEach((sibling: HTMLElement) => {
                             if (sibling !== tag) {
-                                sibling.style.transform = '';
-                                sibling.style.opacity = '';
+                                (sibling as HTMLElement).style.transform = '';
+                                (sibling as HTMLElement).style.opacity = '';
                             }
                         });
                     }
@@ -1733,15 +1739,15 @@
 
         // CTA Button Effects
         function initCTAButtonEffects() {
-            const ctaButton = document.querySelector('.faq-cta .btn');
+            const ctaButton = document.querySelector('.faq-cta .btn') as HTMLElement | null;
             if (ctaButton) {
-                ctaButton.addEventListener('click', (e) => {
+                ctaButton.addEventListener('click', (e: MouseEvent) => {
                     const rect = ctaButton.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
                     
-                    const existingRipples = ctaButton.querySelectorAll('.ripple');
-                    existingRipples.forEach(r => r.remove());
+                    const existingRipples = Array.from(ctaButton.querySelectorAll('.ripple')) as HTMLElement[];
+                    existingRipples.forEach((r: HTMLElement) => r.remove());
                     
                     const ripple = document.createElement('span');
                     ripple.classList.add('ripple');
@@ -1769,16 +1775,16 @@
                 });
                 
                 ctaButton.addEventListener('mouseenter', () => {
-                    const btnText = ctaButton.querySelector('.btn-text');
-                    const btnIcon = ctaButton.querySelector('.btn-icon');
+                    const btnText = ctaButton.querySelector('.btn-text') as HTMLElement | null;
+                    const btnIcon = ctaButton.querySelector('.btn-icon') as HTMLElement | null;
                     
                     if (btnText) btnText.style.transform = 'translateX(-3px)';
                     if (btnIcon) btnIcon.style.transform = 'translateX(3px)';
                 });
                 
                 ctaButton.addEventListener('mouseleave', () => {
-                    const btnText = ctaButton.querySelector('.btn-text');
-                    const btnIcon = ctaButton.querySelector('.btn-icon');
+                    const btnText = ctaButton.querySelector('.btn-text') as HTMLElement | null;
+                    const btnIcon = ctaButton.querySelector('.btn-icon') as HTMLElement | null;
                     
                     if (btnText) btnText.style.transform = '';
                     if (btnIcon) btnIcon.style.transform = '';

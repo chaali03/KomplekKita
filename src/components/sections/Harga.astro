@@ -1217,7 +1217,7 @@
                         </ul>
                     </div>
                     <div class="harga-card-footer">
-                        <a href="#" class="btn-harga btn-outline">Mulai Gratis</a>
+                        <a href="/login" class="btn-harga btn-outline">Mulai Gratis</a>
                     </div>
                     <div class="card-decoration"></div>
                     <div class="card-glow"></div>
@@ -1270,7 +1270,7 @@
                         </ul>
                     </div>
                     <div class="harga-card-footer">
-                        <a href="#" class="btn-harga btn-primary">Pilih Premium</a>
+                        <a href="/login" class="btn-harga btn-primary">Pilih Premium</a>
                     </div>
                     <div class="card-decoration"></div>
                     <div class="card-glow"></div>
@@ -1313,7 +1313,7 @@
                         </ul>
                     </div>
                     <div class="harga-card-footer">
-                        <a href="#" class="btn-harga btn-outline">Pilih Plus</a>
+                        <a href="/login" class="btn-harga btn-outline">Pilih Plus</a>
                     </div>
                     <div class="card-decoration"></div>
                     <div class="card-glow"></div>
@@ -1513,20 +1513,19 @@
                     <p>Mulai dengan paket Gratis atau hubungi kami untuk konsultasi kebutuhan khusus Anda.</p>
                 </div>
                 <div class="cta-buttons">
-                    <a href="#" class="btn-harga btn-outline">Mulai Gratis</a>
+                    <a href="/login" class="btn-harga btn-outline">Mulai Gratis</a>
                     <a href="/kontak" class="btn-harga btn-primary">Hubungi Kami</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
+        // @ts-check
         // Inisialisasi AOS (guarded)
         document.addEventListener('DOMContentLoaded', function() {
-            const w = window /** @type {any} */;
-            if (typeof window !== 'undefined' && w && w.AOS) {
-                w.AOS.init({ duration: 800, once: true, offset: 100 });
+            if (typeof window !== 'undefined' && (window as any) && (window as any).AOS) {
+                (window as any).AOS.init({ duration: 800, once: true, offset: 100 });
             }
 
             const tabBtns = document.querySelectorAll('.tab-btn');
@@ -1538,7 +1537,7 @@
             const tabsContainer = document.querySelector('.harga-tabs');
 
             // Data harga untuk setiap paket
-            const hargaPaket = {
+            const hargaPaket /** @type {Record<'bulanan'|'tahunan', { premium: string; plus: string; plusOriginal: string; plusDiscount: string; }>} */ = {
                 bulanan: { 
                     premium: 'Rp 99.000', 
                     plus: 'Rp 119.000',
@@ -1556,39 +1555,41 @@
             // Initialize ARIA states
             if (tabsContainer) tabsContainer.setAttribute('role', 'tablist');
             tabBtns.forEach((btn) => {
-                btn.setAttribute('role', 'tab');
-                btn.setAttribute('aria-pressed', btn.classList.contains('active') ? 'true' : 'false');
+                (btn as HTMLElement).setAttribute('role', 'tab');
+                (btn as HTMLElement).setAttribute('aria-pressed', (btn as HTMLElement).classList.contains('active') ? 'true' : 'false');
                 btn.addEventListener('click', (ev) => {
-                    const currentBtn = ev.currentTarget;
+                    const currentBtn = ev.currentTarget as HTMLElement | null;
+                    if (!currentBtn) return;
                     // Remove active from all
                     tabBtns.forEach((b) => {
-                        b.classList.remove('active');
-                        b.setAttribute('aria-pressed', 'false');
+                        (b as HTMLElement).classList.remove('active');
+                        (b as HTMLElement).setAttribute('aria-pressed', 'false');
                     });
                     // Activate current
                     currentBtn.classList.add('active');
                     currentBtn.setAttribute('aria-pressed', 'true');
 
-                    const periode = currentBtn.dataset.tab === 'tahunan' ? 'tahunan' : 'bulanan';
+                    const periode /** @type {'bulanan'|'tahunan'} */ = (currentBtn as HTMLElement & { dataset: { tab?: string }}).dataset.tab === 'tahunan' ? 'tahunan' : 'bulanan';
 
                     // Move slider
                     if (tabSlider) {
-                        tabSlider.style.transform = periode === 'bulanan' ? 'translateX(0)' : 'translateX(100%)';
+                        (tabSlider as HTMLElement).style.transform = periode === 'bulanan' ? 'translateX(0)' : 'translateX(100%)';
                     }
                     updatePrices(periode);
                 });
 
                 // Keyboard support
                 btn.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
+                    const ke = e as KeyboardEvent;
+                    if (ke.key === 'Enter' || ke.key === ' ') {
                         e.preventDefault();
-                        btn.click();
+                        (btn as HTMLElement).click();
                     }
-                    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                    if (ke.key === 'ArrowRight' || ke.key === 'ArrowLeft') {
                         e.preventDefault();
-                        const buttons = Array.from(tabBtns);
-                        const idx = buttons.indexOf(btn);
-                        const nextIdx = e.key === 'ArrowRight' ? (idx + 1) % buttons.length : (idx - 1 + buttons.length) % buttons.length;
+                        const buttons = Array.from(tabBtns) as HTMLElement[];
+                        const idx = buttons.indexOf(btn as HTMLElement);
+                        const nextIdx = ke.key === 'ArrowRight' ? (idx + 1) % buttons.length : (idx - 1 + buttons.length) % buttons.length;
                         buttons[nextIdx].focus();
                         buttons[nextIdx].click();
                     }
@@ -1596,28 +1597,32 @@
             });
 
             // Ensure initial state reflects active tab
-            const initial = Array.from(tabBtns).find((b) => b.classList.contains('active')) || tabBtns[0];
+            const initial = (Array.from(tabBtns) as HTMLElement[]).find((b) => b.classList.contains('active')) || (tabBtns[0] as HTMLElement);
             if (initial) {
                 initial.click();
             }
 
             // Function to update prices based on selected period
-            function updatePrices(periode) {
+            /**
+             * @param {'bulanan'|'tahunan'} periode
+             */
+            // @ts-ignore - parameter type is provided via JSDoc above for JS context
+            function updatePrices(periode /** @type {'bulanan'|'tahunan'} */) {
                 if (premiumPrice) {
-                    const priceElement = premiumPrice.querySelector('.price');
-                    const periodElement = premiumPrice.querySelector('.period');
-                    if (priceElement) priceElement.textContent = hargaPaket[periode].premium;
+                    const priceElement = premiumPrice.querySelector('.price') as HTMLElement | null;
+                    const periodElement = premiumPrice.querySelector('.period') as HTMLElement | null;
+                    if (priceElement) priceElement.textContent = hargaPaket[/** @type {'bulanan'|'tahunan'} */(periode)].premium;
                     if (periodElement) periodElement.textContent = periode === 'bulanan' ? '/bulan' : '/tahun';
                 }
                 
                 if (plusPrice) {
-                    const priceElement = plusPrice.querySelector('.price');
-                    const periodElement = plusPrice.querySelector('.period');
+                    const priceElement = plusPrice.querySelector('.price') as HTMLElement | null;
+                    const periodElement = plusPrice.querySelector('.period') as HTMLElement | null;
                     
-                    if (priceElement) priceElement.textContent = hargaPaket[periode].plus;
+                    if (priceElement) priceElement.textContent = hargaPaket[/** @type {'bulanan'|'tahunan'} */(periode)].plus;
                     if (periodElement) periodElement.textContent = periode === 'bulanan' ? '/bulan' : '/tahun';
-                    if (plusOriginalPrice) plusOriginalPrice.textContent = hargaPaket[periode].plusOriginal;
-                    if (plusDiscountText) plusDiscountText.textContent = hargaPaket[periode].plusDiscount;
+                    if (plusOriginalPrice) (plusOriginalPrice as HTMLElement).textContent = hargaPaket[/** @type {'bulanan'|'tahunan'} */(periode)].plusOriginal;
+                    if (plusDiscountText) (plusDiscountText as HTMLElement).textContent = hargaPaket[/** @type {'bulanan'|'tahunan'} */(periode)].plusDiscount;
                 }
             }
 

@@ -1450,7 +1450,7 @@ import Footer from '../components/sections/Footer.astro';
     }
 </style>
 
-<script>
+<script is:inline>
     // Initialize AOS Animation Library
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize AOS with error handling
@@ -1598,26 +1598,102 @@ import Footer from '../components/sections/Footer.astro';
         }
 
         if (registerForm && registerButton) {
-            registerForm.addEventListener('submit', function(e) {
+            registerForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 // Prevent submit if disabled for any reason
                 if (registerButton.disabled) return;
                 
+                // Get form data
+                const formData = new FormData(registerForm);
+                const userData = {
+                    firstName: formData.get('first-name'),
+                    lastName: formData.get('last-name'),
+                    email: formData.get('email'),
+                    phone: formData.get('phone'),
+                    password: formData.get('password'),
+                    confirmPassword: formData.get('confirm-password')
+                };
+                
+                // Validate passwords match
+                if (userData.password !== userData.confirmPassword) {
+                    showToast('Password dan konfirmasi password tidak cocok', 'error');
+                    return;
+                }
+                
                 // Add loading state
                 registerButton.classList.add('loading');
                 registerButton.innerHTML = '<span class="button-text">Memproses...</span><i class="fa-solid fa-spinner fa-spin"></i>';
                 
-                // Simulate form submission (replace with actual form submission)
-                setTimeout(() => {
+                try {
+                    // Import auth utility
+                    const { registerUser } = await import('../utils/auth.js');
+                    const result = await registerUser(userData);
+                    
+                    if (result.success) {
+                        showToast('Registrasi berhasil! Silakan login untuk melanjutkan.', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/login';
+                        }, 1500);
+                    } else {
+                        showToast(result.error || 'Registrasi gagal', 'error');
+                    }
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    showToast('Terjadi kesalahan sistem', 'error');
+                } finally {
                     // Reset button state
                     registerButton.classList.remove('loading');
                     registerButton.innerHTML = '<span class="button-text">Daftar Sekarang</span><i class="fa-solid fa-user-plus"></i>';
-                    
-                    // Redirect or show success message
-                    // window.location.href = '/dashboard';
-                }, 2000);
+                }
             });
+        }
+        
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            // Add toast styles if not already present
+            if (!document.querySelector('#toast-styles')) {
+                const style = document.createElement('style');
+                style.id = 'toast-styles';
+                style.textContent = `
+                    .toast {
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: white;
+                        border-radius: 8px;
+                        padding: 16px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                        z-index: 10000;
+                        animation: slideIn 0.3s ease;
+                        max-width: 400px;
+                    }
+                    .toast-success { border-left: 4px solid #10b981; }
+                    .toast-error { border-left: 4px solid #ef4444; }
+                    .toast-info { border-left: 4px solid #3b82f6; }
+                    .toast-content { display: flex; align-items: center; gap: 8px; }
+                    .toast-success i { color: #10b981; }
+                    .toast-error i { color: #ef4444; }
+                    .toast-info i { color: #3b82f6; }
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
         }
 
         // GSAP Animations with error handling
