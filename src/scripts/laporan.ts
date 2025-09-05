@@ -7,7 +7,8 @@ declare global {
 }
 
 // Shared finance utilities for consistent KPI calculations across pages
-import { calculateTotals as calcShared, applyFilters as filterShared, type FilterOptions } from '~/utils/finance';
+import { calculateTotals as calcShared, applyFiltersSync as filterShared, type FilterOptions } from '~/utils/finance';
+import { iuranManager } from './iuran-manager';
 
 // Quick-save current filtered period as a report snapshot
 function saveCurrentAsReport(){
@@ -300,8 +301,15 @@ function initializeData() {
 // Create demo residents if none exist (used in demo mode only)
 function ensureDemoResidents(){
   try {
+    // Check if real warga data exists first
+    const wargaData = JSON.parse(localStorage.getItem('warga_data_v1') || '[]');
+    if (Array.isArray(wargaData) && wargaData.length > 0) return;
+    
+    // Check if demo residents already exist
     const existing = JSON.parse(localStorage.getItem('residents_data') || '[]');
     if (Array.isArray(existing) && existing.length > 0) return;
+    
+    // Only create demo data if no real data exists
     const names = [
       'Ahmad Fauzi','Siti Aminah','Budi Santoso','Dewi Lestari','Rizky Pratama',
       'Nur Aisyah','Andi Wijaya','Rina Marlina','Fajar Nugraha','Putri Ayu',
@@ -837,7 +845,27 @@ function deleteReport(reportId: string) {
 
 // Monthly dues management
 function loadResidents(): Array<{ id: string | number; nama: string; status?: string }> {
-  try { return (JSON.parse(localStorage.getItem('residents_data') || '[]') as any[]).filter(resident => resident.status === 'aktif') } catch { return [] }
+  try { 
+    // First try to get real warga data from warga.astro
+    const wargaData = JSON.parse(localStorage.getItem('warga_data_v1') || '[]') as any[];
+    if (Array.isArray(wargaData) && wargaData.length > 0) {
+      return wargaData
+        .filter(resident => resident.status === 'aktif')
+        .map(resident => ({
+          id: resident.id,
+          nama: resident.nama || resident.name || `Warga ${resident.id}`,
+          status: resident.status
+        }));
+    }
+    
+    // Fallback to old residents_data key
+    const residentsData = JSON.parse(localStorage.getItem('residents_data') || '[]') as any[];
+    if (Array.isArray(residentsData) && residentsData.length > 0) {
+      return residentsData.filter(resident => resident.status === 'aktif');
+    }
+    
+    return [];
+  } catch { return [] }
 }
 function getCurrentWeekKey() {
   const today = new Date();
@@ -966,7 +994,7 @@ async function renderDuesSection() {
   const editBtnId = 'iuran-edit-btn';
   if (amountInput) {
     const existingBtn = document.getElementById(editBtnId);
-    if (getDuesAmountFor(periode) > 0) {
+    if (iuranExistsFor(periode)) {
       if (!existingBtn) {
         const wrapper = document.createElement('div');
         wrapper.style.display = 'flex';
@@ -993,21 +1021,37 @@ async function renderDuesSection() {
           const newAmount = Number((document.getElementById('iuran-amount') as HTMLInputElement | null)?.value || '0');
           if (isNaN(newAmount) || newAmount <= 0) { showToast('Nominal iuran tidak valid', 'error'); return; }
           try {
-            await postJson('/api/iuran/generate', { komplek_id: Number(komplekId), periode, amount: newAmount });
-            showToast('Nominal iuran diperbarui', 'success');
+            // Use the new updateNominal API method
+            const success = await iuranManager.updateNominal(newAmount, periode);
+            if (success) {
+              showToast('Nominal iuran berhasil diperbarui', 'success');
+              await renderDuesSection();
+              
+              // Dispatch custom event for real-time dashboard update
+              window.dispatchEvent(new CustomEvent('iuran-nominal-changed', {
+                detail: { month: periode, amount: newAmount, action: 'update' }
+              }));
+            } else {
+              showToast('Gagal memperbarui nominal iuran', 'error');
+            }
           } catch (e:any) {
+            console.error(e);
             if (String(e?.message || '').includes('HTTP 401')) {
               localStorage.setItem('iuran_demo', '1');
               showToast('Mode demo: nominal iuran diubah secara lokal.', 'success');
+              updateDuesConfigAmount(periode, newAmount);
+              updateIuranTransactionsAmount(periode, newAmount);
+              persistTransactionsAndRefresh(`${periode}-01`);
+              
+              // Dispatch custom event for real-time dashboard update
+              window.dispatchEvent(new CustomEvent('iuran-nominal-changed', {
+                detail: { month: periode, amount: newAmount, action: 'update-demo' }
+              }));
+              await renderDuesSection();
             } else {
               showToast('Gagal memperbarui iuran. Coba lagi.', 'error');
-              return;
             }
           }
-          updateDuesConfigAmount(periode, newAmount);
-          updateIuranTransactionsAmount(periode, newAmount);
-          persistTransactionsAndRefresh(`${periode}-01`);
-          await renderDuesSection();
         });
       }
     } else if (existingBtn) {
@@ -1185,13 +1229,18 @@ async function renderDuesSection() {
           }
           const existing = getDuesAmountFor(targetMonth);
           if (existing && existing > 0){
-            showToast(`Iuran bulan ${targetMonth} sudah ada: ${formatIDR(existing)}. Gunakan bulan lain.`, 'warning');
+            showToast(`Iuran bulan ${targetMonth} sudah ada: ${formatIDR(existing)}. Gunakan fitur edit untuk mengubah nominal.`, 'warning');
             return;
           }
           saveDuesConfig({ amount: Number(isNaN(amountVal) ? 0 : amountVal), month: targetMonth });
           localStorage.setItem('iuran_demo', '1');
           showToast('Mode demo: iuran disimpan lokal', 'success');
           await renderDuesSectionFromLocal();
+          
+          // Dispatch custom event for real-time dashboard update
+          window.dispatchEvent(new CustomEvent('iuran-updated', {
+            detail: { month: targetMonth, amount: Number(isNaN(amountVal) ? 0 : amountVal), action: 'save-demo' }
+          }));
         } else {
           showToast('Gagal menyimpan iuran. Coba lagi.', 'error');
         }
@@ -1211,15 +1260,21 @@ function saveDuesConfig(config: { amount?: number; month?: string }): boolean {
     const month = String(config.month || getCurrentMonth()).slice(0,7);
     const amount = Number(config.amount || 0);
     const all = getDuesConfigs();
-    if (all[month]) {
-      // Duplicate month: warn and do not overwrite
-      showToast(`Iuran bulan ${month} sudah ada: Rp ${formatIDR(all[month].amount)}. Gunakan bulan lain.`, 'warning');
+    if (all[month] && all[month].amount > 0) {
+      // Duplicate month with non-zero amount: warn and do not overwrite
+      showToast(`Iuran bulan ${month} sudah ada: Rp ${formatIDR(all[month].amount)}. Gunakan fitur edit untuk mengubah nominal.`, 'warning');
       return false;
     }
     all[month] = { amount, closed: false, createdAt: Date.now() } as any;
     setDuesConfigs(all);
     // Notify other tabs (dashboard) to recompute pending
     try { localStorage.setItem('iuran_dirty', String(Date.now())) } catch {}
+    
+    // Dispatch custom event for real-time dashboard update
+    window.dispatchEvent(new CustomEvent('iuran-updated', {
+      detail: { month, amount, action: 'save' }
+    }));
+    
     return true;
   } catch (error) { console.warn('Could not save per-month dues config:', error); return false }
 }
@@ -1238,6 +1293,11 @@ function getDuesAmountFor(month: string): number{
   const map = getDuesConfigs();
   if (map[month]) return Number(map[month].amount||0);
   try { const legacy = JSON.parse(localStorage.getItem('dues_config')||'{}'); return String(legacy?.month||'').slice(0,7)===month ? Number(legacy?.amount||0) : 0 } catch { return 0 }
+}
+function iuranExistsFor(month: string): boolean{
+  const map = getDuesConfigs();
+  if (map[month]) return true;
+  try { const legacy = JSON.parse(localStorage.getItem('dues_config')||'{}'); return String(legacy?.month||'').slice(0,7)===month } catch { return false }
 }
 function isDuesClosed(month: string): boolean{
   const map = getDuesConfigs();
@@ -1331,8 +1391,16 @@ async function markIuranPayment(residentId: string | number, paid: boolean) {
 // ===== Helpers to link Iuran payments with ledger transactions =====
 function getResidentNameById(id: string): string {
   try {
-    const list = JSON.parse(localStorage.getItem('residents_data') || '[]') as Array<{id:any; nama?:string; name?:string}>;
-    const found = Array.isArray(list) ? list.find(r => String(r.id) === String(id)) : null;
+    // First try to get real warga data from warga.astro
+    const wargaData = JSON.parse(localStorage.getItem('warga_data_v1') || '[]') as Array<{id:any; nama?:string; name?:string}>;
+    if (Array.isArray(wargaData) && wargaData.length > 0) {
+      const found = wargaData.find(r => String(r.id) === String(id));
+      if (found) return (found.nama || found.name || `Warga ${id}`);
+    }
+    
+    // Fallback to old residents_data key
+    const residentsData = JSON.parse(localStorage.getItem('residents_data') || '[]') as Array<{id:any; nama?:string; name?:string}>;
+    const found = Array.isArray(residentsData) ? residentsData.find(r => String(r.id) === String(id)) : null;
     return (found?.nama || (found as any)?.name || `Warga ${id}`);
   } catch { return `Warga ${id}` }
 }
@@ -1425,7 +1493,7 @@ function renderDuesSectionFromLocal(){
   const editBtnId = 'iuran-edit-btn';
   if (amountInput) {
     const existingBtn = document.getElementById(editBtnId);
-    if (getDuesAmountFor(periode) > 0) {
+    if (iuranExistsFor(periode)) {
       if (!existingBtn) {
         const btn = document.createElement('button');
         btn.id = editBtnId;

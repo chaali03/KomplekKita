@@ -10,16 +10,46 @@ class Iuran extends Model
 {
     use HasFactory;
 
-    protected $table = 'iuran';
-
     protected $fillable = [
-        'komplek_id',
-        'periode', // format YYYY-MM
-        'amount',  // nominal per bulan (integer rupiah)
+        'periode',
+        'nominal',
+        'total_warga',
+        'warga_sudah_bayar',
+        'warga_belum_bayar',
+        'total_pemasukan',
+        'target_pemasukan',
+        'is_closed',
+        'is_completed',
+        'notes'
     ];
 
-    public function pembayaran(): HasMany
+    protected $casts = [
+        'nominal' => 'decimal:2',
+        'total_pemasukan' => 'decimal:2',
+        'target_pemasukan' => 'decimal:2',
+        'is_closed' => 'boolean',
+        'is_completed' => 'boolean',
+    ];
+
+    public function payments(): HasMany
     {
-        return $this->hasMany(IuranPembayaran::class);
+        return $this->hasMany(IuranPayment::class);
+    }
+
+    // Helper methods
+    public function getCompletionPercentageAttribute(): float
+    {
+        if ($this->total_warga == 0) return 0;
+        return ($this->warga_sudah_bayar / $this->total_warga) * 100;
+    }
+
+    public function getRemainingAmountAttribute(): float
+    {
+        return $this->target_pemasukan - $this->total_pemasukan;
+    }
+
+    public function isFullyPaid(): bool
+    {
+        return $this->warga_sudah_bayar >= $this->total_warga;
     }
 }

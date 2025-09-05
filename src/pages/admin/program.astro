@@ -863,6 +863,66 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     if (t && pmLinkType) (pmLinkType as HTMLSelectElement).value = t as any;
   });
 
+  // API Functions
+  const API_BASE = 'http://127.0.0.1:8000/api/demo';
+  
+  async function loadPrograms() {
+    try {
+      const response = await fetch(`${API_BASE}/programs`);
+      const result = await response.json();
+      if (result.status === 'success') {
+        return result.data;
+      }
+      return [];
+    } catch (error) {
+      console.error('Error loading programs:', error);
+      return [];
+    }
+  }
+
+  async function saveProgram(data) {
+    try {
+      const response = await fetch(`${API_BASE}/programs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error saving program:', error);
+      return { status: 'error', message: 'Failed to save' };
+    }
+  }
+
+  async function updateProgram(id, data) {
+    try {
+      const response = await fetch(`${API_BASE}/programs/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error updating program:', error);
+      return { status: 'error', message: 'Failed to update' };
+    }
+  }
+
+  async function deleteProgram(id) {
+    try {
+      const response = await fetch(`${API_BASE}/programs/${id}`, {
+        method: 'DELETE'
+      });
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error deleting program:', error);
+      return { status: 'error', message: 'Failed to delete' };
+    }
+  }
+
   // Local state
   let programs = JSON.parse(localStorage.getItem('programs') || '[]');
   let editingId = '';
@@ -1058,9 +1118,14 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     renderList(programs, programListEl, 'program');
   };
 
-  // Dummy data seeding removed
-
-  renderAll();
+  // Load programs from API
+  loadPrograms().then(apiData => {
+    if (apiData.length > 0) {
+      programs = apiData;
+      save();
+    }
+    renderAll();
+  });
 
   // Add Program
   $('#btn-add-program').addEventListener('click', async () => {
@@ -1125,32 +1190,40 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       }
     }
 
-    const item = {
-      id: crypto.randomUUID(),
+    const payload = {
       nominal: nominal ? Number(nominal) : null,
       desc,
       info,
       deadline,
       phone: phone || null,
       rekening: rekening || null,
-      linkType,
-      linkUrl,
-      image: imageData
+      link_type: linkType,
+      link_url: linkUrl,
+      image: imageData,
+      is_active: true
     };
-    programs.unshift(item);
-    save();
-    renderAll();
-    markAdded(programListEl);
 
-    // Notify: program created (inline add)
-    try {
-      (window as any).KKNotif?.add(
-        'success',
-        'Program dibuat',
-        item.desc ? `Program baru: ${item.desc}` : 'Program baru ditambahkan'
-      );
-      window.dispatchEvent(new Event('kk-notifs-updated'));
-    } catch {}
+    const result = await saveProgram(payload);
+    if (result.status === 'success') {
+      // Reload programs from API
+      const apiData = await loadPrograms();
+      programs = apiData;
+      save();
+      renderAll();
+      markAdded(programListEl);
+
+      // Notify: program created (inline add)
+      try {
+        (window as any).KKNotif?.add(
+          'success',
+          'Program dibuat',
+          payload.desc ? `Program baru: ${payload.desc}` : 'Program baru ditambahkan'
+        );
+        window.dispatchEvent(new Event('kk-notifs-updated'));
+      } catch {}
+    } else {
+      alert('Gagal menyimpan program: ' + (result.message || 'Unknown error'));
+    }
 
     // reset
     $('#nominal-program').value = '';
@@ -1205,46 +1278,46 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
   modalForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const payload = {
-      id: editingId || crypto.randomUUID(),
       desc: pmDesc.value.trim(),
       nominal: pmNominal.value ? Number(pmNominal.value) : null,
       info: pmInfo.value.trim(),
       deadline: pmDeadline.value,
       phone: pmPhone.value.trim() || null,
       rekening: pmRek.value.trim() || null,
-      linkType: pmLinkType.value,
-      linkUrl: pmLinkUrl.value.trim(),
+      link_type: pmLinkType.value,
+      link_url: pmLinkUrl.value.trim(),
       image: null as string | null,
+      is_active: true
     };
     // Auto-detect in modal
-    const detected = payload.linkUrl ? detectLinkType(payload.linkUrl) : null;
-    if (!payload.linkType && detected){
-      payload.linkType = detected;
+    const detected = payload.link_url ? detectLinkType(payload.link_url) : null;
+    if (!payload.link_type && detected){
+      payload.link_type = detected;
       pmLinkType.value = detected;
     }
-    if (!payload.desc || !payload.deadline || !payload.linkUrl || !payload.linkType){
+    if (!payload.desc || !payload.deadline || !payload.link_url || !payload.link_type){
       const invalid: string[] = [];
       if (!payload.desc) invalid.push('#pm-desc');
       if (!payload.deadline) invalid.push('#pm-deadline');
-      if (!payload.linkUrl) invalid.push('#pm-link-url');
-      if (!payload.linkType) invalid.push('#pm-link-type');
+      if (!payload.link_url) invalid.push('#pm-link-url');
+      if (!payload.link_type) invalid.push('#pm-link-type');
       pulseInvalid(invalid);
       return;
     }
     // Safety check for modal
-    if (!isSafeUrl(payload.linkUrl)){
+    if (!isSafeUrl(payload.link_url)){
       pulseInvalid(['#pm-link-url']);
       alert('URL tidak aman. Wajib HTTPS dan tidak boleh localhost/IP/port non-443.');
       return;
     }
     // Strict type verification: must be WA or QRIS and match selection
-    const detected2 = detectLinkType(payload.linkUrl);
+    const detected2 = detectLinkType(payload.link_url);
     if (!detected2){
       pulseInvalid(['#pm-link-url']);
       alert('URL tidak dikenali sebagai WhatsApp atau QRIS. Pastikan menggunakan wa.me/whatsapp.com atau tautan QRIS (gambar/pdf yang mengandung "qris").');
       return;
     }
-    if (detected2 !== payload.linkType){
+    if (detected2 !== payload.link_type){
       pmLinkType.value = detected2;
       pulseInvalid(['#pm-link-type']);
       const pesan = detected2 === 'wa' ? 'URL terdeteksi sebagai WhatsApp, bukan QRIS.' : 'URL terdeteksi sebagai QRIS, bukan WhatsApp.';
@@ -1271,29 +1344,39 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       if (old) payload.image = old.image || null;
     }
 
-    if (editingId){
-      const i = programs.findIndex(p => p.id === editingId);
-      if (i >= 0) programs[i] = payload;
+    // Check if editing existing item
+    const isEdit = !!editingId;
+    let result;
+    
+    if (isEdit) {
+      result = await updateProgram(editingId, payload);
     } else {
-      programs.unshift(payload);
+      result = await saveProgram(payload);
     }
-    save();
-    renderAll();
 
-    // Notify: program created/updated (modal)
-    try {
-      const isEdit = !!editingId;
-      (window as any).KKNotif?.add(
-        isEdit ? 'info' : 'success',
-        isEdit ? 'Program diubah' : 'Program dibuat',
-        payload.desc
-          ? (isEdit ? `Perubahan: ${payload.desc}` : `Program baru: ${payload.desc}`)
-          : (isEdit ? 'Program diperbarui' : 'Program baru ditambahkan')
-      );
-      window.dispatchEvent(new Event('kk-notifs-updated'));
-    } catch {}
+    if (result.status === 'success') {
+      // Reload programs from API
+      const apiData = await loadPrograms();
+      programs = apiData;
+      save();
+      renderAll();
 
-    closeProgramModal();
+      // Notify: program created/updated (modal)
+      try {
+        (window as any).KKNotif?.add(
+          isEdit ? 'info' : 'success',
+          isEdit ? 'Program diubah' : 'Program dibuat',
+          payload.desc
+            ? (isEdit ? `Perubahan: ${payload.desc}` : `Program baru: ${payload.desc}`)
+            : (isEdit ? 'Program diperbarui' : 'Program baru ditambahkan')
+        );
+        window.dispatchEvent(new Event('kk-notifs-updated'));
+      } catch {}
+
+      closeProgramModal();
+    } else {
+      alert('Gagal menyimpan program: ' + (result.message || 'Unknown error'));
+    }
   });
 
   // Confirm delete
@@ -1309,12 +1392,16 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     confirmModal.setAttribute('aria-hidden', 'true');
   }
   confirmModal?.addEventListener('click', (e) => { if (e.target?.closest?.('[data-close]')) closeConfirm(); });
-  function doDelete(id){
-    const idx = programs.findIndex(p => p.id === id);
-    if (idx >= 0){
-      programs.splice(idx, 1);
+  async function doDelete(id){
+    const result = await deleteProgram(id);
+    if (result.status === 'success') {
+      // Reload programs from API
+      const apiData = await loadPrograms();
+      programs = apiData;
       save();
       renderAll();
+    } else {
+      alert('Gagal menghapus program: ' + (result.message || 'Unknown error'));
     }
   }
 

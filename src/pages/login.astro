@@ -1520,10 +1520,8 @@ import Footer from '../components/sections/Footer.astro';
 </style>
 
 <script is:inline>
-    // TypeScript declarations for external libraries
-    declare const AOS: any;
-    declare const lottie: any;
-    declare const gsap: any;
+    // @ts-nocheck
+    // Inline JS (no TS syntax) with runtime guards for libraries
     
     // Initialize animations when document is ready
     document.addEventListener('DOMContentLoaded', function() {
@@ -1557,10 +1555,6 @@ import Footer from '../components/sections/Footer.astro';
             input.setAttribute('type', 'password');
             icon.classList.remove('fa-eye-slash');
             icon.classList.add('fa-eye');
-            icon.setAttribute('role', 'button');
-            icon.setAttribute('tabindex', '0');
-            icon.setAttribute('aria-pressed', 'false');
-            icon.setAttribute('title', 'Tampilkan password');
 
             const toggle = () => {
                 const masked = input.getAttribute('type') === 'password';
@@ -1577,9 +1571,9 @@ import Footer from '../components/sections/Footer.astro';
             };
 
             icon.addEventListener('click', toggle);
-            icon.addEventListener('keydown', (e: Event) => {
-                const keyEvent = e as KeyboardEvent;
-                if (keyEvent.key === 'Enter' || keyEvent.key === ' ') {
+            icon.addEventListener('keydown', (e) => {
+                const key = (e && e.key) || '';
+                if (key === 'Enter' || key === ' ') {
                     e.preventDefault();
                     toggle();
                 }
@@ -1599,7 +1593,8 @@ import Footer from '../components/sections/Footer.astro';
                 
                 // Call PHP API directly
                 (async () => {
-                    const formData = new FormData(e.target as HTMLFormElement);
+                    const formEl = e && e.target;
+                    const formData = (formEl && formEl instanceof HTMLFormElement) ? new FormData(formEl) : new FormData();
                     const email = formData.get('email');
                     const password = formData.get('password');
 
@@ -1735,11 +1730,13 @@ import Footer from '../components/sections/Footer.astro';
             elements.forEach(selector => {
                 const items = document.querySelectorAll(selector);
                 items.forEach(item => {
-                    (item as HTMLElement).style.opacity = '0';
-                    setTimeout(() => {
-                        (item as HTMLElement).style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                        (item as HTMLElement).style.opacity = '1';
-                    }, 100);
+                    if (item instanceof HTMLElement) {
+                        item.style.opacity = '0';
+                        setTimeout(() => {
+                            item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                            item.style.opacity = '1';
+                        }, 100);
+                    }
                 });
             });
         }

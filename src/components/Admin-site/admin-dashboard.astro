@@ -6,42 +6,11 @@
 */
 ---
 
-<!-- Import laporan scripts with fallback -->
-<script>
-  // Try to load the TypeScript file first
-  const tsScript = document.createElement('script');
-  tsScript.src = '/src/scripts/laporan.ts';
-  tsScript.type = 'module';
-  tsScript.onerror = function() {
-    console.warn('Failed to load laporan.ts, falling back to laporan.js');
-    // If TypeScript file fails to load, use the JS fallback
-    const jsScript = document.createElement('script');
-    jsScript.src = '/js/laporan.js';
-    document.head.appendChild(jsScript);
-  };
-  document.head.appendChild(tsScript);
-</script>
 <!-- Ensure proper viewport settings for responsive design -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<!-- Authentication Check -->
-<div id="auth-check" style="display: none;">
-  <div style="text-align: center; padding: 2rem; color: #666;">
-    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-    <p>Memeriksa autentikasi...</p>
-  </div>
-</div>
-
-<div id="unauthorized-access" style="display: none;">
-  <div style="text-align: center; padding: 2rem; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; margin: 1rem;">
-    <i class="fas fa-exclamation-triangle" style="color: #856404; font-size: 2rem; margin-bottom: 1rem;"></i>
-    <h3 style="color: #856404; margin-bottom: 0.5rem;">Akses Tidak Diizinkan</h3>
-    <p style="color: #856404; margin-bottom: 1rem;">Anda harus login dan menyelesaikan registrasi komplek untuk mengakses dashboard admin.</p>
-    <a href="/login" style="background: #667eea; color: white; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none;">Login Sekarang</a>
-  </div>
-</div>
-
-<div class="admin-dashboard" id="dashboard-content" style="display: none;">
+<!-- Demo Mode - No Authentication Required -->
+<div class="admin-dashboard" id="dashboard-content">
   <!-- Dashboard Hero Section -->
   <div class="dashboard-hero pre-animation" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
     <div class="hero-content">
@@ -53,9 +22,8 @@
     </div>
     <div class="plan-info">
       <span class="plan-badge free">Gratis</span>
-      <a href="/admin/upgrade" class="upgrade-chip" aria-label="Upgrade akun">
-        <i class="fas fa-crown"></i>
-        <span>Upgrade</span>
+      <a href="/register" class="upgrade-chip" aria-label="Regist akun">
+        <span>Regist</span>
       </a>
     </div>
   </div>
@@ -613,7 +581,7 @@
   }
   // Import safe fetch wrapper - menggunakan import dinamis tanpa await
   let fetchJson;
-  import('/src/utils/fetch-wrapper.ts').then(module => {
+  import('~/utils/fetch-wrapper').then(module => {
     fetchJson = module.fetchJson;
   }).catch(error => {
     console.error('Error importing fetch-wrapper:', error);
@@ -627,6 +595,13 @@
       // Fallback to local data
       return useFallbackData();
     }
+  }
+  // Strict JSON fetcher: do not fallback to summary; used for non-summary endpoints (e.g., iuran)
+  async function fetchJsonStrict(url){
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const ct = res.headers.get('content-type')||'';
+    return ct.includes('application/json') ? res.json() : res.text();
   }
   
   function useFallbackData() {
@@ -745,12 +720,13 @@
     window.addEventListener('storage', onStorage);
     // Refresh when tab becomes visible again
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') loadDashboardKPIs(); });
-    // Fallback polling in same tab (storage event won't fire)
+    // Fallback polling in same tab (storage event won't fire) - reduced delay
     setInterval(() => {
       let curr = 0;
       try { curr = Number(localStorage.getItem('iuran_dirty')||'0') || 0; } catch(_){ curr = 0; }
       if (curr && curr !== lastDirty) {
         lastDirty = curr;
+        console.debug('[Dashboard] iuran_dirty changed, reloading KPIs');
         loadDashboardKPIs();
       }
       // Also detect direct changes to configs/payments strings within same tab
@@ -760,9 +736,22 @@
       try { paysNow = String(localStorage.getItem('dues_payments')||''); } catch(_){ paysNow = ''; }
       if (cfgNow !== lastCfg || paysNow !== lastPays) {
         lastCfg = cfgNow; lastPays = paysNow;
+        console.debug('[Dashboard] dues_configs or dues_payments changed, reloading KPIs');
         loadDashboardKPIs();
       }
-    }, 3000);
+    }, 500); // Reduced from 1000ms to 500ms for faster updates
+    
+    // Listen for custom events from laporan.astro
+    window.addEventListener('iuran-updated', (event) => {
+      console.debug('[Dashboard] Received iuran-updated event:', event.detail);
+      loadDashboardKPIs();
+    });
+    
+    // Listen for custom events when nominal is changed
+    window.addEventListener('iuran-nominal-changed', (event) => {
+      console.debug('[Dashboard] Received iuran-nominal-changed event:', event.detail);
+      loadDashboardKPIs();
+    });
   }
   async function loadDashboardKPIs(){
     const komplekId = resolveKomplekId();
@@ -868,16 +857,116 @@
         const periode = getCurrentMonth();
         const apiDisabled = localStorage.getItem('disable_api') === '1';
         if (komplekId && !apiDisabled) {
-          const iuranUrl = `/api/public/iuran/status?komplek_id=${encodeURIComponent(komplekId)}&periode=${encodeURIComponent(periode)}`;
-          console.debug('[Dashboard] Fetching iuran status:', iuranUrl);
-          const iuran = await fetchJson(iuranUrl);
-          const amount = Number(iuran?.amount || iuran?.nominal || 0);
-          let pendingCount = 0;
+          const forceMock = localStorage.getItem('use_mock_api') === '1';
+          const publicUrl = `/api/public/iuran/status?komplek_id=${encodeURIComponent(komplekId)}&periode=${encodeURIComponent(periode)}`;
+          const demoUrl = `/api/demo/iuran/status?komplek_id=${encodeURIComponent(komplekId)}&periode=${encodeURIComponent(periode)}`;
+          const realtimeUrl = `/api/demo/iuran/realtime?komplek_id=${encodeURIComponent(komplekId)}&periode=${encodeURIComponent(periode)}`;
+          const mockUrl = `/api/iuran/status?komplek_id=${encodeURIComponent(komplekId)}&periode=${encodeURIComponent(periode)}`;
+          let iuran = null;
+          // 1) Try real-time sync endpoint first (reads from localStorage)
+          if (!forceMock) {
+            try {
+              // Get real data from localStorage
+              const wargaData = JSON.parse(localStorage.getItem('warga_data_v1') || '[]');
+              const duesConfigs = JSON.parse(localStorage.getItem('dues_configs') || '{}');
+              const duesPayments = JSON.parse(localStorage.getItem('dues_payments') || '{}');
+              
+              const totalWarga = wargaData.filter((r: any) => r.status === 'aktif').length;
+              const nominalIuran = duesConfigs[periode]?.amount || 0;
+              const paidCount = duesPayments[periode]?.paid?.length || 0;
+              
+              console.debug('[Dashboard] Syncing real-time data:', { totalWarga, nominalIuran, paidCount });
+              
+              const syncResponse = await fetch(`/api/demo/demo/iuran/sync?komplek_id=${encodeURIComponent(komplekId)}&periode=${encodeURIComponent(periode)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ total_warga: totalWarga, nominal: nominalIuran, paid_count: paidCount })
+              });
+              
+              if (syncResponse.ok) {
+                iuran = await syncResponse.json();
+                console.debug('[Dashboard] Real-time sync successful:', iuran);
+                // Use sync data directly, skip other endpoints
+                const syncData = iuran.data || iuran;
+                const amount = Number(syncData.nominal || syncData.amount || 0);
+                const pendingCount = Number(syncData.warga_belum_bayar || syncData.unpaidCount || 0);
+                iuranPending = Math.max(0, amount * pendingCount);
+                
+                console.debug('[Dashboard] Using sync data:', { amount, pendingCount, iuranPending });
+                console.debug('[Dashboard] elIuranPending element:', elIuranPending);
+                
+                if (elIuranPending) { 
+                  const oldValue = elIuranPending.textContent;
+                  elIuranPending.textContent = fmtIDR(iuranPending); 
+                  elIuranPending.setAttribute('data-target', String(iuranPending)); 
+                  console.debug('[Dashboard] Updated UI with sync data:', { 
+                    oldValue, 
+                    newValue: fmtIDR(iuranPending), 
+                    element: elIuranPending 
+                  });
+                } else {
+                  console.error('[Dashboard] elIuranPending element not found!');
+                }
+                
+                // Continue to save snapshot and return
+                localStorage.setItem(DASH_SNAP_KEY, JSON.stringify({ 
+                  komplekId, 
+                  totalKas: 0, 
+                  totalMasuk: 0, 
+                  totalKeluar: 0, 
+                  iuranPending, 
+                  ts: now 
+                }));
+                lastDashFetch = now;
+                return; // Exit early, don't try other endpoints
+              } else {
+                throw new Error('Sync failed');
+              }
+            } catch(_) { 
+              // Try demo endpoint as fallback
+              try {
+                console.debug('[Dashboard] Fetching iuran status (demo):', demoUrl);
+                iuran = await fetchJsonStrict(demoUrl);
+              } catch(_) {
+                // Try public endpoint as last fallback
+                try {
+                  console.debug('[Dashboard] Fetching iuran status (public):', publicUrl);
+                  iuran = await fetchJsonStrict(publicUrl);
+                } catch(_) { /* ignore; will try mock */ }
+              }
+            }
+          }
+          let amount = Number(iuran?.amount || iuran?.nominal || 0);
+          // 2) If empty/404/invalid, try mock automatically
+          if (!Number.isFinite(amount) || (amount === 0 && !Array.isArray(iuran?.pending) && typeof iuran?.unpaidCount !== 'number')) {
+            try {
+              console.debug('[Dashboard] Retrying iuran status (mock):', mockUrl);
+              const mockRes = await fetchJsonStrict(mockUrl);
+              const mockAmt = Number(mockRes?.amount || mockRes?.nominal || 0);
+              if (Number.isFinite(mockAmt)) { iuran = mockRes; amount = mockAmt; }
+            } catch(_) { /* handled by safe */ }
+          }
+          // Calculate pending amount: Nominal × Warga Belum Bayar = Total Tertunda
+          const pendingCount = 0;
           if (Array.isArray(iuran?.pending)) pendingCount = iuran.pending.length;
           else if (typeof iuran?.unpaidCount === 'number') pendingCount = Number(iuran.unpaidCount);
           else if (Array.isArray(iuran?.residents) && Array.isArray(iuran?.paid)) pendingCount = Math.max(0, iuran.residents.length - iuran.paid.length);
+          
+          // Use the correct calculation: Nominal × Warga Belum Bayar
           iuranPending = Math.max(0, amount * pendingCount);
-          if (elIuranPending) { elIuranPending.textContent = fmtIDR(iuranPending); elIuranPending.setAttribute('data-target', String(iuranPending)); }
+          
+          // Debug log for calculation
+          console.debug('[iuran-calculation]', {
+            nominal: amount,
+            unpaidCount: pendingCount,
+            totalTertunda: iuranPending,
+            formula: `${amount} × ${pendingCount} = ${iuranPending}`
+          });
+          
+          if (elIuranPending) { 
+            elIuranPending.textContent = fmtIDR(iuranPending); 
+            elIuranPending.setAttribute('data-target', String(iuranPending)); 
+          }
         }
         // Reconcile with local demo data to avoid stale API values
         try{
@@ -891,10 +980,34 @@
           }
           const payments = JSON.parse(localStorage.getItem('dues_payments')||'{}');
           const paid = Array.isArray(payments?.[periode]?.paid) ? payments[periode].paid : [];
-          const residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+          
+          // Get residents from correct source (warga_data_v1 first, then residents_data)
+          let residents = [];
+          try {
+            const wargaData = JSON.parse(localStorage.getItem('warga_data_v1')||'[]');
+            if (Array.isArray(wargaData) && wargaData.length > 0) {
+              residents = wargaData.filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+            } else {
+              residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+            }
+          } catch(_) {
+            residents = [];
+          }
+          
           const pendingCountLocal = Math.max(0, Math.max(0, residents.length) - paid.length);
           const localPending = Math.max(0, amountLocal * pendingCountLocal);
-          try { console.debug('[iuran-debug] reconcile', { periode, amountLocal, residents: residents.length, paid: paid.length, closed: !!cfgMap?.[periode]?.closed, localPending }); } catch(_){}
+          try { 
+            console.debug('[iuran-debug] reconcile', { 
+              periode, 
+              amountLocal, 
+              residents: residents.length, 
+              paid: paid.length, 
+              closed: !!cfgMap?.[periode]?.closed, 
+              localPending,
+              wargaDataLength: JSON.parse(localStorage.getItem('warga_data_v1')||'[]').length,
+              duesConfigs: cfgMap[periode]
+            }); 
+          } catch(_){}
           if (Number.isFinite(localPending) && localPending !== iuranPending) {
             iuranPending = localPending;
             if (elIuranPending) { elIuranPending.textContent = fmtIDR(iuranPending); elIuranPending.setAttribute('data-target', String(iuranPending)); }
@@ -935,11 +1048,44 @@
           }
           const payments = JSON.parse(localStorage.getItem('dues_payments')||'{}');
           const paid = Array.isArray(payments?.[periode]?.paid) ? payments[periode].paid : [];
-          const residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
-          const pendingCount = Math.max(0, Math.max(0, residents.length) - paid.length);
+          
+                     // Get residents from correct source (warga_data_v1 first, then residents_data)
+           let residents = [];
+           try {
+             const wargaData = JSON.parse(localStorage.getItem('warga_data_v1')||'[]');
+             if (Array.isArray(wargaData) && wargaData.length > 0) {
+               residents = wargaData.filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+             } else {
+               residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+             }
+           } catch(_) {
+             residents = [];
+           }
+           
+           // Debug: Log the actual resident count
+           console.debug('[Dashboard] Fallback calculation - residents:', residents.length, 'warga_data_v1:', JSON.parse(localStorage.getItem('warga_data_v1')||'[]').length);
+          
+          const pendingCount = Math.max(0, residents.length - paid.length);
           iuranPending = Math.max(0, amount * pendingCount);
-          try { console.debug('[iuran-debug] api-catch-fallback', { periode, amountLocal: amount, residents: residents.length, paid: paid.length, closed: !!cfgMap?.[periode]?.closed, pending: iuranPending }); } catch(_){}
-          if (elIuranPending) { elIuranPending.textContent = fmtIDR(iuranPending); elIuranPending.setAttribute('data-target', String(iuranPending)); }
+          
+          // Debug log with correct calculation
+          try { 
+            console.debug('[iuran-debug] fallback-calculation', { 
+              periode, 
+              nominal: amount, 
+              totalResidents: residents.length, 
+              paidCount: paid.length, 
+              unpaidCount: pendingCount,
+              totalTertunda: iuranPending,
+              formula: `${amount} × ${pendingCount} = ${iuranPending}`,
+              closed: !!cfgMap?.[periode]?.closed 
+            }); 
+          } catch(_){}
+          
+          if (elIuranPending) { 
+            elIuranPending.textContent = fmtIDR(iuranPending); 
+            elIuranPending.setAttribute('data-target', String(iuranPending)); 
+          }
         }catch(_){ /* noop */ }
       }
       // If the month is marked closed but local data still shows unpaid, prefer showing local pending (avoid misleading zero)
@@ -949,7 +1095,20 @@
         if (cfgMap && cfgMap[periodeNow] && cfgMap[periodeNow].closed) {
           const payments = JSON.parse(localStorage.getItem('dues_payments')||'{}');
           const paid = Array.isArray(payments?.[periodeNow]?.paid) ? payments[periodeNow].paid : [];
-          const residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+          
+          // Get residents from correct source (warga_data_v1 first, then residents_data)
+          let residents = [];
+          try {
+            const wargaData = JSON.parse(localStorage.getItem('warga_data_v1')||'[]');
+            if (Array.isArray(wargaData) && wargaData.length > 0) {
+              residents = wargaData.filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+            } else {
+              residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+            }
+          } catch(_) {
+            residents = [];
+          }
+          
           const pendingCountLocal = Math.max(0, Math.max(0, residents.length) - paid.length);
           const amountLocal = Number((cfgMap?.[periodeNow]?.amount)||0);
           const localPending = Math.max(0, amountLocal * pendingCountLocal);

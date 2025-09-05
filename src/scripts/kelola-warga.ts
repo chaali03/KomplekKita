@@ -791,12 +791,18 @@ function bindEvents(): void {
   const dz = $("#dropzone") as HTMLElement;
   const fi = document.getElementById("file-input") as HTMLInputElement | null;
 
-  on($("#btn-browse") as HTMLElement, "click", () => {
-    fi?.click();
-  });
-  on(dz, "dragover", handleDragOver);
-  on(dz, "dragleave", handleDragLeave);
-  on(dz, "drop", handleDrop);
+  const btnBrowse = $("#btn-browse") as HTMLElement | null;
+  if (btnBrowse) {
+    on(btnBrowse, "click", () => {
+      fi?.click();
+    });
+  }
+  
+  if (dz) {
+    on(dz, "dragover", handleDragOver);
+    on(dz, "dragleave", handleDragLeave);
+    on(dz, "drop", handleDrop);
+  }
   if (fi) on(fi, "change", handleFileInput);
 
   // Delete doc button
@@ -840,6 +846,20 @@ function handleFiles(fileList: FileList | null): void {
 // -------------------- Init --------------------
 function init(): void {
   load();
+  
+  // Try to get data from warga.astro page first
+  const wargaData = localStorage.getItem('warga_data_v1');
+  if (wargaData) {
+    try {
+      const parsed = JSON.parse(wargaData);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        warga = parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to parse warga data from localStorage:', e);
+    }
+  }
+  
   row = warga.find((x) => x.id === id) ?? null;
 
   if (!row) {

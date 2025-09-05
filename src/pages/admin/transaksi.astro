@@ -997,7 +997,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     localStorage.setItem('komplek_id', String(komplekId));
 
     // Import safe fetch wrapper
-    const { fetchJson } = await import('/src/utils/fetch-wrapper.ts');
+    const { fetchJson } = await import('~/utils/fetch-wrapper');
     // Inline shared finance utilities to avoid import issues
     function calculateTotalsShared(rows) {
       const income = rows.filter(t => String(t.type) === 'Masuk').reduce((s, t) => s + Number(t.amount || 0), 0);
@@ -1348,9 +1348,19 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     // Restore filters from localStorage
     function restoreFilters(){
       try{
-        const save = JSON.parse(localStorage.getItem('trx_filters')||'{}');
-        Object.assign(state.filters, save);
-      }catch(_){}
+        // Prefer filters saved by laporan page for parity
+        const dash = JSON.parse(localStorage.getItem('dashboard_filters')||'{}');
+        if (dash && (dash.start || dash.end)) {
+          Object.assign(state.filters, {
+            start: dash.start || state.filters.start,
+            end: dash.end || state.filters.end,
+            q: dash.search || state.filters.q,
+          });
+        } else {
+          const save = JSON.parse(localStorage.getItem('trx_filters')||'{}');
+          Object.assign(state.filters, save);
+        }
+      }catch(_){ }
       // reflect UI
       const q = document.getElementById('filter-q');
       const s = document.getElementById('filter-start');
@@ -1399,28 +1409,19 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     // Filtering + Sorting
     function applyFilters(){
-      // Temporarily bypass shared filtering to use original logic for debugging
-      let rows = state.data.slice();
-      if(state.filters.start){
-        rows = rows.filter(r => r.date >= state.filters.start);
-      }
-      if(state.filters.end){
-        rows = rows.filter(r => r.date <= state.filters.end);
-      }
-      if(state.filters.cat && state.filters.cat !== 'Semua'){
-        rows = rows.filter(r => r.cat === state.filters.cat);
-      }
-      if(state.filters.type !== 'Semua'){
-        rows = rows.filter(r => r.type === state.filters.type);
-      }
-      if(state.filters.q){
-        const q = state.filters.q.toLowerCase().trim();
-        rows = rows.filter(r =>
-          r.note.toLowerCase().includes(q) ||
-          r.cat.toLowerCase().includes(q) ||
-          r.type.toLowerCase().includes(q)
-        );
-      }
+      // Use the same filtering logic as laporan.ts over the shared storage
+      // Read shared transaction shape (date, type, category, description, amount)
+      const sharedRows = readShared();
+      const filters = {
+        start: state.filters.start || undefined,
+        end: state.filters.end || undefined,
+        category: state.filters.cat && state.filters.cat !== 'Semua' ? state.filters.cat : undefined,
+        type: state.filters.type && state.filters.type !== 'Semua' ? state.filters.type : undefined,
+        search: state.filters.q || undefined,
+      };
+      const filteredShared = applyFiltersShared(sharedRows, filters);
+      // Map back to local row shape for this page (cat/note)
+      let rows = fromSharedFormat(filteredShared);
       const [by, dir] = state.filters.sort.split('-');
       rows.sort((a,b)=>{
         let res = 0;
@@ -1428,7 +1429,6 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         if(by==='jumlah'){ res = a.amount - b.amount; }
         return dir==='asc' ? res : -res;
       });
-      // Applied filters to transaction data
       return rows;
     }
 
@@ -1506,32 +1506,62 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     const elCount = document.getElementById('kpi-count');
 
     function updateSummary(){
-      const rows = applyFilters();
-      // Processing filtered transaction data
-      
-      // Force recalculation using shared logic
-      const income = rows.filter(r => String(r.type) === 'Masuk').reduce((s, r) => s + Number(r.amount || 0), 0);
-      const expense = rows.filter(r => String(r.type) === 'Keluar').reduce((s, r) => s + Number(r.amount || 0), 0);
-      const balance = income - expense;
-      const count = rows.length;
-      
-      // Summary calculations completed
-      
-      animateNumber(elSaldo, balance, fmtIDR);
-      animateNumber(elMasuk, income, fmtIDR);
-      animateNumber(elKeluar, expense, fmtIDR);
-      animateNumber(elCount, count, (v)=> String(v).toLocaleString('id-ID'));
+      // Compute totals using the same shared functions and data as laporan.ts
+      const sharedRows = readShared();
+      const filters = {
+        start: state.filters.start || undefined,
+        end: state.filters.end || undefined,
+        category: state.filters.cat && state.filters.cat !== 'Semua' ? state.filters.cat : undefined,
+        type: state.filters.type && state.filters.type !== 'Semua' ? state.filters.type : undefined,
+        search: state.filters.q || undefined,
+      };
+      const filteredShared = applyFiltersShared(sharedRows, filters);
+      const totals = calculateTotalsShared(filteredShared);
+
+      animateNumber(elSaldo, totals.balance, fmtIDR);
+      animateNumber(elMasuk, totals.income, fmtIDR);
+      animateNumber(elKeluar, totals.expense, fmtIDR);
+      animateNumber(elCount, totals.count, (v)=> String(v).toLocaleString('id-ID'));
 
       // Mirror updates to laporan-style IDs if present on this page
       const sumIn = document.getElementById('sum-in');
       const sumOut = document.getElementById('sum-out');
       const sumBal = document.getElementById('sum-bal');
       const sumCount = document.getElementById('sum-count');
-      if(sumIn) (window).animateValue(sumIn, income, fmtIDR);
-      if(sumOut) (window).animateValue(sumOut, expense, fmtIDR);
-      if(sumBal) (window).animateValue(sumBal, balance, fmtIDR);
-      if(sumCount) (window).animateValue(sumCount, count, (n)=> new Intl.NumberFormat('id-ID').format(n));
+      if(sumIn) (window).animateValue(sumIn, totals.income, fmtIDR);
+      if(sumOut) (window).animateValue(sumOut, totals.expense, fmtIDR);
+      if(sumBal) (window).animateValue(sumBal, totals.balance, fmtIDR);
+      if(sumCount) (window).animateValue(sumCount, totals.count, (n)=> new Intl.NumberFormat('id-ID').format(n));
     }
+
+    // Keep in sync with laporan when shared storage changes
+    window.addEventListener('storage', (e)=>{
+      if(e.key === 'financial_transactions_v2'){
+        state.data = loadData();
+        renderTable();
+        updateSummary();
+        buildCharts();
+      } else if (e.key === 'dashboard_filters') {
+        try{
+          const dash = JSON.parse(localStorage.getItem('dashboard_filters')||'{}');
+          if (dash) {
+            state.filters.start = dash.start || state.filters.start;
+            state.filters.end = dash.end || state.filters.end;
+            state.filters.q = dash.search || state.filters.q;
+            // reflect UI and re-render
+            const s = document.getElementById('filter-start');
+            const e = document.getElementById('filter-end');
+            const q = document.getElementById('filter-q');
+            if (s) s.value = state.filters.start||'';
+            if (e) e.value = state.filters.end||'';
+            if (q) q.value = state.filters.q||'';
+            renderTable();
+            updateSummary();
+            buildCharts();
+          }
+        }catch(_){ }
+      }
+    });
 
     function animateNumber(el, to, format=(n)=>n){
       if(!el) return;
@@ -1962,7 +1992,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     });
     document.getElementById('btn-template-keuangan')?.addEventListener('click', async ()=>{
       try{
-        const { safeFetch } = await import('/src/utils/fetch-wrapper.ts');
+        const { safeFetch } = await import('~/utils/fetch-wrapper');
         const res = await safeFetch('/api/templates/keuangan');
         if(!res.ok){ console.error('Gagal mengunduh template keuangan'); return; }
         const blob = await res.blob();

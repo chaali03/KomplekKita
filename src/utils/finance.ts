@@ -1,5 +1,7 @@
 // Shared finance utilities for KPI parity across pages
-// These functions are intentionally minimal and browser-safe
+// Updated to use PHP API instead of localStorage
+
+import { apiClient } from './api-client';
 
 export type TxType = 'Masuk' | 'Keluar';
 
@@ -24,15 +26,16 @@ export function formatIDR(amount: number) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Math.round(amount || 0));
 }
 
-// Shared transaction loading from localStorage
-export function loadTransactions(storageKey = 'financial_transactions_v2') {
+// Load transactions from API
+export async function loadTransactions(filters: FilterOptions = {}) {
   try {
-    const stored = localStorage.getItem(storageKey);
-    if (!stored) return [];
-    const parsed = JSON.parse(stored);
-    return Array.isArray(parsed) ? parsed : [];
+    const response = await apiClient.getTransactions(filters);
+    if (response.success && response.data?.transactions) {
+      return response.data.transactions;
+    }
+    return [];
   } catch (error) {
-    console.warn('Failed to load transactions from localStorage:', error);
+    console.warn('Failed to load transactions from API:', error);
     return [];
   }
 }
@@ -49,7 +52,29 @@ export interface FilterOptions {
 }
 
 // Unified filtering function that both pages can use
-export function applyFilters<T extends TxLike & { date?: string; category?: string; description?: string }>(transactions: T[], filters: FilterOptions): T[] {
+export async function applyFilters<T extends TxLike & { date?: string; category?: string; description?: string }>(transactions: T[], filters: FilterOptions): Promise<T[]> {
+  try {
+    // Use API filtering for better performance
+    const response = await apiClient.applyFilters(transactions, filters);
+    if (response.success && response.data?.transactions) {
+      return response.data.transactions;
+    }
+    
+    // Fallback to client-side filtering
+    return applyFiltersClientSide(transactions, filters);
+  } catch (error) {
+    console.warn('API filtering failed, using client-side filtering:', error);
+    return applyFiltersClientSide(transactions, filters);
+  }
+}
+
+// Synchronous version for immediate use (used by laporan.ts)
+export function applyFiltersSync<T extends TxLike & { date?: string; category?: string; description?: string }>(transactions: T[], filters: FilterOptions): T[] {
+  return applyFiltersClientSide(transactions, filters);
+}
+
+// Client-side filtering as fallback
+function applyFiltersClientSide<T extends TxLike & { date?: string; category?: string; description?: string }>(transactions: T[], filters: FilterOptions): T[] {
   let filtered = transactions.slice();
   
   // Date range filtering

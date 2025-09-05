@@ -656,6 +656,66 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       let viewMode = localStorage.getItem('info_view') || 'grid'; // 'grid' | 'list'
       let sortMode = localStorage.getItem('info_sort') || 'newest'; // 'newest' | 'oldest' | 'title' | 'pinned'
 
+      // API Functions
+      const API_BASE = 'http://127.0.0.1:8000/api/demo';
+      
+      async function loadInformations() {
+        try {
+          const response = await fetch(`${API_BASE}/informations`);
+          const result = await response.json();
+          if (result.status === 'success') {
+            return result.data;
+          }
+          return [];
+        } catch (error) {
+          console.error('Error loading informations:', error);
+          return [];
+        }
+      }
+
+      async function saveInformation(data) {
+        try {
+          const response = await fetch(`${API_BASE}/informations`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          const result = await response.json();
+          return result;
+        } catch (error) {
+          console.error('Error saving information:', error);
+          return { status: 'error', message: 'Failed to save' };
+        }
+      }
+
+      async function updateInformation(id, data) {
+        try {
+          const response = await fetch(`${API_BASE}/informations/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          const result = await response.json();
+          return result;
+        } catch (error) {
+          console.error('Error updating information:', error);
+          return { status: 'error', message: 'Failed to update' };
+        }
+      }
+
+      async function deleteInformation(id) {
+        try {
+          const response = await fetch(`${API_BASE}/informations/${id}`, {
+            method: 'DELETE'
+          });
+          const result = await response.json();
+          return result;
+        } catch (error) {
+          console.error('Error deleting information:', error);
+          return { status: 'error', message: 'Failed to delete' };
+        }
+      }
+
       // Helpers
       const readData = () => {
         try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
@@ -1085,23 +1145,38 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       function wireItemActions(scopeEl, item) {
         scopeEl.querySelector('[data-edit]')?.addEventListener('click', () => openModal('edit', item));
         scopeEl.querySelector('[data-delete]')?.addEventListener('click', () =>
-          openConfirm(() => {
-            const arr = readData().filter((x) => x.id !== item.id);
-            writeData(arr);
-            showToast('Informasi dihapus');
-            render(searchInput?.value || '');
-            updateStats(arr);
+          openConfirm(async () => {
+            const result = await deleteInformation(item.id);
+            if (result.status === 'success') {
+              // Reload data from API
+              const apiData = await loadInformations();
+              writeData(apiData);
+              
+              // Extract categories from API data
+              const categories = [...new Set(apiData.map(info => info.category))];
+              writeTags(categories);
+              
+              showToast('Informasi dihapus');
+              renderTagChips();
+              render(searchInput?.value || '');
+              updateStats(apiData);
+            } else {
+              showToast('Gagal menghapus informasi: ' + (result.message || 'Unknown error'));
+            }
           })
         );
-        scopeEl.querySelector('[data-pin]')?.addEventListener('click', () => {
-          const arr = readData();
-          const i = arr.findIndex((x) => x.id === item.id);
-          if (i >= 0) {
-            arr[i].pinned = !arr[i].pinned;
-            writeData(arr);
-            showToast(arr[i].pinned ? 'Dipin ke atas' : 'Pin dilepas');
+        scopeEl.querySelector('[data-pin]')?.addEventListener('click', async () => {
+          const result = await updateInformation(item.id, { pinned: !item.pinned });
+          if (result.status === 'success') {
+            // Reload data from API
+            const apiData = await loadInformations();
+            writeData(apiData);
+            
+            showToast(item.pinned ? 'Pin dilepas' : 'Dipin ke atas');
             render(searchInput?.value || '');
-            updateStats(arr);
+            updateStats(apiData);
+          } else {
+            showToast('Gagal mengubah status pin: ' + (result.message || 'Unknown error'));
           }
         });
       }
@@ -1124,31 +1199,51 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           });
         }
         const payload = {
-          id,
           title: inputTitle.value.trim(),
           category: inputCategory.value,
           date: inputDate.value,
           pinned: !!inputPinned.checked,
           content: inputContent.value.trim(),
           banner: bannerData,
+          is_active: true
         };
-        const arr = readData();
-        const idx = arr.findIndex((x) => x.id === id);
-        if (idx >= 0) arr[idx] = payload; else arr.push(payload);
-        writeData(arr);
-        closeModal();
-        render(searchInput?.value || '');
-        updateStats(arr);
-        try {
-          const isEdit = idx >= 0;
-          (window as any).KKNotif?.add(
-            isEdit ? 'info' : 'success',
-            isEdit ? 'Informasi diubah' : 'Informasi dibuat',
-            payload.title ? `${payload.title}` : (isEdit ? 'Item informasi diperbarui' : 'Item informasi baru ditambahkan')
-          );
-          window.dispatchEvent(new Event('kk-notifs-updated'));
-        } catch {}
-        showToast('Informasi disimpan');
+
+        // Check if editing existing item
+        const isEdit = !!inputId.value;
+        let result;
+        
+        if (isEdit) {
+          result = await updateInformation(inputId.value, payload);
+        } else {
+          result = await saveInformation(payload);
+        }
+
+        if (result.status === 'success') {
+          // Reload data from API
+          const apiData = await loadInformations();
+          writeData(apiData);
+          
+          // Extract categories from API data
+          const categories = [...new Set(apiData.map(info => info.category))];
+          writeTags(categories);
+          
+          closeModal();
+          renderTagChips();
+          render(searchInput?.value || '');
+          updateStats(apiData);
+          
+          try {
+            (window as any).KKNotif?.add(
+              isEdit ? 'info' : 'success',
+              isEdit ? 'Informasi diubah' : 'Informasi dibuat',
+              payload.title ? `${payload.title}` : (isEdit ? 'Item informasi diperbarui' : 'Item informasi baru ditambahkan')
+            );
+            window.dispatchEvent(new Event('kk-notifs-updated'));
+          } catch {}
+          showToast('Informasi disimpan');
+        } else {
+          showToast('Gagal menyimpan informasi: ' + (result.message || 'Unknown error'));
+        }
       });
 
       // delegate click on dynamic chips
@@ -1205,7 +1300,24 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       populateCategorySelect();
       renderTagChips();
       render();
-      setTimeout(() => { isLoading = false; render(searchInput?.value || ''); }, 450);
+      
+      // Load data from API
+      loadInformations().then(apiData => {
+        if (apiData.length > 0) {
+          // Update localStorage with API data
+          writeData(apiData);
+          
+          // Extract categories from API data
+          const categories = [...new Set(apiData.map(info => info.category))];
+          writeTags(categories);
+        }
+        
+        setTimeout(() => { 
+          isLoading = false; 
+          renderTagChips();
+          render(searchInput?.value || ''); 
+        }, 450);
+      });
 
       // Intersection Observer for pre-anim
       const io = new IntersectionObserver((entries) => {
