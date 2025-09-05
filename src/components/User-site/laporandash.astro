@@ -22,6 +22,31 @@
     </div>
   </div>
   
+  <!-- User KPI Cards: Pemasukan & Pengeluaran -->
+  <div class="kpi-mini-grid" data-aos="fade-up" data-aos-delay="140">
+    <div class="kpi-mini income">
+      <div class="kpi-mini-icon"><i class="fas fa-arrow-down"></i></div>
+      <div>
+        <div class="kpi-mini-label">Pemasukan</div>
+        <div id="user-in" class="kpi-mini-value">Rp 0</div>
+      </div>
+    </div>
+    <div class="kpi-mini expense">
+      <div class="kpi-mini-icon"><i class="fas fa-arrow-up"></i></div>
+      <div>
+        <div class="kpi-mini-label">Pengeluaran</div>
+        <div id="user-out" class="kpi-mini-value">Rp 0</div>
+      </div>
+    </div>
+    <div class="kpi-mini pending">
+      <div class="kpi-mini-icon"><i class="fas fa-clock"></i></div>
+      <div>
+        <div class="kpi-mini-label">Tertunda</div>
+        <div id="user-pending" class="kpi-mini-value">Rp 0</div>
+      </div>
+    </div>
+  </div>
+  
   <div class="grid">
     <div class="report-card" data-aos="fade-right" data-aos-delay="200">
       <div class="card-header">
@@ -57,6 +82,29 @@
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     margin-bottom: 2rem;
+  }
+
+  // Apply dashboard-style summary (same fields as Admin) and persist snapshot
+  function applyDashboardData(data){
+    if(!data) return;
+    const totalKas = Number(data?.totalKas || data?.total_kas || 0);
+    const totalMasuk = Number(data?.totalMasuk || data?.total_masuk || 0);
+    const totalKeluar = Number(data?.totalKeluar || data?.total_keluar || 0);
+    const pending = Number(data?.iuranPending || data?.iuran_pending || 0);
+    paintTotalKasAnimated(totalKas);
+    const inEl = document.getElementById('user-in');
+    const outEl = document.getElementById('user-out');
+    const pdEl = document.getElementById('user-pending');
+    if(inEl) inEl.textContent = currency(totalMasuk);
+    if(outEl) outEl.textContent = currency(totalKeluar);
+    if(pdEl) pdEl.textContent = currency(pending);
+    // persist snapshot for cross-tab sync
+    try{
+      const komplekId = String(localStorage.getItem('komplek_id')||'');
+      localStorage.setItem('summary_kpis', JSON.stringify({ komplekId, totalKas, totalMasuk, totalKeluar, iuranPending: pending, ts: Date.now() }));
+      // Emit storage-like event within same tab
+      try{ window.dispatchEvent(new StorageEvent('storage', { key: 'summary_kpis' })); }catch(_){}
+    }catch(_){ }
   }
 
   .laporan-header {
@@ -154,6 +202,20 @@
     font-size: 1.5rem;
     font-weight: 700;
   }
+
+  /* Mini KPI styles */
+  .kpi-mini-grid{
+    display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 14px; margin: 10px 0 18px;
+  }
+  .kpi-mini{
+    display:flex; align-items:center; gap:12px; background:#fff; border:1px solid #f0f0f0; border-radius:14px; padding:12px 14px; box-shadow:0 6px 16px rgba(0,0,0,.05);
+  }
+  .kpi-mini-icon{ width:40px; height:40px; border-radius:10px; display:grid; place-items:center; }
+  .kpi-mini.income .kpi-mini-icon{ background:#e8f6ee; color:#0c6b2f; }
+  .kpi-mini.expense .kpi-mini-icon{ background:#fff2f2; color:#b22234; }
+  .kpi-mini.pending .kpi-mini-icon{ background:#fff7e6; color:#b36b00; }
+  .kpi-mini-label{ font-size:.9rem; color:#666; font-weight:600; margin-bottom:2px; }
+  .kpi-mini-value{ font-size:1.2rem; font-weight:800; }
 
   .grid { 
     display: grid; 
@@ -306,6 +368,18 @@
     }
   });
 
+  // Load Real-time Chart Update System untuk data updates
+  const realtimeScript = document.createElement('script');
+  realtimeScript.type = 'module';
+  realtimeScript.src = '/src/utils/chart-realtime.js';
+  document.head.appendChild(realtimeScript);
+
+  // Load Shared State Management
+  const sharedStateScript = document.createElement('script');
+  sharedStateScript.type = 'module';
+  sharedStateScript.src = '/src/utils/shared-state.js';
+  document.head.appendChild(sharedStateScript);
+
   const currency = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(n||0));
   const qs = new URLSearchParams(location.search);
   const komplekId = parseInt(qs.get('komplek_id') || localStorage.getItem('komplek_id') || '1');
@@ -328,6 +402,26 @@
     return { income:0, expense:0, balance:0, any:false };
   }
 
+  function getDashboardSummary(){
+    try{
+      const s = JSON.parse(localStorage.getItem('summary_kpis')||'null');
+      if(s){
+        // Ensure snapshot matches current komplek_id
+        const curId = String(localStorage.getItem('komplek_id')||'');
+        if (curId && String(s.komplekId) !== curId) return null;
+        return {
+          komplekId: s.komplekId,
+          income: Number(s.totalMasuk||s.total_masuk||0),
+          expense: Number(s.totalKeluar||s.total_keluar||0),
+          balance: Number(s.totalKas||s.total_kas||0),
+          pending: Number(s.iuranPending || s.iuran_pending || 0),
+          ts: Number(s.ts||0)
+        };
+      }
+    }catch(_){ }
+    return null;
+  }
+
   function paintTotalKasAnimated(val){
     const totalEl = document.getElementById('total-kas');
     if(!totalEl) return;
@@ -336,7 +430,7 @@
   }
 
   // Import safe fetch wrapper
-  const { fetchJson } = await import('~/utils/fetch-wrapper');
+  const { fetchJson } = await import('/src/utils/fetch-wrapper.js');
   
   async function fetchJsonSafe(url){
     try {
@@ -359,6 +453,33 @@
   }
   function readAdminTransactions(){
     try { return JSON.parse(localStorage.getItem('financial_transactions_v2')||'[]') || [] } catch { return [] }
+  }
+
+  function getCurrentMonth(){
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  }
+  function getMonthRange(){
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth()+1, 0);
+    const toISO = (dt)=>{
+      const z = new Date(dt.getTime() - dt.getTimezoneOffset()*60000);
+      return z.toISOString().slice(0,10);
+    };
+    return { start: toISO(start), end: toISO(end) };
+  }
+  function computeLocalMonthTotals(){
+    const txs = readAdminTransactions();
+    if(!Array.isArray(txs) || txs.length===0) return {income:0, expense:0, balance:0};
+    const { start, end } = getMonthRange();
+    const inRange = txs.filter(t=> {
+      const d = String(t?.date||'');
+      return d && d >= start && d <= end;
+    });
+    const income = inRange.filter(t=> String(t?.type)==='Masuk').reduce((s,t)=> s+Number(t?.amount||0),0);
+    const expense = inRange.filter(t=> String(t?.type)==='Keluar').reduce((s,t)=> s+Number(t?.amount||0),0);
+    return { income, expense, balance: income-expense };
   }
 
   // Safe HTML text
@@ -453,6 +574,18 @@
         totalEl.style.opacity = '1';
       }, 300);
     }
+    // Paint income/expense if provided by API summary
+    const inEl = document.getElementById('user-in');
+    const outEl = document.getElementById('user-out');
+    const pdEl = document.getElementById('user-pending');
+    if(inEl || outEl || pdEl){
+      const apiIn = Number(data?.totalMasuk || data?.total_masuk || 0);
+      const apiOut = Number(data?.totalKeluar || data?.total_keluar || 0);
+      if(inEl) inEl.textContent = currency(apiIn);
+      if(outEl) outEl.textContent = currency(apiOut);
+      // API biasanya tidak menyediakan pending; biarkan tetap seperti sebelumnya jika tidak ada
+      if(pdEl && typeof data?.iuranPending !== 'undefined') pdEl.textContent = currency(Number(data.iuranPending||0));
+    }
     // Lists are driven by admin data, not API summary
     renderReportsList();
     renderTransactionsList();
@@ -471,13 +604,81 @@
     });
     
     try {
-      // If laporan snapshot exists and is non-zero, prefer it and skip API overwrite
-      const snap = getLaporanSnapshot();
-      if (snap.any) {
-        paintTotalKasAnimated(snap.balance);
+      // Prefer dashboard snapshot first to mirror Admin Dashboard exactly
+      const dash = getDashboardSummary();
+      if(dash){
+        paintTotalKasAnimated(dash.balance);
+        const inEl = document.getElementById('user-in');
+        const outEl = document.getElementById('user-out');
+        const pdEl = document.getElementById('user-pending');
+        if(inEl) inEl.textContent = currency(dash.income);
+        if(outEl) outEl.textContent = currency(dash.expense);
+        if(pdEl) pdEl.textContent = currency(dash.pending||0);
+        // If all dashboard totals are zero, attempt better fallback (laporan snapshot or local)
+        if (Number(dash.income||0)===0 && Number(dash.expense||0)===0 && Number(dash.balance||0)===0) {
+          const snap = getLaporanSnapshot();
+          if (snap.any) {
+            paintTotalKasAnimated(snap.balance);
+            if(inEl) inEl.textContent = currency(snap.income);
+            if(outEl) outEl.textContent = currency(snap.expense);
+          } else {
+            // Try the same endpoint as Admin to hydrate snapshot
+            const apiDisabled = localStorage.getItem('disable_api') === '1';
+            const kid = String(localStorage.getItem('komplek_id')||'');
+            if (kid && !apiDisabled){
+              try{
+                const data = await fetchJson(`/api/komplek/${encodeURIComponent(kid)}/dashboard`);
+                applyDashboardData(data);
+              }catch(_){
+                const loc = computeLocalMonthTotals();
+                if(inEl) inEl.textContent = currency(loc.income);
+                if(outEl) outEl.textContent = currency(loc.expense);
+                paintTotalKasAnimated(loc.balance);
+              }
+            } else {
+              const loc = computeLocalMonthTotals();
+              if(inEl) inEl.textContent = currency(loc.income);
+              if(outEl) outEl.textContent = currency(loc.expense);
+              paintTotalKasAnimated(loc.balance);
+            }
+          }
+        }
       } else {
-        const data = await fetchJson(`/api/public/transaksi/summary?komplek_id=${encodeURIComponent(komplekId)}`);
-        renderSummary(data);
+        // Next, use laporan snapshot if available
+        const snap = getLaporanSnapshot();
+        if (snap.any) {
+          paintTotalKasAnimated(snap.balance);
+          const inEl = document.getElementById('user-in');
+          const outEl = document.getElementById('user-out');
+          const pdEl = document.getElementById('user-pending');
+          if(inEl) inEl.textContent = currency(snap.income);
+          if(outEl) outEl.textContent = currency(snap.expense);
+          // snapshot laporan tidak punya pending; biarkan kosong/0
+          if(pdEl) pdEl.textContent = pdEl.textContent || 'Rp 0';
+        } else {
+          // Prefer the same dashboard endpoint as Admin; fallback to public summary
+          const apiDisabled = localStorage.getItem('disable_api') === '1';
+          let data = null;
+          if (komplekId && !apiDisabled){
+            try { data = await fetchJson(`/api/komplek/${encodeURIComponent(komplekId)}/dashboard`); } catch(_){}
+          }
+          if (data){
+            applyDashboardData(data);
+          }else{
+            const sum = await fetchJson(`/api/public/transaksi/summary?komplek_id=${encodeURIComponent(komplekId)}`);
+            renderSummary(sum);
+          }
+          // If API failed to provide, compute local month totals
+          if(!(data && (data.totalMasuk||data.total_masuk||data.totalKeluar||data.total_keluar))){
+            const loc = computeLocalMonthTotals();
+            const inEl = document.getElementById('user-in');
+            const outEl = document.getElementById('user-out');
+            const pdEl = document.getElementById('user-pending');
+            if(inEl) inEl.textContent = currency(loc.income);
+            if(outEl) outEl.textContent = currency(loc.expense);
+            if(pdEl) pdEl.textContent = pdEl.textContent || 'Rp 0';
+          }
+        }
       }
       // Always render lists from admin data
       renderReportsList();
@@ -511,9 +712,52 @@
 
   // Initialize data
   (async function init(){
-    // Try paint from laporan snapshot first so it matches admin/laporan immediately
-    const snap = getLaporanSnapshot();
-    if (snap.any) paintTotalKasAnimated(snap.balance);
+    // Mirror Admin Dashboard first if snapshot exists
+    const dash = getDashboardSummary();
+    if(dash){
+      paintTotalKasAnimated(dash.balance);
+      const inEl = document.getElementById('user-in');
+      const outEl = document.getElementById('user-out');
+      const pdEl = document.getElementById('user-pending');
+      if(inEl) inEl.textContent = currency(dash.income);
+      if(outEl) outEl.textContent = currency(dash.expense);
+      if(pdEl) pdEl.textContent = currency(dash.pending||0);
+      // Fallback if dashboard snapshot has zeros
+      if (Number(dash.income||0)===0 && Number(dash.expense||0)===0 && Number(dash.balance||0)===0) {
+        const snap = getLaporanSnapshot();
+        if (snap.any) {
+          paintTotalKasAnimated(snap.balance);
+          if(inEl) inEl.textContent = currency(snap.income);
+          if(outEl) outEl.textContent = currency(snap.expense);
+        } else {
+          const loc = computeLocalMonthTotals();
+          paintTotalKasAnimated(loc.balance);
+          if(inEl) inEl.textContent = currency(loc.income);
+          if(outEl) outEl.textContent = currency(loc.expense);
+        }
+      }
+    } else {
+      // Fall back to Laporan snapshot
+      const snap = getLaporanSnapshot();
+      if (snap.any) {
+        paintTotalKasAnimated(snap.balance);
+        const inEl = document.getElementById('user-in');
+        const outEl = document.getElementById('user-out');
+        const pdEl = document.getElementById('user-pending');
+        if(inEl) inEl.textContent = currency(snap.income);
+        if(outEl) outEl.textContent = currency(snap.expense);
+        if(pdEl) pdEl.textContent = pdEl.textContent || 'Rp 0';
+      } else {
+        const loc = computeLocalMonthTotals();
+        const inEl = document.getElementById('user-in');
+        const outEl = document.getElementById('user-out');
+        const pdEl = document.getElementById('user-pending');
+        paintTotalKasAnimated(loc.balance);
+        if(inEl) inEl.textContent = currency(loc.income);
+        if(outEl) outEl.textContent = currency(loc.expense);
+        if(pdEl) pdEl.textContent = pdEl.textContent || 'Rp 0';
+      }
+    }
     // Render lists immediately from stored admin data
     renderReportsList();
     renderTransactionsList();
@@ -528,18 +772,154 @@
     // Keep in sync with laporan page changes in real-time
     window.addEventListener('storage', (e)=>{
       if (!e) return;
+      // If dashboard snapshot changes, take precedence
+      if (e.key === 'summary_kpis'){
+        const d = getDashboardSummary();
+        if(d){
+          paintTotalKasAnimated(d.balance);
+          const inEl = document.getElementById('user-in');
+          const outEl = document.getElementById('user-out');
+          const pdEl = document.getElementById('user-pending');
+          if(inEl) inEl.textContent = currency(d.income);
+          if(outEl) outEl.textContent = currency(d.expense);
+          if(pdEl) pdEl.textContent = currency(d.pending||0);
+          // If dashboard snapshot all zero, try local/laporan fallback
+          if (Number(d.income||0)===0 && Number(d.expense||0)===0 && Number(d.balance||0)===0) {
+            const snap = getLaporanSnapshot();
+            if (snap.any) {
+              paintTotalKasAnimated(snap.balance);
+              if(inEl) inEl.textContent = currency(snap.income);
+              if(outEl) outEl.textContent = currency(snap.expense);
+            } else {
+              const loc = computeLocalMonthTotals();
+              paintTotalKasAnimated(loc.balance);
+              if(inEl) inEl.textContent = currency(loc.income);
+              if(outEl) outEl.textContent = currency(loc.expense);
+            }
+          }
+        }
+      }
       if (e.key === 'laporan_totals_snapshot'){
         const s = getLaporanSnapshot();
         if (s.any) paintTotalKasAnimated(s.balance);
+        const inEl = document.getElementById('user-in');
+        const outEl = document.getElementById('user-out');
+        const pdEl = document.getElementById('user-pending');
+        if(inEl) inEl.textContent = currency(s.income);
+        if(outEl) outEl.textContent = currency(s.expense);
+        if(pdEl) pdEl.textContent = pdEl.textContent || 'Rp 0';
       }
       if (e.key === 'financial_reports'){
         renderReportsList();
       }
       if (e.key === 'financial_transactions_v2'){
         renderTransactionsList();
+        // Also recompute local month totals for KPIs if no snapshots available
+        const snapNow = getLaporanSnapshot();
+        const dashNow = getDashboardSummary();
+        if(!(snapNow && snapNow.any) && !dashNow){
+          const loc = computeLocalMonthTotals();
+          const inEl = document.getElementById('user-in');
+          const outEl = document.getElementById('user-out');
+          paintTotalKasAnimated(loc.balance);
+          if(inEl) inEl.textContent = currency(loc.income);
+          if(outEl) outEl.textContent = currency(loc.expense);
+        }
       }
     });
   })();
+
+  /**
+   * Initialize Real-time Data Updates untuk Laporan Dashboard
+   */
+  function initRealTimeDataUpdates() {
+    // Pastikan ChartUpdateManager tersedia
+    if (!window.chartUpdateManager) {
+      console.warn('[LaporanDash] ChartUpdateManager not available, skipping real-time updates');
+      return;
+    }
+
+    // Data fetcher untuk data updates
+    async function fetchDataUpdates() {
+      try {
+        // Baca data dari localStorage
+        const snap = getLaporanSnapshot();
+        const reports = readAdminReports();
+        const transactions = readAdminTransactions();
+        
+        return {
+          snapshot: snap,
+          reports: reports || [],
+          transactions: transactions || []
+        };
+      } catch (error) {
+        console.warn('[LaporanDash] Failed to fetch data:', error);
+        return {
+          snapshot: { income: 0, expense: 0, balance: 0, any: false },
+          reports: [],
+          transactions: []
+        };
+      }
+    }
+
+    // Update function untuk summary data
+    function updateSummaryData(newData) {
+      if (newData.snapshot.any) {
+        paintTotalKasAnimated(newData.snapshot.balance);
+      }
+    }
+
+    // Update function untuk reports list
+    function updateReportsList(newData) {
+      renderReportsList();
+    }
+
+    // Update function untuk transactions list
+    function updateTransactionsList(newData) {
+      renderTransactionsList();
+    }
+
+    // Register data updates untuk auto-refresh
+    const dataUpdates = [
+      { id: 'summary-data', updateFn: updateSummaryData },
+      { id: 'reports-list', updateFn: updateReportsList },
+      { id: 'transactions-list', updateFn: updateTransactionsList }
+    ];
+
+    dataUpdates.forEach(({ id, updateFn }) => {
+      window.chartUpdateManager.registerChart(
+        id,
+        null, // No chart instance needed for data updates
+        fetchDataUpdates,
+        updateFn
+      );
+      console.log(`[LaporanDash] Registered ${id} for real-time updates`);
+    });
+
+    // Set update frequency ke 30 detik
+    window.chartUpdateManager.setUpdateFrequency(30000);
+
+    // Listen untuk perubahan data dari halaman lain
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'laporan_totals_snapshot' || e.key === 'financial_reports' || e.key === 'financial_transactions_v2') {
+        console.log('[LaporanDash] Detected data change, updating...');
+        window.chartUpdateManager.updateAllCharts();
+      }
+    });
+
+    // Listen untuk custom events
+    window.addEventListener('chart-data-updated', () => {
+      console.log('[LaporanDash] Received chart-data-updated event');
+      window.chartUpdateManager.updateAllCharts();
+    });
+
+    console.log('[LaporanDash] Real-time data updates initialized');
+  }
+
+  // Initialize real-time updates setelah DOM ready
+  setTimeout(() => {
+    initRealTimeDataUpdates();
+  }, 2000);
 
   // Add CSS for error notification
   const style = document.createElement('style');
