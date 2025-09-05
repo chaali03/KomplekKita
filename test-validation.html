@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Validasi KomplekKita</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .test-input.valid {
+            border-color: #10b981;
+        }
+        .test-input.invalid {
+            border-color: #ef4444;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .test-result.success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        .test-result.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        .test-button {
+            background: #4a6cf7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .test-button:hover {
+            background: #3a5ce5;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Validasi KomplekKita</h1>
+    
+    <div class="test-container">
+        <h2>Test Profanity Filter</h2>
+        <p>Masukkan kata-kata yang akan diuji untuk profanity:</p>
+        
+        <input type="text" id="profanityTest" class="test-input" placeholder="Masukkan nama atau kata...">
+        <div id="profanityResult" class="test-result" style="display: none;"></div>
+        
+        <h3>Contoh kata yang akan diblokir:</h3>
+        <ul>
+            <li>Nama hewan: anjing, babi, kucing, tikus, ular, buaya</li>
+            <li>Kata kasar: bangsat, bajingan, bego, goblok, tolol</li>
+            <li>Kata bahasa Inggris: fuck, shit, bitch, stupid, idiot</li>
+        </ul>
+    </div>
+
+    <div class="test-container">
+        <h2>Test Nama Komplek Generic</h2>
+        <p>Test untuk nama komplek yang terlalu umum:</p>
+        
+        <input type="text" id="genericTest" class="test-input" placeholder="Masukkan nama komplek...">
+        <div id="genericResult" class="test-result" style="display: none;"></div>
+        
+        <h3>Contoh nama yang terlalu umum:</h3>
+        <ul>
+            <li>Griya Harmoni</li>
+            <li>Villa Indah</li>
+            <li>Residence Permai</li>
+            <li>Garden Estate</li>
+        </ul>
+    </div>
+
+    <div class="test-container">
+        <h2>Test Validasi Lengkap</h2>
+        <button class="test-button" onclick="runFullTest()">Jalankan Test Lengkap</button>
+        <div id="fullTestResult" class="test-result" style="display: none;"></div>
+    </div>
+
+    <script type="module">
+        // Import validation functions
+        import { 
+            containsProfanity, 
+            isGenericComplexName, 
+            validateUserData, 
+            validateComplexData 
+        } from '/src/utils/validation.ts';
+
+        // Make functions available globally for testing
+        window.containsProfanity = containsProfanity;
+        window.isGenericComplexName = isGenericComplexName;
+        window.validateUserData = validateUserData;
+        window.validateComplexData = validateComplexData;
+
+        // Setup real-time testing
+        const profanityInput = document.getElementById('profanityTest');
+        const profanityResult = document.getElementById('profanityResult');
+        
+        const genericInput = document.getElementById('genericTest');
+        const genericResult = document.getElementById('genericResult');
+
+        profanityInput.addEventListener('input', () => {
+            const value = profanityInput.value.trim();
+            if (value) {
+                const hasProfanity = containsProfanity(value);
+                showResult(profanityResult, hasProfanity, 
+                    hasProfanity ? '❌ Mengandung kata yang tidak pantas' : '✅ Kata aman');
+                profanityInput.className = hasProfanity ? 'test-input invalid' : 'test-input valid';
+            } else {
+                hideResult(profanityResult);
+                profanityInput.className = 'test-input';
+            }
+        });
+
+        genericInput.addEventListener('input', () => {
+            const value = genericInput.value.trim();
+            if (value) {
+                const isGeneric = isGenericComplexName(value);
+                showResult(genericResult, isGeneric, 
+                    isGeneric ? '⚠️ Nama terlalu umum' : '✅ Nama spesifik');
+                genericInput.className = isGeneric ? 'test-input invalid' : 'test-input valid';
+            } else {
+                hideResult(genericResult);
+                genericInput.className = 'test-input';
+            }
+        });
+
+        function showResult(element, isError, message) {
+            element.style.display = 'block';
+            element.className = `test-result ${isError ? 'error' : 'success'}`;
+            element.textContent = message;
+        }
+
+        function hideResult(element) {
+            element.style.display = 'none';
+        }
+
+        // Full test function
+        window.runFullTest = async function() {
+            const resultDiv = document.getElementById('fullTestResult');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result';
+            resultDiv.textContent = '🔄 Menjalankan test...';
+
+            const testCases = [
+                // User data tests
+                {
+                    type: 'user',
+                    data: { firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
+                    expected: true,
+                    description: 'Data user normal'
+                },
+                {
+                    type: 'user',
+                    data: { firstName: 'Anjing', lastName: 'Babi', email: 'bangsat@example.com' },
+                    expected: false,
+                    description: 'Data user dengan kata kasar'
+                },
+                // Complex data tests
+                {
+                    type: 'complex',
+                    data: { nama: 'Griya Harmoni Indah', deskripsi: 'Komplek perumahan yang nyaman' },
+                    expected: false,
+                    description: 'Nama komplek terlalu umum'
+                },
+                {
+                    type: 'complex',
+                    data: { nama: 'Komplek Anjing Babi', deskripsi: 'Tempat tinggal yang bangsat' },
+                    expected: false,
+                    description: 'Data komplek dengan kata kasar'
+                },
+                {
+                    type: 'complex',
+                    data: { nama: 'Perumahan Taman Sari Indah', deskripsi: 'Komplek perumahan yang asri dan nyaman' },
+                    expected: true,
+                    description: 'Data komplek normal'
+                }
+            ];
+
+            let passedTests = 0;
+            let totalTests = testCases.length;
+
+            for (const testCase of testCases) {
+                try {
+                    let result;
+                    if (testCase.type === 'user') {
+                        result = validateUserData(testCase.data);
+                    } else {
+                        result = await validateComplexData(testCase.data);
+                    }
+
+                    const testPassed = result.isValid === testCase.expected;
+                    if (testPassed) {
+                        passedTests++;
+                    }
+                } catch (error) {
+                    console.error('Test error:', error);
+                }
+            }
+
+            const successRate = (passedTests / totalTests) * 100;
+            resultDiv.className = `test-result ${successRate === 100 ? 'success' : 'error'}`;
+            resultDiv.textContent = `📊 Test selesai: ${passedTests}/${totalTests} berhasil (${successRate.toFixed(1)}%)`;
+        };
+    </script>
+</body>
+</html>

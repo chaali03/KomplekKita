@@ -574,12 +574,46 @@ import Footer from '../components/sections/Footer.astro';
 
 <script>
 // @ts-nocheck
-// Import safe fetch wrapper
-const { safeFetch } = await import('/src/utils/fetch-wrapper.ts');
+// Initialize AOS using global loaded from CDN in Layout.astro
+if (typeof window !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', () => {
+    try {
+      if (window.AOS && typeof window.AOS.init === 'function') {
+        window.AOS.init({
+          duration: 800,
+          easing: 'ease-in-out',
+          once: true,
+          mirror: false
+        });
+      }
+    } catch (e) {
+      // no-op if AOS not available
+    }
+  });
+}
 
 // Enhanced API fetch with automatic fallback
 async function fetchWithFallback(path, options = {}) {
-  return safeFetch(path, options);
+  try {
+    const response = await fetch(path, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      credentials: 'same-origin'
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Network response was not ok');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Fetch error:', error);
+    throw error;
+  }
 }
 document.addEventListener('DOMContentLoaded', function () {
   // Enhanced selectors and utilities
@@ -2080,36 +2114,52 @@ document.addEventListener('DOMContentLoaded', function () {
     `;
     submitBtn.disabled = true;
 
-    try {
-      // Import auth utility
-      const { completeComplexRegistration, getAuthStatus } = await import('/src/utils/auth.js');
-      
-      // Check if user is authenticated
-      const authStatus = getAuthStatus();
-      if (!authStatus.isAuthenticated) {
-        throw new Error('Anda perlu login terlebih dahulu.');
-      }
+          try {
+        // Read token from localStorage (saved at login)
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+          throw new Error('Anda perlu login terlebih dahulu.');
+        }
 
-      // Prepare complex registration data
-      const complexData = {
-        nama: byId('namaKomplek')?.value?.trim() || '',
-        deskripsi: byId('deskripsiKomplek')?.value?.trim() || '',
-        profil: byId('profilKomplek')?.value?.trim() || '',
-        lat: byId('latKomplek')?.value ? parseFloat(byId('latKomplek').value) : null,
-        lng: byId('lngKomplek')?.value ? parseFloat(byId('lngKomplek').value) : null,
-        ketua: byId('namaKetuaRT')?.value?.trim() || null,
-        ketua_phone: normalizePhone(byId('ketuaPhone')?.value || '' ) || null,
-        bendahara: byId('namaBendahara')?.value?.trim() || null,
-        bendahara_phone: normalizePhone(byId('bendaharaPhone')?.value || '' ) || null,
-        banner_path: null,
-        logo_path: null,
-        completed_at: new Date().toISOString()
-      };
+        // Validate complex data for profanity and duplicates
+        const { validateComplexData } = await import('/src/utils/validation.ts');
+        const complexData = {
+          nama: byId('namaKomplek')?.value?.trim() || '',
+          deskripsi: byId('deskripsiKomplek')?.value?.trim() || '',
+          profil: byId('profilKomplek')?.value?.trim() || '',
+          lat: byId('latKomplek')?.value ? parseFloat(byId('latKomplek').value) : null,
+          lng: byId('lngKomplek')?.value ? parseFloat(byId('lngKomplek').value) : null,
+          ketua: byId('namaKetuaRT')?.value?.trim() || null,
+          ketua_phone: normalizePhone(byId('ketuaPhone')?.value || '' ) || null,
+          bendahara: byId('namaBendahara')?.value?.trim() || null,
+          bendahara_phone: normalizePhone(byId('bendaharaPhone')?.value || '' ) || null,
+          banner_path: null,
+          logo_path: null,
+          completed_at: new Date().toISOString()
+        };
 
-      // Complete complex registration
-      const result = completeComplexRegistration(complexData);
-      
-      if (result.success) {
+        // Validate complex data
+        const validation = await validateComplexData(complexData);
+        if (!validation.isValid) {
+          throw new Error(validation.errors[0]);
+        }
+
+        // Send to PHP API
+        const resp = await fetch('http://127.0.0.1:8000/api/register-komplek', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(complexData)
+        });
+
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+          throw new Error(data.message || 'Gagal menyelesaikan registrasi komplek.');
+        }
+
         // Success: clear draft and redirect
         localStorage.removeItem('komplek_registration_draft');
         submitBtn.innerHTML = `
@@ -2119,22 +2169,35 @@ document.addEventListener('DOMContentLoaded', function () {
         showToast('Registrasi komplek berhasil! Mengarahkan ke dashboard...', 'success');
         setTimeout(() => { window.location.href = '/dashboard'; }, 1200);
         return;
-      } else {
-        throw new Error(result.message || 'Gagal menyelesaikan registrasi komplek.');
+      } catch (error) {
+        // Error state
+        submitBtn.classList.remove('loading');
+        submitBtn.innerHTML = originalContent;
+        submitBtn.disabled = false;
+        
+        showToast(error?.message || 'Gagal menyimpan data. Silakan coba lagi.', 'error');
       }
-    } catch (error) {
-      // Error state
-      submitBtn.classList.remove('loading');
-      submitBtn.innerHTML = originalContent;
-      submitBtn.disabled = false;
-      
-      showToast(error?.message || 'Gagal menyimpan data. Silakan coba lagi.', 'error');
-    }
   }
 
   // Initialize everything
   setupPhoneInputs();
-  function initialize() {
+  
+  async function initialize() {
+    // Setup real-time validation for complex data
+    const { setupRealTimeValidation } = await import('/src/utils/validation.ts');
+    
+    const namaKomplekInput = document.getElementById('namaKomplek');
+    const deskripsiKomplekInput = document.getElementById('deskripsiKomplek');
+    const profilKomplekInput = document.getElementById('profilKomplek');
+    const namaKetuaRTInput = document.getElementById('namaKetuaRT');
+    const namaBendaharaInput = document.getElementById('namaBendahara');
+    
+    if (namaKomplekInput) setupRealTimeValidation(namaKomplekInput as HTMLInputElement, 'complex');
+    if (deskripsiKomplekInput) setupRealTimeValidation(deskripsiKomplekInput as HTMLInputElement, 'complex');
+    if (profilKomplekInput) setupRealTimeValidation(profilKomplekInput as HTMLInputElement, 'complex');
+    if (namaKetuaRTInput) setupRealTimeValidation(namaKetuaRTInput as HTMLInputElement, 'complex');
+    if (namaBendaharaInput) setupRealTimeValidation(namaBendaharaInput as HTMLInputElement, 'complex');
+    
     createProgressBar();
     attachNavigation();
     setupExcelImport();
@@ -2724,6 +2787,48 @@ body.loaded {
 .section-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
+}
+
+/* Validation feedback styles */
+.input-container.valid .form-input {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.input-container.invalid .form-input {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.validation-feedback {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  animation: slideDown 0.3s ease;
+}
+
+.validation-feedback.error {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.validation-feedback.success {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .section-card.slide-in {

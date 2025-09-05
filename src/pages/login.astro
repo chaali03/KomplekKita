@@ -1597,44 +1597,63 @@ import Footer from '../components/sections/Footer.astro';
                 // Add loading state
                 loginButton.classList.add('loading');
                 
-                // Use dynamic import for auth utility
-                import('/src/utils/auth.js').then(({ loginUser }) => {
-                    const formData = new FormData(e.target);
+                // Call PHP API directly
+                (async () => {
+                    const formData = new FormData(e.target as HTMLFormElement);
                     const email = formData.get('email');
                     const password = formData.get('password');
-                    
+
                     if (!email || !password) {
                         showToast('Harap isi semua field', 'error');
                         loginButton.classList.remove('loading');
                         return;
                     }
-                    
+
                     try {
-                        const result = loginUser(email, password);
-                        
-                        if (result.success) {
+                        const resp = await fetch('http://127.0.0.1:8000/api/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ email, password })
+                        });
+
+                        const data = await resp.json();
+                        if (!resp.ok) {
+                            showToast(data.message || 'Login gagal', 'error');
+                            loginButton.classList.remove('loading');
+                            return;
+                        }
+
+                        // Expect data: { token, user }
+                        if (data?.token) {
+                            localStorage.setItem('auth_token', data.token);
+                            localStorage.setItem('auth_user', JSON.stringify(data.user || {}));
+
                             showToast('Login berhasil!', 'success');
-                            
-                            // Check if user has completed complex registration
-                            if (result.user.hasComplexRegistration) {
-                                setTimeout(() => { window.location.href = '/dashboard'; }, 1000);
-                            } else {
-                                setTimeout(() => { window.location.href = '/register-komplek'; }, 1000);
-                            }
+
+                            // Check if user has completed komplek registration
+                            const komplekRegistered = data.user && data.user.komplek_registered;
+                            setTimeout(() => {
+                                if (komplekRegistered) {
+                                    window.location.href = '/dashboard';
+                                } else {
+                                    // User needs to complete komplek registration
+                                    showToast('Silakan lengkapi data komplek Anda terlebih dahulu.', 'info');
+                                    window.location.href = '/register-komplek';
+                                }
+                            }, 800);
                         } else {
-                            showToast(result.message || 'Login gagal', 'error');
+                            showToast('Login gagal: token tidak ditemukan', 'error');
                             loginButton.classList.remove('loading');
                         }
                     } catch (error) {
-                        showToast('Terjadi kesalahan saat login', 'error');
                         console.error('Login error:', error);
+                        showToast('Terjadi kesalahan saat login', 'error');
                         loginButton.classList.remove('loading');
                     }
-                }).catch(error => {
-                    showToast('Gagal memuat sistem autentikasi', 'error');
-                    console.error('Auth import error:', error);
-                    loginButton.classList.remove('loading');
-                });
+                })();
             });
         }
 
