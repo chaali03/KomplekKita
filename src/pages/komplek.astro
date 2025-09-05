@@ -1569,7 +1569,8 @@ import Footer from '../components/sections/Footer.astro';
     async function fetchAndRenderKomplek() {
       if (!komplekGrid) return;
       try {
-        const { safeFetch } = await import('~/utils/fetch-wrapper');
+        const { safeFetch } = await import('/src/utils/fetch-wrapper.js');
+
         const res = await safeFetch('/api/komplek');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const items = await res.json();

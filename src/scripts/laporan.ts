@@ -3,7 +3,10 @@
 
 // Global Chart type (loaded via script tag at runtime)
 declare global {
-  interface Window { Chart: any }
+  interface Window { 
+    Chart: any;
+    chartUpdateManager: any;
+  }
 }
 
 // Shared finance utilities for consistent KPI calculations across pages
@@ -531,6 +534,126 @@ function createCharts(transactions: Transaction[]) {
   }
 }
 
+/**
+ * Initialize Real-time Chart Updates untuk Laporan
+ */
+function initRealTimeCharts() {
+  // Pastikan ChartUpdateManager tersedia
+  if (!window.chartUpdateManager) {
+    console.warn('[Laporan] ChartUpdateManager not available, skipping real-time updates');
+    return;
+  }
+
+  // Data fetcher untuk chart updates
+  async function fetchChartData() {
+    try {
+      // Baca data dari localStorage
+      const localData = localStorage.getItem('financial_transactions_v2');
+      if (localData) {
+        const transactions = JSON.parse(localData);
+        if (Array.isArray(transactions) && transactions.length > 0) {
+          const series = generateDailySeries(transactions as Transaction[]);
+          const totals = calculateTotals(transactions as Transaction[]);
+          
+          return {
+            transactions: transactions as Transaction[],
+            series,
+            totals
+          };
+        }
+      }
+    } catch (error) {
+      console.warn('[Laporan] Failed to fetch chart data:', error);
+    }
+
+    // Return default data jika gagal
+    return {
+      transactions: [],
+      series: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        dates: ['2025-01-01', '2025-02-01', '2025-03-01', '2025-04-01', '2025-05-01', '2025-06-01'],
+        dailyIncome: [900000, 1200000, 1150000, 1400000, 1500000, 1600000],
+        dailyExpense: [500000, 700000, 650000, 800000, 900000, 850000],
+        cumulativeBalance: [400000, 900000, 1400000, 2000000, 2600000, 3350000]
+      },
+      totals: {
+        income: 7750000,
+        expense: 4400000,
+        balance: 3350000,
+        count: 0
+      }
+    };
+  }
+
+  // Update function untuk Balance Chart
+  function updateBalanceChart(newData: any) {
+    const chart = appState.charts.balance;
+    if (!chart) return;
+
+    chart.data.labels = newData.series.labels;
+    chart.data.datasets[0].data = newData.series.cumulativeBalance;
+    chart.update('active');
+  }
+
+  // Update function untuk Composition Chart
+  function updateCompositionChart(newData: any) {
+    const chart = appState.charts.composition;
+    if (!chart) return;
+
+    chart.data.datasets[0].data = [newData.totals.income, newData.totals.expense];
+    chart.update('active');
+  }
+
+  // Update function untuk Trends Chart
+  function updateTrendsChart(newData: any) {
+    const chart = appState.charts.trends;
+    if (!chart) return;
+
+    chart.data.labels = newData.series.labels;
+    chart.data.datasets[0].data = newData.series.dailyIncome;
+    chart.data.datasets[1].data = newData.series.dailyExpense;
+    chart.update('active');
+  }
+
+  // Register semua chart untuk auto-update
+  const charts = [
+    { id: 'lap-balance', instance: appState.charts.balance, updateFn: updateBalanceChart },
+    { id: 'lap-mix', instance: appState.charts.composition, updateFn: updateCompositionChart },
+    { id: 'lap-inout', instance: appState.charts.trends, updateFn: updateTrendsChart }
+  ];
+
+  charts.forEach(({ id, instance, updateFn }) => {
+    if (instance) {
+      window.chartUpdateManager.registerChart(
+        id,
+        instance,
+        fetchChartData,
+        updateFn
+      );
+      console.log(`[Laporan] Registered ${id} for real-time updates`);
+    }
+  });
+
+  // Set update frequency ke 30 detik
+  window.chartUpdateManager.setUpdateFrequency(30000);
+
+  // Listen untuk perubahan data dari halaman lain
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'financial_transactions_v2') {
+      console.log('[Laporan] Detected data change, updating charts...');
+      window.chartUpdateManager.updateAllCharts();
+    }
+  });
+
+  // Listen untuk custom events
+  window.addEventListener('chart-data-updated', () => {
+    console.log('[Laporan] Received chart-data-updated event');
+    window.chartUpdateManager.updateAllCharts();
+  });
+
+  console.log('[Laporan] Real-time chart updates initialized');
+}
+
 // Anomaly detection
 function detectAnomalies(transactions: Transaction[]) {
   const container = document.getElementById('anom-list');
@@ -880,14 +1003,122 @@ function getCurrentMonth() {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
-// Validation: only allow current month for creating iuran
-function isCurrentMonth(ym: string){
-  return String(ym).slice(0,7) === getCurrentMonth();
+// Real-time month tracking and navigation
+let currentRealTimeMonth = getCurrentMonth();
+
+// Update real-time month every minute
+function updateRealTimeMonth() {
+  const newMonth = getCurrentMonth();
+  if (newMonth !== currentRealTimeMonth) {
+    currentRealTimeMonth = newMonth;
+    console.log(`[Real-time] Month updated to: ${currentRealTimeMonth}`);
+    
+    // Update month input if it's set to the old month
+    const monthInput = document.getElementById('iuran-month') as HTMLInputElement | null;
+    if (monthInput && monthInput.value === getCurrentMonth()) {
+      monthInput.value = currentRealTimeMonth;
+    }
+    
+    // Refresh dues section to reflect new current month
+    renderDuesSection();
+    
+    // Show notification about month change
+    showToast(`Bulan berubah ke ${formatMonthYear(currentRealTimeMonth)}`, 'info');
+  }
 }
 
-// Check if a YYYY-MM is current or in the future
-function isCurrentOrFutureMonth(ym: string){
-  const [cy, cm] = getCurrentMonth().split('-').map(Number);
+// Format month-year for display
+function formatMonthYear(monthStr: string): string {
+  const [year, month] = monthStr.split('-');
+  const date = new Date(parseInt(year), parseInt(month) - 1);
+  return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+}
+
+// Navigate to previous month
+function navigateToPreviousMonth() {
+  const monthInput = document.getElementById('iuran-month') as HTMLInputElement | null;
+  if (!monthInput) return;
+  
+  const currentValue = monthInput.value || getCurrentMonth();
+  const [year, month] = currentValue.split('-').map(Number);
+  
+  let newMonth = month - 1;
+  let newYear = year;
+  
+  if (newMonth < 1) {
+    newMonth = 12;
+    newYear = year - 1;
+  }
+  
+  const newValue = `${newYear}-${String(newMonth).padStart(2, '0')}`;
+  monthInput.value = newValue;
+  
+  // Update navigation buttons state
+  updateMonthNavigationButtons();
+  
+  // Refresh dues section
+  renderDuesSection();
+}
+
+// Navigate to next month
+function navigateToNextMonth() {
+  const monthInput = document.getElementById('iuran-month') as HTMLInputElement | null;
+  if (!monthInput) return;
+  
+  const currentValue = monthInput.value || getCurrentMonth();
+  const [year, month] = currentValue.split('-').map(Number);
+  
+  let newMonth = month + 1;
+  let newYear = year;
+  
+  if (newMonth > 12) {
+    newMonth = 1;
+    newYear = year + 1;
+  }
+  
+  const newValue = `${newYear}-${String(newMonth).padStart(2, '0')}`;
+  monthInput.value = newValue;
+  
+  // Update navigation buttons state
+  updateMonthNavigationButtons();
+  
+  // Refresh dues section
+  renderDuesSection();
+}
+
+// Update navigation buttons state based on current month
+function updateMonthNavigationButtons() {
+  const monthInput = document.getElementById('iuran-month') as HTMLInputElement | null;
+  const prevBtn = document.querySelector('.prev-month') as HTMLButtonElement | null;
+  const nextBtn = document.querySelector('.next-month') as HTMLButtonElement | null;
+  
+  if (!monthInput || !prevBtn || !nextBtn) return;
+  
+  const currentValue = monthInput.value || getCurrentMonth();
+  const currentMonth = getCurrentMonth();
+  
+  // Disable previous button if we're at the earliest allowed month (1 year back)
+  const [year, month] = currentValue.split('-').map(Number);
+  const [currentYear, currentMonthNum] = currentMonth.split('-').map(Number);
+  
+  const oneYearAgo = new Date(currentYear, currentMonthNum - 1);
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  const earliestAllowed = `${oneYearAgo.getFullYear()}-${String(oneYearAgo.getMonth() + 1).padStart(2, '0')}`;
+  
+  prevBtn.disabled = currentValue <= earliestAllowed;
+  
+  // Disable next button if we're at current month (can't go to future)
+  nextBtn.disabled = currentValue >= currentMonth;
+}
+
+// Enhanced current month validation with real-time check
+function isCurrentMonthRealTime(ym: string): boolean {
+  return String(ym).slice(0,7) === currentRealTimeMonth;
+}
+
+// Check if month is current or in the future (real-time)
+function isCurrentOrFutureMonthRealTime(ym: string): boolean {
+  const [cy, cm] = currentRealTimeMonth.split('-').map(Number);
   const [y, m] = String(ym).slice(0,7).split('-').map(Number);
   return (y > cy) || (y === cy && m >= cm);
 }
@@ -1078,7 +1309,7 @@ async function renderDuesSection() {
   if (pendingContainer) pendingContainer.innerHTML = '<div class="loading-state">Memuat...</div>';
 
   // Rule: If admin hasn't saved iuran for current/future month, hide resident data
-  if (isCurrentOrFutureMonth(periode) && !getDuesAmountFor(periode)) {
+  if (isCurrentOrFutureMonthRealTime(periode) && !getDuesAmountFor(periode)) {
     const msg = `Admin belum menyimpan nominal iuran untuk bulan <strong>${formatMonthID(periode)}</strong>. Data warga disembunyikan hingga iuran disimpan.`;
     if (paidContainer) paidContainer.innerHTML = `<div class="empty-state">${msg}</div>`;
     if (pendingContainer) pendingContainer.innerHTML = `<div class="empty-state">${msg}</div>`;
@@ -1206,8 +1437,8 @@ async function renderDuesSection() {
       const amountVal = Number((document.getElementById('iuran-amount') as HTMLInputElement | null)?.value || '0');
       const monthVal = (document.getElementById('iuran-month') as HTMLInputElement | null)?.value || getCurrentMonth();
       const targetMonth = String(monthVal).slice(0,7);
-      if (!isCurrentMonth(targetMonth)){
-        showCenterModal('Iuran hanya untuk bulan ini', `Maaf, pembuatan iuran dibatasi <strong>hanya untuk bulan berjalan</strong>.<br/>Bulan yang dipilih: <strong>${targetMonth}</strong><br/>Silakan set kembali ke <strong>${getCurrentMonth()}</strong>.`, 'warning');
+      if (!isCurrentMonthRealTime(targetMonth)){
+        showCenterModal('Iuran hanya untuk bulan ini', `Maaf, pembuatan iuran dibatasi <strong>hanya untuk bulan berjalan</strong>.<br/>Bulan yang dipilih: <strong>${targetMonth}</strong><br/>Silakan set kembali ke <strong>${currentRealTimeMonth}</strong>.`, 'warning');
         return;
       }
       try{
@@ -1223,8 +1454,8 @@ async function renderDuesSection() {
         if (String(e?.message || '').includes('HTTP 401')) {
           // Demo fallback: store locally
           // Validate again in demo mode
-          if (!isCurrentMonth(targetMonth)){
-            showCenterModal('Iuran hanya untuk bulan ini', `Maaf, pembuatan iuran dibatasi <strong>hanya untuk bulan berjalan</strong>.<br/>Bulan yang dipilih: <strong>${targetMonth}</strong><br/>Silakan set kembali ke <strong>${getCurrentMonth()}</strong>.`, 'warning');
+          if (!isCurrentMonthRealTime(targetMonth)){
+            showCenterModal('Iuran hanya untuk bulan ini', `Maaf, pembuatan iuran dibatasi <strong>hanya untuk bulan berjalan</strong>.<br/>Bulan yang dipilih: <strong>${targetMonth}</strong><br/>Silakan set kembali ke <strong>${currentRealTimeMonth}</strong>.`, 'warning');
             return;
           }
           const existing = getDuesAmountFor(targetMonth);
@@ -1531,7 +1762,7 @@ function renderDuesSectionFromLocal(){
   // Rule (demo/local): hide residents for current/future month when no iuran saved
   const paidC = document.getElementById('iuran-paid');
   const pendC = document.getElementById('iuran-pending');
-  if (isCurrentOrFutureMonth(periode) && !getDuesAmountFor(periode)) {
+  if (isCurrentOrFutureMonthRealTime(periode) && !getDuesAmountFor(periode)) {
     const msg = `Admin belum menyimpan nominal iuran untuk bulan <strong>${formatMonthID(periode)}</strong>. Data warga disembunyikan hingga iuran disimpan.`;
     if (paidC) paidC.innerHTML = `<div class="empty-state">${msg}</div>`;
     if (pendC) pendC.innerHTML = `<div class="empty-state">${msg}</div>`;
@@ -1969,8 +2200,8 @@ function setupEventListeners() {
     const amount = Number(amountInput?.value || 0);
     const month = monthInput?.value || '';
     const ym = month.slice(0,7);
-    if (!isCurrentMonth(ym)){
-      showCenterModal('Iuran hanya untuk bulan ini', `Maaf, pengaturan iuran dibatasi <strong>hanya untuk bulan berjalan</strong>.<br/>Bulan yang dipilih: <strong>${ym}</strong><br/>Silakan set kembali ke <strong>${getCurrentMonth()}</strong>.`, 'warning');
+    if (!isCurrentMonthRealTime(ym)){
+      showCenterModal('Iuran hanya untuk bulan ini', `Maaf, pengaturan iuran dibatasi <strong>hanya untuk bulan berjalan</strong>.<br/>Bulan yang dipilih: <strong>${ym}</strong><br/>Silakan set kembali ke <strong>${currentRealTimeMonth}</strong>.`, 'warning');
       return;
     }
     const ok = saveDuesConfig({ amount, month: ym });
@@ -2333,8 +2564,72 @@ function configureChartDefaults() {
   }
 }
 
+// Initialize month navigation event listeners
+function initializeMonthNavigation() {
+  const prevBtn = document.querySelector('.prev-month') as HTMLButtonElement | null;
+  const nextBtn = document.querySelector('.next-month') as HTMLButtonElement | null;
+  const monthInput = document.getElementById('iuran-month') as HTMLInputElement | null;
+  
+  if (prevBtn) {
+    prevBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateToPreviousMonth();
+    });
+  }
+  
+  if (nextBtn) {
+    nextBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateToNextMonth();
+    });
+  }
+  
+  if (monthInput) {
+    // Set initial value to current month
+    monthInput.value = currentRealTimeMonth;
+    
+    // Update navigation buttons when month input changes
+    monthInput.addEventListener('change', () => {
+      updateMonthNavigationButtons();
+      renderDuesSection();
+    });
+    
+    // Update navigation buttons on initial load
+    updateMonthNavigationButtons();
+  }
+}
+
+// Initialize real-time month tracking
+function initializeRealTimeTracking() {
+  // Update real-time month every minute
+  setInterval(updateRealTimeMonth, 60000); // 60 seconds
+  
+  // Also check on page visibility change (when user comes back to tab)
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updateRealTimeMonth();
+    }
+  });
+  
+  console.log(`[Real-time] Month tracking initialized. Current month: ${currentRealTimeMonth}`);
+}
+
 // Script loading and initialization
-script.onload = () => { configureChartDefaults(); initializeApp() };
+script.onload = () => { 
+  configureChartDefaults(); 
+  initializeApp();
+  
+  // Initialize month navigation
+  setTimeout(() => {
+    initializeMonthNavigation();
+    initializeRealTimeTracking();
+  }, 500);
+  
+  // Initialize real-time chart updates setelah chart dibuat
+  setTimeout(() => {
+    initRealTimeCharts();
+  }, 2000);
+};
 script.onerror = () => { console.error('Failed to load Chart.js'); removeSkeletons(); showEmptyCharts(); initializeApp() };
 setTimeout(() => { if (!(window as any).Chart) { console.warn('Chart.js loading timeout'); removeSkeletons(); showEmptyCharts() } }, 3000);
 setTimeout(initializeApp, 100);

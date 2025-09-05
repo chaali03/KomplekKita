@@ -2241,6 +2241,18 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       s.src='https://cdn.jsdelivr.net/npm/chart.js';
       s.onload=()=>{ calibrate(); then(); };
       document.head.appendChild(s);
+      
+      // Load Real-time Chart Update System
+      const realtimeScript = document.createElement('script');
+      realtimeScript.type = 'module';
+      realtimeScript.src = '/src/utils/chart-realtime.js';
+      document.head.appendChild(realtimeScript);
+      
+      // Load Shared State Management
+      const sharedStateScript = document.createElement('script');
+      sharedStateScript.type = 'module';
+      sharedStateScript.src = '/src/utils/shared-state.js';
+      document.head.appendChild(sharedStateScript);
     }
 
     function renderCharts(){
@@ -2291,6 +2303,121 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       state.chartMap.set('chart-status', state.charts.status);
       // @ts-ignore
       window.dashboardCharts.set('chart-status', state.charts.status);
+    }
+
+    /**
+     * Initialize Real-time Chart Updates untuk Warga
+     */
+    function initRealTimeCharts() {
+      // Pastikan ChartUpdateManager tersedia
+      if (!window.chartUpdateManager) {
+        console.warn('[Warga] ChartUpdateManager not available, skipping real-time updates');
+        return;
+      }
+
+      // Data fetcher untuk chart updates
+      async function fetchChartData() {
+        try {
+          // Baca data dari localStorage
+          const localData = localStorage.getItem('warga_data');
+          if (localData) {
+            const warga = JSON.parse(localData);
+            if (Array.isArray(warga) && warga.length > 0) {
+              const rows = warga;
+              
+              // Distribusi RT/RW
+              const byRTRW = {};
+              rows.forEach(r=>{ const k = `${r.rt}/${r.rw}`; byRTRW[k]=(byRTRW[k]||0)+1; });
+              const labels1 = Object.keys(byRTRW).sort();
+              const data1 = labels1.map(k=>byRTRW[k]);
+
+              // Status & Verifikasi
+              const byStatus = { aktif:0, pindah:0, nonaktif:0 };
+              const byVer = { ver:0, nver:0 };
+              rows.forEach(r=>{ byStatus[r.status]=(byStatus[r.status]||0)+1; r.verified?byVer.ver++:byVer.nver++; });
+
+              return {
+                rtRwData: { labels: labels1, data: data1 },
+                statusData: { 
+                  labels: ['Aktif','Pindah','Nonaktif','Verifikasi','Belum'],
+                  data: [byStatus.aktif,byStatus.pindah,byStatus.nonaktif,byVer.ver,byVer.nver]
+                }
+              };
+            }
+          }
+        } catch (error) {
+          console.warn('[Warga] Failed to fetch chart data:', error);
+        }
+
+        // Return default data jika gagal
+        return {
+          rtRwData: { 
+            labels: ['RT 01', 'RT 02', 'RT 03', 'RT 04'], 
+            data: [15, 12, 18, 10] 
+          },
+          statusData: { 
+            labels: ['Aktif','Pindah','Nonaktif','Verifikasi','Belum'],
+            data: [45, 5, 2, 40, 12]
+          }
+        };
+      }
+
+      // Update function untuk RT/RW Chart
+      function updateRTRWChart(newData) {
+        const chart = state.charts.rt;
+        if (!chart) return;
+
+        chart.data.labels = newData.rtRwData.labels;
+        chart.data.datasets[0].data = newData.rtRwData.data;
+        chart.update('active');
+      }
+
+      // Update function untuk Status Chart
+      function updateStatusChart(newData) {
+        const chart = state.charts.status;
+        if (!chart) return;
+
+        chart.data.labels = newData.statusData.labels;
+        chart.data.datasets[0].data = newData.statusData.data;
+        chart.update('active');
+      }
+
+      // Register semua chart untuk auto-update
+      const charts = [
+        { id: 'chart-rt', instance: state.charts.rt, updateFn: updateRTRWChart },
+        { id: 'chart-status', instance: state.charts.status, updateFn: updateStatusChart }
+      ];
+
+      charts.forEach(({ id, instance, updateFn }) => {
+        if (instance) {
+          window.chartUpdateManager.registerChart(
+            id,
+            instance,
+            fetchChartData,
+            updateFn
+          );
+          console.log(`[Warga] Registered ${id} for real-time updates`);
+        }
+      });
+
+      // Set update frequency ke 30 detik
+      window.chartUpdateManager.setUpdateFrequency(30000);
+
+      // Listen untuk perubahan data dari halaman lain
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'warga_data') {
+          console.log('[Warga] Detected data change, updating charts...');
+          window.chartUpdateManager.updateAllCharts();
+        }
+      });
+
+      // Listen untuk custom events
+      window.addEventListener('chart-data-updated', () => {
+        console.log('[Warga] Received chart-data-updated event');
+        window.chartUpdateManager.updateAllCharts();
+      });
+
+      console.log('[Warga] Real-time chart updates initialized');
     }
 
     // Chart actions: download + fullscreen
@@ -3093,6 +3220,10 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       ensureChartJs(()=> {
         renderCharts();
         bindChartActions();
+        // Initialize real-time chart updates setelah chart dibuat
+        setTimeout(() => {
+          initRealTimeCharts();
+        }, 1000);
       });
       bind();
       handleResponsiveView();

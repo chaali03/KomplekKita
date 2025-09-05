@@ -961,6 +961,18 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
     document.head.appendChild(script);
 
+    // Load Real-time Chart Update System
+    const realtimeScript = document.createElement('script');
+    realtimeScript.type = 'module';
+    realtimeScript.src = '/src/utils/chart-realtime.js';
+    document.head.appendChild(realtimeScript);
+
+    // Load Shared State Management
+    const sharedStateScript = document.createElement('script');
+    sharedStateScript.type = 'module';
+    sharedStateScript.src = '/src/utils/shared-state.js';
+    document.head.appendChild(sharedStateScript);
+
     // Global Chart registry to avoid canvas reuse issues
     window.dashboardCharts = window.dashboardCharts || new Map();
 
@@ -997,7 +1009,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     localStorage.setItem('komplek_id', String(komplekId));
 
     // Import safe fetch wrapper
-    const { fetchJson } = await import('~/utils/fetch-wrapper');
+    const { fetchJson } = await import('/src/utils/fetch-wrapper.js');
     // Inline shared finance utilities to avoid import issues
     function calculateTotalsShared(rows) {
       const income = rows.filter(t => String(t.type) === 'Masuk').reduce((s, t) => s + Number(t.amount || 0), 0);
@@ -1750,6 +1762,135 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       window.dashboardCharts.set('chart-category', state.charts.category);
       }
       }
+
+    /**
+     * Initialize Real-time Chart Updates untuk Transaksi
+     */
+    function initRealTimeCharts() {
+      // Pastikan ChartUpdateManager tersedia
+      if (!window.chartUpdateManager) {
+        console.warn('[Transaksi] ChartUpdateManager not available, skipping real-time updates');
+        return;
+      }
+
+      const komplekId = parseInt(qs.get('komplek_id') || localStorage.getItem('komplek_id') || '1');
+
+      // Data fetcher untuk chart updates
+      async function fetchChartData() {
+        try {
+          // Baca data dari shared storage
+          const sharedData = readShared();
+          if (Array.isArray(sharedData) && sharedData.length > 0) {
+            const rows = fromSharedFormat(sharedData);
+            const byDateAsc = (a,b)=> a.date.localeCompare(b.date);
+            const dates = Array.from(new Set(rows.slice().sort(byDateAsc).map(d=>d.date)));
+            
+            const masukByDate = dates.map(d=> rows.filter(x=>x.date===d && x.type==='Masuk').reduce((s,x)=>s+x.amount,0));
+            const keluarByDate = dates.map(d=> rows.filter(x=>x.date===d && x.type==='Keluar').reduce((s,x)=>s+x.amount,0));
+            const saldoSeries = dates.map((_,i)=> masukByDate.slice(0,i+1).reduce((a,b)=>a+b,0) - keluarByDate.slice(0,i+1).reduce((a,b)=>a+b,0));
+
+            const totalIn = rows.filter(x=>x.type==='Masuk').reduce((a,b)=>a+b.amount,0);
+            const totalOut = rows.filter(x=>x.type==='Keluar').reduce((a,b)=>a+b.amount,0);
+
+            const cats = Array.from(new Set(rows.map(x=>x.cat)));
+            const perCatIn = cats.map(c=> rows.filter(x=>x.cat===c && x.type==='Masuk').reduce((s,x)=>s+x.amount,0));
+            const perCatOut = cats.map(c=> rows.filter(x=>x.cat===c && x.type==='Keluar').reduce((s,x)=>s+x.amount,0));
+
+            return {
+              labels: dates.map(fmtDateID),
+              saldoSeries,
+              totalIn,
+              totalOut,
+              cats,
+              perCatIn,
+              perCatOut
+            };
+          }
+        } catch (error) {
+          console.warn('[Transaksi] Failed to fetch chart data:', error);
+        }
+
+        // Return default data jika gagal
+        return {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          saldoSeries: [400000, 900000, 1400000, 2000000, 2600000, 3350000],
+          totalIn: 6000000,
+          totalOut: 2650000,
+          cats: ['Iuran', 'Keamanan', 'Kebersihan', 'Lingkungan'],
+          perCatIn: [4500000, 500000, 600000, 400000],
+          perCatOut: [800000, 900000, 650000, 300000]
+        };
+      }
+
+      // Update function untuk Cash Flow Chart
+      function updateCashFlowChart(newData) {
+        const chart = state.charts.cashflow;
+        if (!chart) return;
+
+        chart.data.labels = newData.labels;
+        chart.data.datasets[0].data = newData.saldoSeries;
+        chart.update('active');
+      }
+
+      // Update function untuk Mix Chart
+      function updateMixChart(newData) {
+        const chart = state.charts.mix;
+        if (!chart) return;
+
+        chart.data.datasets[0].data = [newData.totalIn, newData.totalOut];
+        chart.update('active');
+      }
+
+      // Update function untuk Category Chart
+      function updateCategoryChart(newData) {
+        const chart = state.charts.category;
+        if (!chart) return;
+
+        chart.data.labels = newData.cats;
+        chart.data.datasets[0].data = newData.perCatIn;
+        chart.data.datasets[1].data = newData.perCatOut;
+        chart.update('active');
+      }
+
+      // Register semua chart untuk auto-update
+      const charts = [
+        { id: 'chart-cashflow', instance: state.charts.cashflow, updateFn: updateCashFlowChart },
+        { id: 'chart-mix', instance: state.charts.mix, updateFn: updateMixChart },
+        { id: 'chart-category', instance: state.charts.category, updateFn: updateCategoryChart }
+      ];
+
+      charts.forEach(({ id, instance, updateFn }) => {
+        if (instance) {
+          window.chartUpdateManager.registerChart(
+            id,
+            instance,
+            fetchChartData,
+            updateFn
+          );
+          console.log(`[Transaksi] Registered ${id} for real-time updates`);
+        }
+      });
+
+      // Set update frequency ke 30 detik
+      window.chartUpdateManager.setUpdateFrequency(30000);
+
+      // Listen untuk perubahan data dari halaman lain
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'financial_transactions_v2') {
+          console.log('[Transaksi] Detected data change, updating charts...');
+          window.chartUpdateManager.updateAllCharts();
+        }
+      });
+
+      // Listen untuk custom events
+      window.addEventListener('chart-data-updated', () => {
+        console.log('[Transaksi] Received chart-data-updated event');
+        window.chartUpdateManager.updateAllCharts();
+      });
+
+      console.log('[Transaksi] Real-time chart updates initialized');
+    }
+
     // Recompute everything
     function refreshAll(){
       renderTable();
@@ -1992,7 +2133,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     });
     document.getElementById('btn-template-keuangan')?.addEventListener('click', async ()=>{
       try{
-        const { safeFetch } = await import('~/utils/fetch-wrapper');
+        const { safeFetch } = await import('/src/utils/fetch-wrapper.js');
         const res = await safeFetch('/api/templates/keuangan');
         if(!res.ok){ console.error('Gagal mengunduh template keuangan'); return; }
         const blob = await res.blob();
@@ -2022,6 +2163,10 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     // When Chart.js ready
     script.onload = ()=> {
       refreshAll();
+      // Initialize real-time chart updates setelah chart dibuat
+      setTimeout(() => {
+        initRealTimeCharts();
+      }, 1000);
     };
 
     // First render (skeleton visible until Chart.js ready)

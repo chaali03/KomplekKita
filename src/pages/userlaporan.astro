@@ -13,31 +13,6 @@ import Layout from "~/layouts/userlayout.astro";
   <span id="dues-notice-text">Iuran bulan ini belum disimpan oleh admin. Belum ada tagihan berjalan.</span>
  </div>
 
-<!-- Ringkasan Keuangan (User View) - match admin dashboard design -->
-<div class="stats-grid">
-  <div class="stat-card pre-animation">
-    <div class="stat-icon success"><i class="fas fa-arrow-down"></i></div>
-    <div class="stat-content">
-      <h3>Pemasukan</h3>
-      <div id="user-total-masuk" class="stat-value" data-target="0">Rp0</div>
-    </div>
-  </div>
-  <div class="stat-card pre-animation">
-    <div class="stat-icon danger"><i class="fas fa-arrow-up"></i></div>
-    <div class="stat-content">
-      <h3>Pengeluaran</h3>
-      <div id="user-total-keluar" class="stat-value" data-target="0">Rp0</div>
-    </div>
-  </div>
-  <div class="stat-card pre-animation">
-    <div class="stat-icon warning"><i class="fas fa-clock"></i></div>
-    <div class="stat-content">
-      <h3>Tertunda</h3>
-      <div id="user-iuran-pending" class="stat-value" data-target="0">Rp0</div>
-    </div>
-  </div>
-</div>
-
 <style>
   .notice-banner {
     display: flex;
@@ -55,28 +30,10 @@ import Layout from "~/layouts/userlayout.astro";
   }
   .notice-banner i { color: #ff9f00; }
 
-  /* Grid layout */
-  .stats-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); max-width: 1000px; margin: 0 auto 16px; }
-
-  /* Stat card styles (mirroring admin dashboard) */
-  .stat-card { display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:center; background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:16px; box-shadow:0 8px 24px rgba(2,6,23,0.06); }
-  .stat-icon { width:48px; height:48px; display:grid; place-items:center; border-radius:14px; color:#1e3a8a; background:#e8f0f8; border:1px solid #e5e7eb; }
-  .stat-icon.primary { color:#1e3a8a; background:#eef2ff; border-color:#c7d2fe; }
-  .stat-icon.success { color:#065f46; background:#ecfdf5; border-color:#a7f3d0; }
-  .stat-icon.warning { color:#92400e; background:#fffbeb; border-color:#fde68a; }
-  .stat-icon.danger  { color:#991b1b; background:#fef2f2; border-color:#fecaca; }
-  .stat-content h3 { margin:0; font-size:.95rem; color:#6b7280; font-weight:800; }
-  .stat-value { font-weight:900; font-size:1.4rem; color:#111827; }
-
-  
-
   /* Reveal + hover animations */
   .pre-animation { opacity: 0; transform: translateY(8px) scale(0.98); transition: opacity .45s ease, transform .45s ease, box-shadow .2s ease, translate .2s ease; }
   .animate-in { opacity: 1 !important; transform: none !important; }
-  .stat-card:hover { box-shadow: 0 10px 28px rgba(2,6,23,0.12); transform: translateY(-1px); }
   @media (max-width: 520px) {
-    .stat-value { font-size: 1.25rem; }
-    .stat-icon { width: 40px; height: 40px; }
   }
   /* Page opening animation */
   .page-enter { animation: pageIn .5s ease-out both; }
@@ -85,8 +42,7 @@ import Layout from "~/layouts/userlayout.astro";
   /* Section card wrapper for Laporan list */
   .section-card { max-width: 1000px; margin: 10px auto 20px; background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; box-shadow: 0 10px 24px rgba(2,6,23,0.06); padding: 8px 10px; }
 
-  /* Stagger support */
-  .stats-grid .pre-animation { transition-delay: calc(var(--i, 0) * 90ms); }
+  /* Stagger support (no top KPI grid now) */
 </style>
 
 <script type="module">

@@ -37,15 +37,15 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
         <i class="fas fa-arrow-left"></i>
         <span>Kembali</span>
       </a>
-      <button class="burgir" aria-label="Toggle nav">
+      <button class="burgir" aria-label="Toggle nav" aria-controls="mobile-links">
         <span class="line"></span>
         <span class="line"></span>
         <span class="line"></span>
       </button>
 
-      <ul class="links">
-        <li><a href="/userlaporan" class="nav-link"><i class="fas fa-chart-bar"></i> Laporan</a></li>
-        <li><a href="/userinfo" class="nav-link"><i class="fas fa-info-circle"></i> Informasi</a></li>
+      <ul class="links" id="mobile-links" role="menu">
+        <li role="none"><a href="/userlaporan" class="nav-link" role="menuitem"><i class="fas fa-chart-bar"></i> Laporan</a></li>
+        <li role="none"><a href="/userinfo" class="nav-link" role="menuitem"><i class="fas fa-info-circle"></i> Informasi</a></li>
       </ul>
     </nav>
 
@@ -426,6 +426,8 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
 
   @media (max-width: 768px) {
     .header-content { gap: 8px; }
+    /* Ensure the mobile menu overlay is not hidden by ancestor stacking contexts */
+    .parent-nav { z-index: 2000; }
     .main-header .logo .brand-text { font-size: 1.25rem; }
     .user-mini .info .name { font-size: 12px; }
     .user-mini .info .role { display: none; }
@@ -470,44 +472,45 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
 
     .links {
       position: fixed;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       height: 100vh;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      z-index: 5;
-      padding-top: 5rem;
-      border-radius: 0;
-      box-shadow: none;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 3000; /* above everything relevant */
+      padding: 3.25rem 1rem 1.5rem; /* bring items closer to top */
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 2rem;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 0.8rem;
       opacity: 0;
       visibility: hidden;
-      transform: translateY(-20px);
-      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-                  visibility 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateX(100%);
+      transition: opacity .35s ease, visibility .35s ease, transform .35s ease;
+      overflow-y: auto;
     }
     
     .links.is-active {
       opacity: 1;
       visibility: visible;
-      transform: translateY(0);
+      transform: translateX(0);
     }
     
     .nav-link {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-                  transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-                  color 0.3s ease;
+      transform: translateY(10px);
+      transition: opacity .4s ease, transform .4s ease, color .2s ease;
       will-change: opacity, transform;
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .75rem 1rem;
+      border-radius: 10px;
+      color: #0f172a; /* slate-900 */
+      background: rgba(255,255,255,0.6);
     }
     
     .links.is-active .nav-link {
@@ -522,6 +525,7 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     
     .links.is-active .nav-link:hover {
       transform: translateY(-2px);
+      background: rgba(255,255,255,0.9);
     }
   }
 
@@ -539,10 +543,13 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    /** @type {HTMLElement|null} */
     const burgerMenu = document.querySelector('.burgir');
-    const navLinks = document.querySelector('.links');
+    /** @type {HTMLElement|null} */
+    const navLinks = /** @type {HTMLElement|null} */(document.querySelector('.links'));
     const body = document.body;
-    const navItems = document.querySelectorAll('.nav-link');
+    /** @type {NodeListOf<HTMLAnchorElement>} */
+    const navItems = /** @type {NodeListOf<HTMLAnchorElement>} */(document.querySelectorAll('.nav-link'));
 
     // Add animation delay to nav items for initial page load
     navItems.forEach((item, index) => {
@@ -551,8 +558,9 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     });
 
     // Enhanced ripple effect for nav links
+    /** @param {MouseEvent} event */
     function createRipple(event) {
-      const button = event.currentTarget;
+      const button = /** @type {HTMLElement} */(event.currentTarget);
       const ripple = document.createElement('span');
       const rect = button.getBoundingClientRect();
       
@@ -572,9 +580,10 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
         container.appendChild(ripple);
       } else {
         // Remove existing ripples before adding new one for cleaner effect
+        /** @type {NodeListOf<HTMLElement>} */
         const existingRipples = rippleContainer.querySelectorAll('.ripple');
         if (existingRipples.length > 0) {
-          existingRipples.forEach(r => r.remove());
+          existingRipples.forEach((r)=> r.remove());
         }
         rippleContainer.appendChild(ripple);
       }
@@ -590,30 +599,64 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     });
 
     if (burgerMenu && navLinks) {
+      // Accessibility
+      burgerMenu.setAttribute('aria-expanded', 'false');
+      navLinks.setAttribute('aria-hidden', 'true');
       burgerMenu.addEventListener('click', () => {
-        navLinks.classList.toggle('is-active');
-        burgerMenu.classList.toggle('is-active');
-        body.classList.toggle('no-scroll');
-        
+        const active = navLinks.classList.toggle('is-active');
+        burgerMenu.classList.toggle('is-active', active);
+        body.classList.toggle('no-scroll', active);
+        burgerMenu.setAttribute('aria-expanded', active ? 'true' : 'false');
+        navLinks.setAttribute('aria-hidden', active ? 'false' : 'true');
+        // Safety: force visibility via inline styles in case authored CSS is overridden
+        if (active) {
+          (navLinks).style.opacity = '1';
+          (navLinks).style.visibility = 'visible';
+          (navLinks).style.transform = 'translateY(0)';
+        } else {
+          (navLinks).style.opacity = '';
+          (navLinks).style.visibility = '';
+          (navLinks).style.transform = '';
+        }
         // Reset and re-trigger animations when menu opens
-        if (navLinks.classList.contains('is-active')) {
+        if (active) {
           setTimeout(() => {
-            AOS.refresh();
-          }, 150); // Increased delay for smoother animation
+            try { if (typeof AOS !== 'undefined') AOS.refresh(); } catch(_){ }
+          }, 150);
+        }
+      });
+      // Close on Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navLinks.classList.contains('is-active')) {
+          navLinks.classList.remove('is-active');
+          burgerMenu.classList.remove('is-active');
+          body.classList.remove('no-scroll');
+          burgerMenu.setAttribute('aria-expanded', 'false');
+          navLinks.setAttribute('aria-hidden', 'true');
         }
       });
     }
     
-    // Close mobile menu when clicking on a link
+    // Close mobile menu when clicking on a link and navigate reliably
     navItems.forEach(item => {
-      item.addEventListener('click', () => {
-        if (window.innerWidth <= 768 && navLinks.classList.contains('is-active')) {
+      item.addEventListener('click', (ev) => {
+        try {
+          const href = (/** @type {HTMLAnchorElement} */(ev.currentTarget)).getAttribute('href') || '';
+          if (href) {
+            ev.preventDefault();
+            // Navigate programmatically to ensure overlay doesn't block routing
+            window.location.href = href;
+          }
+        } catch(_) {}
+        if (window.innerWidth <= 768 && navLinks && navLinks.classList.contains('is-active')) {
           // Add a small delay before closing the menu for better UX
           setTimeout(() => {
-            navLinks.classList.remove('is-active');
-            burgerMenu.classList.remove('is-active');
+            if (navLinks) navLinks.classList.remove('is-active');
+            if (burgerMenu) burgerMenu.classList.remove('is-active');
             body.classList.remove('no-scroll');
-          }, 400); // Increased delay for smoother transition
+            burgerMenu?.setAttribute('aria-expanded', 'false');
+            navLinks?.setAttribute('aria-hidden', 'true');
+          }, 120);
         }
       });
     });
@@ -621,6 +664,7 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     // Add scroll effect to header with smooth transition and debounce
     const header = document.querySelector('.main-header');
     let lastScrollTop = 0;
+    /** @type {number|undefined} */
     let scrollTimer;
     const scrollThreshold = 30; // Lower threshold for faster response
     
@@ -628,14 +672,16 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       
       // Clear the previous timer for better performance
-      clearTimeout(scrollTimer);
+      if (scrollTimer !== undefined) clearTimeout(scrollTimer);
       
       // Set a new timer with debounce
-      scrollTimer = setTimeout(() => {
-        if (scrollTop > scrollThreshold) {
-          header.classList.add('scrolled');
-        } else {
-          header.classList.remove('scrolled');
+      scrollTimer = window.setTimeout(() => {
+        if (header) {
+          if (scrollTop > scrollThreshold) {
+            header.classList.add('scrolled');
+          } else {
+            header.classList.remove('scrolled');
+          }
         }
       }, 30); // Faster response time
       
@@ -664,11 +710,11 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
       const verticalDistance = Math.abs(touchStartY - touchEndY);
       
       // Only trigger if horizontal swipe is significant and not a diagonal swipe
-      if (navLinks.classList.contains('is-active') && 
+      if (navLinks && navLinks.classList.contains('is-active') && 
           horizontalDistance > 40 && 
           verticalDistance < horizontalDistance) {
-        navLinks.classList.remove('is-active');
-        burgerMenu.classList.remove('is-active');
+        if (navLinks) navLinks.classList.remove('is-active');
+        if (burgerMenu) burgerMenu.classList.remove('is-active');
         body.classList.remove('no-scroll');
       }
     }
