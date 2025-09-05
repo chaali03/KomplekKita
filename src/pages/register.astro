@@ -464,6 +464,48 @@ import Footer from '../components/sections/Footer.astro';
         box-shadow: 0 2px 8px rgba(74, 108, 247, 0.1);
     }
 
+    /* Validation feedback styles */
+    .input-container.valid .form-input {
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .input-container.invalid .form-input {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+    }
+
+    .validation-feedback {
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        animation: slideDown 0.3s ease;
+    }
+
+    .validation-feedback.error {
+        background-color: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+    .validation-feedback.success {
+        background-color: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
 .toggle-password {
         position: absolute;
         right: 1rem;
@@ -1451,8 +1493,18 @@ import Footer from '../components/sections/Footer.astro';
 </style>
 
 <script is:inline>
-    // Initialize AOS Animation Library
-    document.addEventListener('DOMContentLoaded', function() {
+            // Initialize AOS Animation Library
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Setup real-time validation for input fields
+            const { setupRealTimeValidation } = await import('/src/utils/validation.ts');
+            
+            const firstNameInput = document.getElementById('first-name');
+            const lastNameInput = document.getElementById('last-name');
+            const emailInput = document.getElementById('email');
+            
+            if (firstNameInput) setupRealTimeValidation(firstNameInput as HTMLInputElement, 'user');
+            if (lastNameInput) setupRealTimeValidation(lastNameInput as HTMLInputElement, 'user');
+            if (emailInput) setupRealTimeValidation(emailInput as HTMLInputElement, 'user');
         // Initialize AOS with error handling
         if (typeof AOS !== 'undefined') {
             try {
@@ -1621,22 +1673,52 @@ import Footer from '../components/sections/Footer.astro';
                     return;
                 }
                 
+                // Validate user data for profanity
+                const { validateUserData } = await import('/src/utils/validation.ts');
+                const userValidation = validateUserData({
+                    firstName: userData.firstName,
+                    lastName: userData.lastName,
+                    email: userData.email,
+                    phone: userData.phone
+                });
+                
+                if (!userValidation.isValid) {
+                    showToast(userValidation.errors[0], 'error');
+                    return;
+                }
+                
                 // Add loading state
                 registerButton.classList.add('loading');
                 registerButton.innerHTML = '<span class="button-text">Memproses...</span><i class="fa-solid fa-spinner fa-spin"></i>';
                 
                 try {
-                    // Import auth utility
-                    const { registerUser } = await import('../utils/auth.js');
-                    const result = await registerUser(userData);
-                    
-                    if (result.success) {
-                        showToast('Registrasi berhasil! Silakan login untuk melanjutkan.', 'success');
-                        setTimeout(() => {
-                            window.location.href = '/login';
-                        }, 1500);
+                    // Call PHP API directly
+                    const resp = await fetch('http://127.0.0.1:8000/api/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            first_name: userData.firstName,
+                            last_name: userData.lastName,
+                            email: userData.email,
+                            phone: userData.phone,
+                            password: userData.password
+                        })
+                    });
+
+                    const data = await resp.json().catch(() => ({}));
+                    if (!resp.ok) {
+                        showToast(data.message || 'Registrasi gagal', 'error');
                     } else {
-                        showToast(result.error || 'Registrasi gagal', 'error');
+                        showToast('Registrasi berhasil! Silakan lengkapi data komplek Anda.', 'success');
+                        // Store user data temporarily for komplek registration
+                        localStorage.setItem('tempUserData', JSON.stringify({
+                            email: userData.email,
+                            name: `${userData.firstName} ${userData.lastName}`.trim()
+                        }));
+                        setTimeout(() => { window.location.href = '/register-komplek'; }, 1200);
                     }
                 } catch (error) {
                     console.error('Registration error:', error);
