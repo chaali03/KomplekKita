@@ -74,6 +74,11 @@ const mockData = {
   ]
 };
 
+// In-memory mock iuran storage keyed by periode (YYYY-MM)
+const mockIuran = {
+  // example: '2025-09': { nominal: 250000, total_warga: 40, payments: [{ warga_id: 1, warga_name: 'Demo', amount: 250000, payment_date: '2025-09-05', status:'paid', notes: '' }], created_at: '2025-09-01' }
+};
+
 export default function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -130,6 +135,75 @@ export default function handler(req, res) {
       );
       
       return res.status(200).json(existing ? { exists: true, name: existing.nama } : { exists: false });
+    }
+
+    // ==== IURAN (Mock) ====
+    if (path.startsWith('/iuran/status') && method === 'GET') {
+      const periode = (query.periode || new Date().toISOString().slice(0,7));
+      const data = mockIuran[periode] || { nominal: 250000, total_warga: 40, payments: [], created_at: new Date().toISOString().slice(0,10) };
+      const total_pemasukan = data.payments.reduce((s, p) => s + (p.amount || 0), 0);
+      const target_pemasukan = (data.nominal || 0) * (data.total_warga || 0);
+      const warga_sudah_bayar = data.payments.filter(p => p.status === 'paid').length;
+      const warga_belum_bayar = Math.max(0, (data.total_warga || 0) - warga_sudah_bayar);
+      const completion_percentage = target_pemasukan > 0 ? Math.round((total_pemasukan / target_pemasukan) * 100) : 0;
+      const remaining_amount = Math.max(0, target_pemasukan - total_pemasukan);
+      return res.status(200).json({
+        success: true,
+        data: {
+          periode,
+          nominal: data.nominal,
+          total_warga: data.total_warga,
+          warga_sudah_bayar,
+          warga_belum_bayar,
+          total_pemasukan,
+          target_pemasukan,
+          is_completed: remaining_amount === 0,
+          is_closed: false,
+          completion_percentage,
+          remaining_amount,
+          payments: data.payments
+        }
+      });
+    }
+
+    if (path === '/iuran/create-or-update' && method === 'POST') {
+      const body = req.body || {};
+      const periode = body.periode || new Date().toISOString().slice(0,7);
+      const nominal = Number(body.nominal || 0);
+      if (!mockIuran[periode]) mockIuran[periode] = { nominal, total_warga: 40, payments: [], created_at: new Date().toISOString().slice(0,10) };
+      mockIuran[periode].nominal = nominal;
+      return res.status(200).json({ success: true, data: mockIuran[periode] });
+    }
+
+    if (path === '/iuran/mark-paid' && method === 'POST') {
+      const body = req.body || {};
+      const periode = body.periode || new Date().toISOString().slice(0,7);
+      const warga_id = Number(body.warga_id);
+      if (!mockIuran[periode]) mockIuran[periode] = { nominal: 250000, total_warga: 40, payments: [], created_at: new Date().toISOString().slice(0,10) };
+      const data = mockIuran[periode];
+      const idx = data.payments.findIndex(p => p.id === warga_id || p.warga_id === warga_id);
+      const amount = data.nominal || 0;
+      const payment = { id: warga_id, warga_id, warga_name: `Warga ${warga_id}`, amount, payment_date: new Date().toISOString().slice(0,10), status: 'paid', notes: '' };
+      if (idx >= 0) data.payments[idx] = payment; else data.payments.push(payment);
+      return res.status(200).json({ success: true });
+    }
+
+    if (path === '/iuran/mark-unpaid' && method === 'POST') {
+      const body = req.body || {};
+      const periode = body.periode || new Date().toISOString().slice(0,7);
+      const warga_id = Number(body.warga_id);
+      if (!mockIuran[periode]) mockIuran[periode] = { nominal: 250000, total_warga: 40, payments: [], created_at: new Date().toISOString().slice(0,10) };
+      const data = mockIuran[periode];
+      const idx = data.payments.findIndex(p => p.id === warga_id || p.warga_id === warga_id);
+      if (idx >= 0) data.payments.splice(idx, 1);
+      return res.status(200).json({ success: true });
+    }
+
+    if (path === '/iuran/reset' && method === 'POST') {
+      const body = req.body || {};
+      const periode = body.periode || new Date().toISOString().slice(0,7);
+      mockIuran[periode] = { nominal: 250000, total_warga: 40, payments: [], created_at: new Date().toISOString().slice(0,10) };
+      return res.status(200).json({ success: true });
     }
 
     if (path.startsWith('/templates/') && method === 'GET') {

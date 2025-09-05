@@ -13,47 +13,8 @@
     </div>
   </div>
   
-  <div class="button-grid">
-      <button class="format-button format-button1" data-aos="zoom-in" data-aos-delay="100">
-          <div class="button-icon">
-            <i class="fas fa-file-alt"></i>
-          </div>
-          <div class="button-content">
-            <span class="button-title">Surat Pengantar</span>
-            <span class="button-desc">Template surat pengantar resmi</span>
-          </div>
-          <div class="button-glow"></div>
-      </button>
-      <button class="format-button format-button2" data-aos="zoom-in" data-aos-delay="200">
-          <div class="button-icon">
-            <i class="fas fa-file-signature"></i>
-          </div>
-          <div class="button-content">
-            <span class="button-title">Surat Keterangan</span>
-            <span class="button-desc">Template surat keterangan warga</span>
-          </div>
-          <div class="button-glow"></div>
-      </button>
-      <button class="format-button format-button3" data-aos="zoom-in" data-aos-delay="300">
-          <div class="button-icon">
-            <i class="fas fa-file-invoice"></i>
-          </div>
-          <div class="button-content">
-            <span class="button-title">Surat Permohonan</span>
-            <span class="button-desc">Template permohonan bantuan</span>
-          </div>
-          <div class="button-glow"></div>
-      </button>
-      <button class="format-button format-button4" data-aos="zoom-in" data-aos-delay="400">
-          <div class="button-icon">
-            <i class="fas fa-file-contract"></i>
-          </div>
-          <div class="button-content">
-            <span class="button-title">Surat Undangan</span>
-            <span class="button-desc">Template undangan acara</span>
-          </div>
-          <div class="button-glow"></div>
-      </button>
+  <div class="button-grid" id="templateGrid">
+      <!-- Template buttons will be generated here -->
   </div>
 </div>
 
@@ -78,8 +39,27 @@
 </div>
 </section>
 
+<!-- Program Section -->
+<section class="user-program-ui" data-aos="fade-up" data-aos-delay="200">
+<div class="section-header pre-anim">
+  <div>
+    <h2 class="section-title">Program Komplek</h2>
+    <p class="section-subtitle">Program dan kegiatan yang sedang berlangsung di komplek</p>
+  </div>
+</div>
+
+<div class="card-body">
+  <div id="program-grid" class="program-grid stagger-container" aria-live="polite"></div>
+</div>
+</section>
+
 <style>
 .user-informasi-ui { 
+  --primary: #085895; --outline:#e6eaf0; --outline-2:#d8dde5; --surface:#fff; --surface-2:#f7f9fc; --text:#0f172a; --text-muted:#64748b; --ring:#93c5fd;
+  display:grid; gap:12px; margin: 28px 0; padding: 0 16px;
+}
+
+.user-program-ui { 
   --primary: #085895; --outline:#e6eaf0; --outline-2:#d8dde5; --surface:#fff; --surface-2:#f7f9fc; --text:#0f172a; --text-muted:#64748b; --ring:#93c5fd;
   display:grid; gap:12px; margin: 28px 0; padding: 0 16px;
 }
@@ -153,10 +133,64 @@
 .info-grid.grid-mode{ display:grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap:12px; }
 .info-grid.list-mode{ display:grid; gap:8px; }
 
+/* Program Grid */
+.program-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(320px,1fr)); gap:16px; }
+
 /* Cards */
 .info-card{ position:relative; background:#fff; border:1px solid #e6eef7; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.06); overflow:hidden; }
 .info-card .thumb{ width:100%; height:160px; object-fit:cover; background:#f2f6fb; display:block; }
 .info-card .pad{ padding:.85rem .95rem; display:grid; gap:.55rem; }
+
+/* Program Cards */
+.program-card{ 
+  position:relative; background:#fff; border:1px solid #e6eef7; border-radius:16px; 
+  box-shadow:0 8px 25px rgba(0,0,0,.08); overflow:hidden; transition: all 0.3s ease;
+  border-left: 4px solid #085895;
+}
+.program-card:hover{ 
+  transform: translateY(-4px); 
+  box-shadow:0 15px 35px rgba(0,0,0,.12); 
+  border-left-color: #00b4d8;
+}
+.program-card .program-header{ 
+  padding:1.2rem 1.2rem 0.8rem; 
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-bottom: 1px solid #f1f5f9;
+}
+.program-card .program-body{ padding:0.8rem 1.2rem 1.2rem; }
+.program-card .program-title{ 
+  font-size:1.1rem; font-weight:700; color:#1e293b; margin:0 0 0.5rem 0; 
+  line-height:1.3;
+}
+.program-card .program-desc{ 
+  font-size:0.9rem; color:#64748b; margin:0 0 1rem 0; 
+  line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.program-card .program-meta{ 
+  display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem; 
+}
+.program-card .program-amount{ 
+  background:linear-gradient(135deg, #10b981, #059669); color:#fff; 
+  padding:0.4rem 0.8rem; border-radius:20px; font-weight:700; font-size:0.85rem;
+}
+.program-card .program-deadline{ 
+  background:#fef3c7; color:#92400e; 
+  padding:0.4rem 0.8rem; border-radius:20px; font-weight:600; font-size:0.85rem;
+}
+.program-card .program-link{ 
+  display:inline-flex; align-items:center; gap:0.5rem; 
+  padding:0.6rem 1rem; border-radius:10px; text-decoration:none; font-weight:600; 
+  transition: all 0.2s ease; width:100%; justify-content:center;
+}
+.program-card .program-link.wa{ 
+  background:#25d366; color:#fff; 
+}
+.program-card .program-link.qris{ 
+  background:#1e40af; color:#fff; 
+}
+.program-card .program-link:hover{ 
+  transform: translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,.15); 
+}
 .info-card .info-meta{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; color:#5b6778; font-size:.85rem; }
 .info-card .badge{ display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 10px; border-radius:999px; border:1px solid #e6eef7; font-weight:800; }
 .info-card .badge.pill{ background:#eef5ff; color:#0a5fb3; border-color:#d9e7f8; }
@@ -194,6 +228,163 @@
 <script>
 // @ts-nocheck
 (() => {
+  // Load letter templates from API
+  async function loadLetterTemplates() {
+    // Show loading state
+    renderLoadingState();
+    
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/letter-templates');
+      const result = await response.json();
+      
+      if (result.status === 'success') {
+        renderTemplates(result.data);
+      } else {
+        console.error('Failed to load templates:', result.message);
+        renderEmptyState();
+      }
+    } catch (error) {
+      console.error('Error loading templates:', error);
+      renderEmptyState();
+    }
+  }
+
+  function renderTemplates(templates) {
+    const grid = document.getElementById('templateGrid');
+    if (!grid) return;
+
+    if (templates.length === 0) {
+      renderEmptyState();
+      return;
+    }
+
+    // Get template type icons
+    const getTemplateIcon = (type) => {
+      const icons = {
+        'pengantar': 'fa-file-alt',
+        'undangan': 'fa-file-signature', 
+        'keterangan': 'fa-file-invoice',
+        'izin': 'fa-file-contract',
+        'pemberitahuan': 'fa-file-exclamation'
+      };
+      return icons[type] || 'fa-file-alt';
+    };
+    
+    grid.innerHTML = templates.map((template, index) => {
+      const delay = (index + 1) * 100;
+      const iconClass = getTemplateIcon(template.type);
+      
+      return `
+        <button class="format-button ${template.type}" data-aos="zoom-in" data-aos-delay="${delay}" onclick="downloadTemplate(${template.id})">
+          <div class="button-icon">
+            <i class="fas ${iconClass}"></i>
+          </div>
+          <div class="button-content">
+            <span class="button-title">${template.name}</span>
+            <span class="button-desc">${template.description || 'Template surat resmi'}</span>
+          </div>
+          <div class="button-glow"></div>
+        </button>
+      `;
+    }).join('');
+  }
+
+  function renderEmptyState() {
+    const grid = document.getElementById('templateGrid');
+    if (!grid) return;
+
+    grid.innerHTML = `
+      <div class="template-empty-state">
+        <div class="template-empty-icon">
+          <i class="fas fa-file-plus"></i>
+        </div>
+        <h3 class="template-empty-title">Belum Ada Template</h3>
+        <p class="template-empty-desc">Admin belum menambahkan template surat. Silakan hubungi admin untuk informasi lebih lanjut.</p>
+      </div>
+    `;
+  }
+  
+  function renderLoadingState() {
+    const grid = document.getElementById('templateGrid');
+    if (!grid) return;
+
+    grid.innerHTML = `
+      <div class="template-loading-state">
+        <div class="template-loading-icon">
+          <i class="fas fa-spinner fa-spin"></i>
+        </div>
+        <h3 class="template-loading-title">Memuat Template...</h3>
+        <p class="template-loading-desc">Sedang mengambil template surat yang tersedia.</p>
+      </div>
+    `;
+  }
+
+  // Download template function
+  window.downloadTemplate = async function(id) {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/letter-templates/${id}/download`);
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `template_${id}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        // Show success notification
+        showNotification('success', 'Template berhasil diunduh!');
+      } else {
+        const result = await response.json();
+        showNotification('error', result.message || 'Gagal mengunduh template');
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      showNotification('error', 'Tidak dapat mengunduh template');
+    }
+  };
+
+  // Simple notification function
+  function showNotification(type, message) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      z-index: 1000;
+      animation: slideIn 0.3s ease-out;
+      ${type === 'success' ? 'background: #10b981;' : 'background: #ef4444;'}
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.style.animation = 'slideOut 0.3s ease-in forwards';
+      setTimeout(() => document.body.removeChild(notification), 300);
+    }, 3000);
+  }
+
+  // Add CSS for notifications
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
+
   function init(){
     const root = document.querySelector('.user-informasi-ui');
     if (!root) return;
@@ -206,11 +397,99 @@
     let activeCat = 'all';
     let isLoading = true;
     let sortMode = 'newest'; // fixed per design
+    let informations = [];
+    let programs = [];
 
     const readData = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; } };
     const readTags = () => { try { return JSON.parse(localStorage.getItem(TAGS_KEY) || '[]'); } catch { return []; } };
     const fmtDate = (iso) => { if (!iso) return '-'; try { const d = new Date(iso + 'T00:00:00'); return d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' }); } catch { return iso; } };
     const isNewInfo = (iso) => { if (!iso) return false; const d = new Date(iso + 'T00:00:00').getTime(); return (Date.now() - d) / 86400000 <= 3; };
+
+    // Load data from API
+    async function loadDataFromAPI() {
+      try {
+        // Load informations
+        const infoResponse = await fetch('http://127.0.0.1:8000/api/informations');
+        const infoResult = await infoResponse.json();
+        if (infoResult.status === 'success') {
+          informations = infoResult.data;
+        }
+
+        // Load programs
+        const progResponse = await fetch('http://127.0.0.1:8000/api/programs');
+        const progResult = await progResponse.json();
+        if (progResult.status === 'success') {
+          programs = progResult.data;
+        }
+
+        // Update localStorage with API data
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(informations));
+        
+        // Extract categories from API data
+        const categories = [...new Set(informations.map(info => info.category))];
+        localStorage.setItem(TAGS_KEY, JSON.stringify(categories));
+        
+      } catch (error) {
+        console.error('Error loading data from API:', error);
+        // Fallback to localStorage data
+        informations = readData();
+      }
+    }
+
+    // Render programs
+    function renderPrograms() {
+      const programGrid = document.getElementById('program-grid');
+      if (!programGrid) return;
+
+      if (programs.length === 0) {
+        programGrid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <i class="fas fa-calendar-alt"></i>
+            <div>Belum ada program yang tersedia</div>
+          </div>
+        `;
+        return;
+      }
+
+      const frag = document.createDocumentFragment();
+      programs.forEach((program, idx) => {
+        const card = document.createElement('article');
+        card.className = 'program-card enter-anim';
+        card.style.setProperty('--d', String(idx));
+        
+        const formattedAmount = program.nominal ? 
+          new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(program.nominal) : 
+          'Tidak ditentukan';
+        
+        const formattedDeadline = program.deadline ? 
+          new Date(program.deadline).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : 
+          'Tidak ditentukan';
+
+        const linkIcon = program.link_type === 'wa' ? 'fab fa-whatsapp' : 'fas fa-qrcode';
+        const linkText = program.link_type === 'wa' ? 'Hubungi via WhatsApp' : 'Bayar via QRIS';
+
+        card.innerHTML = `
+          <div class="program-header">
+            <h3 class="program-title">${program.desc}</h3>
+          </div>
+          <div class="program-body">
+            <p class="program-desc">${program.info || 'Program komplek untuk kesejahteraan warga'}</p>
+            <div class="program-meta">
+              <span class="program-amount">${formattedAmount}</span>
+              <span class="program-deadline">Deadline: ${formattedDeadline}</span>
+            </div>
+            <a href="${program.link_url}" target="_blank" class="program-link ${program.link_type}">
+              <i class="${linkIcon}"></i>
+              ${linkText}
+            </a>
+          </div>
+        `;
+        
+        frag.appendChild(card);
+      });
+      
+      programGrid.appendChild(frag);
+    }
 
     function renderTagChips(){
       if (!tagHost) return;
@@ -240,7 +519,7 @@
 
     function render(){
       if (!grid) return;
-      const items = readData();
+      const items = informations.length > 0 ? informations : readData();
       grid.innerHTML = '';
       grid.classList.add('grid-mode');
       grid.classList.remove('list-mode');
@@ -292,7 +571,19 @@
     // initial render
     renderTagChips();
     render();
-    setTimeout(() => { isLoading = false; render(); }, 450);
+    
+    // Load data from API and then render
+    loadDataFromAPI().then(() => {
+      setTimeout(() => { 
+        isLoading = false; 
+        renderTagChips();
+        render();
+        renderPrograms();
+      }, 450);
+    });
+    
+    // Load letter templates
+    loadLetterTemplates();
 
     // live update when admin changes localStorage
     window.addEventListener('storage', (e) => { if (e.key === STORAGE_KEY || e.key === TAGS_KEY){ renderTagChips(); render(); } });
@@ -612,31 +903,52 @@ transition: transform .12s ease, box-shadow .2s ease, background .2s ease, color
 
 .button-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin-top: 3rem;
 }
 
 .format-button {
   position: relative;
-  min-height: 140px;
+  min-height: 160px;
   border-radius: 20px;
   cursor: pointer;
   border: none;
   padding: 0;
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 1.5rem;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   background: #fff;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.08),
+    0 3px 10px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
   overflow: hidden;
+}
+
+.format-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #085895, #00b4d8);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
 .format-button:hover {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    0 8px 20px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
+}
+
+.format-button:hover::before {
+  transform: scaleX(1);
 }
 
 .format-button:active {
@@ -644,20 +956,38 @@ transition: transform .12s ease, box-shadow .2s ease, background .2s ease, color
 }
 
 .button-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
+  font-size: 2rem;
   margin: 1.5rem 0 0 1.5rem;
   flex-shrink: 0;
   transition: transform 0.3s ease;
+  position: relative;
 }
 
 .format-button:hover .button-icon {
   transform: rotate(5deg) scale(1.1);
+}
+
+.button-icon::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.format-button:hover .button-icon::after {
+  opacity: 1;
 }
 
 .button-content {
@@ -704,45 +1034,131 @@ transition: transform .12s ease, box-shadow .2s ease, background .2s ease, color
   left: 100%;
 }
 
-/* Button Color Themes */
-.format-button1 .button-icon {
+/* Button Color Themes - Template Type Specific */
+.format-button.pengantar .button-icon {
   background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   color: white;
 }
 
-.format-button1:hover {
+.format-button.pengantar:hover {
   border-color: rgba(59, 130, 246, 0.3);
-  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+  box-shadow: 
+    0 20px 40px rgba(59, 130, 246, 0.2),
+    0 8px 20px rgba(59, 130, 246, 0.1);
 }
 
-.format-button2 .button-icon {
+.format-button.undangan .button-icon {
   background: linear-gradient(135deg, #f59e0b, #d97706);
   color: white;
 }
 
-.format-button2:hover {
+.format-button.undangan:hover {
   border-color: rgba(245, 158, 11, 0.3);
-  box-shadow: 0 20px 40px rgba(245, 158, 11, 0.2);
+  box-shadow: 
+    0 20px 40px rgba(245, 158, 11, 0.2),
+    0 8px 20px rgba(245, 158, 11, 0.1);
 }
 
-.format-button3 .button-icon {
+.format-button.keterangan .button-icon {
   background: linear-gradient(135deg, #10b981, #059669);
   color: white;
 }
 
-.format-button3:hover {
+.format-button.keterangan:hover {
   border-color: rgba(16, 185, 129, 0.3);
-  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+  box-shadow: 
+    0 20px 40px rgba(16, 185, 129, 0.2),
+    0 8px 20px rgba(16, 185, 129, 0.1);
 }
 
-.format-button4 .button-icon {
+.format-button.izin .button-icon {
   background: linear-gradient(135deg, #8b5cf6, #7c3aed);
   color: white;
 }
 
-.format-button4:hover {
+.format-button.izin:hover {
   border-color: rgba(139, 92, 246, 0.3);
-  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+  box-shadow: 
+    0 20px 40px rgba(139, 92, 246, 0.2),
+    0 8px 20px rgba(139, 92, 246, 0.1);
+}
+
+.format-button.pemberitahuan .button-icon {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.format-button.pemberitahuan:hover {
+  border-color: rgba(239, 68, 68, 0.3);
+  box-shadow: 
+    0 20px 40px rgba(239, 68, 68, 0.2),
+    0 8px 20px rgba(239, 68, 68, 0.1);
+}
+
+.format-button.default .button-icon {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  color: white;
+}
+
+.format-button.default:hover {
+  border-color: rgba(107, 114, 128, 0.3);
+  box-shadow: 
+    0 20px 40px rgba(107, 114, 128, 0.2),
+    0 8px 20px rgba(107, 114, 128, 0.1);
+}
+
+/* Fallback for numbered classes */
+.format-button1 .button-icon { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
+.format-button2 .button-icon { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+.format-button3 .button-icon { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+.format-button4 .button-icon { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+
+/* Empty and Loading States */
+.template-empty-state,
+.template-loading-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-radius: 20px;
+  border: 2px dashed #cbd5e1;
+}
+
+.template-empty-icon,
+.template-loading-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 2rem;
+  color: #64748b;
+}
+
+.template-loading-icon {
+  background: linear-gradient(135deg, #085895, #00b4d8);
+  color: white;
+}
+
+.template-empty-title,
+.template-loading-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.template-empty-desc,
+.template-loading-desc {
+  font-size: 1rem;
+  color: #64748b;
+  margin: 0;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Mobile Responsive */

@@ -1,50 +1,23 @@
 // Authentication utilities for KomplekKita
-// Handles user registration, login, and complex registration flow
+// Updated to use PHP API instead of localStorage
 
-// Mock database - in production, replace with actual database calls
-let users = JSON.parse(localStorage.getItem('komplekKita_users') || '[]');
-let complexes = JSON.parse(localStorage.getItem('komplekKita_complexes') || '[]');
-let currentUser = JSON.parse(localStorage.getItem('komplekKita_currentUser') || 'null');
-
-// Save data to localStorage (mock database)
-function saveUsers() {
-    localStorage.setItem('komplekKita_users', JSON.stringify(users));
-}
-
-function saveComplexes() {
-    localStorage.setItem('komplekKita_complexes', JSON.stringify(complexes));
-}
-
-function saveCurrentUser() {
-    localStorage.setItem('komplekKita_currentUser', JSON.stringify(currentUser));
-}
+import { apiClient } from './api-client';
 
 // User registration
 export async function registerUser(userData) {
     try {
-        // Check if user already exists
-        const existingUser = users.find(user => user.email === userData.email);
-        if (existingUser) {
-            throw new Error('Email sudah terdaftar');
-        }
-
-        // Create new user
-        const newUser = {
-            id: Date.now().toString(),
-            firstName: userData.firstName,
-            lastName: userData.lastName,
+        const response = await apiClient.register({
+            name: `${userData.firstName} ${userData.lastName}`.trim(),
             email: userData.email,
-            phone: userData.phone,
-            password: userData.password, // In production, hash this
-            hasCompletedComplexRegistration: false,
-            complexId: null,
-            createdAt: new Date().toISOString()
-        };
+            password: userData.password,
+            phone: userData.phone
+        });
 
-        users.push(newUser);
-        saveUsers();
-
-        return { success: true, user: newUser };
+        if (response.success) {
+            return { success: true, user: response.data.user };
+        } else {
+            return { success: false, error: response.error };
+        }
     } catch (error) {
         return { success: false, error: error.message };
     }
@@ -53,15 +26,13 @@ export async function registerUser(userData) {
 // User login
 export async function loginUser(email, password) {
     try {
-        const user = users.find(u => u.email === email && u.password === password);
-        if (!user) {
-            throw new Error('Email atau password salah');
+        const response = await apiClient.login(email, password);
+
+        if (response.success) {
+            return { success: true, user: response.data.user };
+        } else {
+            return { success: false, error: response.error };
         }
-
-        currentUser = user;
-        saveCurrentUser();
-
-        return { success: true, user };
     } catch (error) {
         return { success: false, error: error.message };
     }
@@ -69,7 +40,10 @@ export async function loginUser(email, password) {
 
 // Check authentication status
 export function getAuthStatus() {
-    if (!currentUser) {
+    const token = localStorage.getItem('auth_token');
+    const userData = localStorage.getItem('auth_user');
+    
+    if (!token || !userData) {
         return {
             isAuthenticated: false,
             hasCompletedComplexRegistration: false,
@@ -77,90 +51,95 @@ export function getAuthStatus() {
         };
     }
 
-    if (!currentUser.hasCompletedComplexRegistration) {
+    try {
+        const user = JSON.parse(userData);
+        
+        if (!user.has_completed_complex_registration) {
+            return {
+                isAuthenticated: true,
+                hasCompletedComplexRegistration: false,
+                redirectTo: '/register-komplek',
+                user: user
+            };
+        }
+
         return {
             isAuthenticated: true,
+            hasCompletedComplexRegistration: true,
+            redirectTo: null,
+            user: user
+        };
+    } catch (error) {
+        return {
+            isAuthenticated: false,
             hasCompletedComplexRegistration: false,
-            redirectTo: '/register-komplek',
-            user: currentUser
+            redirectTo: '/login'
         };
     }
-
-    return {
-        isAuthenticated: true,
-        hasCompletedComplexRegistration: true,
-        redirectTo: null,
-        user: currentUser
-    };
 }
 
 // Complete complex registration
 export async function completeComplexRegistration(complexData) {
     try {
-        if (!currentUser) {
-            throw new Error('User tidak terautentikasi');
+        const response = await apiClient.registerKomplek({
+            namaKomplek: complexData.namaKomplek,
+            deskripsiKomplek: complexData.deskripsiKomplek,
+            profilKomplek: complexData.profilKomplek,
+            latKomplek: complexData.latKomplek,
+            lngKomplek: complexData.lngKomplek,
+            namaKetuaRT: complexData.namaKetuaRT,
+            ketuaPhone: complexData.ketuaPhone,
+            namaBendahara: complexData.namaBendahara,
+            bendaharaPhone: complexData.bendaharaPhone
+        });
+
+        if (response.success) {
+            // Update user data in localStorage
+            const userData = JSON.parse(localStorage.getItem('auth_user') || '{}');
+            userData.has_completed_complex_registration = true;
+            userData.complex_id = response.data.komplek.id;
+            localStorage.setItem('auth_user', JSON.stringify(userData));
+            
+            return { success: true, complex: response.data.komplek };
+        } else {
+            return { success: false, error: response.error };
         }
-
-        // Create new complex
-        const newComplex = {
-            id: Date.now().toString(),
-            userId: currentUser.id,
-            name: complexData.namaKomplek,
-            description: complexData.deskripsiKomplek,
-            profile: complexData.profilKomplek,
-            address: complexData.alamatKomplek,
-            latitude: complexData.latKomplek,
-            longitude: complexData.lngKomplek,
-            ketuaRT: {
-                name: complexData.namaKetuaRT,
-                phone: complexData.ketuaPhone
-            },
-            bendahara: {
-                name: complexData.namaBendahara,
-                phone: complexData.bendaharaPhone
-            },
-            residents: complexData.residents || [],
-            finances: complexData.finances || [],
-            createdAt: new Date().toISOString()
-        };
-
-        complexes.push(newComplex);
-        saveComplexes();
-
-        // Update user status
-        currentUser.hasCompletedComplexRegistration = true;
-        currentUser.complexId = newComplex.id;
-        
-        // Update user in users array
-        const userIndex = users.findIndex(u => u.id === currentUser.id);
-        if (userIndex !== -1) {
-            users[userIndex] = currentUser;
-            saveUsers();
-        }
-        
-        saveCurrentUser();
-
-        return { success: true, complex: newComplex };
     } catch (error) {
         return { success: false, error: error.message };
     }
 }
 
 // Logout
-export function logout() {
-    currentUser = null;
-    localStorage.removeItem('komplekKita_currentUser');
+export async function logout() {
+    try {
+        await apiClient.logout();
+    } catch (error) {
+        console.error('Logout error:', error);
+    } finally {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_user');
+    }
 }
 
 // Get current user
 export function getCurrentUser() {
-    return currentUser;
+    const userData = localStorage.getItem('auth_user');
+    return userData ? JSON.parse(userData) : null;
 }
 
 // Get user's complex
-export function getUserComplex() {
-    if (!currentUser || !currentUser.complexId) return null;
-    return complexes.find(c => c.id === currentUser.complexId);
+export async function getUserComplex() {
+    try {
+        const response = await apiClient.getMe();
+        if (response.success && response.data?.complex_id) {
+            // You might want to add a specific endpoint for getting complex details
+            return { id: response.data.complex_id };
+        }
+        return null;
+    } catch (error) {
+        console.error('Error getting user complex:', error);
+        return null;
+    }
 }
 
 // Authentication middleware for protected routes

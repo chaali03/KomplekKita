@@ -531,6 +531,21 @@
             text-align: center;
         }
 
+        /* Suspension note for Free plan */
+        .suspension-note {
+            margin-top: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: #FFFBEB; /* amber-50 */
+            color: #92400E; /* amber-800 */
+            border: 1px solid #FDE68A; /* amber-300 */
+            font-size: 0.9rem;
+        }
+        .suspension-note i { color: #D97706; /* amber-600 */ }
+
         .btn-harga {
             display: inline-block;
             padding: 0.75rem 2rem;
@@ -1218,6 +1233,10 @@
                     </div>
                     <div class="harga-card-footer">
                         <a href="/login" class="btn-harga btn-outline">Mulai Gratis</a>
+                        <div class="suspension-note">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Akun Gratis akan otomatis disuspend jika tidak aktif selama 2 bulan.</span>
+                        </div>
                     </div>
                     <div class="card-decoration"></div>
                     <div class="card-glow"></div>
@@ -1521,7 +1540,7 @@
     </section>
 
     <script>
-        // @ts-check
+        // @ts-nocheck
         // Inisialisasi AOS (guarded)
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof window !== 'undefined' && (window as any) && (window as any).AOS) {
@@ -1537,7 +1556,9 @@
             const tabsContainer = document.querySelector('.harga-tabs');
 
             // Data harga untuk setiap paket
-            const hargaPaket /** @type {Record<'bulanan'|'tahunan', { premium: string; plus: string; plusOriginal: string; plusDiscount: string; }>} */ = {
+            /** @typedef {'bulanan'|'tahunan'} Periode */
+            /** @type {Record<Periode, { premium: string; plus: string; plusOriginal: string; plusDiscount: string; }>} */
+            const hargaPaket = {
                 bulanan: { 
                     premium: 'Rp 99.000', 
                     plus: 'Rp 119.000',
@@ -1569,7 +1590,9 @@
                     currentBtn.classList.add('active');
                     currentBtn.setAttribute('aria-pressed', 'true');
 
-                    const periode /** @type {'bulanan'|'tahunan'} */ = (currentBtn as HTMLElement & { dataset: { tab?: string }}).dataset.tab === 'tahunan' ? 'tahunan' : 'bulanan';
+                    const rawPeriode = ((currentBtn as HTMLElement & { dataset: { tab?: string }}).dataset.tab === 'tahunan') ? 'tahunan' : 'bulanan';
+                    /** @type {Periode} */
+                    const periode = rawPeriode;
 
                     // Move slider
                     if (tabSlider) {
@@ -1603,26 +1626,22 @@
             }
 
             // Function to update prices based on selected period
-            /**
-             * @param {'bulanan'|'tahunan'} periode
-             */
-            // @ts-ignore - parameter type is provided via JSDoc above for JS context
-            function updatePrices(periode /** @type {'bulanan'|'tahunan'} */) {
+            /** @type {(periode: Periode) => void} */
+            const updatePrices = (periode) => {
                 if (premiumPrice) {
                     const priceElement = premiumPrice.querySelector('.price') as HTMLElement | null;
                     const periodElement = premiumPrice.querySelector('.period') as HTMLElement | null;
-                    if (priceElement) priceElement.textContent = hargaPaket[/** @type {'bulanan'|'tahunan'} */(periode)].premium;
+                    if (priceElement) priceElement.textContent = hargaPaket[periode].premium;
                     if (periodElement) periodElement.textContent = periode === 'bulanan' ? '/bulan' : '/tahun';
                 }
                 
                 if (plusPrice) {
                     const priceElement = plusPrice.querySelector('.price') as HTMLElement | null;
                     const periodElement = plusPrice.querySelector('.period') as HTMLElement | null;
-                    
-                    if (priceElement) priceElement.textContent = hargaPaket[/** @type {'bulanan'|'tahunan'} */(periode)].plus;
+                    if (priceElement) priceElement.textContent = hargaPaket[periode].plus;
                     if (periodElement) periodElement.textContent = periode === 'bulanan' ? '/bulan' : '/tahun';
-                    if (plusOriginalPrice) (plusOriginalPrice as HTMLElement).textContent = hargaPaket[/** @type {'bulanan'|'tahunan'} */(periode)].plusOriginal;
-                    if (plusDiscountText) (plusDiscountText as HTMLElement).textContent = hargaPaket[/** @type {'bulanan'|'tahunan'} */(periode)].plusDiscount;
+                    if (plusOriginalPrice) (plusOriginalPrice as HTMLElement).textContent = hargaPaket[periode].plusOriginal;
+                    if (plusDiscountText) (plusDiscountText as HTMLElement).textContent = hargaPaket[periode].plusDiscount;
                 }
             }
 

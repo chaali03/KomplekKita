@@ -260,11 +260,27 @@
 						initLottieAnimations();
 						
 						// GSAP and ScrollTrigger initialized successfully
+						console.log('GSAP and ScrollTrigger initialized successfully');
 					} catch (error) {
 						console.warn('GSAP initialization failed:', error);
 					}
 				} else {
-					console.warn('GSAP or ScrollTrigger not loaded');
+					console.warn('GSAP or ScrollTrigger not loaded - retrying in 1 second');
+					// Retry after 1 second
+					setTimeout(() => {
+						if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+							try {
+								gsap.registerPlugin(ScrollTrigger);
+								initBuildWithFlowAnimations();
+								initLottieAnimations();
+								console.log('GSAP and ScrollTrigger initialized on retry');
+							} catch (error) {
+								console.warn('GSAP retry failed:', error);
+							}
+						} else {
+							console.warn('GSAP or ScrollTrigger still not loaded after retry');
+						}
+					}, 1000);
 				}
 			}, 300);
 		});
