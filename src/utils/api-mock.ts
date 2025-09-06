@@ -198,20 +198,11 @@ export class ApiMock {
 
 // Enhanced fetch wrapper with mock fallback
 export async function fetchWithMock(url: string, options: RequestInit = {}): Promise<Response> {
-  // In production or when backend is unavailable, use mock data
+  // Always use mock data when called from this function
+  // This prevents recursive calls to the real API
   if (url.startsWith('/api/')) {
-    try {
-      // Try real API first (for development)
-      const response = await fetch(url, options);
-      if (response.ok) return response;
-      
-      // If API fails, fall back to mock
-      console.warn(`API ${url} failed, using mock data`);
-      return handleMockRequest(url, options);
-    } catch (error) {
-      console.warn(`API ${url} error, using mock data:`, error);
-      return handleMockRequest(url, options);
-    }
+    console.info(`Using mock data for ${url}`);
+    return handleMockRequest(url, options);
   }
   
   // Non-API requests go through normally
