@@ -44,7 +44,8 @@ export async function safeFetch(url: string, options: RequestInit = {}): Promise
       
     } catch (error) {
       console.warn(`API ${url} failed with error:`, error);
-      console.info('Falling back to mock data');
+      console.info('Network error - falling back to mock data');
+      // For network errors, always use mock
       return fetchWithMock(url, defaultOptions);
     }
   }

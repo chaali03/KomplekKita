@@ -1,7 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/sections/Header.astro';
-import Footer from '../components/sections/Footer.astro';
+import SimpleFooter from '../components/SimpleFooter.astro';
+
 ---
 
 <Layout>
@@ -222,7 +223,7 @@ import Footer from '../components/sections/Footer.astro';
     </div>
   </section>
 
-  <Footer />
+  <SimpleFooter />
 </Layout>
 
 <style>
@@ -1576,8 +1577,15 @@ import Footer from '../components/sections/Footer.astro';
         const items = await res.json();
 
         if (Array.isArray(items) && items.length) {
-          // Clear existing demo cards if any
-          komplekGrid.innerHTML = '';
+          // Check if we already have cards (demo cards exist)
+          const existingCards = komplekGrid.querySelectorAll('.komplek-card');
+          const hasExistingCards = existingCards.length > 0;
+          
+          // Only clear if we're replacing with different data
+          if (!hasExistingCards || items.length > 2) {
+            komplekGrid.innerHTML = '';
+          }
+          
           const placeholderPhoto = 'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=150&h=150&fit=crop&crop=face';
 
           items.forEach((it: any, idx: number) => {
@@ -1585,9 +1593,16 @@ import Footer from '../components/sections/Footer.astro';
             const deskripsi = it?.deskripsi || (it?.profil || '');
             const lat = it?.lat ? String(it.lat) : '';
             const lng = it?.lng ? String(it.lng) : '';
-            const ketua = it?.ketua || '-';
+            const ketua = it?.ketua_rt || it?.ketua || '-';
             const bendahara = it?.bendahara || '-';
             const alamat = it?.alamat || ''; // backend may not provide alamat; leave blank
+            
+            // Add a "Demo" tag for mock data komplek names  
+            const isDemo = ['Anggrek Asri', 'Melati Indah'].includes(name);
+            
+            // Skip if this card already exists (prevent duplicates)
+            const existingCard = komplekGrid.querySelector(`[data-name="${name.toLowerCase()}"]`);
+            if (existingCard) return;
 
             const card = document.createElement('div');
             card.className = 'komplek-card';
@@ -1615,13 +1630,14 @@ import Footer from '../components/sections/Footer.astro';
                     <h3 class="card-title">${name}</h3>
                     <p class="card-location">${lat && lng ? 'Lokasi tersedia' : 'Lokasi belum diatur'}</p>
                   </div>
+                  ${isDemo ? '<span class="demo-tag">Demo</span>' : ''}
                 </div>
                 <div class="card-body">
-                  <p class="card-description">${deskripsi || 'Tidak ada deskripsi.'}</p>
+                  <p class="card-description">${deskripsi || 'Komunitas terpercaya dengan sistem manajemen yang modern dan terintegrasi.'}</p>
                 </div>
                 <div class="card-footer">
                   <button class="demo-btn">
-                    <span class="btn-text">Lihat Detail</span>
+                    <span class="btn-text">${isDemo ? 'Lihat Demo' : 'Lihat Detail'}</span>
                     <div class="btn-icon"><i class="fas fa-arrow-right"></i></div>
                     <div class="btn-ripple"></div>
                   </button>
@@ -1662,4 +1678,4 @@ import Footer from '../components/sections/Footer.astro';
   });
 </script>
 
-<Footer />
+<SimpleFooter />
