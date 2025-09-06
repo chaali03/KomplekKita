@@ -1419,6 +1419,33 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       localStorage.setItem('trx_filters', JSON.stringify(state.filters));
     }
 
+    // Apply focus from query string (e.g., /admin/transaksi?focus_date=YYYY-MM-DD&type=Keluar)
+    (function applyFocusFromQuery(){
+      try{
+        const params = new URLSearchParams(location.search);
+        const fd = params.get('focus_date');
+        const t = params.get('type');
+        if (fd) {
+          state.filters.start = fd;
+          state.filters.end = fd;
+          state.filters.page = 1;
+        }
+        if (t && (t === 'Masuk' || t === 'Keluar' || t === 'Semua')) {
+          state.filters.type = t;
+        }
+        // Reflect UI immediately if any focus applied
+        if (fd || t) {
+          const s = document.getElementById('filter-start'); if (s) s.value = state.filters.start;
+          const e = document.getElementById('filter-end'); if (e) e.value = state.filters.end;
+          document.querySelectorAll('.chip-group .chip[data-type]').forEach(btn=>{
+            btn.classList.toggle('active', btn.dataset.type===state.filters.type);
+            btn.setAttribute('aria-selected', btn.dataset.type===state.filters.type ? 'true':'false');
+          });
+          saveFilters();
+        }
+      }catch(_){ /* noop */ }
+    })();
+
     // Filtering + Sorting
     function applyFilters(){
       // Use the same filtering logic as laporan.ts over the shared storage

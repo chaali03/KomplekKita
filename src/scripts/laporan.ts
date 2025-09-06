@@ -2432,9 +2432,9 @@ function handleReportSubmit(event: Event) {
   const txTypeRaw = (document.getElementById('tx-type') as HTMLSelectElement | null)?.value || '';
   const txCategory = (document.getElementById('tx-category') as HTMLSelectElement | null)?.value || '';
   const txAmount = Number((document.getElementById('tx-amount') as HTMLInputElement | null)?.value || '0') || 0;
-  // Normalize: any non-"Keluar" value is treated as internal "Masuk" (covers UI option "Pemasukkan")
+  // Pemetaan tipe: jika user memilih 'Transaksi' perlakukan sebagai 'Keluar' (uang kas berkurang)
   const txType: TxType | undefined = txTypeRaw
-    ? (txTypeRaw === 'Keluar' ? 'Keluar' : 'Masuk')
+    ? (txTypeRaw === 'Keluar' || txTypeRaw === 'Transaksi' ? 'Keluar' : 'Masuk')
     : undefined;
   if (txDate) {
     if (!startDate) startDate = txDate;
@@ -2510,6 +2510,15 @@ function handleReportSubmit(event: Event) {
   closeDrawer();
   showToast('Laporan berhasil dibuat dan disimpan', 'success');
   try { addAdminNotif('info', 'Laporan Keuangan Baru', `Laporan "${title}" berhasil dibuat.`) } catch {}
+  // Jika laporan menyertakan transaksi (snapshot), arahkan admin ke halaman Daftar Transaksi
+  try {
+    if (snapshot && snapshot.txAmount && snapshot.txAmount > 0) {
+      const d = snapshot.txDate || new Date().toISOString().slice(0,10);
+      const t = snapshot.txType || 'Keluar';
+      // beri sedikit waktu agar storage event tersinkron
+      setTimeout(() => { window.location.href = `/admin/transaksi?focus_date=${encodeURIComponent(d)}&type=${encodeURIComponent(t)}`; }, 400);
+    }
+  } catch {}
 }
 
 // New: Handle transaction creation from the drawer form

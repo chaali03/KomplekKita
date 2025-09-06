@@ -19,8 +19,12 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
         <span class="role">Profil Komplek</span>
       </div>
     </a>
+    <a href="/login" class="admin-login" aria-label="Login Admin">
+      <i class="fas fa-user-shield" aria-hidden="true"></i>
+      <span>Login Admin</span>
+    </a>
   </div>
-  </header>
+</header>
 
 <section class="hero-section">
   <div class="container">
@@ -46,6 +50,7 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
       <ul class="links" id="mobile-links" role="menu">
         <li role="none"><a href="/userlaporan" class="nav-link" role="menuitem"><i class="fas fa-chart-bar"></i> Laporan</a></li>
         <li role="none"><a href="/userinfo" class="nav-link" role="menuitem"><i class="fas fa-info-circle"></i> Informasi</a></li>
+        <li role="none"><a href="/login" class="nav-link" role="menuitem"><i class="fas fa-user-shield"></i> Login Admin</a></li>
       </ul>
     </nav>
 
@@ -190,6 +195,24 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     -webkit-text-fill-color: transparent;
   }
   .main-header .logo:hover .brand-glow { opacity: 1; }
+
+  /* Admin login button */
+  .admin-login {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: #0f172a;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+    border: 1px solid #0b1220;
+    box-shadow: 0 6px 16px rgba(15,23,42,0.25);
+    transition: transform .15s ease, box-shadow .15s ease, background .2s ease;
+  }
+  .admin-login:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(15,23,42,0.35); background: #111827; }
+  .admin-login i { font-size: 0.95rem; }
 
   /* Mini profile (match admin-topbar style) */
   .user-mini {
@@ -431,6 +454,16 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     .main-header .logo .brand-text { font-size: 1.25rem; }
     .user-mini .info .name { font-size: 12px; }
     .user-mini .info .role { display: none; }
+    /* Show compact admin-login icon on mobile */
+    .admin-login { 
+      display: inline-flex !important;
+      padding: 6px 8px;
+      border-radius: 10px;
+      font-weight: 900;
+      gap: 6px;
+    }
+    .admin-login span { display: none; }
+    .admin-login i { font-size: 1rem; }
     .hero-section::before {
       width: 100%;
       height: 40%;
@@ -530,6 +563,8 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
   }
 
   @media (max-width: 480px) {
+    /* Keep compact admin-login icon visible on very small screens */
+    .admin-login { display: inline-flex !important; }
     .welcome-text {
       font-size: 2rem;
     }
