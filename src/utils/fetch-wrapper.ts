@@ -7,19 +7,26 @@ const isProduction = typeof window !== 'undefined' &&
 
 // Enhanced fetch with automatic fallback
 export async function safeFetch(url: string, options: RequestInit = {}): Promise<Response> {
-  // Add default headers
+  // Add default headers, but avoid forcing Content-Type for FormData
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
+  const defaultHeaders: HeadersInit = {
+    'Accept': 'application/json',
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+    ...(options.headers || {})
+  };
   const defaultOptions: RequestInit = {
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      ...options.headers
-    },
-    ...options
+    ...options,
+    headers: defaultHeaders
   };
 
   // In production, always use mock for API calls
   if (isProduction && url.startsWith('/api/')) {
     console.info(`Production mode: Using mock data for ${url}`);
+    return fetchWithMock(url, defaultOptions);
+  }
+
+  // Special-case: always use mock for letter-templates during development
+  if (!isProduction && url.startsWith('/api/letter-templates')) {
     return fetchWithMock(url, defaultOptions);
   }
 
@@ -33,14 +40,9 @@ export async function safeFetch(url: string, options: RequestInit = {}): Promise
         return response;
       }
       
-      // If 404 or 5xx, try mock fallback
-      if (response.status === 404 || response.status >= 500) {
-        console.warn(`API ${url} returned ${response.status}, trying mock fallback`);
-        return fetchWithMock(url, defaultOptions);
-      }
-      
-      // For other errors (4xx), return the response as-is
-      return response;
+      // For any non-OK status in dev, fallback to mock
+      console.warn(`API ${url} returned ${response.status}, trying mock fallback`);
+      return fetchWithMock(url, defaultOptions);
       
     } catch (error) {
       console.warn(`API ${url} failed with error:`, error);

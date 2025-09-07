@@ -79,6 +79,12 @@ const mockIuran = {
   // example: '2025-09': { nominal: 250000, total_warga: 40, payments: [{ warga_id: 1, warga_name: 'Demo', amount: 250000, payment_date: '2025-09-05', status:'paid', notes: '' }], created_at: '2025-09-01' }
 };
 
+// In-memory mock for letter templates
+let letterTemplates = [
+  { id: 1, name: 'Surat Pengantar RT', category: 'umum', updated_at: '2025-09-01', size: 1024 },
+  { id: 2, name: 'Surat Keterangan Domisili', category: 'administrasi', updated_at: '2025-09-03', size: 2048 },
+];
+
 export default function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -215,6 +221,59 @@ export default function handler(req, res) {
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', `attachment; filename="template-${type}.csv"`);
       return res.status(200).send(csvContent);
+    }
+
+    // ==== LETTER TEMPLATES (Mock) ====
+    if (path === '/letter-templates' && method === 'GET') {
+      // Optional filtering could be added; for now return all
+      return res.status(200).json({ status: 'success', data: letterTemplates });
+    }
+
+    if (path === '/letter-templates' && method === 'POST') {
+      const body = req.body || {};
+      const name = body.name || body.title || 'Template Baru';
+      const category = body.category || 'umum';
+      const id = letterTemplates.length ? Math.max(...letterTemplates.map(t => t.id)) + 1 : 1;
+      const item = { id, name, category, updated_at: new Date().toISOString().slice(0,10), size: 1024 };
+      letterTemplates.push(item);
+      return res.status(201).json({ status: 'success', data: item });
+    }
+
+    if (path.startsWith('/letter-templates/') && method === 'PUT') {
+      const id = Number(path.split('/')[2]);
+      const idx = letterTemplates.findIndex(t => t.id === id);
+      if (idx === -1) return res.status(404).json({ status: 'error', message: 'Template not found' });
+      const body = req.body || {};
+      letterTemplates[idx] = {
+        ...letterTemplates[idx],
+        name: body.name || letterTemplates[idx].name,
+        category: body.category || letterTemplates[idx].category,
+        updated_at: new Date().toISOString().slice(0,10),
+      };
+      return res.status(200).json({ status: 'success', data: letterTemplates[idx] });
+    }
+
+    if (path.startsWith('/letter-templates/') && method === 'DELETE') {
+      const id = Number(path.split('/')[2]);
+      const idx = letterTemplates.findIndex(t => t.id === id);
+      if (idx === -1) return res.status(404).json({ status: 'error', message: 'Template not found' });
+      letterTemplates.splice(idx, 1);
+      return res.status(200).json({ status: 'success' });
+    }
+
+    if (path === '/letter-templates/replace' && method === 'POST') {
+      // In a real backend, you'd handle multipart/form-data. Here we just respond success.
+      return res.status(200).json({ status: 'success', message: 'Templates replaced' });
+    }
+
+    if (path.startsWith('/letter-templates/') && path.endsWith('/download') && method === 'GET') {
+      const id = Number(path.split('/')[2]);
+      const item = letterTemplates.find(t => t.id === id);
+      if (!item) return res.status(404).json({ status: 'error', message: 'Template not found' });
+      const content = `Surat: ${item.name}\nKategori: ${item.category}\nTanggal: ${item.updated_at}`;
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Content-Disposition', `attachment; filename="${item.name.replace(/\s+/g,'_')}.txt"`);
+      return res.status(200).send(content);
     }
 
     // Default response for unknown endpoints
