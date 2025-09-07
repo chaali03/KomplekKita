@@ -1502,9 +1502,9 @@ import Footer from '../components/sections/Footer.astro';
             const lastNameInput = document.getElementById('last-name');
             const emailInput = document.getElementById('email');
             
-            if (firstNameInput) setupRealTimeValidation(firstNameInput as HTMLInputElement, 'user');
-            if (lastNameInput) setupRealTimeValidation(lastNameInput as HTMLInputElement, 'user');
-            if (emailInput) setupRealTimeValidation(emailInput as HTMLInputElement, 'user');
+            if (firstNameInput instanceof HTMLInputElement) setupRealTimeValidation(firstNameInput, 'user');
+            if (lastNameInput instanceof HTMLInputElement) setupRealTimeValidation(lastNameInput, 'user');
+            if (emailInput instanceof HTMLInputElement) setupRealTimeValidation(emailInput, 'user');
         // Initialize AOS with error handling
         if (typeof AOS !== 'undefined') {
             try {
