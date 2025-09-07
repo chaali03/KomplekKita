@@ -103,6 +103,7 @@ interface ReportTotals { income: number; expense: number; balance: number }
 // Snapshot of transaction-style inputs used when creating a report
 interface ReportSnapshot {
   txType?: TxType;
+  formType?: string;
   txDate?: string; // ISO date
   txCategory?: string;
   txAmount?: number;
@@ -859,7 +860,7 @@ function renderReportsTable() {
     const snap = report.snapshot;
     const snapHtml = snap ? `
         <div class="cell-sub">
-          ${snap.txType ? `${snap.txType}` : ''}
+          ${snap.formType ? `${snap.formType}` : ''}
           ${snap.txDate ? ` ${formatDateID(snap.txDate)}` : ''}
           ${snap.txCategory ? ` • ${snap.txCategory}` : ''}
           ${typeof snap.txAmount === 'number' && (snap.txAmount as number) > 0 ? ` • Rp ${formatIDR(snap.txAmount as number)}` : ''}
@@ -870,7 +871,7 @@ function renderReportsTable() {
 
     // Determine fields for new columns
     const periodeText = snap?.txDate ? formatDateID(snap.txDate) : `${formatDateID(report.startDate)} — ${formatDateID(report.endDate)}`;
-    const tipeText = snap?.txType ? snap.txType : '-';
+    const tipeText = snap?.formType ? snap.formType : (report.type || '-');
     const ketText = (snap?.txDesc && snap.txDesc.trim().length > 0) ? snap.txDesc : '-';
     const jumlahText = (typeof snap?.txAmount === 'number' && (snap?.txAmount as number) > 0) ? `<span class="amount">${formatIDR(snap!.txAmount as number)}</span>` : '-';
     // Align with dashboard's latest balance
@@ -2472,7 +2473,7 @@ function handleReportSubmit(event: Event) {
 
   // Build snapshot from transaction-style inputs
   const snapshot: ReportSnapshot | undefined = (txDate || txDesc || txType || txCategory || txAmount > 0)
-    ? { txType, txDate, txCategory, txAmount, txDesc }
+    ? { txType, formType: txTypeRaw || undefined, txDate, txCategory, txAmount, txDesc }
     : undefined;
 
   // If snapshot represents a valid transaction, also add it to the ledger
@@ -2510,13 +2511,11 @@ function handleReportSubmit(event: Event) {
   closeDrawer();
   showToast('Laporan berhasil dibuat dan disimpan', 'success');
   try { addAdminNotif('info', 'Laporan Keuangan Baru', `Laporan "${title}" berhasil dibuat.`) } catch {}
-  // Jika laporan menyertakan transaksi (snapshot), arahkan admin ke halaman Daftar Transaksi
+  // Jangan auto-redirect ke halaman Transaksi; biarkan admin tetap di halaman Laporan
+  // Informasikan saja via notifikasi jika snapshot berisi transaksi
   try {
     if (snapshot && snapshot.txAmount && snapshot.txAmount > 0) {
-      const d = snapshot.txDate || new Date().toISOString().slice(0,10);
-      const t = snapshot.txType || 'Keluar';
-      // beri sedikit waktu agar storage event tersinkron
-      setTimeout(() => { window.location.href = `/admin/transaksi?focus_date=${encodeURIComponent(d)}&type=${encodeURIComponent(t)}`; }, 400);
+      addAdminNotif('info', 'Transaksi Tersimpan', 'Transaksi dari snapshot juga telah ditambahkan ke buku besar.');
     }
   } catch {}
 }
