@@ -28,8 +28,12 @@
 </div>
 
 <div class="card-subheader">
-  <div id="uinfo-chips" class="chips">
-    <button class="chip pressable" data-cat="all" aria-pressed="true"><i class="fas fa-layer-group"></i> Semua</button>
+  <div id="uinfo-chips" class="chips is-scrollable" role="tablist" aria-label="Filter kategori informasi">
+    <button class="chip pressable active" data-cat="all" aria-pressed="true" role="tab" aria-selected="true">
+      <i class="fas fa-layer-group" aria-hidden="true"></i>
+      <span>Semua</span>
+      <span class="chip-count" id="uinfo-count-all" aria-hidden="true">0</span>
+    </button>
     <span id="uinfo-tag-host"></span>
   </div>
 </div>
@@ -78,7 +82,11 @@
 .select-box .select{ height:40px; border-radius:12px; border:1px solid var(--outline); background:var(--surface-2); padding:0 10px; font-weight:800; color:var(--text); }
 
 .card-subheader{ padding:8px 0; }
-.chips{ display:flex; gap:8px; overflow-x:auto; padding:4px 2px 8px; }
+.chips{ display:flex; gap:10px; padding:6px 4px 10px; align-items:center; }
+.chips.is-scrollable{ overflow-x:auto; scrollbar-width: thin; scrollbar-color: #ced8e6 transparent; }
+.chips.is-scrollable::-webkit-scrollbar{ height:8px; }
+.chips.is-scrollable::-webkit-scrollbar-thumb{ background:#ced8e6; border-radius:999px; }
+.chips.is-scrollable{-webkit-mask-image: linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%); }
 
 .card-body{ padding: 0; }
 
@@ -124,7 +132,14 @@
 
 /* Chips and segmented */
 .chips{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; }
-.chip{ display:inline-flex; align-items:center; gap:8px; height:34px; padding:0 12px; border-radius:999px; border:1px solid #d9e7f8; background:#eef5ff; color:#0a5fb3; font-weight:800; white-space:nowrap; }
+.chip{ display:inline-flex; align-items:center; gap:8px; height:36px; padding:0 14px; border-radius:999px; border:1px solid #e3ebf6; background:linear-gradient(180deg, #f5f9ff, #eef5ff); color:#0a5fb3; font-weight:800; white-space:nowrap; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06); transition: transform .08s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease; }
+.chip .chip-count{ display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:22px; padding:0 6px; border-radius:999px; background:#e9effa; color:#274063; font-size:.75rem; font-weight:900; border:1px solid #d7e3f3; }
+.chip:hover{ transform: translateY(-1px); box-shadow: 0 6px 16px rgba(15,23,42,.10); }
+.chip:focus-visible{ outline: 0; box-shadow: 0 0 0 3px rgba(37,99,235,.28);
+  border-color:#cfe0f2; }
+.chip.active{ background: linear-gradient(135deg, #0a5fb3, #2563eb); color:#fff; border-color: #1e40af; }
+.chip.active .chip-count{ background: rgba(255,255,255,.18); color:#fff; border-color: rgba(255,255,255,.24); }
+.pressable:active{ transform: scale(.98); }
 .segmented{ display:inline-flex; background:#f0f5fb; border:1px solid #e1eaf6; border-radius:12px; padding:2px; }
 .segmented .seg-btn{ display:inline-flex; align-items:center; gap:6px; height:34px; padding:0 12px; border:0; background:transparent; color:#24303f; font-weight:800; border-radius:10px; }
 .segmented .seg-btn.active{ background:#fff; border:1px solid #e6eef7; }
@@ -502,13 +517,21 @@
 
     function renderTagChips(){
       if (!tagHost) return;
+      const items = informations.length > 0 ? informations : readData();
       const tags = readTags();
+      // compute counts
+      const counts = tags.reduce((acc, t)=>{ acc[t] = (items||[]).filter(x=>x.category===t).length; return acc; }, {});
+      const allCount = (items||[]).length;
+      const allEl = document.getElementById('uinfo-count-all'); if (allEl) allEl.textContent = String(allCount);
       tagHost.innerHTML = '';
       tags.forEach(tag => {
         const btn = document.createElement('button');
         btn.className = 'chip pressable';
         btn.setAttribute('data-cat', tag);
-        btn.innerHTML = `<i class="fas fa-tag"></i> ${tag}`;
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-selected', 'false');
+        const count = counts[tag] ?? 0;
+        btn.innerHTML = `<i class="fas fa-tag" aria-hidden="true"></i> <span>${tag}</span> <span class="chip-count" aria-hidden="true">${count}</span>`;
         tagHost.appendChild(btn);
       });
       setActiveChips();
@@ -522,6 +545,7 @@
         const pressed = isAll ? activeCat === 'all' : isCat;
         b.classList.toggle('active', pressed);
         b.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+        b.setAttribute('aria-selected', pressed ? 'true' : 'false');
       });
       render();
     }
