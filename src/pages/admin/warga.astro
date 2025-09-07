@@ -55,6 +55,26 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
           </div>
           
           <div class="template-actions-right">
+            <div class="template-search" role="group" aria-label="Filter Template">
+              <div class="input-icon">
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <input id="tpl-q" type="text" placeholder="Cari (nama/jenis/deskripsi)" />
+              </div>
+              <select id="tpl-type" aria-label="Jenis Surat">
+                <option value="">Semua Jenis</option>
+                <option value="pengantar">Surat Pengantar</option>
+                <option value="undangan">Surat Undangan</option>
+                <option value="keterangan">Surat Keterangan</option>
+                <option value="izin">Surat Izin</option>
+                <option value="pemberitahuan">Surat Pemberitahuan</option>
+                <option value="lainnya">Lainnya</option>
+              </select>
+              <select id="tpl-active" aria-label="Status Aktif">
+                <option value="">Semua</option>
+                <option value="true">Aktif</option>
+                <option value="false">Nonaktif</option>
+              </select>
+            </div>
             <div class="template-stats">
               <div class="template-stat">
                 <div class="template-stat-number" id="totalTemplates">0</div>
@@ -1285,9 +1305,14 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     
     .template-actions-right {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.75rem;
       align-items: center;
     }
+    .template-search { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-right: 4px; }
+    .template-search .input-icon { position: relative; }
+    .template-search .input-icon i { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#64748b; font-size: 0.9rem; }
+    .template-search .input-icon input { padding:10px 12px 10px 34px; border:1px solid #cbd5e1; border-radius:10px; min-width:220px; }
+    .template-search select { padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; background:#fff; color:#0f172a; }
     
     .template-stats {
       display: flex;
@@ -1911,6 +1936,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       chartMap: new Map(), // id -> chart instance
       templates: [], // Letter templates
       editingTemplateId: null,
+      templateFilters: { q:'', type:'', active:'' }
     };
 
     // Admin notification helper (safe wrapper around global KKNotif API)
@@ -2862,7 +2888,31 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         return;
       }
 
-      grid.innerHTML = state.templates.map(template => `
+      // Apply template filters
+      const tf = state.templateFilters;
+      const q = String(tf.q||'').trim().toLowerCase();
+      let rows = state.templates.slice();
+      if (q) {
+        rows = rows.filter(t =>
+          String(t.name||'').toLowerCase().includes(q)
+          || String(t.type||'').toLowerCase().includes(q)
+          || String(t.description||'').toLowerCase().includes(q)
+        );
+      }
+      if (tf.type) {
+        rows = rows.filter(t => String(t.type||'').toLowerCase() === String(tf.type).toLowerCase());
+      }
+      if (tf.active !== '') {
+        const want = tf.active === 'true';
+        rows = rows.filter(t => Boolean(t.is_active || t.active) === want);
+      }
+
+      if (rows.length === 0) {
+        grid.innerHTML = `<div class="template-empty-state"><h4 class="template-empty-title">Tidak ada hasil</h4><p class="template-empty-desc">Ubah kata kunci atau filter untuk menemukan template.</p></div>`;
+        return;
+      }
+
+      grid.innerHTML = rows.map(template => `
         <div class="template-card">
           <div class="template-card-header">
             <div class="template-icon ${template.type || ''}">
@@ -3253,6 +3303,23 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
         ['q','f-rt','f-rw','f-status','f-verified'].forEach(id=> document.getElementById(id).value='');
         renderTable();
         renderCharts();
+      });
+
+      // Bind template filters
+      const mapTpl = [
+        ['tpl-q','q'],
+        ['tpl-type','type'],
+        ['tpl-active','active']
+      ];
+      mapTpl.forEach(([id, key])=>{
+        const el = document.getElementById(id);
+        if (!el || (el as any)._tplBound) return;
+        (el as any)._tplBound = true;
+        el.addEventListener('input', ()=>{
+          const val = (el as HTMLInputElement).value;
+          state.templateFilters[key] = val;
+          renderTemplates();
+        }, { passive:true });
       });
     }
 
