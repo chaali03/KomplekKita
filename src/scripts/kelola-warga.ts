@@ -55,14 +55,14 @@ function $$<T extends Element = HTMLElement>(
 ): T[] {
   return Array.from(ctx.querySelectorAll(sel)) as T[];
 }
-function on<E extends Event>(
+function onEvt<E extends Event>(
   el: HTMLElement | Document | Window,
   evt: string,
   handler: (ev: E) => void
 ): void {
   el.addEventListener(evt, handler as EventListener);
 }
-function onDelegated<E extends Event>(
+function onEvtDelegated<E extends Event>(
   el: HTMLElement | Document,
   evt: string,
   selector: string,
@@ -320,12 +320,75 @@ function renderDocs(): void {
   });
 }
 
+// Handle document files for a warga row (single implementation)
+function handleFiles(fileList: FileList | null): void {
+  if (!fileList || !fileList.length) return;
+  if (!row) return;
+  row.documents = row.documents ?? [];
+
+  for (const f of Array.from(fileList)) {
+    const file = f as File;
+    row.documents.push({
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      time: Date.now(),
+    });
+    row.history = (row.history ?? []).concat({
+      time: Date.now(),
+      action: "add-doc",
+      by: "admin",
+      detail: file.name,
+    });
+  }
+  row.updated_at = Date.now();
+  persistRow();
+  renderDocs();
+  renderHistory();
+  renderHeader();
+  toast("Dokumen ditambahkan", "success");
+}
+
 function renderAll(): void {
   renderHeader();
   renderForm();
   renderHistory();
   renderMembers();
   renderDocs();
+}
+
+// -------------------- Init --------------------
+function init(): void {
+  load();
+  
+  // Try to get data from warga.astro page first
+  const wargaData = localStorage.getItem('warga_data_v1');
+  if (wargaData) {
+    try {
+      const parsed = JSON.parse(wargaData);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        warga = parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to parse warga data from localStorage:', e);
+    }
+  }
+  
+  row = warga.find((x) => x.id === id) ?? null;
+
+  if (!row) {
+    renderAll();
+    return;
+  }
+
+  draft = deepClone(row) as Partial<WargaRow>;
+  row.anggota_keluarga = row.anggota_keluarga ?? [];
+  row.documents = row.documents ?? [];
+  row.history = row.history ?? [];
+
+  dirty = false;
+  bindEvents();
+  renderAll();
 }
 
 // -------------------- Validation --------------------
@@ -572,15 +635,15 @@ function bindEvents(): void {
   // Numeric-only filters
   const numFields = ["nik", "kk", "rt", "rw", "telepon", "m-nik"];
   numFields.forEach((id) => {
-    onDelegated(document, "input", `#${id}`, handleNumericInput(id));
+    onEvtDelegated(document, "input", `#${id}`, handleNumericInput(id));
   });
 
   // Main form inputs
-  on($("#form-main") as HTMLElement, "input", handleFormInput);
-  on($("#form-main") as HTMLElement, "change", handleFormChange);
+  onEvt($("#form-main") as HTMLElement, "input", handleFormInput);
+  onEvt($("#form-main") as HTMLElement, "change", handleFormChange);
 
   // Save
-  on($("#btn-save") as HTMLElement, "click", () => {
+  onEvt($("#btn-save") as HTMLElement, "click", () => {
     if (!validateForm(true)) {
       toast("Periksa kembali input yang belum valid", "warn");
       return;
@@ -607,7 +670,7 @@ function bindEvents(): void {
   });
 
   // Verify toggle
-  on($("#btn-verify") as HTMLElement, "click", () => {
+  onEvt($("#btn-verify") as HTMLElement, "click", () => {
     if (!row) return;
     row.verified = !row.verified;
     row.updated_at = Date.now();
@@ -628,7 +691,7 @@ function bindEvents(): void {
   });
 
   // Delete row (open confirm modal)
-  on($("#btn-delete") as HTMLElement, "click", () => {
+  onEvt($("#btn-delete") as HTMLElement, "click", () => {
     const title = document.getElementById("confirm-title") as HTMLElement;
     const msg = document.getElementById("confirm-message") as HTMLElement;
     const yes = document.getElementById("btn-confirm-yes") as HTMLButtonElement;
@@ -639,7 +702,7 @@ function bindEvents(): void {
   });
 
   // Confirm modal actions
-  on($("#btn-confirm-yes") as HTMLElement, "click", () => {
+  onEvt($("#btn-confirm-yes") as HTMLElement, "click", () => {
     const yesBtn = document.getElementById("btn-confirm-yes") as HTMLButtonElement;
     const act = yesBtn.dataset.action;
     if (!row) return;
@@ -695,13 +758,13 @@ function bindEvents(): void {
   });
 
   // Close modals
-  onDelegated(document, "click", "[data-close-modal]", () => {
+  onEvtDelegated(document, "click", "[data-close-modal]", () => {
     ["#modal-member", "#modal-confirm"].forEach((sel) => {
       const m = document.querySelector<HTMLElement>(sel);
       m?.setAttribute("aria-hidden", "true");
     });
   });
-  on(document, "keydown", (e: KeyboardEvent) => {
+  onEvt(document, "keydown", (e: KeyboardEvent) => {
     if (e.key === "Escape") {
       ["#modal-member", "#modal-confirm"].forEach((sel) => {
         const m = document.querySelector<HTMLElement>(sel);
@@ -717,14 +780,14 @@ function bindEvents(): void {
     addBtnSel.disabled = true;
     addBtnSel.title = "Fitur tambah anggota dinonaktifkan";
     addBtnSel.style.display = "none"; // hide button entirely
-    on(addBtnSel, "click", (e: Event) => {
+    onEvt(addBtnSel, "click", (e: Event) => {
       e.preventDefault();
       toast("Fitur tambah anggota dinonaktifkan", "warn");
     });
   }
 
   // Members table actions
-  onDelegated(document, "click", "button[data-edit]", (e: Event) => {
+  onEvtDelegated(document, "click", "button[data-edit]", (e: Event) => {
     const target = e.target as HTMLElement;
     const btn = target.closest("button") as HTMLButtonElement | null;
     const idx = parseInt(btn?.getAttribute("data-edit") ?? "0", 10);
@@ -733,7 +796,7 @@ function bindEvents(): void {
     openMemberModal(m, idx);
   });
 
-  onDelegated(document, "click", "button[data-del]", (e: Event) => {
+  onEvtDelegated(document, "click", "button[data-del]", (e: Event) => {
     const target = e.target as HTMLElement;
     const btn = target.closest("button") as HTMLButtonElement | null;
     const idx = parseInt(btn?.getAttribute("data-del") ?? "0", 10);
@@ -748,7 +811,7 @@ function bindEvents(): void {
   });
 
   const saveMemberBtn = document.getElementById("btn-save-member") as HTMLElement | null;
-  if (saveMemberBtn) on(saveMemberBtn, "click", () => {
+  if (saveMemberBtn) onEvt(saveMemberBtn, "click", () => {
     if (!validateMemberForm(true)) return;
     const nm = document.getElementById("m-nama") as HTMLInputElement;
     const nk = document.getElementById("m-nik") as HTMLInputElement;
@@ -793,88 +856,27 @@ function bindEvents(): void {
 
   const btnBrowse = $("#btn-browse") as HTMLElement | null;
   if (btnBrowse) {
-    on(btnBrowse, "click", () => {
+    onEvt(btnBrowse, "click", () => {
       fi?.click();
     });
   }
   
   if (dz) {
-    on(dz, "dragover", handleDragOver);
-    on(dz, "dragleave", handleDragLeave);
-    on(dz, "drop", handleDrop);
+    onEvt(dz, "dragover", handleDragOver);
+    onEvt(dz, "dragleave", handleDragLeave);
+    onEvt(dz, "drop", handleDrop);
   }
-  if (fi) on(fi, "change", handleFileInput);
+  if (fi) onEvt(fi, "change", handleFileInput);
 
   // Delete doc button
-  onDelegated(document, "click", "button[data-doc-del]", handleDocDeleteClick);
+  onEvtDelegated(document, "click", "button[data-doc-del]", handleDocDeleteClick);
 
   // Keyboard shortcut Save
-  on(document, "keydown", handleKeydown);
+  onEvt(document, "keydown", handleKeydown);
 
   // Warn before unload if dirty
   window.addEventListener("beforeunload", handleBeforeUnload);
 }
 
-function handleFiles(fileList: FileList | null): void {
-  if (!fileList || !fileList.length) return;
-  if (!row) return;
-  row.documents = row.documents ?? [];
-
-  for (const f of Array.from(fileList)) {
-    const file = f as File;
-    row.documents.push({
-      name: file.name,
-      type: file.type,
-      size: file.size,
-      time: Date.now(),
-    });
-    row.history = (row.history ?? []).concat({
-      time: Date.now(),
-      action: "add-doc",
-      by: "admin",
-      detail: file.name,
-    });
-  }
-  row.updated_at = Date.now();
-  persistRow();
-  renderDocs();
-  renderHistory();
-  renderHeader();
-  toast("Dokumen ditambahkan", "success");
-}
-
-// -------------------- Init --------------------
-function init(): void {
-  load();
-  
-  // Try to get data from warga.astro page first
-  const wargaData = localStorage.getItem('warga_data_v1');
-  if (wargaData) {
-    try {
-      const parsed = JSON.parse(wargaData);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        warga = parsed;
-      }
-    } catch (e) {
-      console.warn('Failed to parse warga data from localStorage:', e);
-    }
-  }
-  
-  row = warga.find((x) => x.id === id) ?? null;
-
-  if (!row) {
-    renderAll();
-    return;
-  }
-
-  draft = deepClone(row) as Partial<WargaRow>;
-  row.anggota_keluarga = row.anggota_keluarga ?? [];
-  row.documents = row.documents ?? [];
-  row.history = row.history ?? [];
-
-  dirty = false;
-  bindEvents();
-  renderAll();
-}
 
 document.addEventListener("DOMContentLoaded", init);
