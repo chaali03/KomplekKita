@@ -1302,6 +1302,86 @@ import SimpleFooter from '../components/SimpleFooter.astro';
       font-size: 0.75rem;
     }
   }
+
+  /* Additional responsive refinements */
+  @media (max-width: 1024px) {
+    .container {
+      padding: 0 1.25rem;
+    }
+    .komplek-grid {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .komplek-grid {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+    .card-content {
+      padding: 1.25rem;
+    }
+    .card-title {
+      font-size: 1.125rem;
+    }
+    .card-description {
+      font-size: 0.95rem;
+    }
+    /* Prevent badge from overflowing on narrow screens */
+    .demo-tag {
+      right: 1rem;
+      transform: none;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+    }
+    /* Improve search UI spacing */
+    .search-box {
+      padding: 0.5rem 0.75rem;
+    }
+    .search-results-count {
+      font-size: 0.8rem;
+      padding: 0.5rem 0.75rem;
+    }
+    /* Modal sizing and scrolling */
+    .modal-container {
+      width: calc(100% - 2rem);
+      max-width: 720px;
+    }
+    .modal-body {
+      max-height: calc(90vh - 110px);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .card-header {
+      gap: 0.75rem;
+    }
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      font-size: 1rem;
+    }
+    .btn-icon i { font-size: 0.9rem; }
+    .demo-btn {
+      padding: 0.8rem 1rem;
+      font-size: 0.9rem;
+    }
+    /* Map height tweak for small devices */
+    #mapFrame {
+      height: 240px !important;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .section-title {
+      font-size: 1.75rem;
+    }
+    .search-input { font-size: 0.95rem; }
+    .no-results { padding: 2.5rem 1rem; }
+  }
+
 </style>
 
 <script>
@@ -1570,7 +1650,7 @@ import SimpleFooter from '../components/SimpleFooter.astro';
     async function fetchAndRenderKomplek() {
       if (!komplekGrid) return;
       try {
-        const { safeFetch } = await import('/src/utils/fetch-wrapper.js');
+        const { safeFetch } = await import('../utils/fetch-wrapper.ts');
 
         const res = await safeFetch('/api/komplek');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1677,5 +1757,3 @@ import SimpleFooter from '../components/SimpleFooter.astro';
     fetchAndRenderKomplek();
   });
 </script>
-
-<SimpleFooter />
