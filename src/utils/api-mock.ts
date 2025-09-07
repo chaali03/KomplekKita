@@ -109,6 +109,21 @@ const mockData = {
   ] as TransaksiData[]
 };
 
+// Mock storage for letter templates
+type LetterTemplate = { id: number; name: string; category: string; updated_at: string; size?: number; type?: string; description?: string };
+const LT_STORAGE_KEY = 'kk_letter_templates';
+function readLT(): LetterTemplate[] | null {
+  try { const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(LT_STORAGE_KEY) : null; return raw ? JSON.parse(raw) : null; } catch { return null; }
+}
+function writeLT(arr: LetterTemplate[]) {
+  try { if (typeof localStorage !== 'undefined') localStorage.setItem(LT_STORAGE_KEY, JSON.stringify(arr)); } catch {}
+}
+let letterTemplates: LetterTemplate[] = readLT() || [
+  { id: 1, name: 'Surat Pengantar RT', category: 'umum', updated_at: '2025-09-01', size: 1024, type: 'pengantar' },
+  { id: 2, name: 'Surat Keterangan Domisili', category: 'administrasi', updated_at: '2025-09-03', size: 2048, type: 'keterangan' },
+];
+writeLT(letterTemplates);
+
 // API Mock Functions
 export class ApiMock {
   private static delay(ms: number = 300) {
@@ -240,6 +255,72 @@ async function handleMockRequest(url: string, options: RequestInit): Promise<Res
         status: 200,
         headers: { 'Content-Type': 'text/csv' }
       });
+    } else if (path === '/api/letter-templates' && method === 'GET') {
+      const resp = { status: 'success', data: letterTemplates };
+      return new Response(JSON.stringify(resp), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    } else if (path === '/api/letter-templates' && method === 'POST') {
+      // Accept FormData or JSON; create a new template
+      const now = new Date().toISOString().slice(0, 10);
+      const id = letterTemplates.length ? Math.max(...letterTemplates.map(t => t.id)) + 1 : 1;
+      let name = 'Template Baru';
+      let category = 'umum';
+      let type = 'pengantar';
+      let description = '';
+      const bodyInit: any = (options as any).body;
+      if (typeof FormData !== 'undefined' && bodyInit instanceof FormData) {
+        name = (bodyInit.get('name') as string) || name;
+        category = (bodyInit.get('category') as string) || category;
+        type = (bodyInit.get('type') as string) || type;
+        description = (bodyInit.get('description') as string) || description;
+      } else if (typeof bodyInit === 'string') {
+        try { const parsed = JSON.parse(bodyInit); name = parsed.name || name; category = parsed.category || category; type = parsed.type || type; description = parsed.description || description; } catch {}
+      }
+      const item: LetterTemplate = { id, name, category, updated_at: now, type, description };
+      letterTemplates.push(item);
+      writeLT(letterTemplates);
+      const resp = { status: 'success', data: item };
+      return new Response(JSON.stringify(resp), { status: 201, headers: { 'Content-Type': 'application/json' } });
+    } else if (path.startsWith('/api/letter-templates/') && method === 'PUT') {
+      const id = Number(path.split('/')[3]);
+      const idx = letterTemplates.findIndex(t => t.id === id);
+      if (idx === -1) {
+        return new Response(JSON.stringify({ status: 'error', message: 'Template not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+      }
+      const now = new Date().toISOString().slice(0, 10);
+      const bodyInit: any = (options as any).body;
+      let patch: Partial<LetterTemplate> = {};
+      if (typeof FormData !== 'undefined' && bodyInit instanceof FormData) {
+        patch = {
+          name: (bodyInit.get('name') as string) || letterTemplates[idx].name,
+          category: (bodyInit.get('category') as string) || letterTemplates[idx].category,
+          type: (bodyInit.get('type') as string) || letterTemplates[idx].type,
+          description: (bodyInit.get('description') as string) || letterTemplates[idx].description,
+        };
+      } else if (typeof bodyInit === 'string') {
+        try { const parsed = JSON.parse(bodyInit); patch = parsed; } catch {}
+      }
+      letterTemplates[idx] = { ...letterTemplates[idx], ...patch, updated_at: now };
+      writeLT(letterTemplates);
+      return new Response(JSON.stringify({ status: 'success', data: letterTemplates[idx] }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    } else if (path.startsWith('/api/letter-templates/') && method === 'DELETE') {
+      const id = Number(path.split('/')[3]);
+      const idx = letterTemplates.findIndex(t => t.id === id);
+      if (idx === -1) {
+        return new Response(JSON.stringify({ status: 'error', message: 'Template not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+      }
+      letterTemplates.splice(idx, 1);
+      writeLT(letterTemplates);
+      return new Response(JSON.stringify({ status: 'success' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    } else if (path === '/api/letter-templates/replace' && method === 'POST') {
+      return new Response(JSON.stringify({ status: 'success', message: 'Templates replaced' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    } else if (path.startsWith('/api/letter-templates/') && path.endsWith('/download') && method === 'GET') {
+      const id = Number(path.split('/')[3]);
+      const item = letterTemplates.find(t => t.id === id);
+      if (!item) {
+        return new Response(JSON.stringify({ status: 'error', message: 'Template not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+      }
+      const content = `Surat: ${item.name}\nKategori: ${item.category}\nTanggal: ${item.updated_at}`;
+      return new Response(new Blob([content], { type: 'text/plain' }), { status: 200, headers: { 'Content-Type': 'text/plain' } });
     } else {
       // Default empty response for unknown endpoints
       data = { message: 'Mock endpoint not implemented', path };

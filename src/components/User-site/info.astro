@@ -234,7 +234,8 @@
     renderLoadingState();
     
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/letter-templates');
+      const { safeFetch } = await import('/src/utils/fetch-wrapper.ts');
+      const response = await safeFetch('/api/letter-templates');
       const result = await response.json();
       
       if (result.status === 'success') {
@@ -322,14 +323,22 @@
   // Download template function
   window.downloadTemplate = async function(id) {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/letter-templates/${id}/download`);
+      const { safeFetch } = await import('/src/utils/fetch-wrapper.ts');
+      const response = await safeFetch(`/api/letter-templates/${id}/download`);
       
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `template_${id}.pdf`;
+        // Try to infer filename from current grid item text
+        try {
+          const btn = document.querySelector(`.format-button[onclick="downloadTemplate(${id})"]`);
+          const title = btn?.querySelector('.button-title')?.textContent?.trim();
+          a.download = (title ? `${title}.txt` : `template_${id}.txt`);
+        } catch(_) {
+          a.download = `template_${id}.txt`;
+        }
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
