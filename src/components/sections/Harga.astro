@@ -1573,6 +1573,25 @@
                 }
             };
 
+            // Hoisted function to update prices based on selected period
+            /** @type {(periode: Periode) => void} */
+            function updatePrices(periode) {
+                if (premiumPrice) {
+                    const priceElement = premiumPrice.querySelector('.price');
+                    const periodElement = premiumPrice.querySelector('.period');
+                    if (priceElement) (priceElement as HTMLElement).textContent = hargaPaket[periode].premium;
+                    if (periodElement) (periodElement as HTMLElement).textContent = periode === 'bulanan' ? '/bulan' : '/tahun';
+                }
+                if (plusPrice) {
+                    const priceElement = plusPrice.querySelector('.price');
+                    const periodElement = plusPrice.querySelector('.period');
+                    if (priceElement) (priceElement as HTMLElement).textContent = hargaPaket[periode].plus;
+                    if (periodElement) (periodElement as HTMLElement).textContent = periode === 'bulanan' ? '/bulan' : '/tahun';
+                    if (plusOriginalPrice) (plusOriginalPrice as HTMLElement).textContent = hargaPaket[periode].plusOriginal;
+                    if (plusDiscountText) (plusDiscountText as HTMLElement).textContent = hargaPaket[periode].plusDiscount;
+                }
+            }
+
             // Initialize ARIA states
             if (tabsContainer) tabsContainer.setAttribute('role', 'tablist');
             tabBtns.forEach((btn) => {
@@ -1625,25 +1644,7 @@
                 initial.click();
             }
 
-            // Function to update prices based on selected period
-            /** @type {(periode: Periode) => void} */
-            const updatePrices = (periode) => {
-                if (premiumPrice) {
-                    const priceElement = premiumPrice.querySelector('.price') as HTMLElement | null;
-                    const periodElement = premiumPrice.querySelector('.period') as HTMLElement | null;
-                    if (priceElement) priceElement.textContent = hargaPaket[periode].premium;
-                    if (periodElement) periodElement.textContent = periode === 'bulanan' ? '/bulan' : '/tahun';
-                }
-                
-                if (plusPrice) {
-                    const priceElement = plusPrice.querySelector('.price') as HTMLElement | null;
-                    const periodElement = plusPrice.querySelector('.period') as HTMLElement | null;
-                    if (priceElement) priceElement.textContent = hargaPaket[periode].plus;
-                    if (periodElement) periodElement.textContent = periode === 'bulanan' ? '/bulan' : '/tahun';
-                    if (plusOriginalPrice) (plusOriginalPrice as HTMLElement).textContent = hargaPaket[periode].plusOriginal;
-                    if (plusDiscountText) (plusDiscountText as HTMLElement).textContent = hargaPaket[periode].plusDiscount;
-                }
-            }
+            
 
             // FAQ accordion functionality
             const faqItems = document.querySelectorAll('.faq-item');
