@@ -12,17 +12,19 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
       <span class="brand-text">KomplekKita</span>
       <span class="brand-glow" aria-hidden="true"></span>
     </a>
-    <a href="/userinfo" class="user-mini" aria-label="Profil Komplek">
-      <img src={avatarUrl} alt="Foto Profil" />
-      <div class="info">
-        <span class="name">{complexName}</span>
-        <span class="role">Profil Komplek</span>
-      </div>
-    </a>
-    <a href="/login" class="admin-login" aria-label="Login Admin">
-      <i class="fas fa-user-shield" aria-hidden="true"></i>
-      <span>Login Admin</span>
-    </a>
+    <div class="right-actions">
+      <a href="/userinfo" class="user-mini" aria-label="Profil Komplek">
+        <img src={avatarUrl} alt="Foto Profil" />
+        <div class="info">
+          <span class="name">{complexName}</span>
+          <span class="role">Profil Komplek</span>
+        </div>
+      </a>
+      <a href="/login" class="admin-login" aria-label="Login Admin">
+        <i class="fas fa-user-shield" aria-hidden="true"></i>
+        <span>Login Admin</span>
+      </a>
+    </div>
   </div>
 </header>
 
@@ -136,12 +138,25 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
 
+  /* Container helper for consistent page width */
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
   .header-content {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: 12px;
-    flex-wrap: nowrap;
+  }
+
+  .right-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px; /* keep items close on desktop */
   }
 
   /* Brand logo (match admin-sidebar style, scoped to header) */
@@ -218,20 +233,21 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
   .user-mini {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 4px 6px 4px 4px;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-    background: #fff;
+    gap: 10px;
+    padding: 6px 10px 6px 6px;
+    border-radius: 14px;
+    border: 1px solid #e6eef7;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
     color: #111827;
     text-decoration: none;
-    transition: background .16s ease, border-color .16s ease;
+    transition: background .16s ease, border-color .16s ease, box-shadow .2s ease, transform .12s ease;
+    box-shadow: 0 6px 16px rgba(12, 31, 60, 0.06);
   }
-  .user-mini:hover { background: #f9fafb; border-color: #d1d5db; }
-  .user-mini img { width: 34px; height: 34px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.06); object-fit: cover; }
-  .user-mini .info { display: grid; line-height: 1.1; }
-  .user-mini .info .name { font-weight: 800; font-size: 13px; }
-  .user-mini .info .role { font-size: 11px; color: #6b7280; }
+  .user-mini:hover { background: #f9fafb; border-color: #d1d5db; transform: translateY(-1px); box-shadow: 0 10px 24px rgba(12, 31, 60, 0.10); }
+  .user-mini img { width: 38px; height: 38px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,.06); object-fit: cover; }
+  .user-mini .info { display: grid; line-height: 1.15; }
+  .user-mini .info .name { font-weight: 900; font-size: 14px; letter-spacing: .1px; }
+  .user-mini .info .role { font-size: 11.5px; color: #6b7280; }
 
   /* Welcome Section */
   .selamat-datang {
@@ -448,7 +464,8 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
   }
 
   @media (max-width: 768px) {
-    .header-content { gap: 8px; }
+    .header-content { gap: 8px; grid-template-columns: 1fr auto; }
+    .user-mini { justify-self: start; }
     /* Ensure the mobile menu overlay is not hidden by ancestor stacking contexts */
     .parent-nav { z-index: 2000; }
     .main-header .logo .brand-text { font-size: 1.25rem; }
