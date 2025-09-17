@@ -11,6 +11,7 @@
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "@studio-freight/lenis": "^1.0.19",
+    "@supabase/supabase-js": "^2.57.4",
     "aos": "^2.3.1",
     "astro": "^5.13.2",
     "composer": "^4.1.0",

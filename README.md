@@ -92,3 +92,8 @@ Platform manajemen komplek perumahan modern dengan fitur lengkap untuk pengelola
 4. Anda akan diarahkan ke dashboard user dengan akses penuh
 
 ## 🌟 **Fitur Utama**
+
+### **Database & Backend**
+- **Supabase Integration**: Aplikasi ini terintegrasi dengan Supabase sebagai backend service untuk manajemen database dan autentikasi.
+- **PostgreSQL Database**: Menggunakan database PostgreSQL yang dihosting di Supabase untuk penyimpanan data yang aman dan terstruktur.
+- **Authentication**: Sistem autentikasi yang aman menggunakan Supabase Auth.
