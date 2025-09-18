@@ -482,9 +482,9 @@ import SimpleFooter from '../components/SimpleFooter.astro';
   /* Grid */
   .komplek-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-    margin-bottom: 4rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: clamp(1rem, 2.5vw, 1.5rem);
+    margin-bottom: 3rem;
   }
 
   /* Card Styles */
@@ -492,14 +492,14 @@ import SimpleFooter from '../components/SimpleFooter.astro';
     position: relative;
     border-radius: var(--radius-lg);
     overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform .18s ease, box-shadow .25s ease, border-color .25s ease;
     cursor: pointer;
     group: card;
-    margin-top: 1.5rem;
+    margin-top: 1rem;
   }
 
   .komplek-card:hover {
-    transform: translateY(-8px) scale(1.02);
+    transform: translateY(-4px);
   }
 
   .card-bg {
@@ -508,13 +508,13 @@ import SimpleFooter from '../components/SimpleFooter.astro';
     background: var(--surface-card);
     border: 1px solid var(--border-soft);
     backdrop-filter: blur(20px);
-    transition: all 0.4s ease;
+    transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
   }
 
   .komplek-card:hover .card-bg {
     background: rgba(255, 255, 255, 0.98);
     border-color: var(--primary-light);
-    box-shadow: var(--shadow-lg), 0 0 40px rgba(37, 99, 235, 0.1);
+    box-shadow: var(--shadow), 0 6px 22px rgba(37, 99, 235, 0.10);
   }
 
   .card-glow {
@@ -524,7 +524,7 @@ import SimpleFooter from '../components/SimpleFooter.astro';
       rgba(37, 99, 235, 0.1) 0%, 
       transparent 40%);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.2s ease;
   }
 
   .komplek-card:hover .card-glow {
@@ -545,13 +545,13 @@ import SimpleFooter from '../components/SimpleFooter.astro';
     height: 100%;
     background: linear-gradient(90deg, rgba(255,255,255,0.0), rgba(255,255,255,0.35), rgba(255,255,255,0.0));
     pointer-events: none;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.25s ease;
     opacity: 0;
   }
 
   .card-content {
     position: relative;
-    padding: 2rem;
+    padding: 1.25rem 1.25rem 1rem;
     z-index: 1;
     height: 100%;
     display: flex;
@@ -560,15 +560,15 @@ import SimpleFooter from '../components/SimpleFooter.astro';
 
   .card-header {
     display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 1rem;
   }
 
   .card-icon {
     position: relative;
-    width: 56px;
-    height: 56px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     display: flex;
@@ -576,7 +576,7 @@ import SimpleFooter from '../components/SimpleFooter.astro';
     justify-content: center;
     color: white;
     font-size: 1.25rem;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     flex-shrink: 0;
     overflow: hidden;
   }
@@ -602,42 +602,46 @@ import SimpleFooter from '../components/SimpleFooter.astro';
   }
 
   .card-title {
-    font-size: 1.25rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: var(--text-primary);
-    margin: 0 0 0.25rem 0;
+    margin: 0 0 2px 0;
   }
 
   .card-location {
-    font-size: 0.875rem;
+    font-size: 0.84rem;
     color: var(--text-light);
     margin: 0;
   }
 
   .demo-tag {
     position: absolute;
-    top: 1rem;
-    right: -3rem;
+    top: 0.65rem;
+    right: -2.4rem;
     background: var(--primary);
     color: white;
-    padding: 0.5rem 3rem;
-    font-size: 0.8rem;
-    font-weight: 600;
+    padding: 0.4rem 2.4rem;
+    font-size: 0.72rem;
+    font-weight: 700;
     transform: rotate(45deg);
-    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.25);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
   }
 
   .card-body {
     flex: 1;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
   }
 
   .card-description {
     color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
+    line-height: 1.55;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .card-footer {
@@ -651,22 +655,22 @@ import SimpleFooter from '../components/SimpleFooter.astro';
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
-    padding: 1rem 1.5rem;
+    padding: 0.85rem 1.25rem;
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     border: none;
-    border-radius: 14px;
+    border-radius: 12px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.93rem;
     cursor: pointer;
     overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    transition: transform .18s ease, box-shadow .25s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
   }
 
   .demo-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.3);
   }
 
   .btn-icon {
@@ -687,6 +691,11 @@ import SimpleFooter from '../components/SimpleFooter.astro';
 
   .demo-btn:hover .btn-ripple {
     transform: translateX(100%);
+  }
+
+  /* Responsive adjustments for card and CTA */
+  @media (min-width: 700px) {
+    .demo-btn { width: auto; min-width: 220px; align-self: flex-start; }
   }
 
   /* No Results */
