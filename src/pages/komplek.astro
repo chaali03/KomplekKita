@@ -492,14 +492,27 @@ import SimpleFooter from '../components/SimpleFooter.astro';
     position: relative;
     border-radius: var(--radius-lg);
     overflow: hidden;
-    transition: transform .18s ease, box-shadow .25s ease, border-color .25s ease;
+    transition: transform .18s ease, box-shadow .25s ease, border-color .25s ease, opacity .3s ease;
     cursor: pointer;
     group: card;
     margin-top: 1rem;
+    opacity: 0;
+    transform: translateY(12px);
+    will-change: transform, opacity;
   }
 
   .komplek-card:hover {
     transform: translateY(-4px);
+  }
+
+  .komplek-card.reveal-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .komplek-card { opacity: 1; transform: none; }
+    .komplek-card.reveal-in { opacity: 1; transform: none; }
   }
 
   .card-bg {
@@ -551,7 +564,7 @@ import SimpleFooter from '../components/SimpleFooter.astro';
 
   .card-content {
     position: relative;
-    padding: 1.25rem 1.25rem 1rem;
+    padding: 1rem 1rem 0.75rem;
     z-index: 1;
     height: 100%;
     display: flex;
@@ -636,12 +649,10 @@ import SimpleFooter from '../components/SimpleFooter.astro';
 
   .card-description {
     color: var(--text-secondary);
-    line-height: 1.55;
+    line-height: 1.65;
     margin-bottom: 1rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    display: block;
+    overflow: visible;
   }
 
   .card-footer {
@@ -650,22 +661,24 @@ import SimpleFooter from '../components/SimpleFooter.astro';
 
   .demo-btn {
     position: relative;
-    width: 100%;
+    width: auto;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
-    padding: 0.85rem 1.25rem;
+    padding: 0.6rem 1rem;
     background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     font-weight: 600;
-    font-size: 0.93rem;
+    font-size: 0.9rem;
     cursor: pointer;
     overflow: hidden;
     transition: transform .18s ease, box-shadow .25s ease;
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    align-self: flex-start;
+    min-width: 140px;
   }
 
   .demo-btn:hover {
@@ -1406,6 +1419,37 @@ import SimpleFooter from '../components/SimpleFooter.astro';
     const modalClose = document.getElementById('modalClose') as HTMLElement;
     const modalTitle = document.getElementById('modalTitle') as HTMLElement;
     
+    // Reveal observer for entry animation
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let revealObserver: IntersectionObserver | null = null;
+    function observeCard(el: Element, index = 0){
+      if (!(el instanceof HTMLElement)) return;
+      if (prefersReduced){ el.classList.add('reveal-in'); return; }
+      if (!revealObserver){
+        revealObserver = new IntersectionObserver((entries)=>{
+          entries.forEach((entry)=>{
+            const target = entry.target as HTMLElement;
+            if (entry.isIntersecting){
+              const idx = Number(target.getAttribute('data-reveal-idx')||'0');
+              const delay = Math.min(idx * 70, 350); // stagger up to 350ms
+              setTimeout(()=> target.classList.add('reveal-in'), delay);
+              revealObserver && revealObserver.unobserve(target);
+            }
+          });
+        }, { root: null, rootMargin: '0px 0px -10% 0px', threshold: 0.15 });
+      }
+      revealObserver.observe(el);
+    }
+    function initRevealForExisting(){
+      const list = Array.from(document.querySelectorAll('.komplek-card'));
+      list.forEach((el, i)=>{
+        (el as HTMLElement).setAttribute('data-reveal-idx', String(i));
+        observeCard(el, i);
+      });
+    }
+    // Initialize for server-rendered card(s)
+    initRevealForExisting();
+
     // Modal elements
     const komplekAlamat = document.getElementById('komplekAlamat') as HTMLElement;
     const ketuaRTNama = document.getElementById('ketuaRTNama') as HTMLElement;
@@ -1657,111 +1701,8 @@ import SimpleFooter from '../components/SimpleFooter.astro';
 
     // Dynamically fetch komplek list from backend and render
     async function fetchAndRenderKomplek() {
-      if (!komplekGrid) return;
-      try {
-        const { safeFetch } = await import('../utils/fetch-wrapper.ts');
-
-        const res = await safeFetch('/api/komplek');
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const items = await res.json();
-
-        if (Array.isArray(items) && items.length) {
-          // Check if we already have cards (demo cards exist)
-          const existingCards = komplekGrid.querySelectorAll('.komplek-card');
-          const hasExistingCards = existingCards.length > 0;
-          
-          // Only clear if we're replacing with different data
-          if (!hasExistingCards || items.length > 2) {
-            komplekGrid.innerHTML = '';
-          }
-          
-          const placeholderPhoto = 'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?w=150&h=150&fit=crop&crop=face';
-
-          items.forEach((it: any, idx: number) => {
-            const name = it?.nama || 'Komplek';
-            const deskripsi = it?.deskripsi || (it?.profil || '');
-            const lat = it?.lat ? String(it.lat) : '';
-            const lng = it?.lng ? String(it.lng) : '';
-            const ketua = it?.ketua_rt || it?.ketua || '-';
-            const bendahara = it?.bendahara || '-';
-            const alamat = it?.alamat || ''; // backend may not provide alamat; leave blank
-            
-            // Add a "Demo" tag for mock data komplek names  
-            const isDemo = ['Anggrek Asri', 'Melati Indah'].includes(name);
-            
-            // Skip if this card already exists (prevent duplicates)
-            const existingCard = komplekGrid.querySelector(`[data-name="${name.toLowerCase()}"]`);
-            if (existingCard) return;
-
-            const card = document.createElement('div');
-            card.className = 'komplek-card';
-            card.setAttribute('data-aos', 'fade-up');
-            card.setAttribute('data-aos-delay', String(100 + (idx * 100)));
-            card.setAttribute('data-name', name.toLowerCase());
-            if (lat) card.setAttribute('data-lat', lat);
-            if (lng) card.setAttribute('data-lng', lng);
-            card.setAttribute('data-ketua-rt', ketua);
-            card.setAttribute('data-ketua-rt-foto', placeholderPhoto);
-            card.setAttribute('data-bendahara', bendahara);
-            card.setAttribute('data-bendahara-foto', placeholderPhoto);
-            if (alamat) card.setAttribute('data-alamat', alamat);
-
-            card.innerHTML = `
-              <div class="card-glow"></div>
-              <div class="card-bg"></div>
-              <div class="card-content">
-                <div class="card-header">
-                  <div class="card-icon">
-                    <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=100&h=100&fit=crop&crop=center" alt="${name}" class="complex-image">
-                    <div class="icon-pulse"></div>
-                  </div>
-                  <div class="card-info">
-                    <h3 class="card-title">${name}</h3>
-                    <p class="card-location">${lat && lng ? 'Lokasi tersedia' : 'Lokasi belum diatur'}</p>
-                  </div>
-                  ${isDemo ? '<span class="demo-tag">Demo</span>' : ''}
-                </div>
-                <div class="card-body">
-                  <p class="card-description">${deskripsi || 'Komunitas terpercaya dengan sistem manajemen yang modern dan terintegrasi.'}</p>
-                </div>
-                <div class="card-footer">
-                  <button class="demo-btn">
-                    <span class="btn-text">${isDemo ? 'Lihat Demo' : 'Lihat Detail'}</span>
-                    <div class="btn-icon"><i class="fas fa-arrow-right"></i></div>
-                    <div class="btn-ripple"></div>
-                  </button>
-                </div>
-              </div>
-            `;
-
-            komplekGrid.appendChild(card);
-          });
-
-          // Rebind demo buttons to open modal with current data attributes
-          document.querySelectorAll('.demo-btn').forEach(btn => {
-            btn.addEventListener('click', function(this: HTMLElement) {
-              const card = this.closest('.komplek-card') as HTMLElement;
-              if (!card) return;
-              const data = {
-                komplekName: card.querySelector('.card-title')?.textContent || 'Komplek',
-                lat: card.getAttribute('data-lat') || '',
-                lng: card.getAttribute('data-lng') || '',
-                alamat: card.getAttribute('data-alamat') || '-',
-                ketuaRT: card.getAttribute('data-ketua-rt') || '-',
-                ketuaRTFoto: card.getAttribute('data-ketua-rt-foto') || '',
-                bendahara: card.getAttribute('data-bendahara') || '-',
-                bendaharaFoto: card.getAttribute('data-bendahara-foto') || ''
-              };
-              openModal(data);
-            });
-          });
-
-          performSearch();
-        }
-      } catch (e) {
-        // Keep demo cards if fetch fails
-        console.warn('Gagal memuat data komplek:', e);
-      }
+      // Disabled per request: keep only the existing demo card and do not append others
+      return;
     }
     fetchAndRenderKomplek();
   });
