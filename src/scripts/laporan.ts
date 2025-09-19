@@ -161,6 +161,7 @@ script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
 document.head.appendChild(script);
 
 // Utility functions
+
 const formatIDR = (amount: number) => new Intl.NumberFormat('id-ID', {
   style: 'currency',
   currency: 'IDR',
@@ -176,6 +177,13 @@ const formatDateID = (dateStr: string) => new Date(dateStr + 'T00:00:00').toLoca
 });
 
 const toISODate = (date: Date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
+// Smooth refresh scheduler (coalesce multiple quick changes)
+let refreshTimer: number | null = null;
+function scheduleRefresh(delay = 120) {
+  if (refreshTimer) { clearTimeout(refreshTimer as any); refreshTimer = null; }
+  refreshTimer = window.setTimeout(() => { refreshTimer = null; refreshDashboard(); }, delay);
+}
 
 // ===== API helpers (shared style with other pages) =====
 function resolveKomplekId(){
@@ -217,6 +225,215 @@ function showToast(message: string, type: 'info' | 'success' | 'warning' | 'erro
     error: 'Terjadi Kesalahan'
   } as const;
   showCenterModal(titleMap[type] || 'Informasi', message, type);
+}
+
+// ===== Print Only Report Table =====
+function printReportOnly(){
+  const table = document.querySelector('.data-table') as HTMLTableElement | null;
+  const thead = table?.querySelector('thead') as HTMLElement | null;
+  const tbody = document.getElementById('report-tbody') as HTMLElement | null;
+  if (!table || !thead || !tbody) { window.print(); return }
+
+  // Build HTML snapshot
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Cetak Laporan</title>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#111827;margin:24px}
+    h2{margin:0 0 12px 0}
+    .meta{color:#6b7280;margin-bottom:12px}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{border:1px solid #e5e7eb;padding:8px;vertical-align:top}
+    th{background:#f3f4f6;text-align:left}
+    td.text-right, th.text-right{text-align:right}
+    .amount{font-weight:700}
+  </style></head><body>
+  <h2>Laporan Keuangan</h2>
+  <div class="meta">Periode: ${appState.filters.start} — ${appState.filters.end}</div>
+  <table>
+    ${thead.outerHTML}
+    ${tbody.outerHTML}
+  </table>
+  </body></html>`;
+
+  // Use a hidden iframe for reliable printing without popup blockers
+  const frame = document.createElement('iframe');
+  frame.style.position = 'fixed';
+  frame.style.right = '0';
+  frame.style.bottom = '0';
+  frame.style.width = '0';
+  frame.style.height = '0';
+  frame.style.border = '0';
+  document.body.appendChild(frame);
+  const doc = frame.contentWindow?.document;
+  if (!doc) { document.body.removeChild(frame); window.print(); return }
+  doc.open();
+  doc.write(html);
+  doc.close();
+  frame.onload = () => {
+    try { frame.contentWindow?.focus(); frame.contentWindow?.print(); } finally { setTimeout(()=> document.body.removeChild(frame), 300); }
+  };
+}
+
+// ===== Import Modal Handlers (CSV/XLSX) =====
+type ParsedRow = { date: string; description: string; category: string; type: TxType; amount: number };
+type RowIssue = { index: number; errors: string[] };
+
+function bindImportHandlers(){
+  const modal = document.getElementById('import-modal');
+  const errorModal = document.getElementById('import-error-modal');
+  const errorMsg = document.getElementById('import-error-message');
+  const btnOpen = document.getElementById('btn-import');
+  const btnClose = document.getElementById('btn-close-import');
+  const btnCancel = document.getElementById('btn-cancel-import');
+  const btnCommit = document.getElementById('btn-commit-import');
+  const drop = document.getElementById('csv-dropzone');
+  const fileInput = document.getElementById('csv-file') as HTMLInputElement | null;
+  const summary = document.getElementById('import-summary');
+  const tbody = document.getElementById('import-tbody');
+
+  if (!modal || !drop || !fileInput || !tbody || !btnCommit) return;
+
+  const open = ()=> { (modal as HTMLElement).classList.add('show'); (modal as HTMLElement).setAttribute('aria-hidden','false'); };
+  const close = ()=> { (modal as HTMLElement).classList.remove('show'); (modal as HTMLElement).setAttribute('aria-hidden','true'); };
+  const showErr = (msg: string)=>{ if (errorMsg) errorMsg.textContent = msg; (errorModal as HTMLElement)?.classList.add('show'); };
+  document.getElementById('btn-ok-import-error')?.addEventListener('click', ()=> (errorModal as HTMLElement)?.classList.remove('show'));
+  btnOpen?.addEventListener('click', open);
+  btnClose?.addEventListener('click', close);
+  btnCancel?.addEventListener('click', close);
+  (modal.querySelector('.modal-backdrop') as HTMLElement)?.addEventListener('click', close);
+  drop.addEventListener('click', ()=> fileInput.click());
+  drop.addEventListener('keydown', (e)=> { if ((e as KeyboardEvent).key === 'Enter' || (e as KeyboardEvent).key===' ') { e.preventDefault(); fileInput.click(); }});
+
+  const state: { rows: ParsedRow[]; issues: RowIssue[] } = { rows: [], issues: [] };
+
+  fileInput.addEventListener('change', async ()=>{
+    const file = fileInput.files?.[0];
+    if (!file) return;
+    try{
+      const ext = (file.name.split('.').pop()||'').toLowerCase();
+      if (ext==='xlsx' || ext==='xls') {
+        await ensureSheetJS();
+        const data = await file.arrayBuffer();
+        const wb = (window as any).XLSX.read(data, { type:'array' });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const json = (window as any).XLSX.utils.sheet_to_json(sheet, { header:1 }) as any[];
+        state.rows = normalizeRows(json);
+      } else {
+        const text = await file.text();
+        const lines = text.split(/\r?\n/).filter(Boolean).map(l=> l.split(',').map(s=> s.replace(/^\"|\"$/g,'')));
+        state.rows = normalizeRows(lines);
+      }
+      // Validate strictly against page data
+      const allowed = getAllowedSets();
+      state.issues = validateRowsStrict(state.rows, allowed.types, allowed.categories);
+      renderImportPreview(state.rows.slice(0,50), tbody as HTMLElement, state.issues);
+      const invalidCount = state.issues.reduce((s,i)=> s + (i.errors.length>0 ? 1 : 0), 0);
+      if (summary) summary.textContent = invalidCount>0
+        ? `Ditemukan ${state.rows.length} baris • ${invalidCount} tidak valid (lihat kolom Status).`
+        : `Ditemukan ${state.rows.length} baris siap diimpor.`;
+      (btnCommit as HTMLButtonElement).disabled = state.rows.length === 0 || invalidCount>0;
+    }catch(e:any){ console.error(e); showErr('Format tidak dikenali. Pastikan kolom: Tanggal, Keterangan, Kategori, Tipe, Jumlah.'); }
+  });
+
+  btnCommit.addEventListener('click', ()=>{
+    if (!state.rows.length) { showErr('Belum ada data untuk diimpor.'); return }
+    const invalidCount = state.issues.reduce((s,i)=> s + (i.errors.length>0 ? 1 : 0), 0);
+    if (invalidCount>0) { showErr('Masih ada baris tidak valid. Perbaiki dulu sesuai tipe/kategori yang tersedia.'); return }
+    // Backup before mutate
+    try { localStorage.setItem('import_last_backup', JSON.stringify(appState.transactions)) } catch {}
+    const before = appState.transactions.length;
+    state.rows.forEach(r=>{
+      if (!r.date || !r.amount || r.amount<=0) return;
+      appState.transactions.push({ date:r.date, type:r.type, category:r.category||'Lainnya', description:r.description||'', amount:r.amount });
+    });
+    appState.transactions.sort((a,b)=> a.date.localeCompare(b.date));
+    try { localStorage.setItem('financial_transactions_v2', JSON.stringify(appState.transactions)) } catch {}
+    close();
+    refreshDashboard();
+    showToast(`Impor selesai: ${(appState.transactions.length-before)} transaksi ditambahkan`, 'success');
+    // mark for rollback context
+    try { localStorage.setItem('import_last_count', String(appState.transactions.length-before)) } catch {}
+  });
+}
+
+function normalizeRows(rows: any[][]): ParsedRow[]{
+  if (!rows || rows.length===0) return [];
+  const header = rows[0].map((h:any)=> String(h||'').toLowerCase());
+  const idx = {
+    date: header.findIndex((h:string)=> ['tanggal','date'].includes(h)),
+    desc: header.findIndex((h:string)=> ['keterangan','description','desc'].includes(h)),
+    cat: header.findIndex((h:string)=> ['kategori','category'].includes(h)),
+    type: header.findIndex((h:string)=> ['tipe','type'].includes(h)),
+    amount: header.findIndex((h:string)=> ['jumlah','amount'].includes(h))
+  };
+  const out: ParsedRow[] = [];
+  for (let i=1;i<rows.length;i++){
+    const r = rows[i]||[];
+    const date = String(r[idx.date]||'').slice(0,10);
+    const description = String(r[idx.desc]||'');
+    const category = String(r[idx.cat]||'');
+    const typeRaw = String(r[idx.type]||'Masuk');
+    const amount = Number((r[idx.amount]||'').toString().replace(/[^0-9.-]/g,''))||0;
+    const type: TxType = /keluar/i.test(typeRaw) ? 'Keluar' : 'Masuk';
+    if (date && amount>0) out.push({ date, description, category, type, amount });
+  }
+  return out;
+}
+
+function getAllowedSets(){
+  const typeSet = new Set<TxType>(['Masuk','Keluar']);
+  // Try read categories from the form select to stay in sync with UI
+  const opts = Array.from(document.querySelectorAll('#tx-category option')) as HTMLOptionElement[];
+  const fromDOM = opts.map(o=> (o.value||o.textContent||'').trim()).filter(Boolean);
+  const fallback = ['Iuran','Keamanan','Donasi','Donatur','Lingkungan','Kebersihan','Sosial','Fasilitas','Administrasi'];
+  const categories = new Set<string>((fromDOM.length? fromDOM : fallback).map(x=> String(x)));
+  return { types: typeSet, categories };
+}
+
+function validateRowsStrict(rows: ParsedRow[], allowedTypes: Set<TxType>, allowedCategories: Set<string>): RowIssue[]{
+  const out: RowIssue[] = [];
+  const isoDateRe = /^\d{4}-\d{2}-\d{2}$/;
+  rows.forEach((r, idx)=>{
+    const errs: string[] = [];
+    if (!isoDateRe.test(r.date)) errs.push('Tanggal harus YYYY-MM-DD');
+    if (!allowedTypes.has(r.type)) errs.push('Tipe harus Masuk/Keluar');
+    if (!allowedCategories.has(r.category)) errs.push('Kategori tidak dikenal');
+    if (!(r.amount>0)) errs.push('Jumlah harus > 0');
+    out.push({ index: idx, errors: errs });
+  });
+  return out;
+}
+
+function renderImportPreview(rows: ParsedRow[], tbody: HTMLElement, issues: RowIssue[]){
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Tidak ada baris</td></tr>'; return }
+  tbody.innerHTML = rows.map((r, i)=> {
+    const issue = issues[i];
+    const ok = issue && issue.errors.length===0;
+    const status = ok
+      ? `<span class="badge success"><i class="fas fa-check"></i>Valid</span>`
+      : `<span class="badge error" title="${(issue?.errors||[]).join(' • ')}"><i class="fas fa-exclamation-triangle"></i>Tidak valid</span>`;
+    return `
+      <tr>
+        <td>${r.date}</td>
+        <td>${(r.type)}</td>
+        <td>${(r.category||'')}</td>
+        <td>${(r.description||'')}</td>
+        <td class="text-right">${formatIDR(r.amount)}</td>
+        <td>${status}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function rollbackLastImport(){
+  try{
+    const backup = JSON.parse(localStorage.getItem('import_last_backup')||'null');
+    if (!Array.isArray(backup)) { showToast('Tidak ada data impor terakhir untuk dibatalkan.', 'warning'); return }
+    appState.transactions = backup as Transaction[];
+    localStorage.setItem('financial_transactions_v2', JSON.stringify(appState.transactions));
+    refreshDashboard();
+    showToast('Impor terakhir dibatalkan.', 'success');
+  }catch(e){ console.warn(e); showToast('Gagal membatalkan impor.', 'error'); }
 }
 
 // Category color mapping
@@ -339,6 +556,13 @@ function applyFilterPreset(preset: string) {
   const maxDate = transactions.length ? transactions[transactions.length - 1].date : toISODate(new Date());
 
   switch (preset) {
+    case 'hari-ini': {
+      const today = new Date();
+      const iso = toISODate(today);
+      appState.filters.start = iso;
+      appState.filters.end = iso;
+      break;
+    }
     case 'bulan-ini': {
       const period = getDefaultPeriod();
       appState.filters.start = period.start;
@@ -420,6 +644,37 @@ function generateDailySeries(transactions: Transaction[]) {
     const totalExpense = dailyExpense.slice(0, index + 1).reduce((sum, amount) => sum + amount, 0);
     return totalIncome - totalExpense;
   });
+
+  // Enhance search UI: toggle clear button visibility and handle clear
+  try {
+    const searchBox = document.getElementById('search-box');
+    const searchInput = document.getElementById('filter-q') as HTMLInputElement | null;
+    const clearBtn = document.getElementById('btn-clear-search') as HTMLButtonElement | null;
+    const syncSearchState = () => { if (searchBox && searchInput) searchBox.classList.toggle('has-content', !!searchInput.value.trim()); };
+    if (searchInput && !(searchInput as any).dataset.searchBound) {
+      (searchInput as any).dataset.searchBound = '1';
+      searchInput.addEventListener('input', () => { syncSearchState(); scheduleRefresh(220); });
+      // initialize state
+      syncSearchState();
+      // ESC to clear quickly
+      searchInput.addEventListener('keydown', (ev: KeyboardEvent) => {
+        if (ev.key === 'Escape') {
+          searchInput.value = '';
+          searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      });
+    }
+    if (clearBtn && !(clearBtn as any).dataset.bound) {
+      (clearBtn as any).dataset.bound = '1';
+      clearBtn.addEventListener('click', () => {
+        if (!searchInput) return;
+        searchInput.value = '';
+        searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+        // existing input listener logic already refreshes dashboard
+        searchInput.focus();
+      });
+    }
+  } catch {}
   return { labels: dates.map(formatDateID), dates, dailyIncome, dailyExpense, cumulativeBalance };
 }
 
@@ -876,6 +1131,17 @@ function renderReportsTable() {
     const periodeText = snap?.txDate ? formatDateID(snap.txDate) : `${formatDateID(report.startDate)} — ${formatDateID(report.endDate)}`;
     const tipeText = snap?.formType ? snap.formType : (report.type || '-');
     const ketText = (snap?.txDesc && snap.txDesc.trim().length > 0) ? snap.txDesc : '-';
+    // Badge styling for type (support: Masuk, Keluar, Transaksi, Bulanan, Iuran)
+    const tipeLower = String(tipeText).toLowerCase();
+    const map = (() => {
+      if (tipeLower.includes('masuk')) return { cls: 'success', icon: 'fa-arrow-down' };
+      if (tipeLower.includes('keluar')) return { cls: 'error', icon: 'fa-arrow-up' };
+      if (tipeLower.includes('transaksi')) return { cls: 'primary', icon: 'fa-receipt' };
+      if (tipeLower.includes('bulanan')) return { cls: 'primary', icon: 'fa-calendar-alt' };
+      if (tipeLower.includes('iuran')) return { cls: 'success', icon: 'fa-coins' };
+      return { cls: 'neutral', icon: 'fa-circle' };
+    })();
+
     const jumlahText = (typeof snap?.txAmount === 'number' && (snap?.txAmount as number) > 0) ? `<span class="amount">${formatIDR(snap!.txAmount as number)}</span>` : '-';
     // Align with dashboard's latest balance
     const saldoSekarang = currentBalance;
@@ -893,8 +1159,8 @@ function renderReportsTable() {
           ` : ''}
         </td>
         <td>${periodeText}</td>
-        <td>${tipeText}</td>
-        <td>${ketText}</td>
+        <td><span class="badge ${map.cls}"><i class="fas ${map.icon}"></i>${tipeText}</span></td>
+        <td><span class="truncate-text" title="${(ketText || '').replace(/"/g,'&quot;')}">${ketText}</span></td>
         <td class="text-right num-col">${jumlahText}</td>
         <td class="text-right num-col"><span class="amount">${formatIDR(saldoSekarang)}</span></td>
         <td>
@@ -1294,18 +1560,7 @@ async function renderDuesSection() {
     }
   }
 
-  // Add prev/next month navigation buttons if not present
-  const prevBtnId = 'iuran-prev';
-  const nextBtnId = 'iuran-next';
-  if (!document.getElementById(prevBtnId) && monthInput && monthInput.parentElement){
-    const wrap = monthInput.parentElement;
-    const prevBtn = document.createElement('button'); prevBtn.id = prevBtnId; prevBtn.type='button'; prevBtn.className='btn-month'; prevBtn.innerHTML='<i class="fas fa-chevron-left" aria-hidden="true"></i>'; prevBtn.title='Bulan sebelumnya'; prevBtn.setAttribute('aria-label','Bulan sebelumnya');
-    const nextBtn = document.createElement('button'); nextBtn.id = nextBtnId; nextBtn.type='button'; nextBtn.className='btn-month'; nextBtn.innerHTML='<i class="fas fa-chevron-right" aria-hidden="true"></i>'; nextBtn.title='Bulan berikutnya'; nextBtn.setAttribute('aria-label','Bulan berikutnya');
-    wrap.insertBefore(prevBtn, monthInput);
-    wrap.insertBefore(nextBtn, monthInput.nextSibling);
-    prevBtn.addEventListener('click', ()=>{ if (!monthInput) return; monthInput.value = shiftMonth((monthInput.value||getCurrentMonth()).slice(0,7), -1); renderDuesSectionFromLocal(); });
-    nextBtn.addEventListener('click', ()=>{ if (!monthInput) return; monthInput.value = shiftMonth((monthInput.value||getCurrentMonth()).slice(0,7), +1); renderDuesSectionFromLocal(); });
-  }
+  // Rely on existing .prev-month and .next-month buttons in markup; do not inject duplicates here
 
   const paidContainer = document.getElementById('iuran-paid');
   const pendingContainer = document.getElementById('iuran-pending');
@@ -1349,11 +1604,16 @@ async function renderDuesSection() {
               const rect = btn.getBoundingClientRect();
               const x = (ev as MouseEvent).clientX - rect.left; const y = (ev as MouseEvent).clientY - rect.top;
               r.style.left = x + 'px'; r.style.top = y + 'px';
+              // for CSS radial ripple using vars
+              (btn as HTMLElement).style.setProperty('--x', x + 'px');
+              (btn as HTMLElement).style.setProperty('--y', y + 'px');
               btn.appendChild(r); setTimeout(()=> r.remove(), 500);
             } catch {}
             // loading state
             if (!btn.disabled){
               btn.disabled = true;
+              btn.setAttribute('aria-busy','true');
+              (btn as HTMLElement).blur();
               (btn as any).dataset.prev = btn.innerHTML;
               btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Memproses...</span>';
             }
@@ -1363,6 +1623,7 @@ async function renderDuesSection() {
             setTimeout(()=>{
               if (document.body.contains(btn)){
                 btn.disabled = false;
+                btn.removeAttribute('aria-busy');
                 if ((btn as any).dataset.prev) btn.innerHTML = (btn as any).dataset.prev;
               }
             }, 1200);
@@ -1393,11 +1654,16 @@ async function renderDuesSection() {
               const rect = btn.getBoundingClientRect();
               const x = (ev as MouseEvent).clientX - rect.left; const y = (ev as MouseEvent).clientY - rect.top;
               r.style.left = x + 'px'; r.style.top = y + 'px';
+              // for CSS radial ripple using vars
+              (btn as HTMLElement).style.setProperty('--x', x + 'px');
+              (btn as HTMLElement).style.setProperty('--y', y + 'px');
               btn.appendChild(r); setTimeout(()=> r.remove(), 500);
             } catch {}
             // loading state
             if (!btn.disabled){
               btn.disabled = true;
+              btn.setAttribute('aria-busy','true');
+              (btn as HTMLElement).blur();
               (btn as any).dataset.prev = btn.innerHTML;
               btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Memproses...</span>';
             }
@@ -1406,6 +1672,7 @@ async function renderDuesSection() {
             setTimeout(()=>{
               if (document.body.contains(btn)){
                 btn.disabled = false;
+                btn.removeAttribute('aria-busy');
                 if ((btn as any).dataset.prev) btn.innerHTML = (btn as any).dataset.prev;
               }
             }, 1200);
@@ -2089,8 +2356,11 @@ function updateReportPreview() {
   previewBalance.textContent = formatIDR(finalTotals.balance);
 }
 
-// Initialize application
+// Initialize application (guard to avoid double-init)
+let appInitialized = false;
 function initializeApp() {
+  if (appInitialized) return;
+  appInitialized = true;
   initializeData();
   loadReports();
   try {
@@ -2117,7 +2387,7 @@ function setupEventListeners() {
     chip.addEventListener('click', () => {
       const preset = chip.dataset.preset || '';
       applyFilterPreset(preset);
-      refreshDashboard();
+      scheduleRefresh(80);
     });
   });
 
@@ -2135,21 +2405,43 @@ function setupEventListeners() {
         const target = e.target as HTMLInputElement;
         (appState.filters as any)[key] = transform ? (transform(target.value) || 0) : target.value;
         appState.filters.preset = 'custom';
-        refreshDashboard();
+        // Use a slightly longer delay for text inputs to allow continuous typing
+        const isText = (id === 'filter-q');
+        scheduleRefresh(isText ? 220 : 120);
       });
+      // Also react on change (for date pickers) immediately but still coalesced
+      input.addEventListener('change', () => scheduleRefresh(80));
     }
   });
 
-  document.getElementById('btn-reset')?.addEventListener('click', () => {
-    applyFilterPreset('bulan-ini');
-    appState.filters.search = '';
-    appState.filters.minAmount = 0;
-    appState.filters.maxAmount = 0;
-    refreshDashboard();
-    showToast('Filter berhasil direset', 'info');
-  });
+  const btnReset = document.getElementById('btn-reset');
+  if (btnReset && !(btnReset as any).dataset.bound) {
+    (btnReset as any).dataset.bound = '1';
+    btnReset.addEventListener('click', () => {
+      applyFilterPreset('bulan-ini');
+      appState.filters.search = '';
+      appState.filters.minAmount = 0;
+      appState.filters.maxAmount = 0;
+      scheduleRefresh(80);
+      showToast('Filter berhasil direset', 'info');
+    });
+  }
 
-  document.getElementById('btn-print')?.addEventListener('click', () => { window.print() });
+  const btnPrint = document.getElementById('btn-print');
+  if (btnPrint && !(btnPrint as any).dataset.bound) {
+    (btnPrint as any).dataset.bound = '1';
+    btnPrint.addEventListener('click', () => { printReportOnly(); });
+  }
+
+  // Ensure template download buttons are bound when DOM is ready
+  const tplIds = ['btn-template-excel','btn-open-template','btn-template-keuangan'];
+  tplIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !(el as any).dataset.boundTpl){
+      (el as any).dataset.boundTpl = '1';
+      el.addEventListener('click', downloadExcelTemplate);
+    }
+  });
   document.getElementById('btn-export-csv')?.addEventListener('click', () => {
     const transactions = getFilteredTransactions();
     exportToCSV(transactions);
@@ -2231,6 +2523,11 @@ function setupEventListeners() {
   });
 
   document.addEventListener('keydown', (e: KeyboardEvent) => { if (e.key === 'Escape') closeDrawer() });
+
+  // Bind Import Modal controls (similar UX to warga.astro)
+  bindImportHandlers();
+  // Rollback last import
+  document.getElementById('btn-rollback')?.addEventListener('click', rollbackLastImport);
 }
 
 // ===== Export Modal & Logic (for laporan) =====
@@ -2258,7 +2555,7 @@ function openExport(){
   exportModal.setAttribute('aria-hidden','false');
   // Update summary with current filtered count
   const rows = getFilteredTransactions();
-  if (exportSummary) exportSummary.textContent = `Akan mengekspor ${rows.length} baris sesuai filter saat ini.`;
+  if (exportSummary) exportSummary.textContent = `Akan mengekspor ${rows.length} baris sesuai filter saat ini (${appState.filters.start} → ${appState.filters.end}).`;
 }
 
 function closeExport(){
@@ -2316,8 +2613,27 @@ function downloadBlob(blob: Blob, filename: string){
 }
 
 async function ensureSheetJS(){
-  if((window as any).XLSX) return;
-  await new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+  if ((window as any).XLSX) return;
+  const cdns = [
+    'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+    'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
+  ];
+  let lastErr: any = null;
+  for (const url of cdns){
+    try{
+      await new Promise((res, rej)=>{
+        const s = document.createElement('script');
+        s.src = url; s.async = true; s.defer = true;
+        const to = setTimeout(()=>{ s.remove(); rej(new Error('timeout')) }, 7000);
+        s.onload = ()=>{ clearTimeout(to); res(null) };
+        s.onerror = (e)=>{ clearTimeout(to); rej(e) };
+        document.head.appendChild(s);
+      });
+      if ((window as any).XLSX) return;
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error('Failed to load SheetJS');
 }
 
 async function ensureJsPDF(){
@@ -2336,7 +2652,8 @@ async function exportXLSX(groups: Array<{name:string; rows: Transaction[]}>){
     XLSX.utils.book_append_sheet(wb, ws, g.name.substring(0,31));
   });
   const wbout = XLSX.write(wb, {bookType:'xlsx', type:'array'});
-  downloadBlob(new Blob([wbout], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), 'laporan.xlsx');
+  const fname = `laporan-${appState.filters.start}-${appState.filters.end}.xlsx`;
+  downloadBlob(new Blob([wbout], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), fname);
 }
 
 async function exportPDF(groups: Array<{name:string; rows: Transaction[]}>){
@@ -2365,11 +2682,161 @@ function exportDOC(groups: Array<{name:string; rows: Transaction[]}>){
 }
 
 // Template downloads
-document.getElementById('btn-template-excel')?.addEventListener('click', ()=>{
-  const headers = [['Tanggal','Keterangan','Kategori','Tipe','Jumlah']];
-  const blob = new Blob([headers.map(r=>r.join(',')).join('\n')+'\n'], {type:'text/csv;charset=utf-8;'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='template-laporan-excel.csv'; a.click(); URL.revokeObjectURL(a.href);
-});
+async function downloadFinanceTemplateFromServer(){
+  const endpoints = [
+    '/api/templates/keuangan',
+    'http://localhost:8000/api/templates/keuangan',
+    'http://127.0.0.1:8000/api/templates/keuangan'
+  ];
+  let lastErr: any = null;
+  for (const urlTry of endpoints){
+    try{
+      const res = await fetch(urlTry, { credentials: 'include' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      a.href = url;
+      const cd = res.headers.get('content-disposition') || '';
+      const m = cd.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
+      const serverName = m ? decodeURIComponent(m[1] || m[2]) : '';
+      a.download = serverName || 'template-keuangan.xls';
+      a.rel = 'noopener';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(()=> { document.body.removeChild(a); URL.revokeObjectURL(url); }, 300);
+      showToast && showToast('Template keuangan diunduh', 'success');
+      return;
+    }catch(err){ lastErr = err; }
+  }
+  console.warn('All server endpoints failed for finance template.', lastErr);
+  // Try static asset under /public/templates
+  const ok = await downloadStaticFinanceTemplate();
+  if (ok) return;
+  showToast && showToast('Server template tidak tersedia. Mengunduh template keuangan lokal.', 'warning');
+  // Fallback to local generator (xlsx -> csv)
+  try { await downloadExcelTemplate(); }
+  catch(err){ console.error(err); downloadCSVTemplate(); }
+}
+
+async function downloadStaticFinanceTemplate(): Promise<boolean> {
+  try{
+    const res = await fetch('/templates/template-keuangan.xls', { cache: 'no-store' });
+    if (!res.ok) return false;
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = 'template-keuangan.xls';
+    a.rel = 'noopener';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=> { document.body.removeChild(a); URL.revokeObjectURL(url); }, 300);
+    showToast && showToast('Template keuangan diunduh', 'success');
+    return true;
+  }catch(err){
+    console.warn('Static template fallback failed', err);
+    return false;
+  }
+}
+async function downloadExcelTemplate(){
+  try {
+    await ensureSheetJS();
+  } catch(e){
+    console.error('Failed loading SheetJS', e);
+    showToast('Gagal memuat library Excel. Mengunduh template keuangan CSV sebagai gantinya.', 'warning');
+    return downloadCSVTemplate();
+  }
+  const XLSX = (window as any).XLSX;
+  const wb = XLSX.utils.book_new();
+
+  // Main sheet with headers and sample rows
+  const headers = ['Tanggal','Keterangan','Kategori','Tipe','Jumlah'];
+  const sample = [
+    headers,
+    ['2025-09-01','Iuran Bulanan','Iuran','Masuk',200000],
+    ['2025-09-02','Pembelian ATK','Administrasi','Keluar',50000],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(sample);
+  // Column widths
+  (ws as any)['!cols'] = [ {wch:12},{wch:32},{wch:18},{wch:10},{wch:12} ];
+  // Freeze header row
+  (ws as any)['!freeze'] = { xSplit:0, ySplit:1, topLeftCell:'A2' };
+  XLSX.utils.book_append_sheet(wb, ws, 'Template');
+
+  // README sheet with instructions
+  const readme = [
+    ['Petunjuk Pengisian Template Laporan'],
+    [''],
+    ['1. Kolom Tanggal wajib format YYYY-MM-DD (mis. 2025-09-01).'],
+    ['2. Kolom Tipe hanya menerima Masuk atau Keluar.'],
+    ['3. Kolom Jumlah diisi angka tanpa titik/koma.'],
+    ['4. Contoh baris sudah disediakan di sheet Template baris 2-3.'],
+    ['5. Kategori bisa disesuaikan: Iuran, Keamanan, Donasi, Administrasi, dll.'],
+  ];
+  const wsInfo = XLSX.utils.aoa_to_sheet(readme);
+  (wsInfo as any)['!cols'] = [ {wch:90} ];
+  XLSX.utils.book_append_sheet(wb, wsInfo, 'README');
+
+  // Reference sheet (optional lists)
+  const ref = [ ['TIPE YANG DIDUKUNG'], ['Masuk'], ['Keluar'] ];
+  const wsRef = XLSX.utils.aoa_to_sheet(ref);
+  (wsRef as any)['!cols'] = [ {wch:22} ];
+  XLSX.utils.book_append_sheet(wb, wsRef, 'Referensi');
+
+  let wbout: ArrayBuffer;
+  try {
+    wbout = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+  } catch(e) {
+    console.error('Failed to generate workbook', e);
+    showToast('Gagal membuat file Excel. Coba lagi.', 'error');
+    return;
+  }
+  const blob = new Blob([wbout], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  // Force download (Edge/IE fallback)
+  const navAny = navigator as any;
+  if (navAny && typeof navAny.msSaveOrOpenBlob === 'function') {
+    navAny.msSaveOrOpenBlob(blob, 'template-keuangan.xlsx');
+    return;
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'template-keuangan.xlsx';
+  a.rel = 'noopener';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 500);
+}
+
+function downloadCSVTemplate(){
+  const headers = ['Tanggal','Keterangan','Kategori','Tipe','Jumlah'];
+  const rows = [
+    headers,
+    ['2025-09-01','Iuran Bulanan','Iuran','Masuk','200000'],
+    ['2025-09-02','Pembelian ATK','Administrasi','Keluar','50000']
+  ];
+  const csv = rows.map(r=> r.map(v=>
+    /[,"]/.test(String(v)) ? '"'+String(v).replace(/"/g,'""')+'"' : String(v)
+  ).join(',')).join('\n');
+  const blob = new Blob([csv+'\n'], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'template-keuangan.csv';
+  a.rel = 'noopener';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{ document.body.removeChild(a); }, 300);
+}
+
+// Bind template download buttons on both Export and Import modals
+document.getElementById('btn-template-excel')?.addEventListener('click', downloadFinanceTemplateFromServer);
+document.getElementById('btn-open-template')?.addEventListener('click', downloadFinanceTemplateFromServer);
+document.getElementById('btn-template-keuangan')?.addEventListener('click', downloadFinanceTemplateFromServer);
 document.getElementById('btn-template-word')?.addEventListener('click', ()=>{
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:6px}th{background:#f3f4f6}</style></head><body><h2>Template Laporan</h2><table><thead><tr><th>Tanggal</th><th>Keterangan</th><th>Kategori</th><th>Tipe</th><th>Jumlah</th></tr></thead><tbody><tr><td>2025-08-01</td><td>Iuran Bulanan</td><td>Iuran</td><td>Masuk</td><td>150000</td></tr></tbody></table></body></html>`;
   const blob = new Blob([html], {type:'application/msword'});
