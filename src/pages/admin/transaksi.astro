@@ -1678,19 +1678,24 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       });
 
       const rows = applyFilters();
+      // Clip to today to avoid showing future dates in charts
+      const todayISO = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+      const safeRows = rows.filter(r => r && r.date && r.date <= todayISO);
       const byDateAsc = (a,b)=> a.date.localeCompare(b.date);
-      const dates = Array.from(new Set(rows.slice().sort(byDateAsc).map(d=>d.date)));
+      const dates = Array.from(new Set(safeRows.slice().sort(byDateAsc).map(d=>d.date)));
 
-      const masukByDate = dates.map(d=> rows.filter(x=>x.date===d && x.type==='Masuk').reduce((s,x)=>s+x.amount,0));
-      const keluarByDate = dates.map(d=> rows.filter(x=>x.date===d && x.type==='Keluar').reduce((s,x)=>s+x.amount,0));
+      const masukByDate = dates.map(d=> safeRows.filter(x=>x.date===d && x.type==='Masuk').reduce((s,x)=>s+x.amount,0));
+      const keluarByDate = dates.map(d=> safeRows.filter(x=>x.date===d && x.type==='Keluar').reduce((s,x)=>s+x.amount,0));
+
       const saldoSeries = dates.map((_,i)=> masukByDate.slice(0,i+1).reduce((a,b)=>a+b,0) - keluarByDate.slice(0,i+1).reduce((a,b)=>a+b,0));
 
-      const totalIn = rows.filter(x=>x.type==='Masuk').reduce((a,b)=>a+b.amount,0);
-      const totalOut = rows.filter(x=>x.type==='Keluar').reduce((a,b)=>a+b.amount,0);
+      const totalIn = safeRows.filter(x=>x.type==='Masuk').reduce((a,b)=>a+b.amount,0);
+      const totalOut = safeRows.filter(x=>x.type==='Keluar').reduce((a,b)=>a+b.amount,0);
 
-      const cats = Array.from(new Set(rows.map(x=>x.cat)));
-      const perCatIn = cats.map(c=> rows.filter(x=>x.cat===c && x.type==='Masuk').reduce((s,x)=>s+x.amount,0));
-      const perCatOut = cats.map(c=> rows.filter(x=>x.cat===c && x.type==='Keluar').reduce((s,x)=>s+x.amount,0));
+      const cats = Array.from(new Set(safeRows.map(x=>x.cat)));
+      const perCatIn = cats.map(c=> safeRows.filter(x=>x.cat===c && x.type==='Masuk').reduce((s,x)=>s+x.amount,0));
+      const perCatOut = cats.map(c=> safeRows.filter(x=>x.cat===c && x.type==='Keluar').reduce((s,x)=>s+x.amount,0));
+
       const catColors = cats.map(getCatColor);
 
       // Destroy previous (state + any bound on canvases)
