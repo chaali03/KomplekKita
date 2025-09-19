@@ -409,9 +409,12 @@ function calculateTotals(transactions: Transaction[]) {
 
 // Generate daily series for charts
 function generateDailySeries(transactions: Transaction[]) {
-  const dates = Array.from(new Set(transactions.map(t => t.date))).sort();
-  const dailyIncome = dates.map(date => transactions.filter(t => t.date === date && t.type === 'Masuk').reduce((sum, t) => sum + t.amount, 0));
-  const dailyExpense = dates.map(date => transactions.filter(t => t.date === date && t.type === 'Keluar').reduce((sum, t) => sum + t.amount, 0));
+  // Prevent future dates from appearing in charts
+  const todayISO = toISODate(new Date());
+  const safeTx = (transactions || []).filter(t => t && t.date && t.date <= todayISO);
+  const dates = Array.from(new Set(safeTx.map(t => t.date))).sort();
+  const dailyIncome = dates.map(date => safeTx.filter(t => t.date === date && t.type === 'Masuk').reduce((sum, t) => sum + t.amount, 0));
+  const dailyExpense = dates.map(date => safeTx.filter(t => t.date === date && t.type === 'Keluar').reduce((sum, t) => sum + t.amount, 0));
   const cumulativeBalance = dates.map((_, index) => {
     const totalIncome = dailyIncome.slice(0, index + 1).reduce((sum, amount) => sum + amount, 0);
     const totalExpense = dailyExpense.slice(0, index + 1).reduce((sum, amount) => sum + amount, 0);

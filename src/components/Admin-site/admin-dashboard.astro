@@ -1465,14 +1465,69 @@
       gradient.addColorStop(1, toRGBA(color, 0));
       return gradient;
     };
+    // Helper: clip arrays to current month (no future months)
+    const monthMap = { jan:0, feb:1, mar:2, apr:3, may:4, mei:4, jun:5, jul:6, aug:7, agu:7, agt:7, sep:8, oct:9, okt:9, nov:10, dec:11, des:11 };
+    function monthIndexFromLabel(lbl){
+      if(!lbl) return -1;
+      const s = String(lbl).trim().toLowerCase().slice(0,3);
+      return (s in monthMap) ? monthMap[s] : -1;
+    }
+    const indoMonths = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    function normalizeMonthLabel(lbl){
+      const s = String(lbl||'').trim().toLowerCase();
+      // Try parse common forms
+      if (s.startsWith('jan')) return 'Jan';
+      if (s.startsWith('feb')) return 'Feb';
+      if (s.startsWith('mar')) return 'Mar';
+      if (s.startsWith('apr')) return 'Apr';
+      if (s.startsWith('may') || s.startsWith('mei')) return 'Mei';
+      if (s.startsWith('jun')) return 'Jun';
+      if (s.startsWith('jul')) return 'Jul';
+      if (s.startsWith('aug') || s.startsWith('agu') || s.startsWith('agt')) return 'Agu';
+      if (s.startsWith('sep')) return 'Sep';
+      if (s.startsWith('oct') || s.startsWith('okt')) return 'Okt';
+      if (s.startsWith('nov')) return 'Nov';
+      if (s.startsWith('dec') || s.startsWith('des')) return 'Des';
+      return lbl;
+    }
+    function clipSeriesByCurrentMonth(lbls, incArr, expArr, cumArr){
+      try{
+        const now = new Date();
+        const currentIdx = now.getMonth();
+        let clipTo = -1;
+        if(Array.isArray(lbls) && lbls.length){
+          // try find last index <= current month using label mapping
+          for(let i=lbls.length-1;i>=0;i--){
+            const mi = monthIndexFromLabel(lbls[i]);
+            if(mi>=0){ clipTo = Math.min(currentIdx, mi); break; }
+          }
+        }
+        if(clipTo<0){
+          // fallback: clip by count to current month number + 1
+          clipTo = Math.min(currentIdx, (lbls?.length||12)-1);
+        }
+        const end = clipTo + 1; // slice is non-inclusive
+        return {
+          labels: (lbls||[]).slice(0, end),
+          income: (incArr||[]).slice(0, end),
+          expense: (expArr||[]).slice(0, end),
+          balance: (cumArr||[]).slice(0, end)
+        };
+      }catch{ return { labels: lbls||[], income: incArr||[], expense: expArr||[], balance: cumArr||[] }; }
+    }
+
     // Load compact series from laporan to keep charts in sync
     let lapSeries = null;
     try { const raw = localStorage.getItem('laporan_chart_series'); lapSeries = raw ? JSON.parse(raw) : null; } catch(_) { lapSeries = null }
     const fallbackLabels = ['Jan','Feb','Mar','Apr','May','Jun'];
-    const labels = Array.isArray(lapSeries?.labels) && lapSeries.labels.length ? lapSeries.labels : fallbackLabels;
-    const dailyIncome = Array.isArray(lapSeries?.dailyIncome) && lapSeries.dailyIncome.length ? lapSeries.dailyIncome : [900000,1200000,1150000,1400000,1500000,1600000];
-    const dailyExpense = Array.isArray(lapSeries?.dailyExpense) && lapSeries.dailyExpense.length ? lapSeries.dailyExpense : [500000,700000,650000,800000,900000,850000];
-    const cumulativeBalance = Array.isArray(lapSeries?.cumulativeBalance) && lapSeries.cumulativeBalance.length ? lapSeries.cumulativeBalance : dailyIncome.map((_,i)=> dailyIncome.slice(0,i+1).reduce((s,v)=>s+v,0) - dailyExpense.slice(0,i+1).reduce((s,v)=>s+v,0));
+    let labels = Array.isArray(lapSeries?.labels) && lapSeries.labels.length ? lapSeries.labels : fallbackLabels;
+    let dailyIncome = Array.isArray(lapSeries?.dailyIncome) && lapSeries.dailyIncome.length ? lapSeries.dailyIncome : [900000,1200000,1150000,1400000,1500000,1600000];
+    let dailyExpense = Array.isArray(lapSeries?.dailyExpense) && lapSeries.dailyExpense.length ? lapSeries.dailyExpense : [500000,700000,650000,800000,900000,850000];
+    let cumulativeBalance = Array.isArray(lapSeries?.cumulativeBalance) && lapSeries.cumulativeBalance.length ? lapSeries.cumulativeBalance : dailyIncome.map((_,i)=> dailyIncome.slice(0,i+1).reduce((s,v)=>s+v,0) - dailyExpense.slice(0,i+1).reduce((s,v)=>s+v,0));
+    // Clip to current month
+    const clipped = clipSeriesByCurrentMonth(labels, dailyIncome, dailyExpense, cumulativeBalance);
+    labels = clipped.labels.map(normalizeMonthLabel); dailyIncome = clipped.income; dailyExpense = clipped.expense; cumulativeBalance = clipped.balance;
+
     const compLabels = lapSeries?.composition ? Object.keys(lapSeries.composition) : ['Operasional','Keamanan','Kebersihan','Perbaikan','Lainnya'];
     const compValues = lapSeries?.composition ? Object.values(lapSeries.composition) : [1200000,800000,600000,400000,200000];
     const cashFlowCtx = document.getElementById('chartKas');
@@ -1732,14 +1787,28 @@
         if (localData) {
           const parsed = JSON.parse(localData);
           if (parsed && parsed.labels && parsed.labels.length > 0) {
-            return parsed;
+            // Clip to current month before returning
+            const nowClipped = (function(){
+              const mm = { jan:0,feb:1,mar:2,apr:3,may:4,mei:4,jun:5,jul:6,aug:7,agu:7,agt:7,sep:8,oct:9,okt:9,nov:10,dec:11,des:11 };
+              const idx = (m)=>{ const s=String(m).toLowerCase().slice(0,3); return s in mm ? mm[s]: -1; };
+              const cur = new Date().getMonth();
+              let cut = parsed.labels.length;
+              for(let i=parsed.labels.length-1;i>=0;i--){ const mi = idx(parsed.labels[i]); if(mi>=0){ cut = Math.min(cur+1, mi+1); break; } }
+              return {
+                labels: parsed.labels.slice(0, cut),
+                dailyIncome: (parsed.dailyIncome||[]).slice(0, cut),
+                dailyExpense: (parsed.dailyExpense||[]).slice(0, cut),
+                composition: parsed.composition || {}
+              };
+            })();
+            return nowClipped;
           }
         }
 
         // Fallback ke API jika localStorage kosong
         if (komplekId && fetchJson) {
           const data = await fetchJson(`/api/public/transaksi/summary?komplek_id=${encodeURIComponent(komplekId)}`);
-          return {
+          const base = {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
             dailyIncome: [900000, 1200000, 1150000, 1400000, 1500000, 1600000],
             dailyExpense: [500000, 700000, 650000, 800000, 900000, 850000],
@@ -1751,24 +1820,24 @@
               'Lainnya': 200000
             }
           };
+          // Clip fallback to current month
+          const mm = { jan:0,feb:1,mar:2,apr:3,may:4,mei:4,jun:5,jul:6,aug:7,agu:7,agt:7,sep:8,oct:9,okt:9,nov:10,dec:11,des:11 };
+          const cur = new Date().getMonth();
+          let cut = base.labels.length;
+          for(let i=base.labels.length-1;i>=0;i--){ const mi = mm[base.labels[i].toLowerCase().slice(0,3)] ?? -1; if(mi>=0){ cut = Math.min(cur+1, mi+1); break; } }
+          return { labels: base.labels.slice(0, cut), dailyIncome: base.dailyIncome.slice(0, cut), dailyExpense: base.dailyExpense.slice(0, cut), composition: base.composition };
         }
       } catch (error) {
         console.warn('[Dashboard] Failed to fetch chart data:', error);
       }
 
       // Return default data jika semua gagal
-      return {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        dailyIncome: [900000, 1200000, 1150000, 1400000, 1500000, 1600000],
-        dailyExpense: [500000, 700000, 650000, 800000, 900000, 850000],
-        composition: {
-          'Operasional': 1200000,
-          'Keamanan': 800000,
-          'Kebersihan': 600000,
-          'Perbaikan': 400000,
-          'Lainnya': 200000
-        }
-      };
+      const base2 = { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], dailyIncome: [900000, 1200000, 1150000, 1400000, 1500000, 1600000], dailyExpense: [500000, 700000, 650000, 800000, 900000, 850000], composition: { 'Operasional': 1200000, 'Keamanan': 800000, 'Kebersihan': 600000, 'Perbaikan': 400000, 'Lainnya': 200000 } };
+      const mm2 = { jan:0,feb:1,mar:2,apr:3,may:4,mei:4,jun:5,jul:6,aug:7,agu:7,agt:7,sep:8,oct:9,okt:9,nov:10,dec:11,des:11 };
+      const cur2 = new Date().getMonth();
+      let cut2 = base2.labels.length;
+      for(let i=base2.labels.length-1;i>=0;i--){ const mi = mm2[base2.labels[i].toLowerCase().slice(0,3)] ?? -1; if(mi>=0){ cut2 = Math.min(cur2+1, mi+1); break; } }
+      return { labels: base2.labels.slice(0, cut2), dailyIncome: base2.dailyIncome.slice(0, cut2), dailyExpense: base2.dailyExpense.slice(0, cut2), composition: base2.composition };
     }
 
     // Update function untuk Cash Flow Chart
