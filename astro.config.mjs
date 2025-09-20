@@ -14,6 +14,14 @@ export default defineConfig({
   vite: {
     server: {
       port: 4323,
+      // Allow access from Cloudflare Tunnel (trycloudflare.com) and fix HMR over HTTPS
+      // Vite blocks unknown hosts by default; adding allowedHosts enables tunnel domains.
+      allowedHosts: ['.trycloudflare.com'],
+      hmr: {
+        // Required when accessing dev server via HTTPS reverse proxy/tunnel
+        // so the client connects HMR over port 443 instead of the dev port.
+        clientPort: 443,
+      },
       proxy: {
         // Development proxy - will be ignored in production
         '/api': {
