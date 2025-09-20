@@ -9,7 +9,7 @@ class Komplek extends Model
 {
     use HasFactory;
 
-    protected  = [
+    protected $fillable = [
         'user_id',
         'nama',
         'deskripsi',

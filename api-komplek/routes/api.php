@@ -3,15 +3,20 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\KomplekController;
+use App\Http\Controllers\Komplek\KomplekController;
 use App\Http\Controllers\IuranController;
 use App\Http\Controllers\LetterTemplateController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\ImportController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/check-complex-name', [KomplekController::class, 'checkComplexName']);
+
+// Import routes
+Route::post('/import/warga/preview', [ImportController::class, 'previewWarga']);
+Route::post('/import/keuangan/preview', [ImportController::class, 'previewKeuangan']);
 
 // Iuran routes
 Route::get('/iuran/status', [IuranController::class, 'getStatus']);
@@ -43,13 +48,25 @@ Route::get('/programs/{id}', [ProgramController::class, 'show']);
 
 // Test route without BOM
 Route::get('/test', function() {
-    return response()->json(['test' => 'no bom'], 200, [
-        'Access-Control-Allow-Origin' => 'http://localhost:4323',
-        'Vary' => 'Origin',
-        'Access-Control-Allow-Methods' => 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers' => 'Content-Type, Authorization, Accept, Origin, X-Requested-With',
-        'Access-Control-Max-Age' => '86400',
-    ]);
+    // Create response with explicit encoding
+    $data = ['test' => 'no bom'];
+    $json = json_encode($data);
+    
+    // Binary-safe BOM removal
+    if (strncmp($json, "\xEF\xBB\xBF", 3) === 0) {
+        $json = substr($json, 3);
+    }
+    
+    // Create response with raw content
+    $response = new \Illuminate\Http\Response($json, 200);
+    $response->header('Content-Type', 'application/json');
+    
+    // Set CORS headers
+    $response->header('Access-Control-Allow-Origin', '*');
+    $response->header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    $response->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin, X-Requested-With');
+    
+    return $response;
 });
 
 // Komplek routes
@@ -524,3 +541,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/warga/{id}/documents/{docId}', [App\Http\Controllers\WargaController::class, 'deleteDocument']);
     Route::get('/warga/statistics', [App\Http\Controllers\WargaController::class, 'getStatistics']);
 });
+
+Route::get('/templates/warga', [App\Http\Controllers\Komplek\FinanceTemplateController::class, 'warga']);
+
+
+Route::get('/templates/keuangan', [App\Http\Controllers\Komplek\FinanceTemplateController::class, 'keuangan']);
+
+// Import routes
+Route::post('/import/warga/preview', [App\Http\Controllers\ImportController::class, 'previewWarga']);
+Route::post('/import/keuangan/preview', [App\Http\Controllers\ImportController::class, 'previewKeuangan']);

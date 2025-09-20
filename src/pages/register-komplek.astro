@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Footer from '../components/sections/Footer.astro';
 ---
 
 <Layout>
@@ -549,8 +548,8 @@ import Footer from '../components/sections/Footer.astro';
         </div>
       </div>
       <div class="excel-modal-body">
-        <div class="excel-alert">
-          <i class="fa-solid fa-circle-info"></i>
+        <div class="excel-alert error-alert">
+          <i class="fa-solid fa-circle-exclamation"></i>
           <p id="excelErrorSummary" class="excel-error-summary">File Anda belum memenuhi format yang diwajibkan. Perbaiki isu di bawah atau gunakan template resmi.</p>
         </div>
         <div class="excel-error-scroll">
@@ -569,7 +568,6 @@ import Footer from '../components/sections/Footer.astro';
     </div>
   </div>
 
-  <Footer />
 </Layout>
 
 <script>
@@ -615,6 +613,24 @@ async function fetchWithFallback(path, options = {}) {
     throw error;
   }
 }
+
+async function fetchWithFallbackRaw(path, options = {}) {
+  try {
+    const response = await fetch(path, {
+      ...options,
+      // do not force JSON content-type for binary
+      headers: {
+        ...(options && options.headers ? options.headers : {})
+      },
+      credentials: 'include'
+    });
+    return response; // caller handles ok/blob
+  } catch (error) {
+    console.error('Fetch raw error:', error);
+    throw error;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   // Enhanced selectors and utilities
   const q = (sel) => document.querySelector(sel);
@@ -649,6 +665,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Excel Error Modal helpers
   let excelModalKind = 'warga';
+  let excelModalMode = 'content'; // 'filetype' | 'content'
   function showExcelErrorModal(kind, errors = []) {
     excelModalKind = kind;
     const backdrop = byId('excelErrorModal');
@@ -658,9 +675,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const summary = byId('excelErrorSummary');
     const countBadge = byId('excelErrorCount');
     if (!backdrop || !title || !list || !downloadBtn) return;
-
-    title.textContent = kind === 'warga' ? 'Kesalahan Validasi Data Warga' : 'Kesalahan Validasi Data Keuangan';
-    summary.textContent = 'File Anda belum memenuhi format yang diwajibkan. Perbaiki isu berikut atau gunakan template resmi.';
+    // Dynamic title based on mode
+    if (excelModalMode === 'filetype') {
+      title.textContent = 'Jenis File Salah';
+    } else {
+      title.textContent = kind === 'warga' ? 'Kesalahan Validasi Data Warga' : 'Kesalahan Validasi Data Keuangan';
+    }
+    
+    // Tampilkan pesan yang lebih informatif
+    const totalErrors = (errors || []).length;
+    if (excelModalMode === 'filetype') {
+      summary.textContent = 'Jenis file yang diunggah tidak didukung. Gunakan file Excel (.xlsx atau .xls). Anda dapat mengunduh template resmi di bawah ini.';
+    } else {
+      if (totalErrors > 0) {
+        summary.textContent = `File Excel Anda memiliki ${totalErrors} isu. Perbaiki isu berikut atau gunakan template resmi.`;
+      } else {
+        summary.textContent = 'File Excel Anda belum memenuhi format yang diwajibkan. Perbaiki isu berikut atau gunakan template resmi.';
+      }
+    }
 
     // reset list
     list.innerHTML = '';
@@ -670,6 +702,9 @@ document.addEventListener('DOMContentLoaded', function () {
       countBadge.textContent = `${total} isu`;
       countBadge.classList.toggle('ok', total === 0);
     }
+    
+    // Tampilkan popup secara otomatis
+    showToast(excelModalMode === 'filetype' ? 'Jenis file tidak didukung' : `Validasi file ${kind} gagal. Periksa detail pada popup.`, 'error');
 
     // show top N items only to keep dialog short; user can download template
     const maxItems = 40;
@@ -712,7 +747,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const closeBtn = byId('excelErrorClose');
     const okBtn = byId('excelErrorOkBtn');
-    const close = () => { backdrop.style.display = 'none'; document.body.classList.remove('modal-open'); };
+    const close = () => { backdrop.style.display = 'none'; document.body.classList.remove('modal-open'); excelModalMode = 'content'; };
     if (closeBtn) closeBtn.onclick = close;
     if (okBtn) okBtn.onclick = close;
     backdrop.addEventListener('click', (ev) => { if (ev.target === backdrop) close(); }, { once: true });
@@ -720,6 +755,68 @@ document.addEventListener('DOMContentLoaded', function () {
 
     backdrop.style.display = 'flex';
     document.body.classList.add('modal-open');
+  }
+
+  // Helper for file-type error modal (non-Excel uploads)
+  function showExcelFileTypeError(kind, filename = '', extraMsgs = []) {
+    excelModalMode = 'filetype';
+    const msgs = [
+      filename ? `Jenis file tidak didukung: ${filename}` : 'Jenis file tidak didukung.',
+      'Gunakan file Excel (.xlsx atau .xls) atau unduh template resmi.',
+      ...extraMsgs
+    ];
+    showExcelErrorModal(kind, msgs);
+  }
+
+  // Download official templates (XLSX) from backend
+  async function downloadWargaTemplate() {
+    try {
+      const res = await fetch('/api/templates/warga', { method: 'GET', credentials: 'include' });
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        showToast(text || 'Gagal mengunduh template warga', 'error');
+        return;
+      }
+      const blob = await res.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      const cd = res.headers.get('content-disposition') || '';
+      const m = cd.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
+      const serverName = m ? decodeURIComponent(m[1] || m[2]) : 'template-warga.xlsx';
+      link.download = serverName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Template warga diunduh', 'success');
+    } catch (e) {
+      console.error(e);
+      showToast('Gagal mengunduh template warga', 'error');
+    }
+  }
+
+  async function downloadKeuanganTemplate() {
+    try {
+      const res = await fetch('/api/templates/keuangan', { method: 'GET', credentials: 'include' });
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        showToast(text || 'Gagal mengunduh template keuangan', 'error');
+        return;
+      }
+      const blob = await res.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      const cd = res.headers.get('content-disposition') || '';
+      const m = cd.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
+      const serverName = m ? decodeURIComponent(m[1] || m[2]) : 'template-keuangan.xlsx';
+      link.download = serverName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Template keuangan diunduh', 'success');
+    } catch (e) {
+      console.error(e);
+      showToast('Gagal mengunduh template keuangan', 'error');
+    }
   }
 
   // stepper is display-only (non-clickable) per requirement
@@ -738,23 +835,142 @@ document.addEventListener('DOMContentLoaded', function () {
   // initial state
   setActiveStep('info');
 
-  // Toast notification system
-  function showToast(message, type = 'info') {
+  // Create toast container if not exists
+  function ensureToastContainer() {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toast-container';
+      container.className = 'toast-container';
+      document.body.appendChild(container);
+    }
+    return container;
+  }
+
+  // Show enhanced toast notification (bottom-center) with inline SVG icons
+  function showToast(message, type = 'info', duration = 5000) {
+    const container = ensureToastContainer();
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
+
+    const titles = {
+      success: 'Berhasil',
+      error: 'Terjadi Kesalahan',
+      warning: 'Peringatan',
+      info: 'Informasi'
+    };
+    const title = titles[type] || titles.info;
+
+    // Inline SVG icons so we don't depend on external icon fonts
+    const svgs = {
+      success: '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1 14l-4-4 1.41-1.41L11 12.17l5.59-5.59L18 8l-7 8Z"/></svg>',
+      error: '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 14h-2v-2h2v2Zm0-4h-2V6h2v6Z"/></svg>',
+      warning: '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M1 21h22L12 2 1 21Zm12-3h-2v-2h2v2Zm0-4h-2v-4h2v4Z"/></svg>',
+      info: '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M11 7h2v2h-2V7Zm1-5a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2Zm1 15h-2v-6h2v6Z"/></svg>'
+    };
+    const iconSvg = svgs[type] || svgs.info;
+
+    const autoHide = type !== 'error';
+
     toast.innerHTML = `
+      <span class="toast-icon" aria-hidden="true">${iconSvg}</span>
       <div class="toast-content">
-        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-        <span>${message}</span>
+        <div class="toast-title">${title}</div>
+        <div class="toast-message">${message}</div>
       </div>
+      <button class="toast-close" aria-label="Tutup notifikasi">&times;</button>
+      <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
     `;
     
-    document.body.appendChild(toast);
-    setTimeout(() => toast.classList.add('show'), 100);
+    // Add to container
+    container.appendChild(toast);
+    
+    // Show with animation
+    requestAnimationFrame(() => {
+      toast.classList.add('show');
+    });
+    
+    // Close button handler
+    const closeBtn = toast.querySelector('.toast-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeToast(toast);
+      });
+    }
+    
+    // Click to dismiss
+    toast.addEventListener('click', () => {
+      removeToast(toast);
+    });
+    
+    // Auto-hide if enabled
+    let timeoutId;
+    if (autoHide) {
+      timeoutId = setTimeout(() => {
+        removeToast(toast);
+      }, duration);
+    }
+    
+    // Cleanup on remove
+    toast.cleanup = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+    
+    // For error toasts, add to error stack
+    if (type === 'error') {
+      errorToastStack.push(toast);
+      
+      // If there are too many error toasts, remove the oldest one
+      if (errorToastStack.length > 3) {
+        const oldestToast = errorToastStack.shift();
+        if (oldestToast && document.body.contains(oldestToast)) {
+          removeToast(oldestToast);
+        }
+      }
+    }
+    
+    return toast;
+  }
+  
+  // Track error toasts to limit the number shown
+  const errorToastStack = [];
+  
+  // Helper to remove toast with smooth animation and cleanup
+  function removeToast(toast) {
+    if (!toast || !document.body.contains(toast)) return;
+    
+    // Clean up any timeouts
+    if (typeof toast.cleanup === 'function') {
+      toast.cleanup();
+    }
+    
+    // Remove from error stack if present
+    const index = errorToastStack.indexOf(toast);
+    if (index > -1) {
+      errorToastStack.splice(index, 1);
+    }
+    
+    // Add hide class to trigger exit animation
+    toast.classList.add('hide');
+    
+    // Remove from DOM after animation completes
+    const onAnimationEnd = () => {
+      if (toast && toast.parentNode) {
+        toast.removeEventListener('animationend', onAnimationEnd);
+        toast.parentNode.removeChild(toast);
+      }
+    };
+    
+    toast.addEventListener('animationend', onAnimationEnd);
+    
+    // Force remove if animation doesn't complete
     setTimeout(() => {
-      toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
+      if (toast && toast.parentNode) {
+        toast.removeEventListener('animationend', onAnimationEnd);
+        toast.parentNode.removeChild(toast);
+      }
+    }, 500);
   }
 
   // Enhanced image preview with animations
@@ -788,12 +1004,6 @@ document.addEventListener('DOMContentLoaded', function () {
       reader.readAsDataURL(file);
     });
   }
-
-  // Bind all image previews
-  bindImagePreview('bannerKomplek', 'bannerPreview');
-  bindImagePreview('fotoProfilKomplek', 'profilPreview');
-  bindImagePreview('fotoKetuaRT', 'ketuaPreview');
-  bindImagePreview('fotoBendahara', 'bendaharaPreview');
 
   // Enhanced file input handling
   qAll('.file-input').forEach(container => {
@@ -855,7 +1065,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
+      attribution: ' OpenStreetMap contributors',
       maxZoom: 19
     }).addTo(map);
 
@@ -1126,7 +1336,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
+      attribution: ' OpenStreetMap contributors',
       maxZoom: 19
     }).addTo(fullscreenMap);
 
@@ -1463,13 +1673,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Excel Import Functionality
   function isExcelFile(file) {
-    const nameOk = /\.(xlsx|xls)$/i.test(file.name || '');
-    const typeOk = (
-      file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-      file.type === 'application/vnd.ms-excel' ||
-      file.type === '' // some browsers don't set MIME type on drag-drop
-    );
-    return nameOk && typeOk;
+    if (!file) return false;
+    
+    // Check file extension
+    const extension = (file.name || '').split('.').pop()?.toLowerCase() || '';
+    const validExtensions = ['xls', 'xlsx'];
+    const hasValidExtension = validExtensions.includes(extension);
+    
+    // Check MIME type (be more lenient with MIME type checking)
+    const validMimeTypes = [
+      'application/vnd.ms-excel', // .xls
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+      'application/octet-stream', // Sometimes returned by browsers
+      'application/vnd.ms-office', // Generic MS Office
+      'application/zip' // .xlsx is actually a zip file
+    ];
+    
+    const hasValidMimeType = !file.type || validMimeTypes.includes(file.type);
+    
+    // For better debugging
+    if (!hasValidExtension) {
+      console.warn('Invalid file extension:', extension);
+    }
+    if (!hasValidMimeType) {
+      console.warn('Unexpected MIME type:', file.type);
+    }
+    
+    // Accept if EITHER extension or MIME indicates Excel
+    return hasValidExtension || hasValidMimeType;
   }
 
   function pickHeaders(obj) {
@@ -1651,6 +1882,51 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
+  // Upload helper that retries with multiple possible field keys
+  async function uploadWithFallbackFields(url, file) {
+    const fieldCandidates = ['file','excel','upload','attachment'];
+    let lastResponse = null;
+    
+    for (const field of fieldCandidates) {
+      try {
+        const fd = new FormData();
+        fd.append(field, file);
+        
+        const res = await fetch(url, {
+          method: 'POST',
+          body: fd,
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+        
+        // Store the last response in case all attempts fail
+        lastResponse = res;
+        
+        // If successful, return the response
+        if (res.ok) {
+          return res;
+        }
+      } catch (error) {
+        console.error(`Upload with field "${field}" failed:`, error);
+        // Continue to try the next field
+      }
+    }
+    
+    // If we get here, all attempts failed
+    return lastResponse || new Response(JSON.stringify({
+      status: 'error',
+      message: 'Gagal mengunggah file. Pastikan koneksi internet Anda stabil dan coba lagi.'
+    }), { 
+      status: 400,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+
   function handleKeuanganDrop(e) {
     preventDefaults(e);
     const dt = e.dataTransfer;
@@ -1665,24 +1941,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Ensure XLSX is available before any processing that uses it
-  async function waitForXLSX(timeout = 7000) {
-    const start = Date.now();
-    while (typeof window !== 'undefined' && !window.XLSX) {
-      if (Date.now() - start > timeout) {
-        throw new Error('XLSX library belum siap. Coba lagi dalam beberapa detik.');
-      }
-      await new Promise(r => setTimeout(r, 50));
-    }
-  }
-
   async function handleWargaFile(e) {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
       if (!isExcelFile(file)) {
-        showToast('File harus berformat .xlsx atau .xls', 'error');
+        // Modal khusus jenis file salah
+        showExcelFileTypeError('warga', file.name || '');
         wargaDataValid = false;
         updateNextButtonState();
         return;
@@ -1696,43 +1962,56 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       showToast('Mengunggah dan memvalidasi data warga...', 'info');
-      const fd = new FormData();
-      fd.append('file', file);
-      const res = await fetchWithFallback(`/api/import/warga/preview`, {
-        method: 'POST',
-        body: fd,
-        credentials: 'include',
-      });
+      const res = await uploadWithFallbackFields(`/api/import/warga/preview`, file);
 
-      const payload = await res.json().catch(() => ({ message: 'Respons tidak valid' }));
       if (!res.ok) {
-        const msg = payload?.message || 'Gagal memproses file';
+        const msg = (await res.text()) || 'Gagal memproses file';
         showToast(msg, 'error');
         wargaDataValid = false;
         updateNextButtonState();
         return;
       }
 
-      const { status, data, errors, summary } = payload;
+      const payload = await res.json().catch(() => ({ message: 'Respons tidak valid' }));
+      
+      if (payload.status !== 'ok') {
+        const errorMessage = payload.errors?.[0]?.message || payload.message || 'Gagal memproses file';
+        showToast(errorMessage, 'error');
+        // Tampilkan detail kesalahan di modal agar user tahu harus memperbaiki apa
+        const errorItems = Array.isArray(payload.errors) && payload.errors.length
+          ? payload.errors
+          : [errorMessage || 'Format header tidak sesuai atau data kosong.'];
+        showExcelErrorModal('warga', errorItems);
+        wargaDataValid = false;
+        updateNextButtonState();
+        return;
+      }
+
+      const { data, errors, summary } = payload;
       wargaErrors = errors || [];
       wargaData = Array.isArray(data) ? data : [];
-      wargaDataValid = status === 'ok';
+      wargaDataValid = errors?.length === 0;
 
-      if (!wargaDataValid) {
-        const sample = (wargaErrors || []).slice(0, 3).join(' ');
-        showToast(`Validasi gagal: ${(wargaErrors || []).length} isu. ${sample}`, 'error');
-        showExcelErrorModal('warga', wargaErrors || []);
-      }
       if (wargaData && wargaData.length) {
         renderWargaData(wargaData);
       }
+
       if (summary) {
-        showToast(`Total: ${summary.total}, OK: ${summary.success}, Gagal: ${summary.failed}`, wargaDataValid ? 'success' : 'warning');
+        const successCount = summary.validCount || 0;
+        const errorCount = summary.errorCount || 0;
+        const total = summary.total || 0;
+        
+        if (errorCount > 0) {
+          showToast(`Ditemukan ${errorCount} error pada data warga`, 'error');
+        } else {
+          showToast(`Berhasil memuat ${successCount} dari ${total} data warga`, 'success');
+        }
       }
+      
       updateNextButtonState();
     } catch (error) {
-      showToast('Error saat mengunggah/validasi file', 'error');
       console.error('Upload error:', error);
+      showToast('Terjadi kesalahan saat mengunggah file. Pastikan koneksi internet Anda stabil dan coba lagi.', 'error');
       wargaDataValid = false;
       updateNextButtonState();
     }
@@ -1744,7 +2023,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     try {
       if (!isExcelFile(file)) {
-        showToast('File harus berformat .xlsx atau .xls', 'error');
+        // Modal khusus jenis file salah
+        showExcelFileTypeError('keuangan', file.name || '');
         keuanganDataValid = false;
         updateNextButtonState();
         return;
@@ -1758,43 +2038,55 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       showToast('Mengunggah dan memvalidasi data keuangan...', 'info');
-      const fd = new FormData();
-      fd.append('file', file);
-      const res = await fetchWithFallback(`/api/import/keuangan/preview`, {
-        method: 'POST',
-        body: fd,
-        credentials: 'include',
-      });
+      const res = await uploadWithFallbackFields(`/api/import/keuangan/preview`, file);
 
-      const payload = await res.json().catch(() => ({ message: 'Respons tidak valid' }));
       if (!res.ok) {
-        const msg = payload?.message || 'Gagal memproses file';
+        const msg = (await res.text()) || 'Gagal memproses file';
         showToast(msg, 'error');
         keuanganDataValid = false;
         updateNextButtonState();
         return;
       }
 
-      const { status, data, errors, summary } = payload;
+      const payload = await res.json().catch(() => ({ message: 'Respons tidak valid' }));
+      
+      if (payload.status !== 'ok') {
+        const errorMessage = payload.errors?.[0]?.message || payload.message || 'Gagal memproses file';
+        showToast(errorMessage, 'error');
+        const errorItems = Array.isArray(payload.errors) && payload.errors.length
+          ? payload.errors
+          : [errorMessage || 'Format header tidak sesuai atau data kosong.'];
+        showExcelErrorModal('keuangan', errorItems);
+        keuanganDataValid = false;
+        updateNextButtonState();
+        return;
+      }
+
+      const { data, errors, summary } = payload;
       keuanganErrors = errors || [];
       keuanganData = Array.isArray(data) ? data : [];
-      keuanganDataValid = status === 'ok';
+      keuanganDataValid = errors?.length === 0;
 
-      if (!keuanganDataValid) {
-        const sample = (keuanganErrors || []).slice(0, 3).join(' ');
-        showToast(`Validasi gagal: ${(keuanganErrors || []).length} isu. ${sample}`, 'error');
-        showExcelErrorModal('keuangan', keuanganErrors || []);
-      }
       if (keuanganData && keuanganData.length) {
         renderKeuanganData(keuanganData);
       }
+
       if (summary) {
-        showToast(`Total: ${summary.total}, OK: ${summary.success}, Gagal: ${summary.failed}`, keuanganDataValid ? 'success' : 'warning');
+        const successCount = summary.validCount || 0;
+        const errorCount = summary.errorCount || 0;
+        const total = summary.total || 0;
+        
+        if (errorCount > 0) {
+          showToast(`Ditemukan ${errorCount} error pada data keuangan`, 'error');
+        } else {
+          showToast(`Berhasil memuat ${successCount} dari ${total} data keuangan`, 'success');
+        }
       }
+      
       updateNextButtonState();
     } catch (error) {
-      showToast('Error saat mengunggah/validasi file', 'error');
       console.error('Upload error:', error);
+      showToast('Terjadi kesalahan saat mengunggah file. Pastikan koneksi internet Anda stabil dan coba lagi.', 'error');
       keuanganDataValid = false;
       updateNextButtonState();
     }
@@ -1896,7 +2188,7 @@ document.addEventListener('DOMContentLoaded', function () {
   async function downloadWargaTemplate() {
     try {
       const url = `/api/templates/warga`;
-      const res = await fetchWithFallback(url, { credentials: 'include' });
+      const res = await fetchWithFallbackRaw(url, { credentials: 'include' });
       if (!res.ok) {
         const msg = (await res.text()) || 'Gagal mengunduh template warga';
         showToast(msg, 'error');
@@ -1922,7 +2214,7 @@ document.addEventListener('DOMContentLoaded', function () {
   async function downloadKeuanganTemplate() {
     try {
       const url = `/api/templates/keuangan`;
-      const res = await fetchWithFallback(url, { credentials: 'include' });
+      const res = await fetchWithFallbackRaw(url, { credentials: 'include' });
       if (!res.ok) {
         const msg = (await res.text()) || 'Gagal mengunduh template keuangan';
         showToast(msg, 'error');
@@ -3805,12 +4097,18 @@ body.loaded {
 .excel-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.65);
-  backdrop-filter: blur(6px);
+  background: rgba(17, 24, 39, 0.75);
+  backdrop-filter: blur(8px);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 1200;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .excel-modal {
@@ -3818,9 +4116,15 @@ body.loaded {
   max-height: 85vh;
   background: #fff;
   border-radius: var(--radius-xl);
-  box-shadow: 0 25px 60px rgba(0,0,0,.25);
+  box-shadow: 0 25px 60px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,0.1);
   overflow: hidden;
-  transform: translateY(6px);
+  transform: translateY(0);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .excel-modal-header {
@@ -3829,14 +4133,51 @@ body.loaded {
   justify-content: space-between;
   padding: 1.1rem 1.25rem 1.1rem 1.25rem;
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(135deg, rgba(239,68,68,.06), rgba(251,191,36,.06));
+  background: linear-gradient(135deg, rgba(239,68,68,.08), rgba(251,191,36,.08));
+  position: relative;
+  overflow: hidden;
+}
+
+.excel-modal-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #ef4444, #f59e0b);
 }
 
 .excel-modal-title { display: flex; gap: .9rem; align-items: center; }
 .title-icon { width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; background: #fff; box-shadow: var(--shadow-sm); }
-.title-icon.error i { color: #ef4444; }
-.title-texts h3 { margin: 0; font-size: 1.15rem; color: var(--text-primary); }
-.excel-modal-subtitle { margin: .15rem 0 0 0; color: var(--text-secondary); font-size: .95rem; }
+.title-icon.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.title-icon.error i { 
+  color: #ef4444; 
+  font-size: 1.2rem;
+}
+
+.title-texts h3 { 
+  margin: 0; 
+  font-size: 1.15rem; 
+  color: var(--text-primary); 
+  font-weight: 600;
+}
+
+.excel-modal-subtitle { 
+  margin: .15rem 0 0 0; 
+  color: var(--text-secondary); 
+  font-size: .95rem; 
+  line-height: 1.4;
+}
 
 .excel-modal-actions { display: flex; align-items: center; gap: .75rem; }
 .badge {
@@ -3847,20 +4188,96 @@ body.loaded {
 .badge.ok { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
 .badge-count::before { content: '\f071'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: #f59e0b; }
 
-.excel-modal-close { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border); background: #fff; color: var(--text-secondary); cursor: pointer; display: grid; place-items: center; transition: .2s ease; }
-.excel-modal-close:hover { transform: scale(1.05); color: var(--text-primary); box-shadow: var(--shadow-sm); }
+.excel-modal-close { 
+  width: 38px; 
+  height: 38px; 
+  border-radius: 10px; 
+  border: 1px solid var(--border); 
+  background: #fff; 
+  color: var(--text-secondary); 
+  cursor: pointer; 
+  display: grid; 
+  place-items: center; 
+  transition: .2s ease; 
+}
+
+.excel-modal-close:hover { 
+  transform: scale(1.05); 
+  color: #ef4444; 
+  border-color: rgba(239, 68, 68, 0.3);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15); 
+}
 
 .excel-modal-body { padding: 1rem 1.25rem; }
-.excel-alert { display: flex; gap: .6rem; align-items: flex-start; background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; border-radius: 12px; padding: .8rem 1rem; margin-bottom: .9rem; }
-.excel-alert i { color: #f59e0b; margin-top: .15rem; }
+.excel-alert { 
+  display: flex; 
+  gap: .8rem; 
+  align-items: flex-start; 
+  background: #fff7ed; 
+  color: #9a3412; 
+  border: 1px solid #fed7aa; 
+  border-radius: 12px; 
+  padding: 1rem 1.2rem; 
+  margin-bottom: 1rem; 
+  box-shadow: 0 2px 10px rgba(251, 146, 60, 0.1);
+  transition: all 0.3s ease;
+}
+
+.excel-alert i { 
+  color: #f59e0b; 
+  margin-top: .15rem; 
+  font-size: 1.1rem;
+}
 
 .excel-error-scroll { max-height: 48vh; overflow: auto; border: 1px dashed var(--border); border-radius: 12px; padding: .25rem; background: #fafafa; }
 .excel-error-list { list-style: none; margin: 0; padding: .25rem; display: grid; grid-template-columns: 1fr 1fr; gap: .35rem .5rem; }
 
-.error-item { display: grid; grid-template-columns: 20px 48px 1fr; align-items: start; gap: .5rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: .55rem .65rem; box-shadow: 0 2px 6px rgba(0,0,0,.03); }
-.error-item .error-icon { color: #ef4444; display: inline-flex; align-items: center; justify-content: center; }
-.error-item .row-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; height: 26px; padding: 0 .5rem; border-radius: 999px; background: #eef2ff; color: #3730a3; font-weight: 800; font-size: .8rem; border: 1px solid #c7d2fe; }
-.error-item .error-msg { color: var(--text-primary); line-height: 1.35; }
+.error-item { 
+  display: grid; 
+  grid-template-columns: 20px 48px 1fr; 
+  align-items: start; 
+  gap: .5rem; 
+  background: #fff; 
+  border: 1px solid #e5e7eb; 
+  border-radius: 12px; 
+  padding: .7rem .8rem; 
+  box-shadow: 0 2px 8px rgba(0,0,0,.04); 
+  transition: all 0.2s ease;
+}
+
+.error-item:hover {
+  border-color: #fca5a5;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.08);
+  transform: translateY(-1px);
+}
+
+.error-item .error-icon { 
+  color: #ef4444; 
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center; 
+}
+
+.error-item .row-badge { 
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center; 
+  min-width: 42px; 
+  height: 26px; 
+  padding: 0 .5rem; 
+  border-radius: 999px; 
+  background: #fee2e2; 
+  color: #b91c1c; 
+  font-weight: 800; 
+  font-size: .8rem; 
+  border: 1px solid #fecaca; 
+}
+
+.error-item .error-msg { 
+  color: var(--text-primary); 
+  line-height: 1.4; 
+  font-weight: 500;
+}
 .error-item.more { opacity: .8; font-style: italic; grid-template-columns: 20px 1fr; }
 
 .excel-modal-footer { display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding: .95rem 1.25rem 1.15rem; border-top: 1px solid var(--border); background: linear-gradient(180deg, #fff, #fafafa); }
@@ -3949,64 +4366,87 @@ body.loaded {
 }
 
 .back-home-btn:hover {
-  transform: translateY(-2px);
   box-shadow: var(--shadow-xl);
   background: rgba(255, 255, 255, 1);
 }
 
-/* Toast Notifications */
+/* Enhanced Toast Notifications */
 .toast {
   position: fixed;
   top: 2rem;
   right: 2rem;
   background: white;
-  border-radius: var(--radius-lg);
-  padding: 1rem 1.5rem;
-  box-shadow: var(--shadow-xl);
-  border-left: 4px solid;
-  max-width: 400px;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border: none;
+  max-width: 380px;
   z-index: 2000;
-  transform: translateX(100%);
-  transition: all 0.3s ease;
+  transform: translateX(120%);
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  overflow: hidden;
+  border-left: 4px solid;
+}
+
+.toast::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: currentColor;
+  opacity: 0.2;
 }
 
 .toast.show {
   transform: translateX(0);
+  animation: slideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(120%); }
+  to { transform: translateX(0); }
+}
+
+.toast.hide {
+  animation: slideOut 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes slideOut {
+  from { transform: translateX(0); }
+  to { transform: translateX(120%); }
+}
+
+.toast-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
 }
 
 .toast-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
 }
 
-.toast-info {
-  border-color: #667eea;
+.toast-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+  color: #1f2937;
 }
 
-.toast-info i {
-  color: #667eea;
+.toast-message {
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.5;
 }
 
-.toast-success {
-  border-color: #10b981;
-}
-
-.toast-success i {
-  color: #10b981;
-}
-
-.toast-error {
-  border-color: #ef4444;
-}
-
-.toast-error i {
-  color: #ef4444;
-}
-
-.toast span {
-  color: var(--text-primary);
-  font-weight: 600;
+.toast-close {
 }
 
 /* Responsive Design */
@@ -4277,4 +4717,446 @@ body.loaded {
   75% { transform: translateX(-2px); }
   90% { transform: translateX(2px); }
 }
+
+/* Error Alert Styling */
+.excel-alert.error-alert {
+  background-color: #fff1f2;
+  border: none;
+  border-left: 5px solid #f43f5e;
+  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.15);
+  animation: pulse-error 2.5s infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.excel-alert.error-alert::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, #f43f5e, transparent);
+}
+
+.excel-alert.error-alert::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, #f43f5e, transparent);
+}
+
+.excel-alert.error-alert i {
+  color: #f43f5e;
+  font-size: 1.3em;
+  background: rgba(244, 63, 94, 0.12);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-top: 0;
+}
+
+@keyframes pulse-error {
+  0% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(244, 63, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
+  }
+}
+
+/* Excel Modal Final Overrides (high specificity to ensure it applies) */
+#excelErrorModal.excel-modal-backdrop {
+  z-index: 3000 !important;
+  background: rgba(17, 24, 39, 0.8) !important;
+  backdrop-filter: blur(10px) saturate(115%) !important;
+}
+#excelErrorModal .excel-modal {
+  z-index: 3001 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 30px 80px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.15) !important;
+  border: 1px solid rgba(17,24,39,.06) !important;
+}
+#excelErrorModal .excel-modal-header {
+  background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(253,244,244,.96)) !important;
+}
+#excelErrorModal .excel-modal-header::before {
+  height: 4px !important;
+  background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981) !important;
+}
+#excelErrorModal .badge.badge-count {
+  background: #fff !important;
+  color: #92400e !important;
+  border-color: #fde68a !important;
+  box-shadow: 0 2px 8px rgba(146, 64, 14, 0.08) !important;
+}
+#excelErrorModal .excel-alert.error-alert {
+  background: #fff1f2 !important;
+  border: 1px solid #fecdd3 !important;
+  border-left: 6px solid #f43f5e !important;
+}
+#excelErrorModal .excel-error-scroll {
+  background: #f9fafb !important;
+  border-color: rgba(17,24,39,.08) !important;
+}
+#excelErrorModal .excel-error-list .error-item {
+  border-radius: 14px !important;
+  border-color: #e5e7eb !important;
+}
+#excelErrorModal .excel-error-list .error-item:hover {
+  border-color: #fca5a5 !important;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.12) !important;
+}
+#excelErrorModal .row-badge {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+  border-color: #fecaca !important;
+}
+#excelErrorModal .error-icon {
+  color: #ef4444 !important;
+}
+#excelErrorModal .template-btn {
+  background: linear-gradient(180deg, #ffffff, #f3f4f6) !important;
+  border-color: rgba(17,24,39,.12) !important;
+}
+#excelErrorModal .browse-btn {
+  background: linear-gradient(135deg, #6366f1, #7c3aed) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 10px 22px rgba(99,102,241,.35) !important;
+}
+
+/* Layout & polish upgrades */
+#excelErrorModal .excel-modal-header {
+  display: grid !important;
+  grid-template-columns: 1fr auto auto !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+#excelErrorModal .excel-modal-title { order: 1; }
+#excelErrorModal .excel-modal-actions { order: 2; }
+#excelErrorModal .excel-modal-close { order: 3; }
+
+#excelErrorModal .excel-modal-body {
+  padding: 1.1rem 1.25rem 0.9rem !important;
+}
+
+/* 3D alert look with subtle bevel */
+#excelErrorModal .excel-alert.error-alert {
+  background: linear-gradient(180deg, #fff1f2, #ffe4e6) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 10px 18px rgba(244,63,94,.10), inset 0 1px 0 rgba(255,255,255,.65) !important;
+}
+
+/* Error list spacing & separators */
+#excelErrorModal .excel-error-list {
+  gap: .6rem !important;
+}
+#excelErrorModal .excel-error-list .error-item {
+  padding: .8rem .95rem !important;
+  position: relative !important;
+}
+#excelErrorModal .excel-error-list .error-item::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: -6px;
+  height: 1px;
+  background: rgba(17,24,39,.06);
+}
+#excelErrorModal .excel-error-list .error-item:last-child::after { display: none; }
+
+/* Remove footer in modal as requested */
+#excelErrorModal .excel-modal-footer { display: none !important; }
+#excelErrorModal .excel-modal-body { padding-bottom: 1.25rem !important; }
+}
+</style>
+
+<!-- Premium Toast Notifications: Modern Design System -->
+<style>
+  /* Container positioning - top right with elegant spacing */
+  :global(#toast-container.toast-container) {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    z-index: 3000;
+    pointer-events: none;
+    width: min(90vw, 440px);
+  }
+  :global(#toast-container .toast) { 
+    pointer-events: auto; 
+    width: 100%; 
+  }
+
+  /* Premium card design with advanced glassmorphism */
+  :global(#toast-container .toast) {
+    position: relative;
+    margin: 0;
+    background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9));
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 
+      0 20px 40px rgba(0,0,0,0.08),
+      0 8px 16px rgba(0,0,0,0.04),
+      inset 0 1px 0 rgba(255,255,255,0.8);
+    border-radius: 20px;
+    padding: 1.5rem 1.75rem 1.5rem 1.5rem;
+    transform: translateX(100%);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    overflow: hidden;
+  }
+
+  /* Hover effects for interactivity */
+  :global(#toast-container .toast:hover) { 
+    transform: translateX(-4px) translateY(-2px);
+    box-shadow: 
+      0 25px 50px rgba(0,0,0,0.12),
+      0 12px 24px rgba(0,0,0,0.06),
+      inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+
+  /* Elegant top accent bar with variant colors */
+  :global(#toast-container .toast::before) {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    background: linear-gradient(90deg, rgba(148,163,184,0.3), rgba(203,213,225,0.2));
+  }
+
+  /* Variant-specific accent colors */
+  :global(.toast-success::before) { 
+    background: linear-gradient(90deg, #10b981, #059669, #047857); 
+  }
+  :global(.toast-error::before) { 
+    background: linear-gradient(90deg, #ef4444, #dc2626, #b91c1c); 
+  }
+  :global(.toast-warning::before) { 
+    background: linear-gradient(90deg, #f59e0b, #d97706, #b45309); 
+  }
+  :global(.toast-info::before) { 
+    background: linear-gradient(90deg, #3b82f6, #2563eb, #1d4ed8); 
+  }
+
+  /* Premium icon design with enhanced visual hierarchy */
+  :global(#toast-container .toast .toast-icon) {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(148,163,184,0.08);
+    color: #64748b;
+    flex-shrink: 0;
+    margin-top: 0;
+    font-size: 1.2rem;
+    box-shadow: 
+      0 8px 16px rgba(0,0,0,0.06),
+      inset 0 0 0 1px rgba(255,255,255,0.9),
+      inset 0 2px 4px rgba(255,255,255,0.5);
+    transition: all 0.3s ease;
+  }
+
+  /* Variant-specific icon styling */
+  :global(.toast-success .toast-icon) { 
+    background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(5,150,105,0.08));
+    color: #047857;
+    box-shadow: 
+      0 8px 16px rgba(16,185,129,0.15),
+      inset 0 0 0 1px rgba(255,255,255,0.9),
+      inset 0 2px 4px rgba(255,255,255,0.5);
+  }
+  :global(.toast-error .toast-icon) { 
+    background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(220,38,38,0.08));
+    color: #b91c1c;
+    box-shadow: 
+      0 8px 16px rgba(239,68,68,0.15),
+      inset 0 0 0 1px rgba(255,255,255,0.9),
+      inset 0 2px 4px rgba(255,255,255,0.5);
+  }
+  :global(.toast-warning .toast-icon) { 
+    background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(217,119,6,0.08));
+    color: #b45309;
+    box-shadow: 
+      0 8px 16px rgba(245,158,11,0.15),
+      inset 0 0 0 1px rgba(255,255,255,0.9),
+      inset 0 2px 4px rgba(255,255,255,0.5);
+  }
+  :global(.toast-info .toast-icon) { 
+    background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(37,99,235,0.08));
+    color: #1d4ed8;
+    box-shadow: 
+      0 8px 16px rgba(59,130,246,0.15),
+      inset 0 0 0 1px rgba(255,255,255,0.9),
+      inset 0 2px 4px rgba(255,255,255,0.5);
+  }
+
+  /* Content area with improved typography */
+  :global(#toast-container .toast .toast-content) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  :global(#toast-container .toast .toast-title) {
+    font-weight: 700;
+    font-size: 1.1rem;
+    line-height: 1.4;
+    color: #1f2937;
+    margin: 0 0 0.4rem 0;
+    letter-spacing: -0.01em;
+  }
+
+  :global(#toast-container .toast .toast-message) {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #4b5563;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  /* Enhanced close button */
+  :global(#toast-container .toast .toast-close) {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(148,163,184,0.08);
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  :global(#toast-container .toast .toast-close:hover) {
+    background: rgba(239,68,68,0.1);
+    color: #dc2626;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(239,68,68,0.15);
+  }
+
+  /* Smooth slide animations */
+  :global(#toast-container .toast.show) { 
+    animation: toast-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+  }
+  :global(#toast-container .toast.hide) { 
+    animation: toast-slide-out 0.3s cubic-bezier(0.4, 0, 1, 1) forwards; 
+  }
+
+  @keyframes toast-slide-in {
+    from { 
+      opacity: 0; 
+      transform: translateX(100%) scale(0.95); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateX(0) scale(1); 
+    }
+  }
+
+  @keyframes toast-slide-out {
+    from { 
+      opacity: 1; 
+      transform: translateX(0) scale(1); 
+    }
+    to { 
+      opacity: 0; 
+      transform: translateX(100%) scale(0.95); 
+    }
+  }
+
+  /* Progress indicator with variant colors */
+  :global(.toast .toast-progress) {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: rgba(148,163,184,0.2);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    overflow: hidden;
+  }
+
+  :global(.toast .toast-progress::before) {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, rgba(148,163,184,0.4), rgba(148,163,184,0.6));
+    transform-origin: left;
+  }
+
+  :global(.toast-success .toast-progress::before) { 
+    background: linear-gradient(90deg, #10b981, #059669); 
+  }
+  :global(.toast-error .toast-progress::before) { 
+    background: linear-gradient(90deg, #ef4444, #dc2626); 
+  }
+  :global(.toast-warning .toast-progress::before) { 
+    background: linear-gradient(90deg, #f59e0b, #d97706); 
+  }
+  :global(.toast-info .toast-progress::before) { 
+    background: linear-gradient(90deg, #3b82f6, #2563eb); 
+  }
+
+  :global(#toast-container .toast.show .toast-progress::before) {
+    animation: toast-progress var(--toast-duration, 5s) linear forwards;
+  }
+
+  @keyframes toast-progress {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+
+  /* Responsive design */
+  @media (max-width: 640px) {
+    :global(#toast-container.toast-container) {
+      top: 1rem;
+      right: 1rem;
+      left: 1rem;
+      width: auto;
+    }
+    
+    :global(#toast-container .toast) {
+      padding: 1.25rem 1.5rem 1.25rem 1.25rem;
+    }
+    
+    :global(#toast-container .toast .toast-icon) {
+      width: 40px;
+      height: 40px;
+      font-size: 1.1rem;
+    }
+  }
 </style>
