@@ -2,17 +2,190 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\KomplekController;
+use App\Http\Controllers\API\WargaController;
+use App\Http\Controllers\API\IuranController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Komplek\KomplekController;
-use App\Http\Controllers\IuranController;
 use App\Http\Controllers\LetterTemplateController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ImportController;
 
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
+
+// Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/check-complex-name', [KomplekController::class, 'checkComplexName']);
+
+// Test endpoints
+// Iuran routes
+Route::prefix('iuran')->group(function () {
+    Route::get('/', [IuranController::class, 'index']);
+    Route::post('/', [IuranController::class, 'store']);
+    Route::get('/{id}', [IuranController::class, 'show']);
+    Route::put('/{id}', [IuranController::class, 'update']);
+    Route::delete('/{id}', [IuranController::class, 'destroy']);
+});
+
+Route::get('/test', function () {
+    return response()->json(['message' => 'API is working!']);
+});
+
+// Simple Supabase connection test
+Route::get('/test-supabase-simple', function() {
+    try {
+        $client = new \GuzzleHttp\Client([
+            'base_uri' => 'https://iduumftxjnplvgafihlq.supabase.co/rest/v1/',
+            'headers' => [
+                'apikey' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkdXVtZnR4am5wbHZnYWZpaGxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwOTI5NDUsImV4cCI6MjA3MzY2ODk0NX0.eMdFFbjo8MRoZDN1g6udnRtZQ9-OF4fqwYmyQDVby6U',
+                'Authorization' => 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkdXVtZnR4am5wbHZnYWZpaGxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwOTI5NDUsImV4cCI6MjA3MzY2ODk0NX0.eMdFFbjo8MRoZDN1g6udnRtZQ9-OF4fqwYmyQDVby6U',
+                'Content-Type' => 'application/json',
+            ],
+            'verify' => false, // Hanya untuk pengembangan, jangan digunakan di produksi
+            'timeout' => 10,
+        ]);
+        
+        $response = $client->get('', [
+            'query' => [
+                'select' => '*',
+                'limit' => 1
+            ]
+        ]);
+        
+        return response()->json([
+            'success' => true,
+            'status' => $response->getStatusCode(),
+            'body' => json_decode($response->getBody()->getContents(), true)
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+});
+
+// Test Supabase connection
+Route::get('/test-supabase', function() {
+    $supabaseService = new \App\Services\SupabaseService();
+    
+    // Test connection
+    $result = $supabaseService->testConnection();
+    
+    // Test table access
+    $tableTest = [];
+    if ($result['success']) {
+        try {
+            $tableTest['iuran'] = $supabaseService->query('iuran', [], true);
+        } catch (\Exception $e) {
+            $tableTest['iuran_error'] = $e->getMessage();
+        }
+    }
+    
+    return response()->json([
+        'success' => $result['success'],
+        'message' => $result['success'] ? 'Supabase connection successful!' : 'Supabase connection failed',
+        'method' => 'REST API',
+        'connection' => $result,
+        'table_test' => $tableTest
+    ]);
+});
+
+// Test Supabase insert
+Route::get('/test-insert', function() {
+    try {
+        $supabaseService = new \App\Services\SupabaseService();
+        
+        $data = [
+            'komplek_id' => '123e4567-e89b-12d3-a456-426614174000',
+            'nama' => 'Iuran Test',
+            'jenis' => 'rutin',
+            'nominal' => 100000,
+            'periode' => 'bulanan',
+            'tgl_jatuh_tempo' => '2025-10-31',
+            'keterangan' => 'Ini adalah data test',
+            'status' => 'aktif',
+            'wajib' => true,
+            'denda_per_hari' => 5000,
+            'max_denda' => 50000
+        ];
+        
+        $result = $supabaseService->insert('iuran', $data);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Data berhasil disimpan',
+            'data' => $result
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal menyimpan data',
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+});
+
+// Komplek routes
+Route::prefix('komplek')->group(function () {
+    Route::get('/', [KomplekController::class, 'index']);
+    Route::post('/', [KomplekController::class, 'store']);
+    Route::get('/{id}', [KomplekController::class, 'show']);
+    Route::put('/{id}', [KomplekController::class, 'update']);
+    Route::delete('/{id}', [KomplekController::class, 'destroy']);
+    Route::post('/check-name', [KomplekController::class, 'checkName']);
+});
+
+// Warga routes
+Route::prefix('warga')->group(function () {
+    Route::get('/', [WargaController::class, 'index']);
+    Route::post('/', [WargaController::class, 'store']);
+    Route::get('/{id}', [WargaController::class, 'show']);
+    Route::put('/{id}', [WargaController::class, 'update']);
+    Route::delete('/{id}', [WargaController::class, 'destroy']);
+    Route::get('/kk/{kk}', [WargaController::class, 'byKk']);
+    Route::post('/import', [WargaController::class, 'import']);
+    Route::post('/export', [WargaController::class, 'export']);
+});
+
+// Iuran routes
+Route::prefix('iuran')->group(function () {
+    Route::get('/', [IuranController::class, 'index']);
+    Route::post('/', [IuranController::class, 'store']);
+    Route::get('/{id}', [IuranController::class, 'show']);
+    Route::put('/{id}', [IuranController::class, 'update']);
+    Route::delete('/{id}', [IuranController::class, 'destroy']);
+    Route::get('/komplek/{komplekId}', [IuranController::class, 'byKomplek']);
+    Route::get('/warga/{wargaId}', [IuranController::class, 'byWarga']);
+    Route::post('/bayar', [IuranController::class, 'bayar']);
+    Route::post('/{id}/status', [IuranController::class, 'updateStatus']);
+    Route::post('/generate-tagihan', [IuranController::class, 'generateTagihan']);
+    Route::get('/status/summary', [IuranController::class, 'getStatus']);
+});
+
+// Protected routes (require authentication)
+Route::middleware('auth:sanctum')->group(function () {
+    // User routes
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+    
+    Route::post('/logout', [AuthController::class, 'logout']);
+    
+    // Add other protected routes here
+});
 
 // Import routes
 Route::post('/import/warga/preview', [ImportController::class, 'previewWarga']);
