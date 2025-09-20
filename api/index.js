@@ -214,13 +214,24 @@ export default function handler(req, res) {
 
     if (path.startsWith('/templates/') && method === 'GET') {
       const type = path.split('/').pop();
-      const csvContent = type === 'keuangan' 
-        ? 'Tanggal,Deskripsi,Kategori,Jenis,Jumlah\n2024-08-01,Contoh Pemasukan,Iuran,masuk,100000\n2024-08-02,Contoh Pengeluaran,Operasional,keluar,50000'
-        : 'Nama,Alamat,No HP,Email,Status\nContoh Warga,Blok A No 1,081234567890,contoh@email.com,aktif';
+      let content = '';
+      let contentType = 'text/csv';
+      let fileExtension = 'csv';
       
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', `attachment; filename="template-${type}.csv"`);
-      return res.status(200).send(csvContent);
+      if (type === 'keuangan') {
+        content = 'Tanggal,Deskripsi,Kategori,Jenis,Jumlah\n2024-08-01,Contoh Pemasukan,Iuran,masuk,100000\n2024-08-02,Contoh Pengeluaran,Operasional,keluar,50000';
+      } else if (type === 'warga') {
+        content = 'Nama,NIK,KK,Alamat,RT,RW,No Rumah,Telepon,Email,Status,Tanggal Masuk\nContoh Warga,1234567890123456,1234567890123456,Jl. Contoh No. 123,001,002,A1,081234567890,contoh@email.com,aktif,2024-01-01';
+        // Untuk template warga, gunakan format Excel
+        contentType = 'application/vnd.ms-excel';
+        fileExtension = 'xls';
+      } else {
+        content = 'Nama,Alamat,No HP,Email,Status\nContoh Warga,Blok A No 1,081234567890,contoh@email.com,aktif';
+      }
+      
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Disposition', `attachment; filename="template-${type}.${fileExtension}"`);
+      return res.status(200).send(content);
     }
 
     // ==== LETTER TEMPLATES (Mock) ====

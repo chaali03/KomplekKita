@@ -1084,7 +1084,7 @@
             } catch(_) { /* handled by safe */ }
           }
           // Calculate pending amount: Nominal × Warga Belum Bayar = Total Tertunda
-          const pendingCount = 0;
+          let pendingCount = 0;
           if (Array.isArray(iuran?.pending)) pendingCount = iuran.pending.length;
           else if (typeof iuran?.unpaidCount === 'number') pendingCount = Number(iuran.unpaidCount);
           else if (Array.isArray(iuran?.residents) && Array.isArray(iuran?.paid)) pendingCount = Math.max(0, iuran.residents.length - iuran.paid.length);

@@ -64,4 +64,21 @@ class KomplekController extends Controller
             'available' => !$exists,
         ]);
     }
+
+    public function checkComplexName(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $name = $request->name;
+        
+        // Check if complex name already exists
+        $exists = Komplek::where('nama', $name)->exists();
+
+        return response()->json([
+            'available' => !$exists,
+            'message' => $exists ? 'Nama komplek sudah digunakan' : 'Nama komplek tersedia'
+        ]);
+    }
 }

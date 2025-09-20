@@ -88,7 +88,8 @@ export async function validateComplexNameUniqueness(name: string): Promise<{
 }> {
   try {
     // Check against existing complex names in database
-    const response = await fetch('http://127.0.0.1:8000/api/check-complex-name', {
+    // Use relative path so Astro dev proxy forwards to backend and avoids CORS in dev
+    const response = await fetch('/api/check-complex-name', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -96,8 +97,9 @@ export async function validateComplexNameUniqueness(name: string): Promise<{
       },
       body: JSON.stringify({ name })
     });
-    
-    const data = await response.json();
+    // Backend might return HTML on error; guard JSON parsing
+    let data: any = {};
+    try { data = await response.json(); } catch { data = {}; }
     
     if (!response.ok) {
       return { isUnique: false, message: 'Gagal memvalidasi nama komplek' };
