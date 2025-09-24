@@ -1,0 +1,469 @@
+---
+import Nav from '~/components/User-site/navclient.astro';
+import Laporan from '~/components/User-site/laporandash.astro';
+import Layout from "~/layouts/userlayout.astro";
+---
+
+<Layout>
+<Nav />
+<div class="page-enter">
+<!-- Iuran Notice Banner (visible if current month dues not saved by admin) -->
+<div id="dues-notice" class="notice-banner" style="display:none">
+  <i class="fas fa-exclamation-triangle"></i>
+  <span id="dues-notice-text">Iuran bulan ini belum disimpan oleh admin. Belum ada tagihan berjalan.</span>
+ </div>
+
+<style>
+  .notice-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    max-width: 1000px;
+    margin: 0.75rem auto 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    background: #fff7e6;
+    border: 1px solid #ffe2b4;
+    color: #8a5a00;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    font-size: 0.95rem;
+  }
+  .notice-banner i { color: #ff9f00; }
+
+  /* Reveal + hover animations */
+  .pre-animation { opacity: 0; transform: translateY(8px) scale(0.98); transition: opacity .45s ease, transform .45s ease, box-shadow .2s ease, translate .2s ease; }
+  .animate-in { opacity: 1 !important; transform: none !important; }
+  @media (max-width: 520px) {
+  }
+  /* Page opening animation */
+  .page-enter { animation: pageIn .5s ease-out both; }
+  @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* Section card wrapper for Laporan list */
+  .section-card { max-width: 1000px; margin: 10px auto 20px; background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; box-shadow: 0 10px 24px rgba(2,6,23,0.06); padding: 8px 10px; }
+
+  /* Stagger support (no top KPI grid now) */
+</style>
+
+<script type="module">
+  (function(){
+    try {
+      const now = new Date();
+      const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+      const raw = localStorage.getItem('dues_configs');
+      let saved = false;
+      if (raw) {
+        try {
+          const cfg = JSON.parse(raw);
+          const val = cfg?.[ym];
+          saved = !!(typeof val === 'number' ? val > 0 : val && typeof val.amount !== 'undefined' ? Number(val.amount) > 0 : false);
+        } catch {}
+      }
+      const wrap = document.getElementById('dues-notice');
+      if (wrap) wrap.style.display = saved ? 'none' : 'flex';
+      const txt = document.getElementById('dues-notice-text');
+      if (txt) txt.innerHTML = `Iuran bulan <strong>${ym}</strong> belum disimpan admin. Belum ada penagihan berjalan.`;
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'dues_configs') location.reload();
+      });
+    } catch (err) {
+      console.warn('Failed to compute dues notice (userlaporan):', err);
+    }
+  })();
+</script>
+
+<!-- Sync KPI values from Admin Dashboard snapshots -->
+<script type="module">
+  (function(){
+    const DASH_SNAP_KEY = 'summary_kpis';
+    function fmtIDR(val){
+      try { return new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', maximumFractionDigits:0 }).format(Number(val||0)); }
+      catch(_) { return `Rp${Number(val||0).toLocaleString('id-ID')}`; }
+    }
+    function writeDashSnapshot({kas=0, masuk=0, keluar=0, tertunda=0}){
+      try{
+        const prev = JSON.parse(localStorage.getItem(DASH_SNAP_KEY)||'null');
+        const allPrevZero = !prev || ((Number(prev.totalKas||0)===0) && (Number(prev.totalMasuk||0)===0) && (Number(prev.totalKeluar||0)===0) && (Number(prev.iuranPending||0)===0));
+        if(!prev || allPrevZero){
+          const komplekId = localStorage.getItem('komplek_id') || '';
+          const now = Date.now();
+          const snap = { komplekId, totalKas:Number(kas||0), totalMasuk:Number(masuk||0), totalKeluar:Number(keluar||0), iuranPending:Number(tertunda||0), ts: now };
+          localStorage.setItem(DASH_SNAP_KEY, JSON.stringify(snap));
+        }
+      }catch(_){/* noop */}
+    }
+    async function fetchJson(url){
+      const res = await fetch(url, { headers: { 'Accept':'application/json' } });
+      if(!res.ok){ const t = await res.text().catch(()=> ''); throw new Error(`HTTP ${res.status}: ${t}`); }
+      return res.json();
+    }
+    function resolveKomplekId(){
+      try{
+        const url = new URL(window.location.href);
+        let id = url.searchParams.get('komplek_id') || localStorage.getItem('komplek_id') || '';
+        const n = Number(id);
+        const valid = Number.isFinite(n) && n > 0 && String(Math.floor(n)) === String(id || n);
+        if(valid){ localStorage.setItem('komplek_id', String(id)); return String(id); }
+      }catch(_){/* noop */}
+      return '';
+    }
+    // Animations: reveal and counters
+    function initRevealAnimations(root=document){
+      const cards = root.querySelectorAll('.pre-animation');
+      // assign stagger index
+      cards.forEach((el, idx)=>{ try { if (el instanceof HTMLElement) { el.style.setProperty('--i', String(idx)); } } catch(_){} });
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries)=>{
+          entries.forEach(en=>{ if (en.isIntersecting) { en.target.classList.add('animate-in'); io.unobserve(en.target); } });
+        }, { threshold: 0.12 });
+        cards.forEach(el=>io.observe(el));
+      } else {
+        cards.forEach(el=>el.classList.add('animate-in'));
+      }
+    }
+    function animateCounters(root=document){
+      const els = root.querySelectorAll('.stat-value[data-target]');
+      els.forEach((el)=>{
+        const node = el;
+        const target = Number(node.dataset.target||'0');
+        // If target is 0, just set once and mark animated
+        if (target <= 0){
+          if ((node.dataset.animatedFor||'') !== '0'){
+            node.textContent = fmtIDR(0);
+            node.dataset.animatedFor = '0';
+          }
+          return;
+        }
+        // Don't re-animate if we've already animated to this target value
+        if ((node.dataset.animatedFor||'') === String(target)) return;
+        node.dataset.animatedFor = String(target);
+        // Start from the currently displayed value to avoid flashing down to 0
+        const currentText = node.textContent || '0';
+        const parsed = Number((currentText || '').replace(/[^0-9-]/g, '')) || 0;
+        const startVal = Math.max(0, Math.min(parsed, target));
+        const duration = 800;
+        const start = performance.now();
+        function step(ts){
+          const p = Math.min(1, (ts - start) / duration);
+          const eased = 1 - Math.pow(1-p, 3);
+          const val = Math.round(startVal + (target - startVal) * eased);
+          node.textContent = fmtIDR(val);
+          if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      });
+    }
+    function getMonthRange(){
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      const end = new Date(now.getFullYear(), now.getMonth()+1, 0);
+      const toISO = (dt)=>{
+        const z = new Date(dt.getTime() - dt.getTimezoneOffset()*60000);
+        return z.toISOString().slice(0,10);
+      };
+      return { start: toISO(start), end: toISO(end) };
+    }
+    function computeLocalSummary(){
+      try{
+        const raw = localStorage.getItem('financial_transactions_v2');
+        if(!raw) return null;
+        const txs = JSON.parse(raw)||[];
+        if(!Array.isArray(txs) || txs.length===0) return null;
+        const { start, end } = getMonthRange();
+        const inRange = txs.filter(t => t && t.date >= start && t.date <= end);
+        const income = inRange.filter(t=>t.type==='Masuk').reduce((s,t)=> s + Number(t.amount||0), 0);
+        const expense = inRange.filter(t=>t.type==='Keluar').reduce((s,t)=> s + Number(t.amount||0), 0);
+        const balance = income - expense;
+        return { income, expense, balance };
+      }catch(_){ return null }
+    }
+    function setTargets(kas, masuk, keluar, tertunda){
+      const elKas = document.getElementById('user-total-kas');
+      const elMasuk = document.getElementById('user-total-masuk');
+      const elKeluar = document.getElementById('user-total-keluar');
+      const elTertunda = document.getElementById('user-iuran-pending');
+      if (elKas) { elKas.dataset.target = String(Number(kas||0)); }
+      if (elMasuk) { elMasuk.dataset.target = String(Number(masuk||0)); }
+      if (elKeluar) { elKeluar.dataset.target = String(Number(keluar||0)); }
+      if (elTertunda) { elTertunda.dataset.target = String(Number(tertunda||0)); }
+    }
+    function tryFromSnapshots(){
+      // 1) Admin dashboard snapshot
+      try{
+        const snap = JSON.parse(localStorage.getItem(DASH_SNAP_KEY)||'null');
+        const hasAny = snap && (
+          typeof snap.totalMasuk !== 'undefined' ||
+          typeof snap.totalKeluar !== 'undefined' ||
+          typeof snap.iuranPending !== 'undefined' ||
+          typeof snap.totalKas !== 'undefined'
+        );
+        if (hasAny){
+          const kas = Number(snap.totalKas||0);
+          const masuk = Number(snap.totalMasuk||0);
+          const keluar = Number(snap.totalKeluar||0);
+          const pending = Number(snap.iuranPending||0);
+          const any = (kas>0) || (masuk>0) || (keluar>0) || (pending>0);
+          if (any){ setTargets(kas, masuk, keluar, pending); return true; }
+          // if all zero, do not paint; proceed to fallbacks
+        }
+      }catch(_){/* noop */}
+      // 2) Laporan snapshot for totals
+      try{
+        const lap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
+        if(lap && lap.totals){
+          const li = Number(lap.totals.income||0);
+          const le = Number(lap.totals.expense||0);
+          const lb = Number(lap.totals.balance||0);
+          if (li>0 || le>0 || lb>0){
+            // Tertunda not available in laporan; default to 0 and let dues notice communicate state
+            setTargets(lb, li, le, 0);
+            return true;
+          }
+        }
+      }catch(_){/* noop */}
+      // 3) Local fallback
+      const local = computeLocalSummary();
+      if(local){
+        setTargets(local.balance, local.income, local.expense, 0);
+        if (Number(local.income||0)>0 || Number(local.expense||0)>0 || Number(local.balance||0)>0) {
+          // Seed snapshot so user page has data even without admin dashboard open
+          writeDashSnapshot({ kas: local.balance, masuk: local.income, keluar: local.expense, tertunda: 0 });
+          return true;
+        }
+        return false;
+      }
+      return false;
+    }
+    async function tryFetchFromAPI(){
+      try{
+        const id = resolveKomplekId();
+        const apiDisabled = localStorage.getItem('disable_api') === '1';
+        if(!id || apiDisabled) return false;
+        const url = `/api/public/transaksi/summary?komplek_id=${encodeURIComponent(id)}`;
+        const data = await fetchJson(url);
+        const totalKas = Number(data?.totalKas || data?.total_kas || 0);
+        const totalMasuk = Number(data?.totalMasuk || data?.total_masuk || 0);
+        const totalKeluar = Number(data?.totalKeluar || data?.total_keluar || 0);
+        const any = (totalMasuk>0 || totalKeluar>0 || totalKas>0);
+        if (any){
+          const pending = Number((JSON.parse(localStorage.getItem(DASH_SNAP_KEY)||'{}')||{}).iuranPending||0);
+          setTargets(totalKas, totalMasuk, totalKeluar, pending);
+          try { writeDashSnapshot({ kas: totalKas, masuk: totalMasuk, keluar: totalKeluar, tertunda: pending }); } catch(_){}
+        }
+        return any;
+      }catch(err){
+        try {
+          const msg = String(err && err.message || '');
+          if (msg.includes('HTTP 422') && msg.toLowerCase().includes('komplek')) {
+            // Permanently switch to local-only mode for this session
+            try { localStorage.removeItem('komplek_id'); } catch(_){ }
+            try { localStorage.setItem('disable_api','1'); } catch(_){ }
+          }
+        } catch(_){ }
+        // Immediately try to repaint from snapshots/local so UI doesn't remain zero
+        tryFromSnapshots();
+        return false;
+      }
+    }
+    async function init(){
+      initRevealAnimations();
+      // Ensure local demo transactions exist (mirrors admin laporan)
+      function randomBetween(min, max){ return Math.floor(Math.random() * (max - min + 1)) + min }
+      function randomChoice(arr){ return arr[Math.floor(Math.random() * arr.length)] }
+      function generateMonthData(year, month){
+        const monthStr = String(month).padStart(2,'0');
+        const daysInMonth = new Date(year, month, 0).getDate();
+        const txs = [];
+        const vendors = ['Warung Bu Sari','CV Cahaya Abadi','Tukang Kebun','Panitia RW','PT Prisma','UD Berkah Jaya'];
+        for(let day=1; day<=daysInMonth; day++){
+          const dayStr = String(day).padStart(2,'0');
+          const date = `${year}-${monthStr}-${dayStr}`;
+          if(day <= 7 && Math.random() > 0.25){
+            const unitAmount = randomBetween(200000, 350000);
+            const householdCount = randomBetween(3, 15);
+            txs.push({ date, type:'Masuk', category:'Iuran', description:`Iuran Warga (${householdCount} KK)`, amount: unitAmount * householdCount });
+          }
+          if(Math.random() > 0.93){ txs.push({ date, type:'Masuk', category:'Donasi', description:'Donasi Sukarela', amount: randomBetween(100000, 900000) }); }
+          if(day % 7 === 3){ txs.push({ date, type:'Keluar', category:'Keamanan', description:'Upah Jaga Malam', amount: 250000 }); }
+          if(day % 7 === 5){ txs.push({ date, type:'Keluar', category:'Kebersihan', description:'Kebersihan & Sampah', amount: 180000 }); }
+          if(Math.random() > 0.94){ txs.push({ date, type:'Keluar', category:'Lingkungan', description:'Perawatan Taman', amount: randomBetween(150000, 450000) }); }
+          if(Math.random() > 0.95){ txs.push({ date, type:'Keluar', category:'Administrasi', description:`ATK ${randomChoice(vendors)}`, amount: randomBetween(50000, 250000) }); }
+          if(Math.random() > 0.965){ txs.push({ date, type:'Keluar', category:'Fasilitas', description:'Pemeliharaan Fasilitas', amount: randomBetween(200000, 700000) }); }
+          if(Math.random() > 0.975){ txs.push({ date, type:'Keluar', category:'Sosial', description:'Bantuan Sosial', amount: randomBetween(150000, 600000) }); }
+        }
+        return txs;
+      }
+      function ensureLocalTransactions(){
+        try{
+          const existing = JSON.parse(localStorage.getItem('financial_transactions_v2') || 'null');
+          if(Array.isArray(existing) && existing.length > 0) return;
+        }catch(_){/* ignore */}
+        const now = new Date();
+        const months = [-2,-1,0,1,2,3];
+        let all = [];
+        months.forEach(offset => {
+          const d = new Date(now.getFullYear(), now.getMonth()+offset, 1);
+          all = all.concat(generateMonthData(d.getFullYear(), d.getMonth()+1));
+        });
+        all.sort((a,b)=> a.date.localeCompare(b.date));
+        try{ localStorage.setItem('financial_transactions_v2', JSON.stringify(all)); }catch(_){ }
+      }
+      ensureLocalTransactions();
+      const ok = tryFromSnapshots();
+      if(!ok){ await tryFetchFromAPI(); }
+      // Hard fallback: if still zero after snapshots/API, force local compute and set targets
+      try {
+        const m = document.getElementById('user-total-masuk');
+        const k = document.getElementById('user-total-keluar');
+        const valM = Number((m && m.dataset && m.dataset.target) || '0');
+        const valK = Number((k && k.dataset && k.dataset.target) || '0');
+        if ((valM === 0) && (valK === 0)){
+          const local = computeLocalSummary();
+          if (local && (Number(local.income)>0 || Number(local.expense)>0)){
+            setTargets(local.income - local.expense, local.income, local.expense, 0);
+            try { writeDashSnapshot({ kas: local.income - local.expense, masuk: local.income, keluar: local.expense, tertunda: 0 }); } catch(_){ }
+          }
+        }
+      } catch(_) { }
+      // Now animate once using current targets
+      animateCounters();
+      const keys = ['summary_kpis','laporan_totals_snapshot','iuran_dirty','dues_payments','dues_configs'];
+      window.addEventListener('storage', (e) => { if (e && keys.includes(String(e.key))) { tryFromSnapshots(); animateCounters(); } });
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { tryFromSnapshots(); animateCounters(); } });
+      // same-tab periodic refresh (when other modules write same-tab without storage event)
+      setInterval(async () => { const ok = tryFromSnapshots(); if(!ok){ await tryFetchFromAPI(); } animateCounters(); }, 3000);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  })();
+</script>
+<div id="laporan-wrap" class="section-card pre-animation">
+  <Laporan />
+</div>
+<!-- Charts section (mirrors admin dashboard charts) -->
+<section class="section-card pre-animation" style="max-width:1000px; margin: 10px auto 24px;">
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="card-header"><h3><i class="fas fa-chart-area"></i> Perkembangan Saldo</h3></div>
+      <div class="card-body"><canvas id="chartKas" height="260"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="card-header"><h3><i class="fas fa-chart-pie"></i> Komposisi Pengeluaran</h3></div>
+      <div class="card-body"><canvas id="chartPie" height="260"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="card-header"><h3><i class="fas fa-list"></i> Pengeluaran per Kategori</h3></div>
+      <div class="card-body"><canvas id="chartExpenseCategories" height="260"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="card-header"><h3><i class="fas fa-sliders-h"></i> Perbandingan Bulanan</h3></div>
+      <div class="card-body"><canvas id="chartMonthlyComparison" height="260"></canvas></div>
+    </div>
+    <div class="chart-card" style="grid-column: 1 / -1;">
+      <div class="card-header"><h3><i class="fas fa-wave-square"></i> Tren Pemasukan & Pengeluaran</h3></div>
+      <div class="card-body"><canvas id="chartIncomeExpenseArea" height="280"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .charts-grid { display:grid; gap:18px; grid-template-columns: repeat(2, minmax(0,1fr)); }
+  @media (max-width: 860px){ .charts-grid { grid-template-columns: 1fr; } }
+  .chart-card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; box-shadow:0 8px 24px rgba(2,6,23,0.06); overflow:hidden; }
+  .chart-card .card-header { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #e5e7eb; }
+  .chart-card .card-header h3 { margin:0; font-size:1rem; font-weight:800; display:flex; align-items:center; gap:8px; }
+  .chart-card .card-body { padding:12px; }
+</style>
+
+<script type="module">
+  // Ensure Chart.js is loaded on user pages
+  async function ensureChartJs(){
+    if (typeof window.Chart !== 'undefined') return;
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+      s.onload = () => resolve(true);
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+  function readLaporanSeries(){
+    try { const raw = localStorage.getItem('laporan_chart_series'); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  }
+  function makeGradient(ctx, color, alpha = 0.15) {
+    try {
+      const height = (ctx && ctx.canvas && ctx.canvas.height) ? ctx.canvas.height : 200;
+      const gradient = ctx.createLinearGradient(0, 0, 0, height);
+      const toRGBA = (c, a) => {
+        if (!c) return `rgba(67, 97, 238, ${a})`;
+        if (c.startsWith('#')) { const r=parseInt(c.substr(1,2),16); const g=parseInt(c.substr(3,2),16); const b=parseInt(c.substr(5,2),16); return `rgba(${r}, ${g}, ${b}, ${a})`; }
+        if (c.startsWith('rgba(')) return c.replace(/rgba\(([^,]+),\s*([^,]+),\s*([^,]+),\s*[^)]+\)/, `rgba($1, $2, $3, ${a})`);
+        if (c.startsWith('rgb(')) return c.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
+        return `rgba(67, 97, 238, ${a})`;
+      };
+      gradient.addColorStop(0, toRGBA(color, alpha));
+      gradient.addColorStop(1, toRGBA(color, 0));
+      return gradient;
+    } catch { return color; }
+  }
+  function formatIDR(val){ return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val||0); }
+  function destroyIfExists(map, id){ try { const ex = map.get(id); ex && ex.destroy && ex.destroy(); map.delete(id); } catch(_){} }
+  async function initUserCharts(){
+    await ensureChartJs();
+    if (!window.userCharts) window.userCharts = new Map();
+    const palette = { primary:'#4361ee', primarySoft:'rgba(67,97,238,0.1)', green:'#06d6a0', red:'#ef476f', yellow:'#f9c74f', cyan:'#4cc9f0', grayTick:'#6b7280', grid:'rgba(229,231,235,0.5)' };
+    const lap = readLaporanSeries();
+    const fallbackLabels = ['Jan','Feb','Mar','Apr','May','Jun'];
+    const labels = Array.isArray(lap?.labels) && lap.labels.length ? lap.labels : fallbackLabels;
+    const dailyIncome = Array.isArray(lap?.dailyIncome) && lap.dailyIncome.length ? lap.dailyIncome : [900000,1200000,1150000,1400000,1500000,1600000];
+    const dailyExpense = Array.isArray(lap?.dailyExpense) && lap.dailyExpense.length ? lap.dailyExpense : [500000,700000,650000,800000,900000,850000];
+    const cumulativeBalance = Array.isArray(lap?.cumulativeBalance) && lap.cumulativeBalance.length ? lap.cumulativeBalance : dailyIncome.map((_,i)=> dailyIncome.slice(0,i+1).reduce((s,v)=>s+v,0) - dailyExpense.slice(0,i+1).reduce((s,v)=>s+v,0));
+    const compLabels = lap?.composition ? Object.keys(lap.composition) : ['Operasional','Keamanan','Kebersihan','Perbaikan','Lainnya'];
+    const compValues = lap?.composition ? Object.values(lap.composition) : [1200000,800000,600000,400000,200000];
+
+    // Saldo line area
+    const cashFlowCtx = document.getElementById('chartKas');
+    if (cashFlowCtx) {
+      destroyIfExists(window.userCharts, 'chartKas');
+      const ctx = cashFlowCtx.getContext ? cashFlowCtx.getContext('2d') : null;
+      const chart = new Chart(cashFlowCtx, { type:'line', data:{ labels, datasets:[{ label:'Saldo', data:cumulativeBalance, borderColor: palette.primary, backgroundColor: ctx ? makeGradient(ctx, palette.primary) : palette.primarySoft, borderWidth:2, tension:0.4, fill:true, pointBackgroundColor:'#ffffff', pointBorderColor: palette.primary, pointBorderWidth:2, pointRadius:4, pointHoverRadius:6 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ display:false }, tooltip:{ mode:'index', intersect:false, backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:(ctx)=>{ let label=ctx.dataset.label||''; if(label){label+=': ';} if(ctx.parsed.y!=null){ label+=formatIDR(ctx.parsed.y);} return label; } } } }, scales:{ x:{ grid:{ display:false }, ticks:{ color: palette.grayTick } }, y:{ beginAtZero:true, grid:{ color: palette.grid }, ticks:{ color: palette.grayTick, callback:(v)=> new Intl.NumberFormat('id-ID',{ style:'currency', currency:'IDR', maximumSignificantDigits:3 }).format(v) } } } } });
+      window.userCharts.set('chartKas', chart);
+    }
+    // Pie
+    const pieCtx = document.getElementById('chartPie');
+    if (pieCtx) {
+      destroyIfExists(window.userCharts, 'chartPie');
+      const chart = new Chart(pieCtx, { type:'doughnut', data:{ labels: compLabels, datasets:[{ data: compValues, backgroundColor:['#06d6a0','#ef476f','#ffd166','#4cc9f0','#f9c74f'], borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ animateRotate:true, animateScale:true, duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ position:'bottom', labels:{ padding:20, usePointStyle:true, pointStyle:'circle' } }, tooltip:{ backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:(ctx)=>{ const label=ctx.label||''; const value=ctx.raw||0; const total=ctx.dataset.data.reduce((a,b)=>a+b,0); const percentage = total? Math.round((value/total)*100): 0; return `${label}: ${percentage}%`; } } } }, cutout:'70%' } });
+      window.userCharts.set('chartPie', chart);
+    }
+    // Expense per category bar
+    const expCatCtx = document.getElementById('chartExpenseCategories');
+    if (expCatCtx) {
+      destroyIfExists(window.userCharts, 'chartExpenseCategories');
+      const chart = new Chart(expCatCtx, { type:'bar', data:{ labels: compLabels, datasets:[{ label:'Pengeluaran per Kategori', data: compValues, backgroundColor:['rgba(67, 97, 238, 0.7)','rgba(76, 201, 240, 0.7)','rgba(6, 214, 160, 0.7)','rgba(249, 199, 79, 0.7)','rgba(239, 71, 111, 0.7)'], borderWidth:0, borderRadius:6, maxBarThickness:40 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ delay:(ctx)=> ctx.dataIndex*100, duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ display:false }, tooltip:{ backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:(ctx)=>{ let label=ctx.dataset.label||''; if(label) label+=': '; if(ctx.parsed.y!=null) label+=formatIDR(ctx.parsed.y); return label; } } } }, scales:{ x:{ grid:{ display:false }, ticks:{ color: palette.grayTick } }, y:{ beginAtZero:true, grid:{ color: palette.grid }, ticks:{ color: palette.grayTick, callback:(v)=> new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', maximumSignificantDigits:3 }).format(v) } } } } });
+      window.userCharts.set('chartExpenseCategories', chart);
+    }
+    // Monthly comparison bar
+    const monthlyCtx = document.getElementById('chartMonthlyComparison');
+    if (monthlyCtx) {
+      destroyIfExists(window.userCharts, 'chartMonthlyComparison');
+      const chart = new Chart(monthlyCtx, { type:'bar', data:{ labels, datasets:[{ label:'Pemasukan', data: dailyIncome, backgroundColor:'rgba(6, 214, 160, 0.7)', borderColor:'rgba(6, 214, 160, 1)', borderWidth:1, borderRadius:6, maxBarThickness:20 },{ label:'Pengeluaran', data: dailyExpense, backgroundColor:'rgba(239, 71, 111, 0.7)', borderColor:'rgba(239, 71, 111, 1)', borderWidth:1, borderRadius:6, maxBarThickness:20 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ delay:(ctx)=> ctx.datasetIndex*100 + ctx.dataIndex*50, duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ position:'bottom', labels:{ padding:20, usePointStyle:true, pointStyle:'circle' } }, tooltip:{ backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:(ctx)=>{ let label=ctx.dataset.label||''; if(label) label+=': '; if(ctx.parsed.y!=null) label+=formatIDR(ctx.parsed.y); return label; } } } }, scales:{ x:{ grid:{ display:false }, ticks:{ color: palette.grayTick } }, y:{ beginAtZero:true, grid:{ color: palette.grid }, ticks:{ color: palette.grayTick, callback:(v)=> new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', maximumSignificantDigits:3 }).format(v) } } } } });
+      window.userCharts.set('chartMonthlyComparison', chart);
+    }
+    // Dual area income/expense
+    const areaCtx = document.getElementById('chartIncomeExpenseArea');
+    if (areaCtx) {
+      destroyIfExists(window.userCharts, 'chartIncomeExpenseArea');
+      const ctx = areaCtx.getContext ? areaCtx.getContext('2d') : null;
+      const chart = new Chart(areaCtx, { type:'line', data:{ labels, datasets:[{ label:'Pemasukan', data: dailyIncome, borderColor: palette.green, backgroundColor: ctx ? makeGradient(ctx, palette.green) : 'rgba(6, 214, 160, 0.15)', fill:true, tension:0.35, borderWidth:2 },{ label:'Pengeluaran', data: dailyExpense, borderColor: palette.red, backgroundColor: ctx ? makeGradient(ctx, palette.red) : 'rgba(239, 71, 111, 0.15)', fill:true, tension:0.35, borderWidth:2 }] }, options:{ responsive:true, maintainAspectRatio:false, interaction:{ mode:'index', intersect:false }, plugins:{ legend:{ position:'bottom' }, tooltip:{ callbacks:{ label:(ctx)=>{ const v = ctx.parsed && ctx.parsed.y != null ? ctx.parsed.y : 0; const l = ctx.dataset && ctx.dataset.label ? ctx.dataset.label : ''; return `${l}: ${new Intl.NumberFormat('id-ID',{ style:'currency', currency:'IDR' }).format(v)}`; } } } }, scales:{ x:{ grid:{ display:false }, ticks:{ color: palette.grayTick } }, y:{ grid:{ color: palette.grid }, ticks:{ color: palette.grayTick } } } } });
+      window.userCharts.set('chartIncomeExpenseArea', chart);
+    }
+  }
+  (function(){
+    const init = async () => { try { await initUserCharts(); } catch(e){ console.warn('Chart init failed', e); } };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+    window.addEventListener('storage', (e)=>{ if (e && e.key === 'laporan_chart_series') { initUserCharts(); } });
+    document.addEventListener('visibilitychange', ()=>{ if (document.visibilityState === 'visible') initUserCharts(); });
+  })();
+</script>
+</div>
+</Layout>

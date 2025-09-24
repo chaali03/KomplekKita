@@ -1,0 +1,1196 @@
+---
+---
+
+<header class="header">
+    <!-- Spotlight effect -->
+    <div class="spotlight"></div>
+
+    <!-- Artistic background blobs using SVG -->
+    <div class="blobs" aria-hidden="true">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="grain"></div>
+    </div>
+
+    <!-- Floating particles -->
+    <div class="particles" aria-hidden="true">
+        <div class="particle particle-1"></div>
+        <div class="particle particle-2"></div>
+        <div class="particle particle-3"></div>
+        <div class="particle particle-4"></div>
+        <div class="particle particle-5"></div>
+        <div class="particle particle-6"></div>
+        <div class="particle particle-7"></div>
+        <div class="particle particle-8"></div>
+    </div>
+
+    <!-- Scroll progress indicator -->
+    <div class="scroll-progress">
+        <div class="scroll-bar"></div>
+    </div>
+
+    <div class="container">
+        <div class="header-inner">
+            <!-- Brand with glow effect -->
+            <a href="/" class="brand">
+                <span class="brand-icon"><i class="fas fa-building"></i></span>
+                <span class="brand-text">KomplekKita</span>
+                <span class="brand-glow"></span>
+            </a>
+
+            <!-- Navigation menu -->
+            <nav class="menu">
+                <ul class="menu-list">
+                    <li class="menu-item"><a href="/" class="menu-link">Beranda</a></li>
+                    <li class="menu-item"><a href="/harga" class="menu-link">Harga</a></li>
+                    <li class="menu-item"><a href="/komplek" class="menu-link">Komplek</a></li>
+                    <li class="menu-item"><a href="/kontak" class="menu-link">Kontak</a></li>
+                </ul>
+            </nav>
+
+            <!-- Action buttons -->
+            <div class="actions">
+                <a href="/admin" class="btn btn-secondary">
+                    <span class="btn-text">Demo</span>
+                    <span class="btn-icon"><i class="fas fa-play-circle"></i></span>
+                </a>
+                <a href="/login" class="btn btn-primary">
+                    <span class="btn-text">Mulai Sekarang</span>
+                    <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+                    <span class="btn-shine"></span>
+                </a>
+            </div>
+
+            <!-- Hamburger menu for mobile -->
+            <button class="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
+                <span class="hamburger-box">
+                    <span class="hamburger-inner"></span>
+                </span>
+                <span class="hamburger-glow"></span>
+            </button>
+
+            <!-- Mobile navigation menu -->
+            <div class="mobile-menu" id="mobile-menu">
+                <div class="mobile-menu-container">
+                    <div class="mobile-menu-header">
+                        <a href="/" class="mobile-brand">
+                            <span class="brand-icon"><i class="fas fa-building"></i></span>
+                            <span class="brand-text">KomplekKita</span>
+                        </a>
+                        <button class="mobile-close" aria-label="Close menu">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <ul class="mobile-menu-list">
+                        <li class="mobile-menu-item"><a href="/" class="mobile-menu-link">Beranda</a></li>
+                        <li class="mobile-menu-item"><a href="/harga" class="mobile-menu-link">Harga</a></li>
+                        <li class="mobile-menu-item"><a href="/komplek" class="mobile-menu-link">Komplek</a></li>
+                        <li class="mobile-menu-item"><a href="/kontak" class="mobile-menu-link">Kontak</a></li>
+                    </ul>
+                    
+                    <div class="mobile-actions">
+                        <a href="/admin" class="mobile-btn mobile-btn-secondary">
+                            <span class="btn-text">Demo</span>
+                            <span class="btn-icon"><i class="fas fa-play-circle"></i></span>
+                        </a>
+                        <a href="/login" class="mobile-btn mobile-btn-primary">
+                            <span class="btn-text">Mulai Sekarang</span>
+                            <span class="btn-icon"><i class="fas fa-arrow-right"></i></span>
+                            <span class="btn-shine"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<style>
+    /* Base styles and variables */
+    :root {
+        --primary-blue: #3B82F6;
+        --primary-blue-dark: #1E40AF;
+        --primary-blue-light: #93C5FD;
+        --muted-green: #10B981;
+        --accent-purple: #8B5CF6;
+        --accent-pink: #F472B6;
+        --accent-orange: #F59E0B;
+        --text-dark: #1F2937;
+        --text-light: #6B7280;
+        --surface: #FFFFFF;
+        --surface-2: #F9FAFB;
+        --border: #E5E7EB;
+        --transition-fast: 0.2s ease;
+        --transition-normal: 0.3s ease;
+        --transition-slow: 0.5s ease;
+        --bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        --header-height: 80px;
+        --header-height-mobile: 70px;
+    }
+
+    /* Header container with glassmorphism effect */
+    .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-height);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    z-index: 1000;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+    .header.scrolled {
+    height: calc(var(--header-height) - 10px);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+    .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        height: 100%;
+    }
+
+    .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+        position: relative;
+    }
+
+    /* Brand with enhanced glow effect */
+    .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s ease;
+}
+
+.brand:hover {
+    transform: scale(1.05);
+}
+
+    .brand-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+        color: white;
+        border-radius: 10px;
+        font-size: 1.25rem;
+        box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+        transition: all var(--transition-normal);
+    }
+
+    .brand-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    background: linear-gradient(135deg, var(--text-dark), var(--primary-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: all var(--transition-normal);
+    text-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+    .brand-glow {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+        filter: blur(10px);
+        opacity: 0;
+        transition: opacity var(--transition-normal);
+        z-index: -1;
+    }
+
+    .brand:hover .brand-icon {
+        transform: rotate(-10deg) scale(1.1);
+        background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+        box-shadow: 0 5px 15px rgba(59, 130, 246, 0.5);
+    }
+
+    .brand:hover .brand-text {
+        background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .brand:hover .brand-glow {
+        opacity: 1;
+    }
+
+    /* Menu styling with hover effects */
+    .menu {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        position: relative;
+        z-index: 2;
+    }
+
+    .menu-list {
+        display: flex;
+        gap: 1.5rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .menu-item {
+        position: relative;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+    .menu-link {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        text-decoration: none;
+        padding: 0.5rem 0;
+        position: relative;
+        transition: all var(--transition-normal);
+        overflow: hidden;
+    }
+
+    .menu-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--accent-purple));
+        transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        border-radius: 2px;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    }
+
+    .menu-link:hover {
+        color: var(--primary-blue);
+        transform: translateY(-3px);
+        text-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+    }
+
+    .menu-link:hover::after {
+        width: 100%;
+        animation: glow-pulse 1.5s infinite alternate;
+    }
+    
+    @keyframes glow-pulse {
+        0% {
+            box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+        }
+        100% {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+    }
+
+    /* Action buttons with enhanced hover effects */
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-text {
+        position: relative;
+        z-index: 1;
+    }
+
+    .btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+        transition: transform var(--transition-normal);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+        color: white;
+        box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+        background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+    }
+
+    .btn-primary:hover .btn-icon {
+        transform: translateX(3px);
+    }
+
+    .btn-shine {
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.3) 50%,
+            rgba(255, 255, 255, 0) 100%
+        );
+        animation: btn-shine 3s infinite;
+        z-index: 0;
+    }
+
+    @keyframes btn-shine {
+        0% { left: -100%; }
+        20% { left: 100%; }
+        100% { left: 100%; }
+    }
+
+    .btn-secondary {
+        background: var(--surface-2);
+        color: var(--text-dark);
+        border: 1px solid var(--border);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-secondary:hover {
+        background: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        border-color: var(--primary-blue-light);
+        color: var(--primary-blue);
+    }
+
+    .btn-secondary:hover .btn-icon {
+        transform: rotate(10deg) scale(1.2);
+        color: var(--primary-blue);
+    }
+
+    /* Hamburger menu with glow effect */
+    .hamburger {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.75rem;
+        margin: -0.75rem;
+        position: relative;
+        z-index: 1001;
+    }
+
+    .hamburger-box {
+        width: 24px;
+        height: 20px;
+        display: inline-block;
+        position: relative;
+    }
+
+    .hamburger-inner {
+        display: block;
+        top: 50%;
+        margin-top: -2px;
+    }
+
+    .hamburger-inner, .hamburger-inner::before, .hamburger-inner::after {
+        width: 24px;
+        height: 2px;
+        background-color: var(--text-dark);
+        border-radius: 4px;
+        position: absolute;
+        transition: transform var(--transition-fast), background-color var(--transition-fast);
+    }
+
+    .hamburger-inner::before, .hamburger-inner::after {
+        content: "";
+        display: block;
+    }
+
+    .hamburger-inner::before {
+        top: -8px;
+    }
+
+    .hamburger-inner::after {
+        bottom: -8px;
+    }
+
+    .hamburger.active .hamburger-inner {
+        transform: rotate(45deg);
+        background-color: var(--primary-blue);
+    }
+
+    .hamburger.active .hamburger-inner::before {
+        top: 0;
+        opacity: 0;
+    }
+
+    .hamburger.active .hamburger-inner::after {
+        bottom: 0;
+        transform: rotate(-90deg);
+        background-color: var(--primary-blue);
+    }
+
+    .hamburger-glow {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+        filter: blur(10px);
+        opacity: 0;
+        transition: opacity var(--transition-normal);
+        z-index: -1;
+    }
+
+    .hamburger:hover .hamburger-glow,
+    .hamburger.active .hamburger-glow {
+        opacity: 1;
+    }
+
+    /* Spotlight effect */
+    .spotlight {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+        opacity: 0;
+        background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(59, 130, 246, 0.1) 0%, transparent 80%);
+        transition: opacity var(--transition-normal);
+    }
+
+    /* Decorative background elements */
+    .blobs {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: -2;
+    }
+
+    .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.1;
+    animation: blob-float 20s ease-in-out infinite alternate;
+    transition: all 0.5s ease;
+}
+
+.header:hover .blob {
+    filter: blur(30px);
+    opacity: 0.15;
+    transform: scale(1.05);
+}
+
+    .blob-1 {
+        top: -50%;
+        left: -10%;
+        width: 300px;
+        height: 300px;
+        background: var(--primary-blue);
+        animation-delay: 0s;
+    }
+
+    .blob-2 {
+        top: -30%;
+        right: 20%;
+        width: 200px;
+        height: 200px;
+        background: var(--muted-green);
+        animation-delay: 5s;
+    }
+
+    .blob-3 {
+        bottom: -80%;
+        right: -10%;
+        width: 250px;
+        height: 250px;
+        background: var(--accent-purple);
+        animation-delay: 10s;
+    }
+
+    @keyframes blob-float {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(10px, 10px) scale(1.05); }
+        100% { transform: translate(-10px, -10px) scale(0.95); }
+    }
+
+    .grain {
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        opacity: 0.05;
+        mix-blend-mode: overlay;
+    }
+
+    /* Floating particles */
+    .particles {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .particle {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-blue-light), var(--primary-blue));
+        opacity: 0;
+        animation: particle-animation 15s linear infinite;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .header:hover .particle {
+        background: linear-gradient(135deg, var(--primary-blue-light), var(--accent-purple));
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 20px rgba(139, 92, 246, 0.3);
+    }
+
+    .particle-1 {
+        top: 20%;
+        left: 20%;
+        animation-delay: 0s;
+    }
+
+    .particle-2 {
+        top: 60%;
+        left: 80%;
+        animation-delay: 3s;
+    }
+
+    .particle-3 {
+        top: 40%;
+        left: 40%;
+        animation-delay: 6s;
+    }
+
+    .particle-4 {
+        top: 80%;
+        left: 60%;
+        animation-delay: 9s;
+    }
+
+    .particle-5 {
+        top: 30%;
+        left: 70%;
+        animation-delay: 12s;
+    }
+    
+    .particle-6 {
+        top: 70%;
+        left: 30%;
+        animation-delay: 7s;
+    }
+    
+    .particle-7 {
+        top: 50%;
+        left: 10%;
+        animation-delay: 5s;
+    }
+    
+    .particle-8 {
+        top: 15%;
+        left: 85%;
+        animation-delay: 10s;
+    }
+
+    @keyframes particle-animation {
+        0% {
+            transform: translate(0, 0) scale(1);
+            opacity: 0;
+        }
+        10% {
+            opacity: 0.8;
+        }
+        50% {
+            opacity: 0.5;
+            transform: translate(calc(var(--tx, 100px) * 0.5), calc(var(--ty, -100px) * 0.5)) scale(1.2);
+        }
+        90% {
+            opacity: 0.1;
+        }
+        100% {
+            transform: translate(var(--tx, 100px), var(--ty, -100px)) scale(0);
+            opacity: 0;
+        }
+    }
+
+    /* Scroll progress indicator */
+    .scroll-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .scroll-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-blue), var(--accent-purple), var(--primary-blue));
+        background-size: 200% 100%;
+        animation: gradient-shift 3s linear infinite;
+        transition: width var(--transition-fast);
+    }
+
+    @keyframes gradient-shift {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 100% 50%; }
+    }
+
+    /* Ripple effect for buttons and links */
+    .ripple {
+        position: absolute;
+        border-radius: 50%;
+        transform: scale(0);
+        animation: ripple 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        background-color: rgba(255, 255, 255, 0.7);
+        z-index: 1;
+    }
+
+    @keyframes ripple {
+        0% {
+            transform: scale(0);
+            opacity: 0.5;
+        }
+        40% {
+            opacity: 0.4;
+        }
+        100% {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+
+    /* Mobile navigation menu */
+    .mobile-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    z-index: 1000;
+    transform: translateX(100%);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 2rem;
+    overflow-y: auto;
+    box-shadow: -10px 0 50px rgba(0, 0, 0, 0.2);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+    .mobile-menu.active {
+    transform: translateX(0);
+    animation: menu-reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes menu-reveal {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+    .mobile-menu-container {
+        max-width: 400px;
+        width: 100%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .mobile-menu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .mobile-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+    }
+    
+    .mobile-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-dark);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all var(--transition-normal);
+    }
+    
+    .mobile-close:hover {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--primary-blue);
+        transform: rotate(90deg);
+    }
+
+    .mobile-menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: menu-items-reveal 0.6s forwards;
+    animation-delay: 0.3s;
+}
+
+@keyframes menu-items-reveal {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+    .mobile-menu-item {
+        text-align: center;
+    }
+
+    .mobile-menu-link {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        width: 100%;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        background: transparent;
+    }
+
+    .mobile-menu-link:hover {
+        color: var(--primary-blue);
+        background: rgba(59, 130, 246, 0.1);
+        transform: translateY(-2px) translateX(5px);
+        box-shadow: 0 5px 15px rgba(59, 130, 246, 0.15);
+    }
+
+    .mobile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    margin-top: 2rem;
+    padding: 0 1.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: menu-items-reveal 0.6s forwards;
+    animation-delay: 0.5s;
+}
+
+    .mobile-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.75rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all var(--transition-normal);
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Mobile button styles */
+    .mobile-btn-primary {
+        background: var(--primary-blue);
+        color: white;
+        box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .mobile-btn-primary:hover {
+        background: var(--primary-blue-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(59, 130, 246, 0.4);
+    }
+
+    .mobile-btn-secondary {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--primary-blue);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .mobile-btn-secondary:hover {
+        background: rgba(59, 130, 246, 0.15);
+        border-color: var(--primary-blue);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+    }
+
+    .mobile-btn .btn-icon {
+        transition: transform 0.3s ease;
+        font-size: 1.1rem;
+    }
+
+    .mobile-btn:hover .btn-icon {
+        transform: translateX(5px);
+    }
+    
+    /* Responsive design */
+    @media (max-width: 1024px) {
+        .menu-list {
+            gap: 1rem;
+        }
+
+        .menu-link {
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        .brand-text {
+            font-size: 1.25rem;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .header {
+            height: var(--header-height-mobile);
+        }
+
+        .header.scrolled {
+            height: calc(var(--header-height-mobile) - 5px);
+        }
+
+        .container {
+            padding: 0 1.5rem;
+        }
+
+        .menu {
+            display: none;
+        }
+
+        .actions {
+            display: none;
+        }
+
+        .hamburger {
+            display: inline-block;
+        }
+        
+        .mobile-menu-link {
+            font-size: 1.125rem;
+            padding: 0.625rem 1.25rem;
+        }
+        
+        .mobile-btn {
+            padding: 0.75rem 1.25rem;
+            font-size: 0.875rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding: 0 1rem;
+        }
+
+        .brand-text {
+            font-size: 1.125rem;
+        }
+
+        .brand-icon {
+            width: 28px;
+            height: 28px;
+            font-size: 0.875rem;
+        }
+
+        .mobile-menu-link {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+        }
+        
+        .mobile-btn {
+            padding: 0.625rem 1rem;
+            font-size: 0.8125rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Enhanced scroll effect
+        const header = document.querySelector('.header');
+        const scrollBar = document.querySelector('.scroll-bar');
+        const brand = document.querySelector('.brand');
+        
+        window.addEventListener('scroll', () => {
+            // Header scroll class with enhanced animation
+            if (window.scrollY > 10) {
+                header?.classList.add('scrolled');
+                if (brand) brand.classList.add('scrolled');
+            } else {
+                header?.classList.remove('scrolled');
+                if (brand) brand.classList.remove('scrolled');
+            }
+            
+            // Update scroll progress bar with smoother animation
+            const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+            if (scrollBar) (scrollBar as HTMLElement).style.width = `${scrollPercent}%`;
+            
+            // Parallax effect for particles while scrolling
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach((particle, index) => {
+                const speed = 0.05 + (index % 3) * 0.02;
+                const yPos = window.scrollY * speed;
+                (particle as HTMLElement).style.transform = `translate3d(0, calc(var(--ty) - ${yPos}px), 0)`;
+            });
+        });
+        
+        // Enhanced mobile menu toggle with animations
+        const hamburger = document.querySelector('.hamburger');
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+        const mobileClose = document.querySelector('.mobile-close');
+        
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                hamburger?.classList.toggle('active');
+                mobileMenu?.classList.toggle('active');
+                document.body.style.overflow = mobileMenu?.classList.contains('active') ? 'hidden' : '';
+                
+                // Staggered animation for menu items
+                if (mobileMenu?.classList.contains('active')) {
+                    mobileMenuLinks.forEach((link, index) => {
+                        (link as HTMLElement).style.transitionDelay = `${0.1 + index * 0.05}s`;
+                        (link as HTMLElement).style.opacity = '1';
+                        (link as HTMLElement).style.transform = 'translateX(0)';
+                    });
+                }
+            });
+        }
+        
+        if (mobileClose) {
+            mobileClose.addEventListener('click', () => {
+                hamburger?.classList.remove('active');
+                mobileMenu?.classList.remove('active');
+                document.body.style.overflow = '';
+                
+                // Reset menu items animation
+                mobileMenuLinks.forEach(link => {
+                    (link as HTMLElement).style.transitionDelay = '';
+                    (link as HTMLElement).style.opacity = '0';
+                    (link as HTMLElement).style.transform = 'translateX(-20px)';
+                });
+            });
+        }
+        
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger?.classList.remove('active');
+                mobileMenu?.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+        
+        // Enhanced spotlight effect with brand interaction
+        const spotlight = document.querySelector('.spotlight');
+        const headerInner = document.querySelector('.header-inner');
+        const brandGlow = document.querySelector('.brand-glow');
+        
+        if (spotlight && headerInner) {
+            headerInner.addEventListener('mousemove', (e) => {
+                const rect = headerInner.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                
+                spotlight.style.setProperty('--x', `${x}%`);
+                spotlight.style.setProperty('--y', `${y}%`);
+                spotlight.style.opacity = '1';
+                
+                // Brand glow follows cursor with subtle delay
+                if (brandGlow && brand) {
+                    const brandRect = brand.getBoundingClientRect();
+                    const brandCenterX = brandRect.left + brandRect.width / 2 - rect.left;
+                    const brandCenterY = brandRect.top + brandRect.height / 2 - rect.top;
+                    
+                    // Calculate distance from cursor to brand center
+                    const dx = (e.clientX - rect.left) - brandCenterX;
+                    const dy = (e.clientY - rect.top) - brandCenterY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Adjust glow based on distance
+                    const maxDistance = 200;
+                    const intensity = Math.max(0, 1 - distance / maxDistance);
+                    (brandGlow as HTMLElement).style.opacity = (0.3 + intensity * 0.7).toString();
+                    (brandGlow as HTMLElement).style.transform = `scale(${1 + intensity * 0.3})`;
+                }
+            });
+            
+            headerInner.addEventListener('mouseleave', () => {
+                spotlight.style.opacity = '0';
+                if (brandGlow) {
+                    (brandGlow as HTMLElement).style.opacity = '0';
+                    (brandGlow as HTMLElement).style.transform = 'scale(1)';
+                }
+            });
+        }
+        
+        // Enhanced ripple effect for buttons and links
+        const buttons = document.querySelectorAll('.btn, .menu-link, .mobile-menu-link');
+        
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Jangan menambahkan efek ripple jika link mengarah ke halaman lain (bukan anchor)
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('/')) {
+                    return; // Biarkan navigasi normal terjadi
+                }
+                
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Calculate ripple size based on button size
+                const size = Math.max(rect.width, rect.height) * 2;
+                
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                ripple.style.width = ripple.style.height = `${size}px`;
+                ripple.style.left = `${x - size/2}px`;
+                ripple.style.top = `${y - size/2}px`;
+                
+                // Determine ripple color based on button type
+                const isPrimary = this.classList.contains('btn-primary') || this.classList.contains('mobile-btn-primary');
+                ripple.style.backgroundColor = isPrimary ? 'rgba(255, 255, 255, 0.3)' : 'rgba(59, 130, 246, 0.2)';
+                
+                (this as HTMLElement).appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+        
+        // Enhanced dynamic floating particles
+        const particles = document.querySelectorAll('.particle');
+        
+        particles.forEach((particle, index) => {
+            // Random initial position with wider range
+            const tx = (Math.random() * 300) - 150;
+            const ty = (Math.random() * 300) - 150;
+            
+            (particle as HTMLElement).style.setProperty('--tx', `${tx}px`);
+            (particle as HTMLElement).style.setProperty('--ty', `${ty}px`);
+            
+            // Random animation duration and delay
+            const baseDuration = 15;
+            const randomDuration = baseDuration + Math.random() * 10;
+            (particle as HTMLElement).style.animationDuration = `${randomDuration}s`;
+            
+            const randomDelay = Math.random() * 5;
+            (particle as HTMLElement).style.animationDelay = `-${randomDelay}s`;
+        });
+        
+        // Enhanced hover effect for navigation links
+        const menuLinks = document.querySelectorAll('.menu-link');
+        
+        menuLinks.forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                (this as HTMLElement).style.transform = 'translateY(-3px)';
+                (this as HTMLElement).style.color = 'var(--primary-blue)';
+                (this as HTMLElement).style.textShadow = '0 0 10px rgba(59, 130, 246, 0.3)';
+            });
+            
+            link.addEventListener('mouseleave', function() {
+                (this as HTMLElement).style.transform = 'translateY(0)';
+                (this as HTMLElement).style.color = '';
+                (this as HTMLElement).style.textShadow = '';
+            });
+        });
+        
+        // Add shine effect to primary buttons
+        const primaryButtons = document.querySelectorAll('.btn-primary, .mobile-btn-primary');
+        primaryButtons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                const shine = this.querySelector('.btn-shine');
+                if (shine) {
+                    (shine as HTMLElement).style.animation = 'btn-shine 1s forwards';
+                }
+                (this as HTMLElement).style.transform = 'translateY(-5px)';
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                (this as HTMLElement).style.transform = '';
+            });
+        });
+    });
+</script>

@@ -1,0 +1,3280 @@
+---
+/*
+  Admin Dashboard Component (Astro)
+  Modern UI/UX — No gradient, No hover
+  Responsive design for all screen sizes
+*/
+---
+
+<!-- Ensure proper viewport settings for responsive design -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<!-- Demo Mode - No Authentication Required -->
+<div class="admin-dashboard" id="dashboard-content">
+  <!-- Dashboard Hero Section -->
+  <div class="dashboard-hero pre-animation" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="hero-icon"><i class="fas fa-chart-line"></i></span>
+        Dashboard Admin
+      </h1>
+      <p class="hero-subtitle">Selamat datang kembali. Kelola keuangan dengan tampilan yang bersih dan minimal.</p>
+    </div>
+    <div class="plan-info">
+      <span class="plan-badge free">Gratis</span>
+      <a href="/register" class="upgrade-chip" aria-label="Regist akun">
+        <span>Regist</span>
+      </a>
+    </div>
+  </div>
+
+  
+
+  <!-- Stats Cards -->
+  <div class="stats-grid" style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+    <div class="stat-card pre-animation">
+      <div class="stat-icon primary">
+        <i class="fas fa-wallet"></i>
+      </div>
+      <div class="stat-content">
+        <h3>Total Kas</h3>
+        <div id="dash-total-kas" class="stat-value" data-target="3200000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
+        <div class="stat-trend up">
+          <i class="fas fa-arrow-up"></i> 12% dari bulan lalu
+        </div>
+      </div>
+      
+    </div>
+    
+    <div class="stat-card pre-animation">
+      <div class="stat-icon success">
+        <i class="fas fa-arrow-down"></i>
+      </div>
+      <div class="stat-content">
+        <h3>Pemasukan</h3>
+        <div id="dash-total-masuk" class="stat-value" data-target="2200000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
+        <div class="stat-trend up">
+          <i class="fas fa-arrow-up"></i> 8% dari bulan lalu
+        </div>
+      </div>
+      
+    </div>
+    
+    <div class="stat-card pre-animation">
+      <div class="stat-icon danger">
+        <i class="fas fa-arrow-up"></i>
+      </div>
+      <div class="stat-content">
+        <h3>Pengeluaran</h3>
+        <div id="dash-total-keluar" class="stat-value" data-target="1100000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
+        <div class="stat-trend down">
+          <i class="fas fa-arrow-up"></i> 5% dari bulan lalu
+        </div>
+      </div>
+      
+    </div>
+    
+    <div class="stat-card pre-animation">
+      <div class="stat-icon warning">
+        <i class="fas fa-clock"></i>
+      </div>
+      <div class="stat-content">
+        <h3 id="dash-iuran-title">Tertunda</h3>
+        <div id="dash-iuran-pending" class="stat-value" data-target="800000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
+        <div class="stat-trend neutral">
+          <i class="fas fa-minus"></i> Sama dengan bulan lalu
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-grid" style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+    <!-- Cash Flow Trend Chart -->
+    <div class="chart-card pre-animation">
+      <div class="card-header">
+        <h3><i class="fas fa-chart-line"></i> Tren Kas</h3>
+        <div class="card-actions">
+          <button class="action-button" aria-label="Unduh grafik" title="Unduh PNG">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </button>
+          <button class="action-button" aria-label="Layar penuh" title="Layar penuh">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 3 21 3 21 9"/>
+              <polyline points="9 21 3 21 3 15"/>
+              <line x1="21" y1="3" x2="14" y2="10"/>
+              <line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <canvas id="chartKas" height="250"></canvas>
+      </div>
+    </div>
+    
+    <!-- Composition Pie Chart -->
+    <div class="chart-card pre-animation">
+      <div class="card-header">
+        <h3><i class="fas fa-chart-pie"></i> Komposisi Bulan Ini</h3>
+        <div class="card-actions">
+          <button class="action-button" aria-label="Unduh grafik" title="Unduh PNG">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </button>
+          <button class="action-button" aria-label="Layar penuh" title="Layar penuh">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 3 21 3 21 9"/>
+              <polyline points="9 21 3 21 3 15"/>
+              <line x1="21" y1="3" x2="14" y2="10"/>
+              <line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <canvas id="chartPie" height="250"></canvas>
+      </div>
+    </div>
+
+    <!-- New: Stacked Area Chart (Income vs Expense) -->
+    <div class="chart-card pre-animation">
+      <div class="card-header">
+        <h3><i class="fas fa-layer-group"></i> Pemasukan vs Pengeluaran</h3>
+        <div class="card-actions">
+          <button class="action-button" aria-label="Unduh grafik" title="Unduh PNG">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </button>
+          <button class="action-button" aria-label="Layar penuh" title="Layar penuh">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 3 21 3 21 9"/>
+              <polyline points="9 21 3 21 3 15"/>
+              <line x1="21" y1="3" x2="14" y2="10"/>
+              <line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <canvas id="chartIncomeExpenseArea" height="250"></canvas>
+      </div>
+    </div>
+
+    
+    
+    <!-- Expense Categories Chart (Premium Feature) -->
+    <div class="chart-card">
+      <div class="card-header">
+        <h3><i class="fas fa-tags"></i> Kategori Pengeluaran</h3>
+        <div class="card-actions">
+          <button class="action-button" aria-label="Unduh grafik" title="Unduh PNG">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </button>
+          <button class="action-button" aria-label="Layar penuh" title="Layar penuh">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 3 21 3 21 9"/>
+              <polyline points="9 21 3 21 3 15"/>
+              <line x1="21" y1="3" x2="14" y2="10"/>
+              <line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <canvas id="chartExpenseCategories" height="250"></canvas>
+      </div>
+      
+    </div>
+    
+    <!-- Monthly Comparison Chart (Plus Feature) -->
+    <div class="chart-card">
+      <div class="card-header">
+        <h3><i class="fas fa-calendar-alt"></i> Perbandingan Bulanan</h3>
+        <div class="card-actions">
+          <button class="action-button" aria-label="Unduh grafik" title="Unduh PNG">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </button>
+          <button class="action-button" aria-label="Layar penuh" title="Layar penuh">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 3 21 3 21 9"/>
+              <polyline points="9 21 3 21 3 15"/>
+              <line x1="21" y1="3" x2="14" y2="10"/>
+              <line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <canvas id="chartMonthlyComparison" height="250"></canvas>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- Recent Transactions Table -->
+  <div class="table-section pre-animation">
+    <div class="section-header">
+      <h3><i class="fas fa-exchange-alt"></i> Transaksi Terbaru</h3>
+      <div class="section-actions">
+        <div class="search-container">
+          <i class="fas fa-search search-icon left" aria-hidden="true"></i>
+          <input type="text" placeholder="Cari transaksi..." class="search-input" aria-label="Cari transaksi">
+        </div>
+        <button class="action-button primary icon" aria-label="Tambah transaksi">
+          <i class="fas fa-plus" aria-hidden="true"></i>
+        </button>
+        <button class="action-button icon" aria-label="Unduh data">
+          <i class="fas fa-download"></i>
+        </button>
+      </div>
+    </div>
+    
+    <div class="table-container paginated" data-rows-per-page="3">
+      <table class="data-table sortable">
+        <thead>
+          <tr>
+            <th class="sortable" data-type="date">Tanggal <i class="fas fa-sort" aria-hidden="true"></i></th>
+            <th class="sortable" data-type="text">Deskripsi <i class="fas fa-sort" aria-hidden="true"></i></th>
+            <th class="sortable" data-type="text">Kategori <i class="fas fa-sort" aria-hidden="true"></i></th>
+            <th class="sortable" data-type="amount">Jumlah <i class="fas fa-sort" aria-hidden="true"></i></th>
+            <th class="sortable" data-type="text">Status <i class="fas fa-sort" aria-hidden="true"></i></th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-th="Tanggal">15 Jun 2023</td>
+            <td data-th="Deskripsi">Pembayaran Iuran Bulanan</td>
+            <td data-th="Kategori"><span class="category-badge income">Pemasukan</span></td>
+            <td data-th="Jumlah" class="amount positive">Rp 500.000</td>
+            <td data-th="Status"><span class="status-badge success">Selesai</span></td>
+            <td data-th="Aksi">
+              <div class="action-buttons">
+                <button class="icon-button" aria-label="Edit transaksi">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="icon-button" aria-label="Hapus transaksi">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td data-th="Tanggal">12 Jun 2023</td>
+            <td data-th="Deskripsi">Pembayaran Keamanan</td>
+            <td data-th="Kategori"><span class="category-badge expense">Pengeluaran</span></td>
+            <td data-th="Jumlah" class="amount negative">Rp 200.000</td>
+            <td data-th="Status"><span class="status-badge success">Selesai</span></td>
+            <td data-th="Aksi">
+              <div class="action-buttons">
+                <button class="icon-button" aria-label="Edit transaksi">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="icon-button" aria-label="Hapus transaksi">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td data-th="Tanggal">10 Jun 2023</td>
+            <td data-th="Deskripsi">Perbaikan Taman</td>
+            <td data-th="Kategori"><span class="category-badge expense">Pengeluaran</span></td>
+            <td data-th="Jumlah" class="amount negative">Rp 350.000</td>
+            <td data-th="Status"><span class="status-badge success">Selesai</span></td>
+            <td data-th="Aksi">
+              <div class="action-buttons">
+                <button class="icon-button" aria-label="Edit transaksi">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="icon-button" aria-label="Hapus transaksi">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td data-th="Tanggal">5 Jun 2023</td>
+            <td data-th="Deskripsi">Pembayaran Iuran Bulanan</td>
+            <td data-th="Kategori"><span class="category-badge income">Pemasukan</span></td>
+            <td data-th="Jumlah" class="amount positive">Rp 500.000</td>
+            <td data-th="Status"><span class="status-badge pending">Tertunda</span></td>
+            <td data-th="Aksi">
+              <div class="action-buttons">
+                <button class="icon-button" aria-label="Edit transaksi">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="icon-button" aria-label="Hapus transaksi">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td data-th="Tanggal">1 Jun 2023</td>
+            <td data-th="Deskripsi">Pembayaran Listrik</td>
+            <td data-th="Kategori"><span class="category-badge expense">Pengeluaran</span></td>
+            <td data-th="Jumlah" class="amount negative">Rp 450.000</td>
+            <td data-th="Status"><span class="status-badge success">Selesai</span></td>
+            <td data-th="Aksi">
+              <div class="action-buttons">
+                <button class="icon-button" data-tooltip="Edit" aria-label="Edit transaksi">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="icon-button" data-tooltip="Hapus" aria-label="Hapus transaksi">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div class="pagination" role="navigation" aria-label="Pagination">
+        <button class="pagination-button" disabled aria-label="Halaman sebelumnya">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="pagination-pages"></div>
+        <button class="pagination-button" aria-label="Halaman berikutnya">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Section -->
+  <div class="quick-actions-section pre-animation">
+    <div class="section-header">
+      <h2><i class="fas fa-bolt"></i> Aksi Cepat</h2>
+    </div>
+    <div class="quick-actions-grid">
+      <div class="quick-action-card">
+        <div class="quick-action-icon primary">
+          <i class="fas fa-plus-circle"></i>
+        </div>
+        <div class="quick-action-content">
+          <h3>Tambah Program</h3>
+          <p>Kelola dan tambah program</p>
+        </div>
+        <a href="/admin/program" class="card-link" aria-label="Tambah Program"></a>
+      </div>
+      
+      <div class="quick-action-card">
+        <div class="quick-action-icon success">
+          <i class="fas fa-file-invoice"></i>
+        </div>
+        <div class="quick-action-content">
+          <h3>Buat Laporan</h3>
+          <p>Generate laporan keuangan bulanan</p>
+        </div>
+        <a href="/admin/laporan" class="card-link" aria-label="Buat Laporan"></a>
+      </div>
+      
+      <div class="quick-action-card">
+        <div class="quick-action-icon warning">
+          <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="quick-action-content">
+          <h3>Informasi</h3>
+          <p>Kelola informasi untuk warga</p>
+        </div>
+        <a href="/admin/informasi" class="card-link" aria-label="Informasi"></a>
+      </div>
+      
+      <div class="quick-action-card">
+        <div class="quick-action-icon info">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="quick-action-content">
+          <h3>Kelola Warga</h3>
+          <p>Tambah atau edit data warga</p>
+        </div>
+        <a href="/admin/warga" class="card-link" aria-label="Kelola Warga"></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fitur Baru: Widget Notifikasi -->
+  <div class="notifications-widget pre-animation">
+    <div class="section-header">
+      <h2><i class="fas fa-bell"></i> Notifikasi Terbaru</h2>
+      <a href="/admin/notifikasi" class="view-all">Lihat Semua <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="notifications-list" id="dash-notif-list"></div>
+  </div>
+
+  
+
+</div>
+
+<!-- Load Chart.js only for the dashboard -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+
+<!-- Load Real-time Chart Update System -->
+<script type="module" src="/src/utils/chart-realtime.js"></script>
+<script type="module" src="/src/utils/shared-state.js"></script>
+
+<script>
+// @ts-nocheck
+/* global Chart, window, document, IntersectionObserver */
+/**
+ * Admin Dashboard JavaScript
+ * Modern UI/UX Dashboard functionality with Real-time Chart Updates
+ */
+(function(){
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize sidebar toggle functionality
+    initSidebar();
+    // Unified KPI loader for dashboard stat cards (run early so counters get correct targets)
+    loadDashboardKPIs();
+    // Initialize charts if Chart.js is available
+    if (typeof Chart !== 'undefined') {
+      initCharts();
+      initSparklines();
+      initChartCardActions();
+      // Initialize real-time chart updates
+      initRealTimeCharts();
+    }
+
+  // ===== Dashboard Notifications (sync with /admin/notifikasi) =====
+  function initDashboardNotifications(){
+    const LIST_ID = 'dash-notif-list';
+    const STORE_KEY = 'kk_notifications';
+    const COUNT_KEY = 'kk_unread_count';
+    const list = document.getElementById(LIST_ID);
+    if(!list) return;
+
+    function iconClass(t){
+      if (t==='resident') return 'resident';
+      if (t==='income') return 'income';
+      if (t==='expense') return 'expense';
+      return t==='success' ? 'success' : t==='warning' ? 'warning' : 'info';
+    }
+    function iconFor(t){
+      if (t==='resident') return 'fa-user-plus';
+      if (t==='income') return 'fa-arrow-down';
+      if (t==='expense') return 'fa-arrow-up';
+      if (t==='success') return 'fa-check-circle';
+      if (t==='warning') return 'fa-exclamation-triangle';
+      return 'fa-info-circle';
+    }
+    function inferType(n){
+      const t = ((n && n.type) || '').toString().toLowerCase();
+      const title = ((n && n.title) || '').toString().toLowerCase();
+      const msg = ((n && n.message) || '').toString().toLowerCase();
+      const text = title + ' ' + msg;
+      if (t==='resident') return 'resident';
+      if (t==='income') return 'income';
+      if (t==='expense') return 'expense';
+      if (/warga|penduduk|resident/.test(text)) return 'resident';
+      if (/pemasukan|income|bayar|pembayaran masuk|iuran masuk|setoran/.test(text)) return 'income';
+      if (/pengeluaran|expense|biaya|keluar|pembayaran keluar|penarikan/.test(text)) return 'expense';
+      if (t==='success' || /berhasil|selesai|sukses/.test(text)) return 'success';
+      if (t==='warning' || /peringatan|hati-hati|menurun|terlambat/.test(text)) return 'warning';
+      return 'info';
+    }
+    function ensureSeed(){
+      // Seed demo notifications if empty to mirror notifikasi page style
+      try{
+        const raw = localStorage.getItem(STORE_KEY);
+        if(raw) return;
+        const now = Date.now();
+        const seed = [
+          { id:'n1', title:'Pembayaran Tertunda', message:'5 warga belum melakukan pembayaran iuran bulan ini', time:new Date(now-2*60*60*1000).toISOString(), unread:true, type:'warning' },
+          { id:'n2', title:'Laporan Bulanan Selesai', message:'Laporan keuangan bulan ini telah dibuat', time:new Date(now-24*60*60*1000).toISOString(), unread:false, type:'success' },
+          { id:'n3', title:'Warga Baru', message:'2 keluarga baru terdaftar', time:new Date(now-2*24*60*60*1000).toISOString(), unread:false, type:'info' },
+        ];
+        localStorage.setItem(STORE_KEY, JSON.stringify(seed));
+        const unread = seed.filter(x=>x.unread).length; localStorage.setItem(COUNT_KEY, String(unread));
+      }catch(_){/* noop */}
+    }
+    function getNotifs(){
+      try{ const raw = localStorage.getItem(STORE_KEY); return raw? JSON.parse(raw): []; }catch{ return []; }
+    }
+    function fmtTime(iso){ try{ const d = new Date(iso); return d.toLocaleString('id-ID', { hour: '2-digit', minute:'2-digit', day:'2-digit', month:'short' }); }catch{ return ''; } }
+    function render(){
+      if(!list) return;
+      let arr = getNotifs();
+      // sort desc by time if available
+      arr = arr.slice().sort((a,b)=> new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0,3);
+      list.innerHTML = '';
+      if(arr.length===0){ list.innerHTML = '<div style="padding:12px;color:#64748b">Tidak ada notifikasi</div>'; return; }
+      arr.forEach(n=>{
+        const rt = inferType(n);
+        const el = document.createElement('div');
+        el.className = 'notification-item' + (n.unread?' unread':'');
+        el.innerHTML = `
+          <div class="notification-icon ${iconClass(rt)}">
+            <i class="fas ${iconFor(rt)}"></i>
+          </div>
+          <div class="notification-content">
+            <h4>${n.title||''}</h4>
+            <p>${n.message||''}</p>
+            <span class="notification-time">${fmtTime(n.time||'')}</span>
+          </div>
+          <div class="notification-actions">
+            <button class="btn-icon" aria-label="Tandai dibaca" data-id="${n.id}">Baca</button>
+          </div>`;
+        list.appendChild(el);
+      });
+    }
+    // mark read from widget
+    list.addEventListener('click', (e)=>{
+      const btn = e.target?.closest?.('.btn-icon'); if(!btn) return;
+      const id = btn.getAttribute('data-id'); if(!id) return;
+      const arr = getNotifs(); const idx = arr.findIndex(x=>String(x.id)===String(id));
+      if(idx>=0){ arr[idx].unread = false; localStorage.setItem(STORE_KEY, JSON.stringify(arr));
+        const unread = arr.filter(x=>x.unread).length; localStorage.setItem(COUNT_KEY, String(unread));
+        render();
+        try { window.dispatchEvent(new CustomEvent('kk-notifs-updated')); } catch {}
+      }
+    });
+    // react to changes from notifikasi page or other tabs
+    window.addEventListener('storage', (e)=>{ if(e.key==='kk_notifications' || e.key==='kk_unread_count'){ render(); } });
+    window.addEventListener('kk-notifs-updated', ()=> render());
+    ensureSeed();
+    render();
+  }
+    // Initialize other UI features
+    initTopbarElevation();
+    initAnimations();
+    // Counters after KPI values are set
+    initCounters();
+    initTooltips();
+    initDataTables();
+    // Listen for laporan/local changes to keep KPIs (incl. Tertunda) in sync
+    setupSyncListeners();
+    initPremiumLocks();
+    // Sync dashboard notifications with /admin/notifikasi
+    initDashboardNotifications();
+    
+    // Initialize trend indicators after a short delay to ensure data is loaded
+    setTimeout(() => {
+      const dash = getDashboardSummary();
+      if (dash) {
+        updateTrendIndicators({ 
+          totalKas: dash.balance, 
+          totalMasuk: dash.income, 
+          totalKeluar: dash.expense, 
+          iuranPending: 0 
+        });
+      }
+    }, 1000);
+  });
+
+  function initTopbarElevation() {
+    const topbar = document.querySelector('.admin-topbar');
+    if (!topbar) return;
+    const handler = () => {
+      if (window.scrollY > 2) topbar.classList.add('elevated');
+      else topbar.classList.remove('elevated');
+    };
+    handler();
+    window.addEventListener('scroll', handler, { passive: true });
+  }
+
+  // ===== Unified KPI loader (shared summary API) =====
+  function fmtIDR(val){
+    try { return new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', maximumFractionDigits:0 }).format(Number(val||0)); }
+    catch(_){ return `Rp${Number(val||0).toLocaleString('id-ID')}`; }
+  }
+
+  // Function to calculate percentage change from previous month
+  function calculateMonthChange(currentValue, previousValue) {
+    if (!previousValue || previousValue === 0) return { percentage: 0, trend: 'neutral' };
+    const change = ((currentValue - previousValue) / previousValue) * 100;
+    const percentage = Math.round(change);
+    const trend = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
+    return { percentage: Math.abs(percentage), trend };
+  }
+
+  // Function to get previous month data
+  function getPreviousMonthData() {
+    try {
+      const now = new Date();
+      const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const prevMonthStr = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, '0')}`;
+      
+      // Try to get from laporan snapshot first
+      const snap = JSON.parse(localStorage.getItem('laporan_totals_snapshot') || 'null');
+      if (snap && snap.previousMonth && snap.previousMonth[prevMonthStr]) {
+        return snap.previousMonth[prevMonthStr];
+      }
+      
+      // Fallback: calculate from transactions
+      const txs = JSON.parse(localStorage.getItem('financial_transactions_v2') || '[]');
+      if (!Array.isArray(txs) || txs.length === 0) {
+        // Return demo data for realistic percentage changes
+        return {
+          income: 15000000,  // 15M previous month income
+          expense: 8000000,  // 8M previous month expense
+          balance: 7000000   // 7M previous month balance
+        };
+      }
+      
+      const start = new Date(prevMonth.getFullYear(), prevMonth.getMonth(), 1);
+      const end = new Date(prevMonth.getFullYear(), prevMonth.getMonth() + 1, 0);
+      const toISO = (dt) => {
+        const z = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000);
+        return z.toISOString().slice(0, 10);
+      };
+      const { start: startISO, end: endISO } = { start: toISO(start), end: toISO(end) };
+      
+      const inRange = txs.filter(t => t && t.date >= startISO && t.date <= endISO);
+      const income = inRange.filter(t => t.type === 'Masuk').reduce((s, t) => s + Number(t.amount || 0), 0);
+      const expense = inRange.filter(t => t.type === 'Keluar').reduce((s, t) => s + Number(t.amount || 0), 0);
+      const balance = income - expense;
+      
+      // If no data found, return demo data
+      if (income === 0 && expense === 0 && balance === 0) {
+        return {
+          income: 15000000,  // 15M previous month income
+          expense: 8000000,  // 8M previous month expense
+          balance: 7000000   // 7M previous month balance
+        };
+      }
+      
+      return { income, expense, balance };
+    } catch (_) {
+      // Return demo data on error
+      return {
+        income: 15000000,  // 15M previous month income
+        expense: 8000000,  // 8M previous month expense
+        balance: 7000000   // 7M previous month balance
+      };
+    }
+  }
+
+  // Function to get dashboard summary for trend calculation
+  function getDashboardSummary() {
+    try {
+      const s = JSON.parse(localStorage.getItem('summary_kpis')||'null');
+      if(s){
+        return {
+          balance: Number(s.totalKas||s.total_kas||0),
+          income: Number(s.totalMasuk||s.total_masuk||0),
+          expense: Number(s.totalKeluar||s.total_keluar||0)
+        };
+      }
+    }catch(_){ }
+    return null;
+  }
+
+  // Function to update trend indicators
+  function updateTrendIndicators(currentData) {
+    const prevData = getPreviousMonthData();
+    if (!prevData) return;
+
+    // Update Total Kas trend
+    const kasChange = calculateMonthChange(currentData.totalKas, prevData.balance);
+    const kasTrendEl = document.querySelector('#dash-total-kas').parentElement.querySelector('.stat-trend');
+    if (kasTrendEl) {
+      kasTrendEl.className = `stat-trend ${kasChange.trend}`;
+      kasTrendEl.innerHTML = `<i class="fas fa-arrow-${kasChange.trend === 'up' ? 'up' : kasChange.trend === 'down' ? 'down' : 'minus'}"></i> ${kasChange.percentage}% dari bulan lalu`;
+    }
+
+    // Update Pemasukan trend
+    const masukChange = calculateMonthChange(currentData.totalMasuk, prevData.income);
+    const masukTrendEl = document.querySelector('#dash-total-masuk').parentElement.querySelector('.stat-trend');
+    if (masukTrendEl) {
+      masukTrendEl.className = `stat-trend ${masukChange.trend}`;
+      masukTrendEl.innerHTML = `<i class="fas fa-arrow-${masukChange.trend === 'up' ? 'up' : masukChange.trend === 'down' ? 'down' : 'minus'}"></i> ${masukChange.percentage}% dari bulan lalu`;
+    }
+
+    // Update Pengeluaran trend
+    const keluarChange = calculateMonthChange(currentData.totalKeluar, prevData.expense);
+    const keluarTrendEl = document.querySelector('#dash-total-keluar').parentElement.querySelector('.stat-trend');
+    if (keluarTrendEl) {
+      keluarTrendEl.className = `stat-trend ${keluarChange.trend}`;
+      keluarTrendEl.innerHTML = `<i class="fas fa-arrow-${keluarChange.trend === 'up' ? 'up' : keluarChange.trend === 'down' ? 'down' : 'minus'}"></i> ${keluarChange.percentage}% dari bulan lalu`;
+    }
+
+    // Update Tertunda trend (always neutral for now)
+    const iuranTrendEl = document.querySelector('#dash-iuran-pending').parentElement.querySelector('.stat-trend');
+    if (iuranTrendEl) {
+      iuranTrendEl.className = 'stat-trend neutral';
+      iuranTrendEl.innerHTML = '<i class="fas fa-minus"></i> Sama dengan bulan lalu';
+    }
+  }
+  // Import safe fetch wrapper - menggunakan import dinamis tanpa await
+  let fetchJson;
+  import('/src/utils/fetch-wrapper.js').then(module => {
+    fetchJson = module.fetchJson;
+  }).catch(error => {
+    console.error('Error importing fetch-wrapper:', error);
+  });
+  
+  async function fetchJsonSafe(url){
+    try {
+      return await fetchJson(url);
+    } catch (error) {
+      console.warn('Gagal memuat summary dashboard dari API, menggunakan snapshot jika ada.', error);
+      // Fallback to local data
+      return useFallbackData();
+    }
+  }
+  // Strict JSON fetcher: do not fallback to summary; used for non-summary endpoints (e.g., iuran)
+  async function fetchJsonStrict(url){
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const ct = res.headers.get('content-type')||'';
+    return ct.includes('application/json') ? res.json() : res.text();
+  }
+  
+  function useFallbackData() {
+    // Generate demo data for dashboard
+    const demoData = {
+      totalKas: 5000000,
+      totalMasuk: 7500000,
+      totalKeluar: 2500000,
+      countTransaksi: 25
+    };
+    
+    // Try to get data from localStorage first
+    try {
+      const localData = localStorage.getItem(DASH_SNAP_KEY);
+      if (localData) {
+        const parsed = JSON.parse(localData);
+        if (parsed && parsed.totalKas) {
+          return parsed;
+        }
+      }
+      
+      // If no localStorage data, try to get from laporan snapshot
+      try {
+        const snap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
+        if (snap && snap.totals) {
+          return {
+            totalKas: snap.totals.balance || 0,
+            totalMasuk: snap.totals.income || 0,
+            totalKeluar: snap.totals.expense || 0,
+            countTransaksi: 0
+          };
+        }
+      } catch (error) {
+        console.warn('Failed to parse laporan snapshot:', error);
+      }
+      
+      // If no laporan snapshot, use local summary
+      const local = computeLocalSummary();
+      if (local) {
+        return {
+          totalKas: local.balance || 0,
+          totalMasuk: local.income || 0,
+          totalKeluar: local.expense || 0,
+          countTransaksi: 0
+        };
+      }
+    } catch (e) {
+      console.warn('Error getting fallback data:', e);
+    }
+    
+    // Return demo data as last resort
+    return demoData;
+  }
+  function resolveKomplekId(){
+    const url = new URL(window.location.href);
+    let id = url.searchParams.get('komplek_id') || localStorage.getItem('komplek_id') || '';
+    // Accept only positive numeric IDs; otherwise treat as demo/offline (no API)
+    const n = Number(id);
+    const valid = Number.isFinite(n) && n > 0 && String(Math.floor(n)) === String(id || n);
+    if(valid){ localStorage.setItem('komplek_id', String(id)); return String(id); }
+    return '';
+  }
+  function getCurrentMonth(){
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  }
+  
+  function getMonthRange(){
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth()+1, 0);
+    const toISO = (dt)=>{
+      const z = new Date(dt.getTime() - dt.getTimezoneOffset()*60000);
+      return z.toISOString().slice(0,10);
+    };
+    return { start: toISO(start), end: toISO(end) };
+  }
+  // Fallback to the same local data used in laporan.ts
+  function computeLocalSummary(){
+    try{
+      const raw = localStorage.getItem('financial_transactions_v2');
+      if(!raw) return null;
+      const txs = JSON.parse(raw)||[];
+      if(!Array.isArray(txs) || txs.length===0) return null;
+      const { start, end } = getMonthRange();
+      const inRange = txs.filter(t => t && t.date >= start && t.date <= end);
+      const income = inRange.filter(t=>t.type==='Masuk').reduce((s,t)=> s + Number(t.amount||0), 0);
+      const expense = inRange.filter(t=>t.type==='Keluar').reduce((s,t)=> s + Number(t.amount||0), 0);
+      const balance = income - expense;
+      return { income, expense, balance };
+    }catch(_){ return null }
+  }
+  const DASH_SNAP_KEY = 'summary_kpis';
+  let lastDashFetch = 0;
+
+  // Keep dashboard synced with laporan updates across tabs/pages
+  function setupSyncListeners(){
+    let lastDirty = 0;
+    try { lastDirty = Number(localStorage.getItem('iuran_dirty')||'0') || 0; } catch(_){}
+    // Track same-tab changes by string snapshot (storage event doesn't fire in same tab)
+    let lastCfg = '';
+    let lastPays = '';
+    try { lastCfg = String(localStorage.getItem('dues_configs')||''); } catch(_){ lastCfg = ''; }
+    try { lastPays = String(localStorage.getItem('dues_payments')||''); } catch(_){ lastPays = ''; }
+    const onStorage = (e: StorageEvent) => {
+      if (!e) return;
+      const keys = ['iuran_dirty','dues_payments','dues_configs','laporan_totals_snapshot', 'laporan_chart_series', DASH_SNAP_KEY];
+      if (keys.includes(String(e.key))) {
+        loadDashboardKPIs();
+        if (String(e.key) === 'laporan_chart_series' && typeof Chart !== 'undefined') {
+          // Re-render charts to mirror laporan
+          initCharts();
+        }
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    // Refresh when tab becomes visible again
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') loadDashboardKPIs(); });
+    // Fallback polling in same tab (storage event won't fire) - reduced delay
+    setInterval(() => {
+      let curr = 0;
+      try { curr = Number(localStorage.getItem('iuran_dirty')||'0') || 0; } catch(_){ curr = 0; }
+      if (curr && curr !== lastDirty) {
+        lastDirty = curr;
+        console.debug('[Dashboard] iuran_dirty changed, reloading KPIs');
+        loadDashboardKPIs();
+      }
+      // Also detect direct changes to configs/payments strings within same tab
+      let cfgNow = '';
+      let paysNow = '';
+      try { cfgNow = String(localStorage.getItem('dues_configs')||''); } catch(_){ cfgNow = ''; }
+      try { paysNow = String(localStorage.getItem('dues_payments')||''); } catch(_){ paysNow = ''; }
+      if (cfgNow !== lastCfg || paysNow !== lastPays) {
+        lastCfg = cfgNow; lastPays = paysNow;
+        console.debug('[Dashboard] dues_configs or dues_payments changed, reloading KPIs');
+        loadDashboardKPIs();
+      }
+    }, 500); // Reduced from 1000ms to 500ms for faster updates
+    
+    // Listen for custom events from laporan.astro
+    window.addEventListener('iuran-updated', (event) => {
+      console.debug('[Dashboard] Received iuran-updated event:', event.detail);
+      loadDashboardKPIs();
+    });
+    
+    // Listen for custom events when nominal is changed
+    window.addEventListener('iuran-nominal-changed', (event) => {
+      console.debug('[Dashboard] Received iuran-nominal-changed event:', event.detail);
+      loadDashboardKPIs();
+    });
+  }
+  async function loadDashboardKPIs(){
+    const komplekId = resolveKomplekId();
+    const elKas = document.getElementById('dash-total-kas');
+    const elMasuk = document.getElementById('dash-total-masuk');
+    const elKeluar = document.getElementById('dash-total-keluar');
+    const elIuranPending = document.getElementById('dash-iuran-pending');
+    const now = Date.now();
+    // 1) Immediate paint from any snapshot (no TTL) to avoid showing zeros
+    try {
+      const snapNow = JSON.parse(localStorage.getItem(DASH_SNAP_KEY)||'null');
+      if(snapNow && String(snapNow.komplekId)===String(komplekId)){
+        const sKas = Number(snapNow.totalKas||0);
+        const sMasuk = Number(snapNow.totalMasuk||0);
+        const sKeluar = Number(snapNow.totalKeluar||0);
+        const sIuranPending = Number(snapNow.iuranPending||0);
+        elKas && (elKas.textContent = fmtIDR(sKas), elKas.setAttribute('data-target', String(sKas)));
+        elMasuk && (elMasuk.textContent = fmtIDR(sMasuk), elMasuk.setAttribute('data-target', String(sMasuk)));
+        elKeluar && (elKeluar.textContent = fmtIDR(sKeluar), elKeluar.setAttribute('data-target', String(sKeluar)));
+        elIuranPending && (elIuranPending.textContent = fmtIDR(sIuranPending), elIuranPending.setAttribute('data-target', String(sIuranPending)));
+      }
+      // Also paint from laporan snapshot if present so values match laporan exactly
+      const lapSnap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
+      if(lapSnap && lapSnap.totals){
+        const li = Number(lapSnap.totals.income||0);
+        const le = Number(lapSnap.totals.expense||0);
+        const lb = Number(lapSnap.totals.balance||0);
+        if (li>0 || le>0 || lb>0){
+          elMasuk && (elMasuk.textContent = fmtIDR(li), elMasuk.setAttribute('data-target', String(li)));
+          elKeluar && (elKeluar.textContent = fmtIDR(le), elKeluar.setAttribute('data-target', String(le)));
+          elKas && (elKas.textContent = fmtIDR(lb), elKas.setAttribute('data-target', String(lb)));
+        }
+      }
+    } catch(_) { /* noop */ }
+    try{
+      const snap = JSON.parse(localStorage.getItem(DASH_SNAP_KEY)||'null');
+      const snapTs = Number(snap?.ts)||0;
+      let dirtyTs = 0; try { dirtyTs = Number(localStorage.getItem('iuran_dirty')||'0')||0; } catch(_){}
+      const snapFresh = snap && (now - snapTs) < 60000 && String(snap.komplekId)===String(komplekId);
+      const staleDueToDirty = dirtyTs && dirtyTs > snapTs; // if dues changed after snapshot, don't early-return
+      if(snapFresh){
+        elKas && (elKas.textContent = fmtIDR(Number(snap.totalKas||0)), elKas.setAttribute('data-target', String(Number(snap.totalKas||0))));
+        elMasuk && (elMasuk.textContent = fmtIDR(Number(snap.totalMasuk||0)), elMasuk.setAttribute('data-target', String(Number(snap.totalMasuk||0))));
+        elKeluar && (elKeluar.textContent = fmtIDR(Number(snap.totalKeluar||0)), elKeluar.setAttribute('data-target', String(Number(snap.totalKeluar||0))));
+        elIuranPending && (elIuranPending.textContent = fmtIDR(Number(snap.iuranPending||0)), elIuranPending.setAttribute('data-target', String(Number(snap.iuranPending||0))));
+      }
+      // Prefer laporan snapshot first, then API (non-zero), then local current month
+      let totalKas = 0, totalMasuk = 0, totalKeluar = 0;
+      let skipApi = false;
+      try{
+        const lapSnap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
+        if(lapSnap && lapSnap.totals){
+          const li = Number(lapSnap.totals.income||0);
+          const le = Number(lapSnap.totals.expense||0);
+          const lb = Number(lapSnap.totals.balance||0);
+          if (li>0 || le>0 || lb>0){
+            totalMasuk = li; totalKeluar = le; totalKas = lb;
+            // Paint immediately and mark to skip API overwrite
+            elMasuk && (elMasuk.textContent = fmtIDR(li), elMasuk.setAttribute('data-target', String(li)));
+            elKeluar && (elKeluar.textContent = fmtIDR(le), elKeluar.setAttribute('data-target', String(le)));
+            elKas && (elKas.textContent = fmtIDR(lb), elKas.setAttribute('data-target', String(lb)));
+            skipApi = true;
+          }
+        }
+      }catch(_){/* noop */}
+      const apiDisabled = localStorage.getItem('disable_api') === '1';
+      if (!skipApi && komplekId && !apiDisabled) {
+        const url = `/api/komplek/${komplekId}/dashboard`;
+        console.debug('[Dashboard] Fetching summary:', url);
+        const data = await fetchJsonSafe(url);
+        console.debug('[Dashboard] Summary data:', data);
+        totalKas = Number(data?.totalKas || data?.total_kas || 0);
+        totalMasuk = Number(data?.totalMasuk || data?.total_masuk || 0);
+        totalKeluar = Number(data?.totalKeluar || data?.total_keluar || 0);
+      }
+      if (!skipApi) {
+        elKas && (elKas.textContent = fmtIDR(totalKas), elKas.setAttribute('data-target', String(totalKas)));
+        elMasuk && (elMasuk.textContent = fmtIDR(totalMasuk), elMasuk.setAttribute('data-target', String(totalMasuk)));
+        elKeluar && (elKeluar.textContent = fmtIDR(totalKeluar), elKeluar.setAttribute('data-target', String(totalKeluar)));
+      }
+      // If API returned zeros but local laporan demo data exists, override to keep consistency with laporan page
+      try{
+        const local = computeLocalSummary();
+        if(local){
+          const allApiZero = (totalKas===0 && totalMasuk===0 && totalKeluar===0);
+          const hasLocal = (Number(local.income||0)>0 || Number(local.expense||0)>0);
+          if(!skipApi && allApiZero && hasLocal){
+            elMasuk && (elMasuk.textContent = fmtIDR(local.income), elMasuk.setAttribute('data-target', String(local.income)));
+            elKeluar && (elKeluar.textContent = fmtIDR(local.expense), elKeluar.setAttribute('data-target', String(local.expense)));
+            elKas && (elKas.textContent = fmtIDR(local.balance), elKas.setAttribute('data-target', String(local.balance)));
+            // keep variables in sync so snapshot isn't zeroed
+            totalMasuk = Number(local.income||0);
+            totalKeluar = Number(local.expense||0);
+            totalKas = Number(local.balance||0);
+          }
+        }
+        // If still zero, try laporan snapshot which reflects the laporan page totals exactly
+        // Already prioritized earlier; no need to re-apply here
+      }catch(_){/* noop */}
+      // Also fetch iuran status to compute pending total
+      let iuranPending = 0;
+      try{
+        const periode = getCurrentMonth();
+        const apiDisabled = localStorage.getItem('disable_api') === '1';
+        if (komplekId && !apiDisabled) {
+          const forceMock = localStorage.getItem('use_mock_api') === '1';
+          const publicUrl = `/api/public/iuran/status?komplek_id=${encodeURIComponent(komplekId)}&periode=${encodeURIComponent(periode)}`;
+          const demoUrl = `/api/demo/iuran/status?komplek_id=${encodeURIComponent(komplekId)}&periode=${encodeURIComponent(periode)}`;
+          const realtimeUrl = `/api/demo/iuran/realtime?komplek_id=${encodeURIComponent(komplekId)}&periode=${encodeURIComponent(periode)}`;
+          const mockUrl = `/api/iuran/status?komplek_id=${encodeURIComponent(komplekId)}&periode=${encodeURIComponent(periode)}`;
+          let iuran = null;
+          // 1) Try real-time sync endpoint first (reads from localStorage)
+          if (!forceMock) {
+            try {
+              // Get real data from localStorage
+              const wargaData = JSON.parse(localStorage.getItem('warga_data_v1') || '[]');
+              const duesConfigs = JSON.parse(localStorage.getItem('dues_configs') || '{}');
+              const duesPayments = JSON.parse(localStorage.getItem('dues_payments') || '{}');
+              
+              const totalWarga = wargaData.filter((r: any) => r.status === 'aktif').length;
+              const nominalIuran = duesConfigs[periode]?.amount || 0;
+              const paidCount = duesPayments[periode]?.paid?.length || 0;
+              
+              console.debug('[Dashboard] Syncing real-time data:', { totalWarga, nominalIuran, paidCount });
+              
+              const syncResponse = await fetch(`/api/demo/demo/iuran/sync?komplek_id=${encodeURIComponent(komplekId)}&periode=${encodeURIComponent(periode)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ total_warga: totalWarga, nominal: nominalIuran, paid_count: paidCount })
+              });
+              
+              if (syncResponse.ok) {
+                iuran = await syncResponse.json();
+                console.debug('[Dashboard] Real-time sync successful:', iuran);
+                // Use sync data directly, skip other endpoints
+                const syncData = iuran.data || iuran;
+                const amount = Number(syncData.nominal || syncData.amount || 0);
+                const pendingCount = Number(syncData.warga_belum_bayar || syncData.unpaidCount || 0);
+                iuranPending = Math.max(0, amount * pendingCount);
+                
+                console.debug('[Dashboard] Using sync data:', { amount, pendingCount, iuranPending });
+                console.debug('[Dashboard] elIuranPending element:', elIuranPending);
+                
+                if (elIuranPending) { 
+                  const oldValue = elIuranPending.textContent;
+                  elIuranPending.textContent = fmtIDR(iuranPending); 
+                  elIuranPending.setAttribute('data-target', String(iuranPending)); 
+                  console.debug('[Dashboard] Updated UI with sync data:', { 
+                    oldValue, 
+                    newValue: fmtIDR(iuranPending), 
+                    element: elIuranPending 
+                  });
+                } else {
+                  console.error('[Dashboard] elIuranPending element not found!');
+                }
+                
+                // Continue to save snapshot and return
+                localStorage.setItem(DASH_SNAP_KEY, JSON.stringify({ 
+                  komplekId, 
+                  totalKas: 0, 
+                  totalMasuk: 0, 
+                  totalKeluar: 0, 
+                  iuranPending, 
+                  ts: now 
+                }));
+                lastDashFetch = now;
+                return; // Exit early, don't try other endpoints
+              } else {
+                throw new Error('Sync failed');
+              }
+            } catch(_) { 
+              // Try demo endpoint as fallback
+              try {
+                console.debug('[Dashboard] Fetching iuran status (demo):', demoUrl);
+                iuran = await fetchJsonStrict(demoUrl);
+              } catch(_) {
+                // Try public endpoint as last fallback
+                try {
+                  console.debug('[Dashboard] Fetching iuran status (public):', publicUrl);
+                  iuran = await fetchJsonStrict(publicUrl);
+                } catch(_) { /* ignore; will try mock */ }
+              }
+            }
+          }
+          let amount = Number(iuran?.amount || iuran?.nominal || 0);
+          // 2) If empty/404/invalid, try mock automatically
+          if (!Number.isFinite(amount) || (amount === 0 && !Array.isArray(iuran?.pending) && typeof iuran?.unpaidCount !== 'number')) {
+            try {
+              console.debug('[Dashboard] Retrying iuran status (mock):', mockUrl);
+              const mockRes = await fetchJsonStrict(mockUrl);
+              const mockAmt = Number(mockRes?.amount || mockRes?.nominal || 0);
+              if (Number.isFinite(mockAmt)) { iuran = mockRes; amount = mockAmt; }
+            } catch(_) { /* handled by safe */ }
+          }
+          // Calculate pending amount: Nominal × Warga Belum Bayar = Total Tertunda
+          let pendingCount = 0;
+          if (Array.isArray(iuran?.pending)) pendingCount = iuran.pending.length;
+          else if (typeof iuran?.unpaidCount === 'number') pendingCount = Number(iuran.unpaidCount);
+          else if (Array.isArray(iuran?.residents) && Array.isArray(iuran?.paid)) pendingCount = Math.max(0, iuran.residents.length - iuran.paid.length);
+          
+          // Use the correct calculation: Nominal × Warga Belum Bayar
+          iuranPending = Math.max(0, amount * pendingCount);
+          
+          // Debug log for calculation
+          console.debug('[iuran-calculation]', {
+            nominal: amount,
+            unpaidCount: pendingCount,
+            totalTertunda: iuranPending,
+            formula: `${amount} × ${pendingCount} = ${iuranPending}`
+          });
+          
+          if (elIuranPending) { 
+            elIuranPending.textContent = fmtIDR(iuranPending); 
+            elIuranPending.setAttribute('data-target', String(iuranPending)); 
+          }
+        }
+        // Reconcile with local demo data to avoid stale API values
+        try{
+          const cfgMap = JSON.parse(localStorage.getItem('dues_configs')||'{}');
+          let amountLocal = 0;
+          if (cfgMap && cfgMap[periode] && typeof cfgMap[periode].amount !== 'undefined') {
+            amountLocal = Number(cfgMap[periode].amount||0);
+          } else {
+            const cfg = JSON.parse(localStorage.getItem('dues_config')||'{}');
+            amountLocal = Number(cfg?.amount||0);
+          }
+          const payments = JSON.parse(localStorage.getItem('dues_payments')||'{}');
+          const paid = Array.isArray(payments?.[periode]?.paid) ? payments[periode].paid : [];
+          
+          // Get residents from correct source (warga_data_v1 first, then residents_data)
+          let residents = [];
+          try {
+            const wargaData = JSON.parse(localStorage.getItem('warga_data_v1')||'[]');
+            if (Array.isArray(wargaData) && wargaData.length > 0) {
+              residents = wargaData.filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+            } else {
+              residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+            }
+          } catch(_) {
+            residents = [];
+          }
+          
+          const pendingCountLocal = Math.max(0, Math.max(0, residents.length) - paid.length);
+          const localPending = Math.max(0, amountLocal * pendingCountLocal);
+          try { 
+            console.debug('[iuran-debug] reconcile', { 
+              periode, 
+              amountLocal, 
+              residents: residents.length, 
+              paid: paid.length, 
+              closed: !!cfgMap?.[periode]?.closed, 
+              localPending,
+              wargaDataLength: JSON.parse(localStorage.getItem('warga_data_v1')||'[]').length,
+              duesConfigs: cfgMap[periode]
+            }); 
+          } catch(_){}
+          if (Number.isFinite(localPending) && localPending !== iuranPending) {
+            iuranPending = localPending;
+            if (elIuranPending) { elIuranPending.textContent = fmtIDR(iuranPending); elIuranPending.setAttribute('data-target', String(iuranPending)); }
+          }
+        }catch(_){/* noop */}
+        // If still zero, check local demo dues
+        if(iuranPending===0){
+          try{
+            const periode = getCurrentMonth();
+            const cfgMap = JSON.parse(localStorage.getItem('dues_configs')||'{}');
+            let amountLocal = 0;
+            if (cfgMap && cfgMap[periode] && typeof cfgMap[periode].amount !== 'undefined') {
+              amountLocal = Number(cfgMap[periode].amount||0);
+            } else {
+              const cfg = JSON.parse(localStorage.getItem('dues_config')||'{}');
+              amountLocal = Number(cfg?.amount||0);
+            }
+            const payments = JSON.parse(localStorage.getItem('dues_payments')||'{}');
+            const paid = Array.isArray(payments?.[periode]?.paid) ? payments[periode].paid : [];
+            const residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+            const pendingCountLocal = Math.max(0, Math.max(0, residents.length) - paid.length);
+            const localPending = Math.max(0, amountLocal * pendingCountLocal);
+            try { console.debug('[iuran-debug] zero-check', { periode, amountLocal, residents: residents.length, paid: paid.length, closed: !!cfgMap?.[periode]?.closed, localPending }); } catch(_){}
+            if(localPending>0 && elIuranPending){ elIuranPending.textContent = fmtIDR(localPending); elIuranPending.setAttribute('data-target', String(localPending)); iuranPending = localPending; }
+          }catch(_){/* noop */}
+        }
+      }catch(e){
+        console.warn('Gagal memuat iuran status dari API, menggunakan demo fallback jika tersedia.', e);
+        try{
+          const periode = getCurrentMonth();
+          const cfgMap = JSON.parse(localStorage.getItem('dues_configs')||'{}');
+          let amount = 0;
+          if (cfgMap && cfgMap[periode] && typeof cfgMap[periode].amount !== 'undefined') {
+            amount = Number(cfgMap[periode].amount||0);
+          } else {
+            const cfg = JSON.parse(localStorage.getItem('dues_config')||'{}');
+            amount = Number(cfg?.amount||0);
+          }
+          const payments = JSON.parse(localStorage.getItem('dues_payments')||'{}');
+          const paid = Array.isArray(payments?.[periode]?.paid) ? payments[periode].paid : [];
+          
+                     // Get residents from correct source (warga_data_v1 first, then residents_data)
+           let residents = [];
+           try {
+             const wargaData = JSON.parse(localStorage.getItem('warga_data_v1')||'[]');
+             if (Array.isArray(wargaData) && wargaData.length > 0) {
+               residents = wargaData.filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+             } else {
+               residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+             }
+           } catch(_) {
+             residents = [];
+           }
+           
+           // Debug: Log the actual resident count
+           console.debug('[Dashboard] Fallback calculation - residents:', residents.length, 'warga_data_v1:', JSON.parse(localStorage.getItem('warga_data_v1')||'[]').length);
+          
+          const pendingCount = Math.max(0, residents.length - paid.length);
+          iuranPending = Math.max(0, amount * pendingCount);
+          
+          // Debug log with correct calculation
+          try { 
+            console.debug('[iuran-debug] fallback-calculation', { 
+              periode, 
+              nominal: amount, 
+              totalResidents: residents.length, 
+              paidCount: paid.length, 
+              unpaidCount: pendingCount,
+              totalTertunda: iuranPending,
+              formula: `${amount} × ${pendingCount} = ${iuranPending}`,
+              closed: !!cfgMap?.[periode]?.closed 
+            }); 
+          } catch(_){}
+          
+          if (elIuranPending) { 
+            elIuranPending.textContent = fmtIDR(iuranPending); 
+            elIuranPending.setAttribute('data-target', String(iuranPending)); 
+          }
+        }catch(_){ /* noop */ }
+      }
+      // If the month is marked closed but local data still shows unpaid, prefer showing local pending (avoid misleading zero)
+      try {
+        const periodeNow = getCurrentMonth();
+        const cfgMap = JSON.parse(localStorage.getItem('dues_configs')||'{}');
+        if (cfgMap && cfgMap[periodeNow] && cfgMap[periodeNow].closed) {
+          const payments = JSON.parse(localStorage.getItem('dues_payments')||'{}');
+          const paid = Array.isArray(payments?.[periodeNow]?.paid) ? payments[periodeNow].paid : [];
+          
+          // Get residents from correct source (warga_data_v1 first, then residents_data)
+          let residents = [];
+          try {
+            const wargaData = JSON.parse(localStorage.getItem('warga_data_v1')||'[]');
+            if (Array.isArray(wargaData) && wargaData.length > 0) {
+              residents = wargaData.filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+            } else {
+              residents = (JSON.parse(localStorage.getItem('residents_data')||'[]')||[]).filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+            }
+          } catch(_) {
+            residents = [];
+          }
+          
+          const pendingCountLocal = Math.max(0, Math.max(0, residents.length) - paid.length);
+          const amountLocal = Number((cfgMap?.[periodeNow]?.amount)||0);
+          const localPending = Math.max(0, amountLocal * pendingCountLocal);
+          if (localPending > 0) {
+            try { console.debug('[iuran-debug] month-closed-ignored', { periode: periodeNow, closed: true, residents: residents.length, paid: paid.length, amountLocal, localPending }); } catch(_){ }
+            iuranPending = localPending;
+            if (elIuranPending) { elIuranPending.textContent = fmtIDR(iuranPending); elIuranPending.setAttribute('data-target', String(iuranPending)); }
+          } else {
+            try { console.debug('[iuran-debug] month-closed', { periode: periodeNow, closed: true }); } catch(_){ }
+            iuranPending = 0;
+            if (elIuranPending) { elIuranPending.textContent = fmtIDR(0); elIuranPending.setAttribute('data-target', '0'); }
+          }
+        }
+      } catch(_) { /* noop */ }
+      // Save current data as previous month data for next month's comparison
+      const currentMonth = getCurrentMonth();
+      const prevMonthData = getPreviousMonthData();
+      
+      // Update laporan snapshot with previous month data
+      try {
+        const snap = JSON.parse(localStorage.getItem('laporan_totals_snapshot') || 'null') || {};
+        if (!snap.previousMonth) snap.previousMonth = {};
+        
+        // Save current month data as previous for next month
+        snap.previousMonth[currentMonth] = { income: totalMasuk, expense: totalKeluar, balance: totalKas };
+        localStorage.setItem('laporan_totals_snapshot', JSON.stringify(snap));
+      } catch (_) { /* ignore */ }
+      
+      localStorage.setItem(DASH_SNAP_KEY, JSON.stringify({ komplekId, totalKas, totalMasuk, totalKeluar, iuranPending, ts: now }));
+      lastDashFetch = now;
+      
+      // Update trend indicators with current data
+      updateTrendIndicators({ totalKas, totalMasuk, totalKeluar, iuranPending });
+    }catch(err){
+      // On invalid komplek_id (422), permanently switch to local-only mode
+      try {
+        const msg = String(err && err.message || '');
+        if (msg.includes('HTTP 422') && msg.toLowerCase().includes('komplek')) {
+          localStorage.removeItem('komplek_id');
+          localStorage.setItem('disable_api','1');
+        }
+      } catch(_) {}
+      console.warn('Gagal memuat summary dashboard dari API, menggunakan snapshot jika ada.', err);
+      try{
+        const snap = JSON.parse(localStorage.getItem(DASH_SNAP_KEY)||'null');
+        if(snap && String(snap.komplekId)===String(komplekId)){
+          elKas && (elKas.textContent = fmtIDR(Number(snap.totalKas||0)), elKas.setAttribute('data-target', String(Number(snap.totalKas||0))));
+          elMasuk && (elMasuk.textContent = fmtIDR(Number(snap.totalMasuk||0)), elMasuk.setAttribute('data-target', String(Number(snap.totalMasuk||0))));
+          elKeluar && (elKeluar.textContent = fmtIDR(Number(snap.totalKeluar||0)), elKeluar.setAttribute('data-target', String(Number(snap.totalKeluar||0))));
+          if (elIuranPending) { const v = Number(snap.iuranPending||0); elIuranPending.textContent = fmtIDR(v); elIuranPending.setAttribute('data-target', String(v)); }
+        }
+        // Additionally, align with laporan.ts demo data if available
+        const local = computeLocalSummary();
+        if(local){
+          const { income, expense, balance } = local;
+          elMasuk && (elMasuk.textContent = fmtIDR(income), elMasuk.setAttribute('data-target', String(income)));
+          elKeluar && (elKeluar.textContent = fmtIDR(expense), elKeluar.setAttribute('data-target', String(expense)));
+          elKas && (elKas.textContent = fmtIDR(balance), elKas.setAttribute('data-target', String(balance)));
+        }
+      }catch(_){ /* noop */ }
+    }
+  }
+
+  function initSidebar() {
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const adminSidebar = document.querySelector('.admin-sidebar');
+    const adminFrame = document.querySelector('.admin-frame');
+    if (sidebarToggle && !sidebarToggle.dataset.bound) {
+      sidebarToggle.dataset.bound = '1';
+      sidebarToggle.addEventListener('click', () => {
+        if (adminSidebar) adminSidebar.classList.toggle('collapsed');
+        if (adminFrame) adminFrame.classList.toggle('expanded');
+        const icon = sidebarToggle.querySelector('i');
+        if (icon && adminSidebar) {
+          if (adminSidebar.classList.contains('collapsed')) {
+            icon.classList.remove('fa-chevron-left');
+            icon.classList.add('fa-chevron-right');
+          } else {
+            icon.classList.remove('fa-chevron-right');
+            icon.classList.add('fa-chevron-left');
+          }
+        }
+      });
+    }
+    const sectionToggles = document.querySelectorAll('.section-toggle');
+    sectionToggles.forEach((btn) => {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget;
+        const expanded = target.getAttribute('aria-expanded') === 'true';
+        target.setAttribute('aria-expanded', String(!expanded));
+        const targetId = target.getAttribute('aria-controls');
+        const targetList = targetId ? document.getElementById(targetId) : null;
+        if (targetList) {
+          if (expanded) {
+            targetList.style.maxHeight = '0';
+            targetList.classList.add('collapsed');
+          } else {
+            targetList.style.maxHeight = targetList.scrollHeight + 'px';
+            targetList.classList.remove('collapsed');
+          }
+        }
+        const icon = target.querySelector('.toggle-icon');
+        if (icon) {
+          const isExpanding = !expanded;
+          icon.classList.remove(isExpanding ? 'fa-chevron-down' : 'fa-chevron-up');
+          icon.classList.add(isExpanding ? 'fa-chevron-up' : 'fa-chevron-down');
+          (icon as HTMLElement).style.transform = '';
+        }
+      });
+    });
+    const currentPath = window.location.pathname;
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    sidebarLinks.forEach((link) => {
+      const href = link.getAttribute('href');
+      if (href === currentPath) {
+        link.classList.add('active');
+        const parentList = link.closest('.nav-list');
+        if (parentList && parentList.classList.contains('collapsed')) {
+          const sectionToggle = parentList.previousElementSibling;
+          if (sectionToggle && sectionToggle.classList.contains('section-toggle')) {
+            sectionToggle.dispatchEvent(new Event('click'));
+          }
+        }
+      }
+    });
+  }
+
+  function initAnimations() {
+    const cards = document.querySelectorAll('.admin-topbar, .stat-card, .chart-card, .quick-action-card, .table-section');
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-in');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      cards.forEach(card => {
+        card.classList.add('pre-animation');
+        observer.observe(card);
+      });
+    } else {
+      cards.forEach(card => card.classList.add('animate-in'));
+    }
+    const hoverElements = document.querySelectorAll('.stat-card, .quick-action-card');
+    hoverElements.forEach(el => {
+      el.addEventListener('mouseenter', function() { this.classList.add('hover-effect'); });
+      el.addEventListener('mouseleave', function() { this.classList.remove('hover-effect'); });
+    });
+  }
+
+  function initChartCardActions() {
+    const cards = document.querySelectorAll('.chart-card');
+    cards.forEach(card => {
+      const canvas = card.querySelector('canvas');
+      if (!canvas) return;
+      const buttons = card.querySelectorAll('.card-actions .action-button');
+      if (!buttons.length) return;
+      const downloadBtn = buttons[0];
+      if (downloadBtn && !downloadBtn.dataset.bound) {
+        downloadBtn.dataset.bound = '1';
+        downloadBtn.addEventListener('click', () => {
+          try {
+            const chart = window.dashboardCharts ? window.dashboardCharts.get(canvas.id) : null;
+            if (chart && chart.canvas) {
+              const link = document.createElement('a');
+              link.href = chart.canvas.toDataURL('image/png');
+              link.download = `${canvas.id || 'chart'}.png`;
+              document.body.appendChild(link);
+              link.click();
+              link.remove();
+            }
+          } catch (e) { console.error('Failed to download chart image', e); }
+        });
+      }
+      const zoomBtn = buttons[1];
+      if (zoomBtn && !zoomBtn.dataset.bound) {
+        zoomBtn.dataset.bound = '1';
+        zoomBtn.addEventListener('click', async () => {
+          try {
+            // If already fullscreen, exit
+            if (document.fullscreenElement) { await document.exitFullscreen(); return; }
+
+            // Center the card in the viewport before entering fullscreen
+            card.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+            // Small delay to allow scroll to settle
+            await new Promise((r) => setTimeout(r, 200));
+
+            // Enter fullscreen
+            if (card.requestFullscreen) { await card.requestFullscreen(); }
+            // @ts-ignore - Safari prefix
+            else if (card.webkitRequestFullscreen) { card.webkitRequestFullscreen(); }
+          } catch (e) { console.error('Fullscreen failed', e); }
+        });
+      }
+    });
+  }
+
+  function initCharts() {
+    if (!window.dashboardCharts) window.dashboardCharts = new Map();
+    const palette = { primary:'#4361ee', primarySoft:'rgba(67,97,238,0.1)', green:'#06d6a0', red:'#ef476f', yellow:'#f9c74f', cyan:'#4cc9f0', grayTick:'#6b7280', grid:'rgba(229,231,235,0.5)' };
+    const formatIDRCurrency = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val);
+    const makeGradient = (ctx, color, alpha = 0.15) => {
+      const height = (ctx && ctx.canvas && ctx.canvas.height) ? ctx.canvas.height : 200;
+      const gradient = ctx.createLinearGradient(0, 0, 0, height);
+      const toRGBA = (c, a) => {
+        if (!c) return `rgba(67, 97, 238, ${a})`;
+        if (c.startsWith('#')) { const r=parseInt(c.substr(1,2),16); const g=parseInt(c.substr(3,2),16); const b=parseInt(c.substr(5,2),16); return `rgba(${r}, ${g}, ${b}, ${a})`; }
+        if (c.startsWith('rgba(')) return c.replace(/rgba\(([^,]+),\s*([^,]+),\s*([^,]+),\s*[^)]+\)/, `rgba($1, $2, $3, ${a})`);
+        if (c.startsWith('rgb(')) return c.replace('rgb(', 'rgba(').replace(')', `, ${a})`);
+        return `rgba(67, 97, 238, ${a})`;
+      };
+      gradient.addColorStop(0, toRGBA(color, alpha));
+      gradient.addColorStop(1, toRGBA(color, 0));
+      return gradient;
+    };
+    // Helper: clip arrays to current month (no future months)
+    const monthMap = { jan:0, feb:1, mar:2, apr:3, may:4, mei:4, jun:5, jul:6, aug:7, agu:7, agt:7, sep:8, oct:9, okt:9, nov:10, dec:11, des:11 };
+    function monthIndexFromLabel(lbl){
+      if(!lbl) return -1;
+      const s = String(lbl).trim().toLowerCase().slice(0,3);
+      return (s in monthMap) ? monthMap[s] : -1;
+    }
+    const indoMonths = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    function normalizeMonthLabel(lbl){
+      const s = String(lbl||'').trim().toLowerCase();
+      // Try parse common forms
+      if (s.startsWith('jan')) return 'Jan';
+      if (s.startsWith('feb')) return 'Feb';
+      if (s.startsWith('mar')) return 'Mar';
+      if (s.startsWith('apr')) return 'Apr';
+      if (s.startsWith('may') || s.startsWith('mei')) return 'Mei';
+      if (s.startsWith('jun')) return 'Jun';
+      if (s.startsWith('jul')) return 'Jul';
+      if (s.startsWith('aug') || s.startsWith('agu') || s.startsWith('agt')) return 'Agu';
+      if (s.startsWith('sep')) return 'Sep';
+      if (s.startsWith('oct') || s.startsWith('okt')) return 'Okt';
+      if (s.startsWith('nov')) return 'Nov';
+      if (s.startsWith('dec') || s.startsWith('des')) return 'Des';
+      return lbl;
+    }
+    function clipSeriesByCurrentMonth(lbls, incArr, expArr, cumArr){
+      try{
+        const now = new Date();
+        const currentIdx = now.getMonth();
+        let clipTo = -1;
+        if(Array.isArray(lbls) && lbls.length){
+          // try find last index <= current month using label mapping
+          for(let i=lbls.length-1;i>=0;i--){
+            const mi = monthIndexFromLabel(lbls[i]);
+            if(mi>=0){ clipTo = Math.min(currentIdx, mi); break; }
+          }
+        }
+        if(clipTo<0){
+          // fallback: clip by count to current month number + 1
+          clipTo = Math.min(currentIdx, (lbls?.length||12)-1);
+        }
+        const end = clipTo + 1; // slice is non-inclusive
+        return {
+          labels: (lbls||[]).slice(0, end),
+          income: (incArr||[]).slice(0, end),
+          expense: (expArr||[]).slice(0, end),
+          balance: (cumArr||[]).slice(0, end)
+        };
+      }catch{ return { labels: lbls||[], income: incArr||[], expense: expArr||[], balance: cumArr||[] }; }
+    }
+
+    // Load compact series from laporan to keep charts in sync
+    let lapSeries = null;
+    try { const raw = localStorage.getItem('laporan_chart_series'); lapSeries = raw ? JSON.parse(raw) : null; } catch(_) { lapSeries = null }
+    const fallbackLabels = ['Jan','Feb','Mar','Apr','May','Jun'];
+    let labels = Array.isArray(lapSeries?.labels) && lapSeries.labels.length ? lapSeries.labels : fallbackLabels;
+    let dailyIncome = Array.isArray(lapSeries?.dailyIncome) && lapSeries.dailyIncome.length ? lapSeries.dailyIncome : [900000,1200000,1150000,1400000,1500000,1600000];
+    let dailyExpense = Array.isArray(lapSeries?.dailyExpense) && lapSeries.dailyExpense.length ? lapSeries.dailyExpense : [500000,700000,650000,800000,900000,850000];
+    let cumulativeBalance = Array.isArray(lapSeries?.cumulativeBalance) && lapSeries.cumulativeBalance.length ? lapSeries.cumulativeBalance : dailyIncome.map((_,i)=> dailyIncome.slice(0,i+1).reduce((s,v)=>s+v,0) - dailyExpense.slice(0,i+1).reduce((s,v)=>s+v,0));
+    // Clip to current month
+    const clipped = clipSeriesByCurrentMonth(labels, dailyIncome, dailyExpense, cumulativeBalance);
+    labels = clipped.labels.map(normalizeMonthLabel); dailyIncome = clipped.income; dailyExpense = clipped.expense; cumulativeBalance = clipped.balance;
+
+    const compLabels = lapSeries?.composition ? Object.keys(lapSeries.composition) : ['Operasional','Keamanan','Kebersihan','Perbaikan','Lainnya'];
+    const compValues = lapSeries?.composition ? Object.values(lapSeries.composition) : [1200000,800000,600000,400000,200000];
+    const cashFlowCtx = document.getElementById('chartKas');
+    if (cashFlowCtx) {
+      try {
+        const existing = window.dashboardCharts ? window.dashboardCharts.get('chartKas') : null;
+        existing && typeof existing.destroy === 'function' && existing.destroy();
+      } catch (e) {}
+      try {
+        // Also destroy if a Chart is already bound to this canvas (defensive)
+        if (typeof Chart !== 'undefined' && Chart.getChart) {
+          const prev = Chart.getChart(cashFlowCtx);
+          if (prev && typeof prev.destroy === 'function') prev.destroy();
+        }
+      } catch (e) {}
+      const ctx = cashFlowCtx.getContext ? cashFlowCtx.getContext('2d') : null;
+      const cashFlowChart = new Chart(cashFlowCtx, { type: 'line', data: { labels: labels, datasets:[{ label:'Saldo', data: cumulativeBalance, borderColor: palette.primary, backgroundColor: ctx ? makeGradient(ctx, palette.primary) : palette.primarySoft, borderWidth:2, tension:0.4, fill:true, pointBackgroundColor:'#ffffff', pointBorderColor: palette.primary, pointBorderWidth:2, pointRadius:4, pointHoverRadius:6 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ display:false }, tooltip:{ mode:'index', intersect:false, backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:function(context){ let label=context.dataset.label||''; if(label){label+=': ';} if(context.parsed.y!==null){ label+=formatIDRCurrency(context.parsed.y);} return label; } } } }, scales:{ x:{ grid:{ display:false }, ticks:{ color: palette.grayTick } }, y:{ beginAtZero:true, grid:{ color: palette.grid }, ticks:{ color: palette.grayTick, callback:function(value){ return new Intl.NumberFormat('id-ID',{ style:'currency', currency:'IDR', maximumSignificantDigits:3 }).format(value); } } } } } });
+      window.dashboardCharts.set('chartKas', cashFlowChart);
+    }
+
+    const compositionCtx = document.getElementById('chartPie');
+    if (compositionCtx) {
+      try { const ex = window.dashboardCharts ? window.dashboardCharts.get('chartPie') : null; ex && ex.destroy && ex.destroy(); } catch (e) {}
+      try {
+        if (typeof Chart !== 'undefined' && Chart.getChart) {
+          const prev = Chart.getChart(compositionCtx);
+          if (prev && typeof prev.destroy === 'function') prev.destroy();
+        }
+      } catch (e) {}
+      const compositionChart = new Chart(compositionCtx, { type:'doughnut', data:{ labels: compLabels, datasets:[{ data: compValues, backgroundColor:['#06d6a0','#ef476f','#ffd166','#4cc9f0','#f9c74f'], borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, animation:{ animateRotate:true, animateScale:true, duration:1000, easing:'easeOutQuart' }, plugins:{ legend:{ position:'bottom', labels:{ padding:20, usePointStyle:true, pointStyle:'circle' } }, tooltip:{ backgroundColor:'rgba(17, 24, 39, 0.8)', titleColor:'#ffffff', bodyColor:'#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderWidth:1, padding:10, cornerRadius:8, callbacks:{ label:function(context){ const label=context.label||''; const value=context.raw||0; const total=context.dataset.data.reduce((a,b)=>a+b,0); const percentage = total? Math.round((value/total)*100): 0; return `${label}: ${percentage}%`; } } } }, cutout:'70%' } });
+      window.dashboardCharts.set('chartPie', compositionChart);
+    }
+
+    const expenseCategoriesCtx = document.getElementById('chartExpenseCategories');
+    if (expenseCategoriesCtx) {
+      try { const ex = window.dashboardCharts ? window.dashboardCharts.get('chartExpenseCategories') : null; ex && ex.destroy && ex.destroy(); } catch (e) {}
+      try {
+        if (typeof Chart !== 'undefined' && Chart.getChart) {
+          const prev = Chart.getChart(expenseCategoriesCtx);
+          if (prev && typeof prev.destroy === 'function') prev.destroy();
+        }
+      } catch (e) {}
+      const expenseCategoriesChart = new Chart(expenseCategoriesCtx, {
+        type: 'bar',
+        data: {
+          labels: compLabels,
+          datasets: [
+            {
+              label: 'Pengeluaran per Kategori',
+              data: compValues,
+              backgroundColor: [
+                'rgba(67, 97, 238, 0.7)',
+                'rgba(76, 201, 240, 0.7)',
+                'rgba(6, 214, 160, 0.7)',
+                'rgba(249, 199, 79, 0.7)',
+                'rgba(239, 71, 111, 0.7)'
+              ],
+              borderWidth: 0,
+              borderRadius: 6,
+              maxBarThickness: 40
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            delay: function (context) { return context.dataIndex * 100; },
+            duration: 1000,
+            easing: 'easeOutQuart'
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(17, 24, 39, 0.8)',
+              titleColor: '#ffffff',
+              bodyColor: '#ffffff',
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+              borderWidth: 1,
+              padding: 10,
+              cornerRadius: 8,
+              callbacks: {
+                label: function (context) {
+                  let label = context.dataset.label || '';
+                  if (label) label += ': ';
+                  if (context.parsed.y !== null) label += formatIDRCurrency(context.parsed.y);
+                  return label;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: palette.grayTick } },
+            y: {
+              beginAtZero: true,
+              grid: { color: palette.grid },
+              ticks: {
+                color: palette.grayTick,
+                callback: function (value) {
+                  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumSignificantDigits: 3 }).format(value);
+                }
+              }
+            }
+          }
+        }
+      });
+      window.dashboardCharts.set('chartExpenseCategories', expenseCategoriesChart);
+    }
+    const monthlyComparisonCtx = document.getElementById('chartMonthlyComparison');
+    if (monthlyComparisonCtx) {
+      const monthlyComparisonChart = new Chart(monthlyComparisonCtx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Pemasukan',
+              data: dailyIncome,
+              backgroundColor: 'rgba(6, 214, 160, 0.7)',
+              borderColor: 'rgba(6, 214, 160, 1)',
+              borderWidth: 1,
+              borderRadius: 6,
+              maxBarThickness: 20
+            },
+            {
+              label: 'Pengeluaran',
+              data: dailyExpense,
+              backgroundColor: 'rgba(239, 71, 111, 0.7)',
+              borderColor: 'rgba(239, 71, 111, 1)',
+              borderWidth: 1,
+              borderRadius: 6,
+              maxBarThickness: 20
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            delay: function (context) { return context.datasetIndex * 100 + context.dataIndex * 50; },
+            duration: 1000,
+            easing: 'easeOutQuart'
+          },
+          plugins: {
+            legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true, pointStyle: 'circle' } },
+            tooltip: {
+              backgroundColor: 'rgba(17, 24, 39, 0.8)',
+              titleColor: '#ffffff',
+              bodyColor: '#ffffff',
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+              borderWidth: 1,
+              padding: 10,
+              cornerRadius: 8,
+              callbacks: {
+                label: function (context) {
+                  let label = context.dataset.label || '';
+                  if (label) label += ': ';
+                  if (context.parsed.y !== null) label += formatIDRCurrency(context.parsed.y);
+                  return label;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: palette.grayTick } },
+            y: {
+              beginAtZero: true,
+              grid: { color: palette.grid },
+              ticks: {
+                color: palette.grayTick,
+                callback: function (value) {
+                  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumSignificantDigits: 3 }).format(value);
+                }
+              }
+            }
+          }
+        }
+      });
+      window.dashboardCharts.set('chartMonthlyComparison', monthlyComparisonChart);
+    }
+    const areaCtx = document.getElementById('chartIncomeExpenseArea');
+    if (areaCtx) {
+      const ctx = areaCtx.getContext ? areaCtx.getContext('2d') : null;
+      const areaChart = new Chart(areaCtx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Pemasukan',
+              data: dailyIncome,
+              borderColor: palette.green,
+              backgroundColor: ctx ? makeGradient(ctx, palette.green) : 'rgba(6, 214, 160, 0.15)',
+              fill: true,
+              tension: 0.35,
+              borderWidth: 2
+            },
+            {
+              label: 'Pengeluaran',
+              data: dailyExpense,
+              borderColor: palette.red,
+              backgroundColor: ctx ? makeGradient(ctx, palette.red) : 'rgba(239, 71, 111, 0.15)',
+              fill: true,
+              tension: 0.35,
+              borderWidth: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  const value = context.parsed && context.parsed.y != null ? context.parsed.y : 0;
+                  const label = context.dataset && context.dataset.label ? context.dataset.label : '';
+                  return `${label}: ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: palette.grayTick } },
+            y: {
+              grid: { color: palette.grid },
+              ticks: { color: palette.grayTick }
+            }
+          }
+        }
+      });
+      window.dashboardCharts.set('chartIncomeExpenseArea', areaChart);
+    }
+  }
+
+  /**
+   * Initialize Real-time Chart Updates
+   * Mengintegrasikan sistem real-time update untuk semua chart di dashboard
+   */
+  function initRealTimeCharts() {
+    // Pastikan ChartUpdateManager tersedia
+    if (!window.chartUpdateManager) {
+      console.warn('[Dashboard] ChartUpdateManager not available, skipping real-time updates');
+      return;
+    }
+
+    const komplekId = resolveKomplekId();
+    const formatIDRCurrency = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(val);
+
+    // Data fetcher untuk chart updates
+    async function fetchChartData() {
+      try {
+        // Coba ambil data dari localStorage terlebih dahulu
+        const localData = localStorage.getItem('laporan_chart_series');
+        if (localData) {
+          const parsed = JSON.parse(localData);
+          if (parsed && parsed.labels && parsed.labels.length > 0) {
+            // Clip to current month before returning
+            const nowClipped = (function(){
+              const mm = { jan:0,feb:1,mar:2,apr:3,may:4,mei:4,jun:5,jul:6,aug:7,agu:7,agt:7,sep:8,oct:9,okt:9,nov:10,dec:11,des:11 };
+              const idx = (m)=>{ const s=String(m).toLowerCase().slice(0,3); return s in mm ? mm[s]: -1; };
+              const cur = new Date().getMonth();
+              let cut = parsed.labels.length;
+              for(let i=parsed.labels.length-1;i>=0;i--){ const mi = idx(parsed.labels[i]); if(mi>=0){ cut = Math.min(cur+1, mi+1); break; } }
+              return {
+                labels: parsed.labels.slice(0, cut),
+                dailyIncome: (parsed.dailyIncome||[]).slice(0, cut),
+                dailyExpense: (parsed.dailyExpense||[]).slice(0, cut),
+                composition: parsed.composition || {}
+              };
+            })();
+            return nowClipped;
+          }
+        }
+
+        // Fallback ke API jika localStorage kosong
+        if (komplekId && fetchJson) {
+          const data = await fetchJson(`/api/public/transaksi/summary?komplek_id=${encodeURIComponent(komplekId)}`);
+          const base = {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            dailyIncome: [900000, 1200000, 1150000, 1400000, 1500000, 1600000],
+            dailyExpense: [500000, 700000, 650000, 800000, 900000, 850000],
+            composition: {
+              'Operasional': 1200000,
+              'Keamanan': 800000,
+              'Kebersihan': 600000,
+              'Perbaikan': 400000,
+              'Lainnya': 200000
+            }
+          };
+          // Clip fallback to current month
+          const mm = { jan:0,feb:1,mar:2,apr:3,may:4,mei:4,jun:5,jul:6,aug:7,agu:7,agt:7,sep:8,oct:9,okt:9,nov:10,dec:11,des:11 };
+          const cur = new Date().getMonth();
+          let cut = base.labels.length;
+          for(let i=base.labels.length-1;i>=0;i--){ const mi = mm[base.labels[i].toLowerCase().slice(0,3)] ?? -1; if(mi>=0){ cut = Math.min(cur+1, mi+1); break; } }
+          return { labels: base.labels.slice(0, cut), dailyIncome: base.dailyIncome.slice(0, cut), dailyExpense: base.dailyExpense.slice(0, cut), composition: base.composition };
+        }
+      } catch (error) {
+        console.warn('[Dashboard] Failed to fetch chart data:', error);
+      }
+
+      // Return default data jika semua gagal
+      const base2 = { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], dailyIncome: [900000, 1200000, 1150000, 1400000, 1500000, 1600000], dailyExpense: [500000, 700000, 650000, 800000, 900000, 850000], composition: { 'Operasional': 1200000, 'Keamanan': 800000, 'Kebersihan': 600000, 'Perbaikan': 400000, 'Lainnya': 200000 } };
+      const mm2 = { jan:0,feb:1,mar:2,apr:3,may:4,mei:4,jun:5,jul:6,aug:7,agu:7,agt:7,sep:8,oct:9,okt:9,nov:10,dec:11,des:11 };
+      const cur2 = new Date().getMonth();
+      let cut2 = base2.labels.length;
+      for(let i=base2.labels.length-1;i>=0;i--){ const mi = mm2[base2.labels[i].toLowerCase().slice(0,3)] ?? -1; if(mi>=0){ cut2 = Math.min(cur2+1, mi+1); break; } }
+      return { labels: base2.labels.slice(0, cut2), dailyIncome: base2.dailyIncome.slice(0, cut2), dailyExpense: base2.dailyExpense.slice(0, cut2), composition: base2.composition };
+    }
+
+    // Update function untuk Cash Flow Chart
+    function updateCashFlowChart(newData) {
+      const chart = window.dashboardCharts?.get('chartKas');
+      if (!chart) return;
+
+      const cumulativeBalance = newData.dailyIncome.map((_, i) => 
+        newData.dailyIncome.slice(0, i + 1).reduce((s, v) => s + v, 0) - 
+        newData.dailyExpense.slice(0, i + 1).reduce((s, v) => s + v, 0)
+      );
+
+      chart.data.labels = newData.labels;
+      chart.data.datasets[0].data = cumulativeBalance;
+      chart.update('active');
+    }
+
+    // Update function untuk Composition Pie Chart
+    function updateCompositionChart(newData) {
+      const chart = window.dashboardCharts?.get('chartPie');
+      if (!chart) return;
+
+      chart.data.labels = Object.keys(newData.composition);
+      chart.data.datasets[0].data = Object.values(newData.composition);
+      chart.update('active');
+    }
+
+    // Update function untuk Expense Categories Chart
+    function updateExpenseCategoriesChart(newData) {
+      const chart = window.dashboardCharts?.get('chartExpenseCategories');
+      if (!chart) return;
+
+      chart.data.labels = Object.keys(newData.composition);
+      chart.data.datasets[0].data = Object.values(newData.composition);
+      chart.update('active');
+    }
+
+    // Update function untuk Monthly Comparison Chart
+    function updateMonthlyComparisonChart(newData) {
+      const chart = window.dashboardCharts?.get('chartMonthlyComparison');
+      if (!chart) return;
+
+      chart.data.labels = newData.labels;
+      chart.data.datasets[0].data = newData.dailyIncome;
+      chart.data.datasets[1].data = newData.dailyExpense;
+      chart.update('active');
+    }
+
+    // Update function untuk Income vs Expense Area Chart
+    function updateIncomeExpenseAreaChart(newData) {
+      const chart = window.dashboardCharts?.get('chartIncomeExpenseArea');
+      if (!chart) return;
+
+      chart.data.labels = newData.labels;
+      chart.data.datasets[0].data = newData.dailyIncome;
+      chart.data.datasets[1].data = newData.dailyExpense;
+      chart.update('active');
+    }
+
+    // Register semua chart untuk auto-update
+    const charts = [
+      { id: 'chartKas', instance: window.dashboardCharts?.get('chartKas'), updateFn: updateCashFlowChart },
+      { id: 'chartPie', instance: window.dashboardCharts?.get('chartPie'), updateFn: updateCompositionChart },
+      { id: 'chartExpenseCategories', instance: window.dashboardCharts?.get('chartExpenseCategories'), updateFn: updateExpenseCategoriesChart },
+      { id: 'chartMonthlyComparison', instance: window.dashboardCharts?.get('chartMonthlyComparison'), updateFn: updateMonthlyComparisonChart },
+      { id: 'chartIncomeExpenseArea', instance: window.dashboardCharts?.get('chartIncomeExpenseArea'), updateFn: updateIncomeExpenseAreaChart }
+    ];
+
+    charts.forEach(({ id, instance, updateFn }) => {
+      if (instance) {
+        window.chartUpdateManager.registerChart(
+          id,
+          instance,
+          fetchChartData,
+          updateFn
+        );
+        console.log(`[Dashboard] Registered ${id} for real-time updates`);
+      }
+    });
+
+    // Set update frequency ke 30 detik
+    window.chartUpdateManager.setUpdateFrequency(30000);
+
+    // Listen untuk perubahan data dari halaman lain
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'laporan_chart_series' || e.key === 'financial_transactions_v2') {
+        console.log('[Dashboard] Detected data change, updating charts...');
+        window.chartUpdateManager.updateAllCharts();
+      }
+    });
+
+    // Listen untuk custom events
+    window.addEventListener('chart-data-updated', () => {
+      console.log('[Dashboard] Received chart-data-updated event');
+      window.chartUpdateManager.updateAllCharts();
+    });
+
+    console.log('[Dashboard] Real-time chart updates initialized');
+  }
+
+  function initSparklines() {
+    if (typeof Chart === 'undefined') return;
+    const canvases = document.querySelectorAll('canvas.sparkline');
+    canvases.forEach(cv => {
+      const valuesAttr = cv.getAttribute('data-values');
+      if (!valuesAttr) return;
+      const values = valuesAttr.split(',').map(v => parseFloat(v.trim())).filter(v => !isNaN(v));
+      if (!values.length) return;
+      const desiredHeight = parseInt(cv.getAttribute('data-height') || '48', 10);
+      if (!isNaN(desiredHeight) && desiredHeight > 0) {
+        cv.style.height = desiredHeight + 'px';
+        try { cv.height = desiredHeight; } catch (e) {}
+      }
+      const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#2563eb';
+      const fillColor = 'rgba(37, 99, 235, 0.12)';
+      const minVal = Math.min(...values);
+      const maxVal = Math.max(...values);
+      const range = Math.max(1, maxVal - minVal);
+      const pad = Math.max(0.5, range * 0.1);
+      new Chart(cv, {
+        type: 'line',
+        data: {
+          labels: values.map((_, i) => i + 1),
+          datasets: [
+            {
+              data: values,
+              borderColor: primary,
+              backgroundColor: fillColor,
+              borderWidth: 3,
+              borderCapStyle: 'round',
+              borderJoinStyle: 'round',
+              pointRadius: 0,
+              fill: true,
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: { padding: { left: 8, right: 10, top: 6, bottom: 6 } },
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: {
+            x: { display: false, offset: true },
+            y: { display: false, suggestedMin: minVal - pad, suggestedMax: maxVal + pad }
+          }
+        }
+      });
+    });
+  }
+
+  function initDataTables() {
+    const tables = document.querySelectorAll('.data-table');
+    tables.forEach(table => {
+      const tableHeader = table.querySelector('thead');
+      const tableBody = table.querySelector('tbody');
+      if (tableHeader && tableBody) {
+        const sortableHeaders = tableHeader.querySelectorAll('th.sortable');
+        sortableHeaders.forEach(header => {
+          header.addEventListener('click', function() {
+            const index = Array.from(this.parentNode.children).indexOf(this);
+            const isAscending = this.classList.contains('sort-asc');
+            sortableHeaders.forEach(h => { h.classList.remove('sort-asc', 'sort-desc'); });
+            this.classList.add(isAscending ? 'sort-desc' : 'sort-asc');
+            const rows = Array.from(tableBody.querySelectorAll('tr'));
+            rows.sort((a, b) => {
+              const cellA = a.children[index].textContent.trim();
+              const cellB = b.children[index].textContent.trim();
+              const numA = parseFloat(cellA.replace(/[^0-9.-]+/g, ''));
+              const numB = parseFloat(cellB.replace(/[^0-9.-]+/g, ''));
+              if (!isNaN(numA) && !isNaN(numB)) { return isAscending ? numA - numB : numB - numA; }
+              else { return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA); }
+            });
+            rows.forEach(row => { tableBody.appendChild(row); });
+          });
+        });
+        const paginationContainer = table.nextElementSibling;
+        if (paginationContainer && paginationContainer.classList.contains('pagination')) {
+          const rowsPerPage = 5;
+          const rows = Array.from(tableBody.querySelectorAll('tr'));
+          const pageCount = Math.ceil(rows.length / rowsPerPage);
+          if (pageCount > 1) {
+            const paginationButtons = paginationContainer.querySelectorAll('.pagination-button');
+            showPage(1);
+            paginationButtons.forEach(button => {
+              if (button.dataset.page) {
+                button.addEventListener('click', function() {
+                  const page = parseInt(this.dataset.page);
+                  showPage(page);
+                  paginationButtons.forEach(btn => { btn.classList.remove('active'); });
+                  this.classList.add('active');
+                });
+              }
+            });
+          }
+          function showPage(page) {
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            rows.forEach((row, index) => { row.style.display = (index >= start && index < end) ? '' : 'none'; });
+          }
+        }
+      }
+    });
+  }
+
+  function initCounters() {
+    const counters = document.querySelectorAll('.stat-value');
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const counter = entry.target;
+            const target = parseFloat(counter.getAttribute('data-target') || counter.innerText.replace(/[^0-9.-]+/g, ''));
+            const duration = 1500;
+            const step = Math.ceil(target / (duration / 16));
+            let current = 0;
+            const format = counter.getAttribute('data-format') || '';
+            const formatOptions = counter.getAttribute('data-format-options') ? JSON.parse(counter.getAttribute('data-format-options')) : {};
+            const timer = setInterval(() => {
+              current += step;
+              if (current >= target) { current = target; clearInterval(timer); }
+              if (format === 'currency') {
+                counter.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: formatOptions.currency || 'IDR', maximumFractionDigits: formatOptions.maximumFractionDigits || 0 }).format(current);
+              } else if (format === 'number') {
+                counter.textContent = new Intl.NumberFormat('id-ID', formatOptions).format(current);
+              } else if (format === 'percent') {
+                counter.textContent = `${current}%`;
+              } else {
+                counter.textContent = current;
+              }
+            }, 16);
+            observer.unobserve(counter);
+          }
+        });
+      }, { threshold: 0.1 });
+      counters.forEach(counter => { observer.observe(counter); });
+    }
+  }
+
+  function initTooltips() {
+    const tooltips = document.querySelectorAll('[data-tooltip]');
+    tooltips.forEach(tooltip => {
+      tooltip.addEventListener('mouseenter', function() {
+        const text = this.getAttribute('data-tooltip');
+        const tooltipEl = document.createElement('div');
+        tooltipEl.className = 'tooltip';
+        tooltipEl.textContent = text;
+        document.body.appendChild(tooltipEl);
+        const rect = this.getBoundingClientRect();
+        const tooltipRect = tooltipEl.getBoundingClientRect();
+        tooltipEl.style.top = `${rect.top - tooltipRect.height - 10 + window.scrollY}px`;
+        tooltipEl.style.left = `${rect.left + (rect.width / 2) - (tooltipRect.width / 2)}px`;
+        tooltipEl.style.opacity = '1';
+        this.addEventListener('mouseleave', function onMouseLeave() {
+          tooltipEl.remove();
+          this.removeEventListener('mouseleave', onMouseLeave);
+        });
+      });
+    });
+  }
+
+  function initPremiumLocks() {
+    // Disabled to unlock all premium features
+    return;
+  }
+})();
+</script>
+
+<style>
+  /* ============ THEME (Scoped to .admin-dashboard) ============ */
+  .admin-dashboard {
+  --primary: #085895;
+  --primary-600: #0a5ca8;
+  --primary-700: #074a7b;
+
+  --success: #16a34a;
+  --success-ink: #0c6b2f;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #0ea5e9;
+
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --surface-2: #f7f9fc;
+  --outline: #e6eaf0;
+  --outline-2: #d8dde5;
+
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-subtle: #7c8aa3;
+
+  --ring: #93c5fd;
+
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --frame-padding: 14px;
+
+  --shadow-sm: 0 2px 10px rgba(20, 40, 80, 0.06);
+  --shadow-md: 0 6px 18px rgba(20, 40, 80, 0.08);
+  --shadow-lg: 0 14px 34px rgba(20, 40, 80, 0.10);
+}
+
+/* Reset + container */
+.admin-dashboard * { box-sizing: border-box; }
+.admin-dashboard {
+  width: min(1300px, 94vw);
+  margin: 24px auto 64px;
+  display: grid;
+  gap: 24px;
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+}
+
+/* Utility */
+.mt-2 { margin-top: 8px; }
+
+/* Focus ring (no hover) */
+.admin-dashboard a,
+.admin-dashboard button,
+.admin-dashboard [tabindex],
+.admin-dashboard input {
+  outline: none;
+}
+.admin-dashboard a:focus-visible,
+.admin-dashboard button:focus-visible,
+.admin-dashboard [tabindex]:focus-visible,
+.admin-dashboard input:focus-visible {
+  box-shadow: 0 0 0 3px var(--ring);
+  border-radius: var(--radius-sm);
+}
+
+/* ============ HERO ============ */
+.dashboard-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+}
+.hero-content { display: grid; gap: 6px; }
+.hero-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: clamp(1rem, 2.4vw, 1.25rem); font-weight: 800; color: var(--text);
+  letter-spacing: .2px;
+}
+.hero-icon {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  background: #e8f0f8;
+  color: var(--primary);
+  border: 1px solid var(--outline);
+  border-radius: 10px;
+}
+.hero-subtitle {
+  margin: 0; color: var(--text-muted);
+  font-size: .95rem;
+}
+.plan-info { display: flex; align-items: center; gap: 10px; }
+.plan-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 28px; padding: 0 10px; font-weight: 700;
+  font-size: .8rem; letter-spacing: .3px;
+  border-radius: 999px; border: 1px solid var(--outline);
+  background: #eef4fb; color: var(--primary);
+}
+.plan-badge.free { background: #eef7ff; color: #0b5fad; border-color: #d8e7f6; }
+.upgrade-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 32px; padding: 0 12px;
+  background: var(--primary); color: #fff; font-weight: 700; text-decoration: none;
+  border-radius: 999px; box-shadow: var(--shadow-sm);
+}
+
+/* ============ UPGRADE BANNER ============ */
+.upgrade-banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-left: 5px solid var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px; box-shadow: var(--shadow-sm);
+}
+.upgrade-banner-left { display: flex; align-items: center; gap: 12px; }
+.badge.crown {
+  width: 36px; height: 36px; display: grid; place-items: center;
+  border-radius: 12px; background: #fff5cc; color: #b37400; border: 1px solid #f1e3b0;
+}
+.upgrade-text h3 { margin: 0; font-size: 1rem; font-weight: 800; color: var(--text); }
+.upgrade-text p { margin: 2px 0 0; color: var(--text-muted); }
+.btn-upgrade {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 36px; padding: 0 14px; border: 1px solid var(--outline); border-radius: 10px;
+  background: #0d66b3; color: #fff; font-weight: 700; text-decoration: none;
+}
+
+/* ============ STATS GRID ============ */
+.stats-grid {
+  display: grid; gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.stat-card {
+  display: grid; grid-template-columns: auto 1fr; gap: 14px;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  padding: 16px; box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.stat-icon {
+  width: 48px; height: 48px; display: grid; place-items: center;
+  border-radius: 14px; color: var(--primary);
+  background: #e8f0f8; border: 1px solid var(--outline);
+}
+.stat-icon.primary { color: var(--primary); background: #e8f0f8; }
+.stat-icon.success { color: var(--success-ink); background: #e8f6ee; border-color: #d7eadf; }
+.stat-icon.warning { color: #b87300; background: #fff4e0; border-color: #f3e1c0; }
+.stat-icon.danger  { color: #b4232a; background: #ffeaea; border-color: #f2d2d3; }
+
+.stat-content h3 { margin: 0; font-size: .95rem; color: var(--text-muted); font-weight: 700;}
+.stat-value {
+  font-family: ui-rounded, Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  font-size: clamp(1.2rem, 2.8vw, 1.6rem); font-weight: 900; letter-spacing: .2px; color: var(--text);
+}
+.stat-trend { 
+  margin-top: 2px; 
+  font-size: .85rem; 
+  font-weight: 700; 
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.stat-trend.up { 
+  color: var(--success); 
+  background: rgba(22, 163, 74, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+.stat-trend.down { 
+  color: var(--danger); 
+  background: rgba(239, 68, 68, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+.stat-trend.neutral { 
+  color: var(--text-muted); 
+  background: rgba(107, 114, 128, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+/* Sparklines */
+.stat-card .mt-2 { padding: 0 6px; }
+.sparkline { width: 100%; display: block; }
+
+/* ============ CHART CARDS ============ */
+.charts-grid {
+  display: grid; gap: 18px 18px;
+  grid-template-columns: repeat(12, 1fr);
+}
+.chart-card {
+  grid-column: span 6;
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+@media (max-width: 1200px){ .chart-card { grid-column: 1 / -1; } }
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid var(--outline);
+}
+.card-header h3 { margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1rem; }
+.card-actions { display: flex; align-items: center; gap: 8px; }
+.action-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 36px; min-width: 36px; padding: 0 12px;
+  border: 1px solid var(--outline);
+  background: var(--surface-2);
+  border-radius: 10px; font-weight: 700; color: var(--text);
+}
+.action-button.icon {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+}
+.action-button.primary { background: var(--primary); color: #fff; border-color: #0a5699; }
+.card-body { padding: 12px; }
+/* Unify frame paddings via variable */
+.table-section .section-header,
+.notifications-widget .section-header,
+.quick-actions-section,
+.activity-section .section-header { padding: var(--frame-padding); }
+.table-section .card-body,
+.chart-card .card-body,
+.notifications-widget .card-body,
+.activity-section .activity-feed { padding: var(--frame-padding); }
+
+/* refine card spacing */
+.chart-card .card-body { padding: 14px; }
+
+/* Premium overlay */
+.premium-feature { position: relative; }
+.premium-overlay {
+  position: absolute; inset: 0;
+  background: rgba(255, 255, 255, .72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: grid; place-items: center;
+}
+.premium-message {
+  display: grid; grid-auto-flow: column; align-items: center; gap: 12px;
+  background: #ffffff; color: var(--text);
+  padding: 12px 16px; border-radius: 12px;
+  border: 1px solid var(--outline);
+  box-shadow: var(--shadow-sm);
+}
+.premium-message .lock {
+  width: 36px; height: 36px; display: grid; place-items: center;
+  border-radius: 10px; background: #eef4fb; color: var(--primary);
+  border: 1px solid var(--outline);
+}
+.premium-message .text { display: grid; gap: 2px; }
+.premium-message .text strong { font-weight: 900; }
+.premium-message .text span { color: var(--text-muted); font-weight: 600; font-size: .9rem; }
+.btn-upgrade-cta {
+  text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+  height: 34px; padding: 0 12px; border-radius: 999px;
+  background: var(--primary); color: #fff; font-weight: 800;
+  border: 1px solid #0a5699;
+}
+
+/* ============ TABLE ============ */
+.table-section {
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid var(--outline); gap: 10px; flex-wrap: wrap;
+}
+.section-header h2, .section-header h3 { margin: 0; font-weight: 800; }
+.section-actions { display: flex; align-items: center; gap: 10px; }
+.section-actions { flex-wrap: wrap; }
+
+.search-container {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 180px;
+}
+.search-input {
+  width: 100%; height: 40px;
+  border: 1px solid var(--outline);
+  border-radius: 999px;
+  background: var(--surface-2);
+  padding: 0 12px 0 38px; color: var(--text);
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.search-input::placeholder { color: var(--text-muted); }
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-600);
+  box-shadow: 0 0 0 3px rgba(8, 88, 149, 0.15);
+  background: #fff;
+}
+.search-icon {
+  position: absolute; top: 50%; transform: translateY(-50%); color: var(--text-muted);
+}
+.search-icon.left { left: 12px; }
+
+/* Buttons polish */
+.action-button { transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .06s ease; }
+.action-button:hover { filter: brightness(0.98); box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+.action-button:active { transform: translateY(1px); }
+.action-button.primary { background: var(--primary); color: #fff; border-color: #0a5699; }
+.action-button.primary:hover { background: var(--primary-600); }
+.action-button.icon { border-radius: 10px; }
+
+/* Scrollbar polish (keep inside <style>) */
+.table-container {
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scrollbar-width: thin; /* Firefox */
+}
+.table-container::-webkit-scrollbar { height: 8px; } /* Chrome/Safari/Edge */
+.table-container::-webkit-scrollbar-thumb { background: var(--outline); border-radius: 4px; }
+
+.data-table { width: 100%; min-width: 650px; border-collapse: collapse; }
+.data-table thead th {
+  position: sticky; top: 0; z-index: 2;
+  background: #fbfcff;
+  color: #334155;
+  font-weight: 900;
+  text-align: left;
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--outline);
+  white-space: nowrap;
+}
+.data-table tbody td {
+  padding: 12px 12px; border-bottom: 1px solid var(--outline);
+  color: var(--text);
+}
+.data-table tbody tr:nth-child(2n) td { background: #fcfeff; }
+.data-table tbody tr:focus-within td {
+  outline: none;
+  background: #eef6ff;
+}
+th.sortable { user-select: none; }
+th.sortable[aria-sort="ascending"]  { color: var(--primary); }
+th.sortable[aria-sort="descending"] { color: var(--primary); }
+
+.amount { font-weight: 800; white-space: nowrap; }
+.amount.positive { color: var(--success); }
+.amount.negative { color: var(--danger); }
+
+.category-badge, .status-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 26px; padding: 0 10px;
+  border-radius: 999px; font-weight: 800; letter-spacing: .2px;
+  border: 1px solid var(--outline);
+}
+.category-badge.income { background: #ecfdf5; color: #047857; border-color: #ccefe1; }
+.category-badge.expense { background: #fff1f2; color: #be123c; border-color: #f3c8d1; }
+.status-badge.success { background:#ecfdf5; color:#047857; border-color:#ccefe1; }
+.status-badge.pending { background:#fff7ed; color:#b45309; border-color:#f1d5b2; }
+
+.action-buttons { display: inline-flex; gap: 6px; }
+.icon-button {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; border: 1px solid var(--outline);
+  border-radius: 8px; background: var(--surface-2);
+  color: var(--text);
+}
+
+.pagination {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px; border-top: 1px solid var(--outline);
+}
+.pagination-button {
+  height: 34px; min-width: 34px;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 10px; border-radius: 8px;
+  border: 1px solid var(--outline); background: var(--surface-2);
+  color: var(--text); font-weight: 700;
+}
+.pagination-button[disabled] { opacity: .5; cursor: not-allowed; }
+.pagination-pages { display: inline-flex; gap: 6px; }
+.pagination-pages .pagination-button.active {
+  background: var(--primary); border-color: #0a5699; color: #fff;
+}
+
+/* ============ RESPONSIVE DESIGN SYSTEM ============ */
+/* A comprehensive responsive system for all screen sizes */
+
+/* Base styles for all devices */
+.admin-dashboard {
+  display: grid;
+  gap: 24px;
+  width: 100%;
+  font-size: 16px; /* Base font size */
+  line-height: 1.5;
+}
+
+/* Ensure all images and icons are responsive */
+.admin-dashboard img, .admin-dashboard svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Ensure all cards have proper padding on all devices */
+.admin-dashboard .chart-card, 
+.admin-dashboard .stat-card,
+.admin-dashboard .quick-action-card,
+.admin-dashboard .table-section,
+.admin-dashboard .notification-item {
+  box-sizing: border-box;
+}
+
+/* Ensure tables are responsive */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  max-width: 100vw; /* Prevent horizontal overflow */
+  margin: 0 auto;
+}
+
+.data-table {
+  min-width: 650px; /* Ensures table doesn't shrink too much */
+  width: 100%;
+}
+
+.data-table thead th {
+  white-space: nowrap;
+}
+
+/* Add responsive wrapper for all overflow content */
+.overflow-container {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Large Desktop (1440px and up) */
+@media (min-width: 1440px) {
+  .admin-dashboard { gap: 28px; }
+  .charts-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Desktop (1024px to 1439px) */
+@media (max-width: 1439px) {
+  .admin-dashboard { gap: 24px; }
+  .charts-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Tablet Landscape (960px to 1023px) */
+@media (max-width: 1023px) {
+  .admin-dashboard { gap: 20px; }
+  .charts-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .section-header { padding: 12px 14px; }
+  .section-actions { gap: 8px; }
+  .card-header { padding: 12px 14px; }
+  .chart-card .card-body { padding: calc(var(--frame-padding) + 2px); }
+  .quick-actions-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Tablet Portrait (720px to 959px) */
+@media (max-width: 959px) {
+  .admin-dashboard { gap: 18px; }
+  .charts-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-hero { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .plan-info { align-self: flex-start; }
+  .hero-title { font-size: 1.5rem; }
+  .hero-subtitle { font-size: 0.9rem; }
+  
+  /* Stack section headers and make actions full-width */
+  .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .section-actions { width: 100%; }
+  .section-actions .action-button, .section-actions .search-container { flex: 1 1 auto; }
+  .search-container { min-width: 0; }
+  
+  /* Adjust card headers */
+  .card-header { flex-direction: row; flex-wrap: wrap; }
+  .card-header h3 { font-size: 1rem; }
+}
+
+/* Mobile Large (640px to 719px) */
+@media (max-width: 719px) {
+  .admin-dashboard { gap: 16px; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .quick-actions-grid { grid-template-columns: 1fr; }
+  .data-table-container { overflow-x: auto; }
+  .data-table { min-width: 500px; }
+  
+  /* Adjust buttons and inputs for better touch targets */
+  .action-button, .icon-button, .pagination-button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 12px;
+    touch-action: manipulation;
+  }
+  
+  .search-input { 
+    height: 44px;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  /* Improve touch targets for all interactive elements */
+  button, a, input, select, .card-link {
+    touch-action: manipulation;
+  }
+  
+  /* Add more space between interactive elements */
+  .section-actions, .card-actions {
+    gap: 12px;
+  }
+}
+
+/* Mobile Small (up to 639px) */
+@media (max-width: 639px) {
+  .admin-dashboard { gap: 14px; padding: 10px; }
+  
+  /* Ensure proper text wrapping */
+  .hero-title, .hero-subtitle, .section-header h2, .section-header h3, .card-header h3 {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  /* Card table layout for mobile */
+  .table-container { overflow: visible; }
+  .data-table thead { display: none; }
+  .data-table { border-collapse: separate; border-spacing: 0 10px; min-width: auto; }
+  .data-table tbody tr {
+    display: grid; grid-template-columns: 1fr; gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--outline);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 12px; margin: 0 0 10px;
+  }
+  .data-table tbody td {
+    display: grid; grid-template-columns: 120px 1fr; align-items: center;
+    gap: 10px; padding: 0; border: 0; background: transparent !important;
+  }
+  .data-table tbody td::before{
+    content: attr(data-th);
+    font-weight: 800; color: var(--text-muted);
+  }
+  .data-table tbody td .action-buttons { justify-content: flex-end; }
+  
+  /* Adjust typography for small screens */
+  .stat-value { font-size: 1.25rem; }
+  .stat-trend { font-size: 0.8rem; }
+  .stat-icon { width: 40px; height: 40px; }
+  .hero-icon { width: 32px; height: 32px; }
+  
+  /* Adjust other elements */
+  .upgrade-chip { height: 32px; }
+  .plan-badge { height: 24px; padding: 0 8px; font-size: 0.8rem; }
+  
+  /* Adjust quick action cards */
+  .quick-action-icon { width: 36px; height: 36px; }
+  .quick-action-content h4 { font-size: 0.9rem; }
+  .quick-action-content p { font-size: 0.8rem; }
+  
+  /* Adjust notification items */
+  .notification-item { padding: 10px; }
+  .notification-actions { flex-direction: column; align-items: flex-start; gap: 6px; }
+}
+
+/* ============ QUICK ACTIONS ============ */
+.quick-actions-section {
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+}
+.quick-actions-grid {
+  display: grid; gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.quick-action-card {
+  position: relative;
+  display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center;
+  background: var(--surface-2); border: 1px solid var(--outline);
+  border-radius: var(--radius-lg); padding: 14px;
+}
+.card-link { position: absolute; inset: 0; border-radius: inherit; }
+.quick-action-icon {
+  width: 44px; height: 44px; display: grid; place-items: center;
+  border-radius: 12px; border: 1px solid var(--outline); background: #fff;
+}
+.quick-action-icon.primary { color: var(--primary); background: #eef7ff; border-color: #d6e8f9; }
+.quick-action-icon.success { color: var(--success-ink); background: #e8f6ee; border-color:#d7eadf; }
+.quick-action-icon.warning { color: #b87300; background: #fff4e0; border-color:#f3e1c0; }
+.quick-action-icon.info    { color: #0a6791; background: #e9f6ff; border-color:#cfe8fb; }
+.quick-action-content h3 { margin: 0; font-weight: 800; }
+.quick-action-content p  { margin: 2px 0 0; color: var(--text-muted); }
+
+/* ============ NOTIFICATIONS ============ */
+.notifications-widget {
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.notifications-widget .section-header {
+  padding: 14px 16px; border-bottom: 1px solid var(--outline);
+}
+.notifications-widget .view-all {
+  text-decoration: none; color: var(--primary); font-weight: 800;
+}
+.notifications-list { display: grid; gap: 10px; padding: 12px; }
+.notification-item {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
+  background: var(--surface-2); border: 1px solid var(--outline); border-radius: var(--radius-md);
+  padding: 12px;
+}
+.notification-item.unread { border-left: 5px solid var(--primary); }
+.notification-icon {
+  width: 40px; height: 40px; display: grid; place-items: center;
+  border-radius: 10px; background: #fff; border: 1px solid var(--outline);
+}
+.notification-icon.warning { color:#b87300; background:#fff6e6; border-color:#f1e2c4; }
+.notification-icon.success { color:#0c6b2f; background:#e8f6ee; border-color:#d7eadf; }
+.notification-icon.info    { color:#0a6791; background:#e9f6ff; border-color:#cfe8fb; }
+.notification-icon.resident { color:#0a6791; background:#e9f6ff; border-color:#cfe8fb; }
+.notification-icon.income   { color:#0c6b2f; background:#e8f6ee; border-color:#d7eadf; }
+.notification-icon.expense  { color:#9b1c1c; background:#fee2e2; border-color:#fecaca; }
+
+.notification-content h4 { margin: 0; font-weight: 800; }
+.notification-content p { margin: 2px 0; color: var(--text-muted); }
+.notification-time { font-size: .85rem; color: var(--text-subtle); }
+
+.notification-actions .btn-icon {
+  width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--outline); border-radius: 8px; background: var(--surface);
+}
+
+/* ============ ACTIVITY FEED ============ */
+.activity-section {
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.activity-section .section-header {
+  padding: 14px 16px; border-bottom: 1px solid var(--outline);
+}
+.view-all-link { text-decoration: none; font-weight: 800; color: var(--primary); }
+.activity-feed { display: grid; gap: 10px; padding: 12px; }
+.activity-item {
+  display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center;
+  background: var(--surface-2); border: 1px solid var(--outline);
+  border-radius: var(--radius-md); padding: 12px;
+}
+.activity-icon {
+  width: 40px; height: 40px; display: grid; place-items: center;
+  border-radius: 10px; background: #eef4fb; color: var(--primary); border: 1px solid var(--outline);
+}
+.activity-text { margin: 0; font-weight: 700; }
+.activity-time { margin: 2px 0 0; color: var(--text-muted); }
+
+/* ============ ANIMATIONS (No hover, No gradient) ============ */
+.pre-animation { opacity: 0; transform: translateY(8px); }
+.animate-in { animation: fadeUp .5s cubic-bezier(.2,.7,.2,1) forwards; }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+.pressable:active { transform: scale(.98); }
+
+/* Tooltips removed */
+
+/* Responsive Design System - Enhanced for all screen sizes */
+
+/* Large Desktop (1200px+) */
+@media (min-width: 1201px) {
+  .admin-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .charts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Desktop (960px - 1200px) */
+@media (max-width: 1200px) {
+  .admin-dashboard {
+    max-width: 100%;
+    padding: 0 16px;
+  }
+  .charts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}
+
+/* Tablet Landscape (768px - 960px) */
+@media (max-width: 960px) {
+  .admin-dashboard {
+    padding: 0 12px;
+    gap: 20px;
+  }
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .section-header { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 10px; 
+  }
+  .section-actions { 
+    width: 100%; 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 8px; 
+  }
+  .section-actions .search-container { 
+    grid-column: 1 / -1; 
+  }
+  .card-header { 
+    flex-wrap: wrap; 
+    gap: 8px; 
+  }
+  .quick-actions-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+}
+
+/* Tablet Portrait (640px - 768px) */
+@media (max-width: 768px) {
+  .admin-dashboard {
+    width: 100%;
+    padding: 0 10px;
+    gap: 18px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  .dashboard-hero { 
+    flex-direction: column; 
+    gap: 10px; 
+    align-items: flex-start; 
+    padding: 16px;
+  }
+  .plan-info { 
+    width: 100%; 
+    justify-content: space-between; 
+  }
+  .hero-title {
+    font-size: 1.1rem;
+  }
+  .hero-subtitle {
+    font-size: 0.9rem;
+  }
+  .data-table {
+    overflow-x: auto;
+  }
+  .data-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Mobile Large (480px - 640px) */
+@media (max-width: 640px) {
+  .admin-dashboard { 
+    width: 100%; 
+    gap: 16px; 
+    padding: 0 8px;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .search-input { 
+    height: 40px; 
+  }
+  .data-table thead th, .data-table tbody td { 
+    padding: 10px 8px; 
+    font-size: 0.85rem;
+  }
+  .pagination { 
+    flex-wrap: wrap; 
+    justify-content: center;
+    gap: 6px;
+  }
+  .notification-item { 
+    grid-template-columns: auto 1fr; 
+  }
+  .notification-actions { 
+    justify-self: end; 
+  }
+  .action-button, .icon-button, .pagination-button { 
+    height: 40px; 
+    min-width: 40px; 
+  }
+  .card-header h3 {
+    font-size: 1rem;
+  }
+  .stat-card {
+    padding: 14px;
+  }
+  .stat-content h3 {
+    font-size: 0.9rem;
+  }
+  .stat-value {
+    font-size: 1.2rem;
+  }
+  .stat-trend {
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile Small (320px - 480px) */
+@media (max-width: 480px) {
+  .admin-dashboard {
+    width: 100%;
+    padding: 0 6px;
+    gap: 14px;
+  }
+  .section-actions { 
+    grid-template-columns: 1fr; 
+  }
+  .action-button, .pagination-button { 
+    width: 100%; 
+  }
+  .data-table thead th, .data-table tbody td { 
+    font-size: 0.8rem; 
+    padding: 8px 6px;
+  }
+  .card-header {
+    padding: 12px 10px;
+  }
+  .card-body {
+    padding: 10px 8px;
+  }
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+  .hero-icon {
+    width: 30px;
+    height: 30px;
+  }
+  .upgrade-chip {
+    height: 28px;
+    padding: 0 8px;
+    font-size: 0.8rem;
+  }
+  .plan-badge {
+    height: 24px;
+    padding: 0 8px;
+    font-size: 0.75rem;
+  }
+  .quick-action-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .quick-action-content h3 {
+    font-size: 0.9rem;
+  }
+  .quick-action-content p {
+    font-size: 0.8rem;
+  }
+}
+
+/* Motion accessibility */
+@media (prefers-reduced-motion: reduce){
+  .animate-in { animation: none !important; }
+  .pre-animation { opacity: 1 !important; transform: none !important; }
+}
+</style>
+
+<script>
+/* ========== INTERACTIONS (No hover/gradient) — TS-safe ========== */
+(() => {
+  const root = document.querySelector('.admin-dashboard') as HTMLElement | null;
+  if (!root) return;
+
+  // Intersection Observer: animate elements with .pre-animation
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) {
+        (en.target as HTMLElement).classList.add('animate-in');
+        io.unobserve(en.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  (root.querySelectorAll('.pre-animation') as NodeListOf<HTMLElement>).forEach((el) => io.observe(el));
+
+  // Counter animation for .stat-value
+  const counters = (root.querySelectorAll('.stat-value[data-target]') as NodeListOf<HTMLElement>);
+  const nfCache = new Map<string, Intl.NumberFormat>();
+
+  function getFormatter(opts: Intl.NumberFormatOptions): Intl.NumberFormat {
+    const key = JSON.stringify(opts || {});
+    let fmt = nfCache.get(key);
+    if (!fmt) {
+      fmt = new Intl.NumberFormat('id-ID', opts);
+      nfCache.set(key, fmt);
+    }
+    return fmt;
+  }
+
+  function animateCounter(el: HTMLElement) {
+    const target = Number(el.dataset.target || 0);
+    const format = (el.dataset.format || 'number');
+    let opts = {};
+    try {
+      const raw = el.dataset.formatOptions || '{}';
+      opts = JSON.parse(raw);
+    } catch { /* ignore */ }
+    const formatter = (format === 'currency')
+      ? getFormatter({ ...opts, style: 'currency' })
+      : getFormatter(opts);
+
+    const duration = 900;
+    const start = performance.now();
+    function tick(now: number) {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p; // ease in-out quad
+      const val = Math.floor(eased * target);
+      el.textContent = formatter.format(val);
+      if (p < 1) requestAnimationFrame(tick);
+      else el.textContent = formatter.format(target);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // animate when in view
+  const co = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) {
+        animateCounter(en.target as HTMLElement);
+        co.unobserve(en.target);
+      }
+    });
+  }, { threshold: 0.6 });
+  counters.forEach((el) => co.observe(el));
+
+  // Draw minimal sparklines (flat line/area)
+  function drawSparkline(canvas: HTMLCanvasElement) {
+    const str = canvas.dataset.values || '';
+    const values = str.split(',')
+      .map((v: string) => Number((v || '').trim()))
+      .filter((v: number) => !Number.isNaN(v));
+    if (!values.length) return;
+
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const styleWidth = canvas.clientWidth || 140;
+    const styleHeightAttr = canvas.getAttribute('height');
+    const styleHeight = styleHeightAttr ? parseInt(styleHeightAttr, 10) : 30;
+
+    canvas.width = Math.floor(styleWidth * dpr);
+    canvas.height = Math.floor(styleHeight * dpr);
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const w = styleWidth;
+    const h = styleHeight;
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const pad = 2;
+    const range = Math.max(1, max - min);
+    const stepX = values.length > 1 ? (w - pad * 2) / (values.length - 1) : 0;
+
+    const points = values.map((v: number, i: number) => {
+      const x = pad + i * stepX;
+      const y = h - pad - ((v - min) / range) * (h - pad * 2);
+      return [x, y] as [number, number];
+    });
+
+    // Area fill
+    ctx.beginPath();
+    ctx.moveTo(points[0][0], h - pad);
+    points.forEach(([x, y]: [number, number]) => ctx.lineTo(x, y));
+    ctx.lineTo(points[points.length - 1][0], h - pad);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(8, 88, 149, 0.10)';
+    ctx.fill();
+
+    // Stroke line
+    ctx.beginPath();
+    points.forEach(([x, y]: [number, number], idx: number) => {
+      if (idx === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#085895';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  }
+
+  (root.querySelectorAll('canvas.sparkline') as NodeListOf<HTMLCanvasElement>).forEach((c) => drawSparkline(c));
+  window.addEventListener('resize', () => {
+    (root.querySelectorAll('canvas.sparkline') as NodeListOf<HTMLCanvasElement>).forEach((c) => drawSparkline(c));
+  });
+
+  // Tooltips removed
+
+  // Table: sorting, search, pagination (client-side)
+  const container = root.querySelector('.table-container.paginated') as HTMLElement | null;
+  if (container) {
+    const table = container.querySelector('table.data-table') as HTMLTableElement | null;
+    const tbody = table?.querySelector('tbody') as HTMLTableSectionElement | null;
+    const rowsOriginal = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
+    const searchInput = root.querySelector('.search-input') as HTMLInputElement | null;
+    const pagination = container.querySelector('.pagination') as HTMLElement | null;
+    const pagesWrap = pagination?.querySelector('.pagination-pages') as HTMLElement | null;
+    const prevBtn = pagination?.querySelector('.pagination-button:first-child') as HTMLButtonElement | null;
+    const nextBtn = pagination?.querySelector('.pagination-button:last-child') as HTMLButtonElement | null;
+    const rowsPerPageAttr = container.getAttribute('data-rows-per-page');
+    const rowsPerPage = rowsPerPageAttr ? parseInt(rowsPerPageAttr, 10) : 5;
+
+    let filtered = rowsOriginal.slice();
+    let currentPage = 1;
+    let currentSortIdx = -1;
+    let currentSortDir: 'asc' | 'desc' | 'none' = 'none';
+
+    function parseAmount(text: string): number {
+      return Number(text.replace(/[^\d-]+/g, '')) || 0;
+    }
+    function parseDateID(text: string): number {
+      try {
+        const [d, mon, y] = text.split(' ');
+        const idx = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'].indexOf(mon);
+        const month = idx !== -1 ? idx : new Date(Date.parse(`${mon} 1, 2020`)).getMonth();
+        return new Date(Number(y), month, Number(d)).getTime();
+      } catch { return 0; }
+    }
+    function updateHeadSort(th: HTMLTableCellElement | null, dir: 'asc' | 'desc' | 'none') {
+      table?.querySelectorAll('th.sortable').forEach((h) => h.setAttribute('aria-sort','none'));
+      if (th) th.setAttribute('aria-sort', dir === 'asc' ? 'ascending' : dir === 'desc' ? 'descending' : 'none');
+    }
+    function rebuildPagination() {
+      if (!pagesWrap) return;
+      const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
+      pagesWrap.innerHTML = '';
+      for (let i = 1; i <= totalPages; i++) {
+        const b = document.createElement('button');
+        b.className = 'pagination-button' + (i === currentPage ? ' active' : '');
+        b.textContent = String(i);
+        b.setAttribute('aria-label', 'Halaman ' + i);
+        b.addEventListener('click', () => { currentPage = i; render(); });
+        pagesWrap.appendChild(b);
+      }
+      if (prevBtn) prevBtn.disabled = currentPage === 1;
+      if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+    }
+    function render() {
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      const start = (currentPage - 1) * rowsPerPage;
+      const slice = filtered.slice(start, start + rowsPerPage);
+      slice.forEach((tr) => tbody.appendChild(tr));
+      rebuildPagination();
+    }
+    function applySearch() {
+      const q = (searchInput?.value || '').toLowerCase().trim();
+      filtered = rowsOriginal.filter((tr) => (tr.textContent || '').toLowerCase().includes(q));
+      currentPage = 1;
+      render();
+    }
+    function sortBy(colIdx: number, type: 'text' | 'amount' | 'date') {
+      if (currentSortIdx === colIdx) {
+        currentSortDir = currentSortDir === 'asc' ? 'desc' : currentSortDir === 'desc' ? 'none' : 'asc';
+      } else {
+        currentSortIdx = colIdx;
+        currentSortDir = 'asc';
+      }
+      const th = table?.querySelectorAll('thead th')[colIdx] as HTMLTableCellElement | undefined;
+      updateHeadSort(th ?? null, currentSortDir);
+
+      if (currentSortDir === 'none') {
+        filtered = rowsOriginal.filter((tr) => filtered.includes(tr));
+        applySearch();
+        return;
+      }
+      const multiplier = currentSortDir === 'asc' ? 1 : -1;
+      filtered.sort((a, b) => {
+        const A = (a.children[colIdx]).textContent?.trim() || '';
+        const B = (b.children[colIdx]).textContent?.trim() || '';
+        if (type === 'amount') return (parseAmount(A) - parseAmount(B)) * multiplier;
+        if (type === 'date') return (parseDateID(A) - parseDateID(B)) * multiplier;
+        return A.localeCompare(B, 'id') * multiplier;
+      });
+      currentPage = 1;
+      render();
+    }
+
+    // Bind sort
+    (table?.querySelectorAll('thead th.sortable') as NodeListOf<HTMLTableCellElement>).forEach((thEl) => {
+      const th = thEl;
+      th.setAttribute('aria-sort','none');
+      th.addEventListener('click', () => {
+        const type = (th.getAttribute('data-type') || 'text');
+        const colIdx = Array.prototype.indexOf.call(th.parentElement?.children, th);
+        sortBy(colIdx, type as 'text' | 'amount' | 'date');
+      });
+      th.tabIndex = 0;
+      th.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); (th as HTMLElement).click(); }
+      });
+    });
+
+    // Bind search
+    if (searchInput) {
+      searchInput.addEventListener('input', () => { applySearch(); });
+    }
+
+    // Pagination buttons
+    if (prevBtn) prevBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; render(); } });
+    if (nextBtn) nextBtn.addEventListener('click', () => {
+      const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
+      if (currentPage < totalPages) { currentPage++; render(); }
+    });
+
+    applySearch();
+  }
+
+  // Notifications: mark as read
+  root.addEventListener('click', (e: MouseEvent) => {
+    const target = e.target as HTMLElement | null;
+    const btn = target?.closest('.notification-item .btn-icon');
+    if (!btn) return;
+    const item = btn.closest('.notification-item');
+    if (item) item.classList.remove('unread');
+  });
+
+  // Make buttons "pressable" (no hover)
+  (root.querySelectorAll('button, .upgrade-chip, .btn-upgrade, .icon-button, .action-button, .pagination-button, .card-link') as NodeListOf<HTMLElement>).forEach((el) => {
+    el.classList.add('pressable');
+  });
+})();
+
+// Demo mode - show dashboard content directly without authentication
+(function showDemoContent() {
+  const authCheckEl = document.getElementById('auth-check');
+  const unauthorizedEl = document.getElementById('unauthorized-access');
+  const dashboardContent = document.getElementById('dashboard-content');
+  
+  // Hide loading and unauthorized messages
+  if (authCheckEl) authCheckEl.style.display = 'none';
+  if (unauthorizedEl) unauthorizedEl.style.display = 'none';
+  
+  // Show dashboard content immediately for demo
+  if (dashboardContent) dashboardContent.style.display = 'block';
+})();
+</script>

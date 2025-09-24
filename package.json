@@ -1,0 +1,28 @@
+{
+  "name": "komplekkita",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@studio-freight/lenis": "^1.0.19",
+    "@supabase/supabase-js": "^2.57.4",
+    "aos": "^2.3.1",
+    "astro": "5.13.9",
+    "composer": "^4.1.0",
+    "fdir": "^6.5.0",
+    "gsap": "^3.12.2",
+    "lottie-web": "^5.12.2",
+    "php": "^1.1.0",
+    "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "vite": "5.4.10",
+    "rollup": "4.47.1"
+  }
+}

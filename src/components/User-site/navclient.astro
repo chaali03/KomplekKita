@@ -1,0 +1,774 @@
+---
+const nama = "Anggrek Asri";
+const complexName = 'Komplek Anggrek Asri';
+// Match profile photo with Komplek Anggrek Asri image used in src/pages/komplek.astro
+const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=100&h=100&fit=crop&crop=center';
+---
+
+<header class="main-header" data-aos="fade-down" data-aos-duration="800">
+  <div class="header-content container">
+    <a href="/user" class="logo" aria-label="KomplekKita">
+      <span class="brand-icon"><i class="fas fa-building" aria-hidden="true"></i></span>
+      <span class="brand-text">KomplekKita</span>
+      <span class="brand-glow" aria-hidden="true"></span>
+    </a>
+    <div class="right-actions">
+      <a href="/userinfo" class="user-mini" aria-label="Profil Komplek">
+        <img src={avatarUrl} alt="Foto Profil" />
+        <div class="info">
+          <span class="name">{complexName}</span>
+          <span class="role">Profil Komplek</span>
+        </div>
+      </a>
+      <a href="/login" class="admin-login" aria-label="Login Admin">
+        <i class="fas fa-user-shield" aria-hidden="true"></i>
+        <span>Login Admin</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<section class="hero-section">
+  <div class="container">
+    <div class="selamat-datang" data-aos="fade-up" data-aos-delay="200">
+      <h1 class="welcome-text">Selamat Datang</h1>
+      <h1 class="komplek-text">
+        Di Komplek <span class="highlight">{nama}</span>
+      </h1>
+      <p class="welcome-subtitle">Sistem informasi terpadu untuk warga komplek</p>
+    </div>
+
+    <nav class="parent-nav" data-aos="fade-up" data-aos-delay="400">
+      <a href="/komplek" class="back-button" aria-label="Kembali ke Halaman Utama">
+        <i class="fas fa-arrow-left"></i>
+        <span>Kembali</span>
+      </a>
+      <button class="burgir" aria-label="Toggle nav" aria-controls="mobile-links">
+        <span class="line"></span>
+        <span class="line"></span>
+        <span class="line"></span>
+      </button>
+
+      <ul class="links" id="mobile-links" role="menu">
+        <li role="none"><a href="/userlaporan" class="nav-link" role="menuitem"><i class="fas fa-chart-bar"></i> Laporan</a></li>
+        <li role="none"><a href="/userinfo" class="nav-link" role="menuitem"><i class="fas fa-info-circle"></i> Informasi</a></li>
+        <li role="none"><a href="/login" class="nav-link" role="menuitem"><i class="fas fa-user-shield"></i> Login Admin</a></li>
+      </ul>
+    </nav>
+
+    <div class="divider" data-aos="fade-up" data-aos-delay="600"></div>
+  </div>
+</section>
+
+<style>
+  /* Hero Section */
+  .hero-section {
+    padding: 2rem 0;
+    background-color: #f8f9fa;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Ripple effect for buttons and links */
+  .ripple-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+    background-color: rgba(8, 88, 149, 0.3);
+    z-index: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+
+  @keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(5);
+        opacity: 0;
+    }
+  }
+  
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(8, 88, 149, 0.1) 0%, rgba(0, 180, 216, 0.05) 100%);
+    border-radius: 0 0 0 100%;
+    z-index: 0;
+  }
+
+  /* Header Styles */
+  .main-header {
+    padding: 1rem 0;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: all 0.3s ease;
+  }
+  
+  .main-header.scrolled {
+    padding: 0.6rem 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Container helper for consistent page width */
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .right-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px; /* keep items close on desktop */
+  }
+
+  /* Brand logo (match admin-sidebar style, scoped to header) */
+  .main-header .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+  }
+  .main-header .logo .brand-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #3B82F6, #1E40AF);
+    color: #ffffff;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 10px rgba(59,130,246,0.3);
+    transition: all 0.3s ease;
+  }
+  .main-header .logo .brand-text {
+    font-size: 1.4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #1F2937, #3B82F6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 15px rgba(59,130,246,0.3);
+    line-height: 1;
+  }
+  .main-header .logo .brand-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(59,130,246,0.3) 0%, transparent 70%);
+    filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+  }
+  .main-header .logo:hover .brand-icon {
+    transform: rotate(-10deg) scale(1.06);
+    background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+    box-shadow: 0 5px 15px rgba(59,130,246,0.5);
+  }
+  .main-header .logo:hover .brand-text {
+    background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .main-header .logo:hover .brand-glow { opacity: 1; }
+
+  /* Admin login button */
+  .admin-login {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: #0f172a;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+    border: 1px solid #0b1220;
+    box-shadow: 0 6px 16px rgba(15,23,42,0.25);
+    transition: transform .15s ease, box-shadow .15s ease, background .2s ease;
+  }
+  .admin-login:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(15,23,42,0.35); background: #111827; }
+  .admin-login i { font-size: 0.95rem; }
+
+  /* Mini profile (match admin-topbar style) */
+  .user-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px 6px 6px;
+    border-radius: 14px;
+    border: 1px solid #e6eef7;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    color: #111827;
+    text-decoration: none;
+    transition: background .16s ease, border-color .16s ease, box-shadow .2s ease, transform .12s ease;
+    box-shadow: 0 6px 16px rgba(12, 31, 60, 0.06);
+  }
+  .user-mini:hover { background: #f9fafb; border-color: #d1d5db; transform: translateY(-1px); box-shadow: 0 10px 24px rgba(12, 31, 60, 0.10); }
+  .user-mini img { width: 38px; height: 38px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,.06); object-fit: cover; }
+  .user-mini .info { display: grid; line-height: 1.15; }
+  .user-mini .info .name { font-weight: 900; font-size: 14px; letter-spacing: .1px; }
+  .user-mini .info .role { font-size: 11.5px; color: #6b7280; }
+
+  /* Welcome Section */
+  .selamat-datang {
+    text-align: left;
+    margin: 3rem 0;
+    position: relative;
+  }
+
+  .welcome-text {
+    color: #085895;
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #085895, #00b4d8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .komplek-text {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin: 0.5rem 0 1rem;
+    color: #333;
+  }
+  
+  .highlight {
+    color: #FFB61D;
+    position: relative;
+  }
+  
+  .highlight::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #FFB61D;
+    border-radius: 2px;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-top: 1rem;
+    max-width: 80%;
+  }
+
+  /* Navigation */
+  .parent-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
+    position: relative;
+    z-index: 5;
+  }
+  
+  .links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    background-color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  }
+
+  .nav-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    border-radius: 50px;
+    overflow: hidden;
+  }
+  
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #085895;
+    transition: width 0.3s ease;
+  }
+  
+  .nav-link:hover {
+    color: #085895;
+  }
+  
+  .nav-link:hover::after {
+    width: 100%;
+  }
+
+  .back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    margin-right: auto;
+  }
+  
+  .back-button:hover {
+    background-color: #f0f2f5;
+    transform: translateX(-4px);
+  }
+  
+  .back-button i {
+    font-size: 1rem;
+  }
+
+  /* Burger Menu */
+  .burgir {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 2rem;
+    height: 2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+    margin-left: 12px;
+  }
+  
+
+  .burgir:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .burgir .line {
+    width: 100%;
+    height: 0.2rem;
+    background: #085895;
+    border-radius: 10px;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    transform-origin: center;
+  }
+  
+  .burgir:hover .line {
+    background: #064a77;
+    transform: scaleX(0.9);
+  }
+  
+  .burgir.is-active .line:nth-child(1) {
+    transform: rotate(45deg) translate(0.3rem, 0.5rem) scaleX(1.1);
+    width: 110%;
+  }
+  
+  .burgir.is-active .line:nth-child(2) {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.5);
+  }
+  
+  .burgir.is-active .line:nth-child(3) {
+    transform: rotate(-45deg) translate(0.3rem, -0.5rem) scaleX(1.1);
+    width: 110%;
+  }
+  
+  /* Divider */
+  .divider {
+    border-bottom: 3px solid #085895;
+    margin: 2rem auto 5rem;
+    max-width: 80%;
+    position: relative;
+    border-radius: 2px;
+  }
+  
+  .divider::before {
+    content: '';
+    position: absolute;
+    width: 30%;
+    height: 3px;
+    background-color: #FFB61D;
+    left: 0;
+    top: 0;
+    border-radius: 2px;
+  }
+
+  body.no-scroll {
+    overflow: hidden;
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 992px) {
+    .welcome-text {
+      font-size: 3rem;
+    }
+    
+    .komplek-text {
+      font-size: 2rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .header-content { gap: 8px; grid-template-columns: 1fr auto; }
+    .user-mini { justify-self: start; }
+    /* Ensure the mobile menu overlay is not hidden by ancestor stacking contexts */
+    .parent-nav { z-index: 2000; }
+    .main-header .logo .brand-text { font-size: 1.25rem; }
+    .user-mini .info .name { font-size: 12px; }
+    .user-mini .info .role { display: none; }
+    /* Show compact admin-login icon on mobile */
+    .admin-login { 
+      display: inline-flex !important;
+      padding: 6px 8px;
+      border-radius: 10px;
+      font-weight: 900;
+      gap: 6px;
+    }
+    .admin-login span { display: none; }
+    .admin-login i { font-size: 1rem; }
+    .hero-section::before {
+      width: 100%;
+      height: 40%;
+      border-radius: 0 0 50% 50%;
+    }
+    
+    .welcome-text {
+      font-size: 2.5rem;
+    }
+    
+    .komplek-text {
+      font-size: 1.8rem;
+    }
+    
+    .welcome-subtitle {
+      max-width: 100%;
+    }
+
+    .parent-nav {
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    
+    .burgir {
+      display: flex;
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 9999;
+      margin: 0;
+      transform: scale(1);
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    
+    .burgir:active {
+      transform: scale(0.9);
+      background-color: rgba(240, 240, 240, 0.95);
+    }
+
+    .links {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100vh;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 3000; /* above everything relevant */
+      padding: 3.25rem 1rem 1.5rem; /* bring items closer to top */
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 0.8rem;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(100%);
+      transition: opacity .35s ease, visibility .35s ease, transform .35s ease;
+      overflow-y: auto;
+    }
+    
+    .links.is-active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+    
+    .nav-link {
+      font-size: 1.25rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .4s ease, transform .4s ease, color .2s ease;
+      will-change: opacity, transform;
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .75rem 1rem;
+      border-radius: 10px;
+      color: #0f172a; /* slate-900 */
+      background: rgba(255,255,255,0.6);
+    }
+    
+    .links.is-active .nav-link {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .links.is-active .nav-link:nth-child(1) { transition-delay: 0.12s; }
+    .links.is-active .nav-link:nth-child(2) { transition-delay: 0.18s; }
+    .links.is-active .nav-link:nth-child(3) { transition-delay: 0.24s; }
+    .links.is-active .nav-link:nth-child(4) { transition-delay: 0.30s; }
+    
+    .links.is-active .nav-link:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.9);
+    }
+  }
+
+  @media (max-width: 480px) {
+    /* Keep compact admin-login icon visible on very small screens */
+    .admin-login { display: inline-flex !important; }
+    .welcome-text {
+      font-size: 2rem;
+    }
+    
+    .komplek-text {
+      font-size: 1.5rem;
+    }
+    .user-mini { padding: 4px; }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    /** @type {HTMLElement|null} */
+    const burgerMenu = document.querySelector('.burgir');
+    /** @type {HTMLElement|null} */
+    const navLinks = /** @type {HTMLElement|null} */(document.querySelector('.links'));
+    const body = document.body;
+    /** @type {NodeListOf<HTMLAnchorElement>} */
+    const navItems = /** @type {NodeListOf<HTMLAnchorElement>} */(document.querySelectorAll('.nav-link'));
+
+    // Add animation delay to nav items for initial page load
+    navItems.forEach((item, index) => {
+      item.setAttribute('data-aos', 'fade-down');
+      item.setAttribute('data-aos-delay', `${(index + 1) * 100}`);
+    });
+
+    // Enhanced ripple effect for nav links
+    /** @param {MouseEvent} event */
+    function createRipple(event) {
+      const button = /** @type {HTMLElement} */(event.currentTarget);
+      const ripple = document.createElement('span');
+      const rect = button.getBoundingClientRect();
+      
+      const diameter = Math.max(rect.width, rect.height) * 2; // Larger ripple for better coverage
+      const radius = diameter / 2;
+      
+      ripple.style.width = ripple.style.height = `${diameter}px`;
+      ripple.style.left = `${event.clientX - rect.left - radius}px`;
+      ripple.style.top = `${event.clientY - rect.top - radius}px`;
+      ripple.classList.add('ripple');
+      
+      const rippleContainer = button.querySelector('.ripple-container');
+      if (!rippleContainer) {
+        const container = document.createElement('div');
+        container.classList.add('ripple-container');
+        button.appendChild(container);
+        container.appendChild(ripple);
+      } else {
+        // Remove existing ripples before adding new one for cleaner effect
+        /** @type {NodeListOf<HTMLElement>} */
+        const existingRipples = rippleContainer.querySelectorAll('.ripple');
+        if (existingRipples.length > 0) {
+          existingRipples.forEach((r)=> r.remove());
+        }
+        rippleContainer.appendChild(ripple);
+      }
+      
+      setTimeout(() => {
+        ripple.remove();
+      }, 800);
+    }
+
+    // Add ripple effect to all nav links
+    navItems.forEach(item => {
+      item.addEventListener('click', createRipple);
+    });
+
+    if (burgerMenu && navLinks) {
+      // Accessibility
+      burgerMenu.setAttribute('aria-expanded', 'false');
+      navLinks.setAttribute('aria-hidden', 'true');
+      burgerMenu.addEventListener('click', () => {
+        const active = navLinks.classList.toggle('is-active');
+        burgerMenu.classList.toggle('is-active', active);
+        body.classList.toggle('no-scroll', active);
+        burgerMenu.setAttribute('aria-expanded', active ? 'true' : 'false');
+        navLinks.setAttribute('aria-hidden', active ? 'false' : 'true');
+        // Safety: force visibility via inline styles in case authored CSS is overridden
+        if (active) {
+          (navLinks).style.opacity = '1';
+          (navLinks).style.visibility = 'visible';
+          (navLinks).style.transform = 'translateY(0)';
+        } else {
+          (navLinks).style.opacity = '';
+          (navLinks).style.visibility = '';
+          (navLinks).style.transform = '';
+        }
+        // Reset and re-trigger animations when menu opens
+        if (active) {
+          setTimeout(() => {
+            try { if (typeof AOS !== 'undefined') AOS.refresh(); } catch(_){ }
+          }, 150);
+        }
+      });
+      // Close on Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navLinks.classList.contains('is-active')) {
+          navLinks.classList.remove('is-active');
+          burgerMenu.classList.remove('is-active');
+          body.classList.remove('no-scroll');
+          burgerMenu.setAttribute('aria-expanded', 'false');
+          navLinks.setAttribute('aria-hidden', 'true');
+        }
+      });
+    }
+    
+    // Close mobile menu when clicking on a link and navigate reliably
+    navItems.forEach(item => {
+      item.addEventListener('click', (ev) => {
+        try {
+          const href = (/** @type {HTMLAnchorElement} */(ev.currentTarget)).getAttribute('href') || '';
+          if (href) {
+            ev.preventDefault();
+            // Navigate programmatically to ensure overlay doesn't block routing
+            window.location.href = href;
+          }
+        } catch(_) {}
+        if (window.innerWidth <= 768 && navLinks && navLinks.classList.contains('is-active')) {
+          // Add a small delay before closing the menu for better UX
+          setTimeout(() => {
+            if (navLinks) navLinks.classList.remove('is-active');
+            if (burgerMenu) burgerMenu.classList.remove('is-active');
+            body.classList.remove('no-scroll');
+            burgerMenu?.setAttribute('aria-expanded', 'false');
+            navLinks?.setAttribute('aria-hidden', 'true');
+          }, 120);
+        }
+      });
+    });
+    
+    // Add scroll effect to header with smooth transition and debounce
+    const header = document.querySelector('.main-header');
+    let lastScrollTop = 0;
+    /** @type {number|undefined} */
+    let scrollTimer;
+    const scrollThreshold = 30; // Lower threshold for faster response
+    
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      
+      // Clear the previous timer for better performance
+      if (scrollTimer !== undefined) clearTimeout(scrollTimer);
+      
+      // Set a new timer with debounce
+      scrollTimer = window.setTimeout(() => {
+        if (header) {
+          if (scrollTop > scrollThreshold) {
+            header.classList.add('scrolled');
+          } else {
+            header.classList.remove('scrolled');
+          }
+        }
+      }, 30); // Faster response time
+      
+      lastScrollTop = scrollTop;
+    });
+    
+    // Enhanced touch swipe to close menu with better sensitivity
+    let touchStartX = 0;
+    let touchStartY = 0; // Track vertical movement too
+    let touchEndY = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true }); // Use passive for better performance
+    
+    document.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
+      handleSwipe();
+    }, { passive: true });
+    
+    function handleSwipe() {
+      const horizontalDistance = touchStartX - touchEndX;
+      const verticalDistance = Math.abs(touchStartY - touchEndY);
+      
+      // Only trigger if horizontal swipe is significant and not a diagonal swipe
+      if (navLinks && navLinks.classList.contains('is-active') && 
+          horizontalDistance > 40 && 
+          verticalDistance < horizontalDistance) {
+        if (navLinks) navLinks.classList.remove('is-active');
+        if (burgerMenu) burgerMenu.classList.remove('is-active');
+        body.classList.remove('no-scroll');
+      }
+    }
+  });
+</script>

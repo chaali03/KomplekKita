@@ -1,0 +1,325 @@
+---
+import Layout from "~/layouts/admin-layout.astro";
+import AdminSidebar from "../../components/Admin-site/admin-sidebar.astro";
+import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
+// Complex branding to show in admin UI
+const complexName = 'Komplek Anggrek Asri';
+const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=100&h=100&fit=crop&crop=center';
+---
+
+<Layout>
+  <AdminSidebar slot="sidebar" complexName={complexName} complexImage={complexImage} />
+  <AdminTopbar slot="topbar" complexName={complexName} complexImage={complexImage} />
+
+  <section class="header-card">
+    <div class="header-left">
+      <div class="icon"><i class="fas fa-bell"></i></div>
+      <div>
+        <h1>Notifikasi</h1>
+        <p>Kelola preferensi notifikasi dan lihat riwayat aktivitas terbaru.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="notifications-widget">
+    <div class="section-header">
+      <h2><i class="fas fa-bell"></i> Notifikasi</h2>
+      <div class="header-actions">
+        <button class="btn ghost" id="mark-all" title="Tandai semua sebagai dibaca" aria-live="polite">
+          <span class="label">Tandai semua dibaca</span>
+          <span class="badge" id="unread-badge">0</span>
+        </button>
+        <button class="btn danger" id="clear-all" title="Hapus semua notifikasi">
+          <i class="fas fa-trash" aria-hidden="true"></i>
+          <span class="label">Bersihkan</span>
+        </button>
+      </div>
+    </div>
+    <div class="notifications-list" id="notif-list"></div>
+  </section>
+
+  <style>
+    :root { --gap: 16px; }
+    .header-card { background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:14px 16px; box-shadow:0 8px 24px rgba(2,6,23,0.06); margin-bottom:16px; }
+    .header-left { display:flex; align-items:center; gap:12px; }
+    .header-left h1 { margin:0; font-size:1.4rem; font-weight:800; }
+    .header-left p { margin:2px 0 0; color:#64748b; font-weight:600; }
+    .icon { width:44px; height:44px; display:grid; place-items:center; border-radius:12px; background:#fff7ed; color:#ea580c; border:1px solid #fed7aa; }
+
+    /* Notifications styles mirrored from dashboard */
+    .notifications-widget {
+      background: var(--surface); border: 1px solid var(--outline);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
+    }
+    .notifications-widget .section-header {
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding: 14px 16px; border-bottom: 1px solid var(--outline);
+    }
+    .notifications-widget .section-header h2 { margin:0; font-weight:800; }
+    .header-actions { display:flex; gap:10px; }
+    .notifications-list { display: grid; gap: 10px; padding: 12px; }
+    .notification-item {
+      display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
+      background: var(--surface-2); border: 1px solid var(--outline); border-radius: var(--radius-md);
+      padding: 12px;
+    }
+    .notification-item.unread { border-left: 5px solid var(--primary); }
+    .notification-icon {
+      width: 40px; height: 40px; display: grid; place-items: center;
+      border-radius: 10px; background: #fff; border: 1px solid var(--outline);
+    }
+    .notification-icon.warning { color:#b87300; background:#fff6e6; border-color:#f1e2c4; }
+    .notification-icon.success { color:#0c6b2f; background:#e8f6ee; border-color:#d7eadf; }
+    .notification-icon.info    { color:#0a6791; background:#e9f6ff; border-color:#cfe8fb; }
+    /* Custom types */
+    .notification-icon.resident { color:#0a6791; background:#e9f6ff; border-color:#cfe8fb; } /* warga baru */
+    .notification-icon.income   { color:#0c6b2f; background:#e8f6ee; border-color:#d7eadf; } /* pemasukan */
+    .notification-icon.expense  { color:#9b1c1c; background:#fee2e2; border-color:#fecaca; } /* pengeluaran */
+    .notification-content h4 { margin: 0; font-weight: 800; }
+    .notification-content p { margin: 2px 0; color: var(--text-muted); }
+    .notification-time { font-size: .85rem; color: var(--text-subtle); }
+    .notification-actions .btn-icon {
+      width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--outline); border-radius: 8px; background: var(--surface);
+    }
+    @media (max-width: 640px){
+      .notification-item { grid-template-columns: auto 1fr; }
+      .notification-actions { justify-self: end; }
+    }
+
+    .btn { display:inline-flex; align-items:center; gap:8px; height:36px; padding:0 12px; border-radius:10px; border:1px solid #e5e7eb; background:#f9fafb; color:#111827; font-weight:800; transition: all .18s ease; }
+    .btn:hover { background:#eef2ff; border-color:#c7d2fe; color:#1e3a8a; }
+    .btn:focus { outline: 3px solid rgba(99,102,241,.35); outline-offset:2px; }
+    .btn:disabled { opacity:.6; cursor:not-allowed; }
+    .btn .badge { display:inline-flex; align-items:center; justify-content:center; min-width:20px; height:20px; padding:0 6px; border-radius:999px; font-size:12px; background:#eef2ff; color:#3730a3; border:1px solid #c7d2fe; }
+    .btn.ghost { background:linear-gradient(180deg, #ffffff, #f9fafb); color:#0f172a; }
+    .btn.ghost:hover { background:#f3f4ff; }
+    .btn.danger { background:#fef2f2; color:#b91c1c; border-color:#fecaca; }
+    .btn.danger:hover { background:#fee2e2; color:#991b1b; border-color:#fca5a5; }
+    .btn .spinner { display:none; }
+    .btn.loading .spinner { display:inline-block; }
+    .btn.loading .label, .btn.loading .badge { opacity:.35; }
+
+    /* Loading state (text-only button now) */
+    @keyframes icon-rotate { to { transform: rotate(360deg); } }
+    @media (max-width: 640px){
+      .header-actions .label { display:none; }
+      .btn { padding:0 10px; }
+    }
+  </style>
+
+  <script>
+    // Sink with topbar notification store
+    document.addEventListener('DOMContentLoaded', function(){
+      const STORE_KEY = 'kk_notifications';
+      const COUNT_KEY = 'kk_unread_count';
+      const list = document.getElementById('notif-list');
+      const clearBtn = document.getElementById('clear-all');
+      const markAllBtn = document.getElementById('mark-all');
+      const unreadBadge = document.getElementById('unread-badge');
+
+      // Define notification interface for type safety
+      interface Notification {
+        id: string;
+        title: string;
+        message: string;
+        time: string;
+        unread: boolean;
+        type: string;
+      }
+
+      function updateHeader(unread: number, total: number): void {
+        if (unreadBadge) unreadBadge.textContent = String(unread);
+        if (markAllBtn){
+          markAllBtn.toggleAttribute('disabled', unread === 0);
+          markAllBtn.setAttribute('aria-disabled', String(unread === 0));
+          markAllBtn.title = unread === 0 ? 'Semua sudah dibaca' : 'Tandai semua sebagai dibaca';
+        }
+        if (clearBtn){
+          clearBtn.toggleAttribute('disabled', total === 0);
+          clearBtn.setAttribute('aria-disabled', String(total === 0));
+        }
+      }
+
+      function getNotifs(): Notification[] {
+        try { const raw = localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : []; } catch { return []; }
+      }
+
+      function setNotifs(items: Notification[]): void {
+        localStorage.setItem(STORE_KEY, JSON.stringify(items));
+        const unread = items.filter((x: {unread: boolean}) => x.unread).length;
+        localStorage.setItem(COUNT_KEY, String(unread));
+        updateHeader(unread, items.length);
+        render();
+        // Notify same-document listeners (topbar/sidebar) to refresh immediately
+        try { window.dispatchEvent(new CustomEvent('kk-notifs-updated')); } catch {}
+      }
+
+      function fmtTime(iso: string): string { try{ const d = new Date(iso); return d.toLocaleString('id-ID', { hour: '2-digit', minute:'2-digit', day:'2-digit', month:'short' }); }catch{ return ''; } }
+
+      function inferType(n: any): string {
+        const t = (n?.type || '').toString().toLowerCase();
+        const title = (n?.title || '').toString().toLowerCase();
+        const msg = (n?.message || '').toString().toLowerCase();
+        const text = title + ' ' + msg;
+        if (t==='resident') return 'resident';
+        if (t==='income') return 'income';
+        if (t==='expense') return 'expense';
+        if (/(warga|penduduk|resident|new\s+resident)/.test(text)) return 'resident';
+        if (/(pemasukan|pemasukkan|income|pelaporan\s+pemasukan|income\s+report|bayar|pembayaran\s+masuk|iuran\s+masuk|setoran)/.test(text)) return 'income';
+        if (/(pengeluaran|expense|pelaporan\s+pengeluaran|expense\s+report|biaya|keluar|pembayaran\s+keluar|penarikan)/.test(text)) return 'expense';
+        if (t==='success' || /berhasil|selesai|sukses|verifikasi|terverifikasi|verify/.test(text)) return 'success';
+        if (t==='warning' || /peringatan|hati-hati|menurun|terlambat/.test(text)) return 'warning';
+        return 'info';
+      }
+
+      function iconClass(t: string): string {
+        if (t==='resident') return 'resident';
+        if (t==='income') return 'income';
+        if (t==='expense') return 'expense';
+        return t==='success' ? 'success' : t==='warning' ? 'warning' : 'info';
+      }
+      function iconFor(t: string): string {
+        if (t==='resident') return 'fa-user-plus';
+        if (t==='income') return 'fa-arrow-down';
+        if (t==='expense') return 'fa-arrow-up';
+        if (t==='success') return 'fa-check-circle';
+        if (t==='warning') return 'fa-exclamation-triangle';
+        return 'fa-info-circle';
+      }
+
+      // One-time migration to persist inferred types for older notifications
+      function migrateNotifs(): void {
+        try{
+          const arr = getNotifs();
+          let changed = false;
+          const updated = arr.map((n: any) => {
+            const rt = inferType(n);
+            if (!n.type || n.type !== rt) { changed = true; return { ...n, type: rt }; }
+            return n;
+          });
+          if (changed) {
+            localStorage.setItem(STORE_KEY, JSON.stringify(updated));
+          }
+        }catch{}
+      }
+
+      function render(): void {
+        if (!list) return;
+        const arr = getNotifs();
+        list.innerHTML = '';
+        if (arr.length === 0){
+          list.innerHTML = '<div style="padding:12px;color:#64748b">Tidak ada notifikasi</div>';
+          return;
+        }
+        arr.forEach((n: Notification) => {
+          const rt = inferType(n);
+          const item = document.createElement('div');
+          item.className = 'notification-item' + (n.unread ? ' unread' : '');
+          item.innerHTML = `
+            <div class="notification-icon ${iconClass(rt)}">
+              <i class="fas ${iconFor(rt)}"></i>
+            </div>
+            <div class="notification-content">
+              <h4>${n.title}</h4>
+              <p>${n.message}</p>
+              <span class="notification-time">${fmtTime(n.time)}</span>
+            </div>
+            <div class="notification-actions">
+              <button class="btn-icon" aria-label="Tandai dibaca" data-id="${n.id}">Baca</button>
+            </div>
+          `;
+          list.appendChild(item);
+        });
+      }
+
+      function markRead(id: string): void {
+        if (!list) return;
+        const arr = getNotifs();
+        list.innerHTML = '';
+        if (arr.length === 0){
+          list.innerHTML = '<div style="padding:12px;color:#64748b">Tidak ada notifikasi</div>';
+          return;
+        }
+        const items = arr.map(n => n.id === id ? {...n, unread: false} : n);
+        setNotifs(items);
+      }
+
+      // Events
+      document.addEventListener('click', function(e: MouseEvent){
+        const target = e.target;
+        if (!(target instanceof Element)) return;
+        const btn = target.closest('.notification-item .btn-icon');
+        if (!btn) return;
+        const id = btn.getAttribute('data-id');
+        if (!id) return;
+        const items = getNotifs().map(n => n.id === id ? {...n, unread: false} : n);
+        setNotifs(items);
+      });
+
+      clearBtn?.addEventListener('click', function(){ setNotifs([]); });
+      markAllBtn?.addEventListener('click', function(){
+        if (!markAllBtn || markAllBtn.hasAttribute('disabled')) return;
+        const items = getNotifs();
+        const unread = items.filter((n: {unread: boolean}) => n.unread).length;
+        if (unread === 0) return;
+        // micro interaction: loading state
+        markAllBtn.classList.add('loading');
+        setTimeout(()=>{
+          const updated = getNotifs().map(n => ({
+            ...n,
+            unread: false
+          }));
+          setNotifs(updated);
+          markAllBtn.classList.remove('loading');
+        }, 400);
+      });
+
+      // Listen for new resident events
+      window.addEventListener('kk-new-resident' as any, (e: Event) => {
+        const resident = (e as any)?.detail || {};
+        const notifications = getNotifs();
+        
+        // Create new notification
+        const newNotif = {
+          id: 'notif-' + Date.now(),
+          title: 'Warga Baru',
+          message: `Warga baru telah ditambahkan: ${resident.name || 'Warga Baru'}`,
+          time: new Date().toISOString(),
+          unread: true,
+          type: 'resident'
+        };
+        
+        // Add to existing notifications (limit to 100)
+        const updatedNotifs = [newNotif, ...notifications].slice(0, 100);
+        setNotifs(updatedNotifs);
+      });
+
+      // Listen for resident verification events
+      window.addEventListener('kk-resident-verified' as any, (e: Event) => {
+        const resident = (e as any)?.detail || {};
+        const notifications = getNotifs();
+        const newNotif = {
+          id: 'notif-' + Date.now(),
+          title: 'Verifikasi Warga',
+          message: `Data warga terverifikasi: ${resident.name || 'Warga'}`,
+          time: new Date().toISOString(),
+          unread: true,
+          type: 'success'
+        };
+        const updatedNotifs = [newNotif, ...notifications].slice(0, 100);
+        setNotifs(updatedNotifs);
+      });
+      
+      // Cross-tab/component sync
+      window.addEventListener('storage', (e: StorageEvent) => {
+        if (e.key === STORE_KEY || e.key === COUNT_KEY) render();
+      });
+
+      migrateNotifs();
+      const initial = getNotifs();
+      updateHeader(initial.filter((n: Notification) => n.unread).length, initial.length);
+      render();
+    });
+  </script>
+</Layout>

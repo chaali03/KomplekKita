@@ -1,0 +1,843 @@
+---
+// Admin Sidebar Component
+// Modern UI/UX Design with enhanced navigation and visual indicators
+const { complexName, complexImage } = Astro.props;
+const displayName = complexName ?? 'Admin';
+const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=4f46e5&color=fff`;
+---
+
+<div class="admin-sidebar">
+  <div class="sidebar-content">
+    <div class="sidebar-header">
+      <a href="/admin" class="logo">
+        <span class="brand-icon"><i class="fas fa-building" aria-hidden="true"></i></span>
+        <span class="brand-text">KomplekKita</span>
+        <span class="brand-glow"></span>
+      </a>
+    </div>
+    <div class="demo-strip" role="note" aria-label="Demo account">
+      <i class="fa-solid fa-flask" aria-hidden="true"></i>
+      Akun Demo
+    </div>
+    
+    <div class="sidebar-nav">
+      <div class="nav-section">
+        <h4 class="nav-title">Menu Utama</h4>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="/admin" class="sidebar-link active">
+              <div class="link-icon"><i class="fa-solid fa-tachometer-alt"></i></div>
+              <span class="link-text">Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/program" class="sidebar-link">
+              <div class="link-icon"><i class="fa-solid fa-project-diagram"></i></div>
+              <span class="link-text">Program</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/informasi" class="sidebar-link">
+              <div class="link-icon"><i class="fa-solid fa-info-circle"></i></div>
+              <span class="link-text">Informasi</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="nav-section">
+        <button class="section-toggle" aria-expanded="true" aria-controls="keuangan-menu">
+          <h4 class="nav-title">Keuangan</h4>
+          <i class="fa-solid fa-chevron-down toggle-icon"></i>
+        </button>
+        <ul class="nav-list" id="keuangan-menu">
+          <li class="nav-item">
+            <a href="/admin/transaksi" class="sidebar-link">
+              <div class="link-icon"><i class="fa-solid fa-exchange-alt"></i></div>
+              <span class="link-text">Transaksi</span>
+              <span class="link-badge status success"></span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/laporan" class="sidebar-link">
+              <div class="link-icon"><i class="fa-solid fa-chart-bar"></i></div>
+              <span class="link-text">Laporan</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="nav-section">
+        <button class="section-toggle" aria-expanded="true" aria-controls="warga-menu">
+          <h4 class="nav-title">Warga</h4>
+          <i class="fa-solid fa-chevron-down toggle-icon"></i>
+        </button>
+        <ul class="nav-list" id="warga-menu">
+          <li class="nav-item">
+            <a href="/admin/warga" class="sidebar-link">
+              <div class="link-icon"><i class="fa-solid fa-users"></i></div>
+              <span class="link-text">Warga</span>
+            </a>
+          </li>
+          <li class="nav-item premium-feature" data-required-plan="plus">
+            <a href="/admin/kelola-warga" class="sidebar-link">
+              <div class="link-icon"><i class="fa-solid fa-user-cog"></i></div>
+              <span class="link-text">Kelola Warga</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="nav-section">
+        <button class="section-toggle" aria-expanded="true" aria-controls="pengaturan-menu">
+          <h4 class="nav-title">Pengaturan</h4>
+          <i class="fa-solid fa-chevron-down toggle-icon"></i>
+        </button>
+        <ul class="nav-list" id="pengaturan-menu">
+          <li class="nav-item">
+            <a href="/admin/pengaturan" class="sidebar-link">
+              <div class="link-icon"><i class="fa-solid fa-cog"></i></div>
+              <span class="link-text">Pengaturan</span>
+            </a>
+          </li>
+          <li class="nav-item premium-feature" data-required-plan="premium">
+            <a href="/admin/notifikasi" class="sidebar-link">
+              <div class="link-icon"><i class="fa-solid fa-bell"></i></div>
+              <span class="link-text">Notifikasi</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">
+          <img src={avatarUrl} alt="User Avatar" />
+          <span class="status-indicator online"></span>
+        </div>
+        <div class="user-details">
+          <div class="user-name">{displayName}</div>
+          <div class="user-role">Administrator</div>
+          <span class="demo-badge" aria-label="Demo">Demo</span>
+        </div>
+      </div>
+      <div class="footer-actions">
+        <span class="upgrade-button only-plus" data-tooltip="Upgrade ke Plus">
+          <i class="fa-solid fa-gem"></i>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // @ts-nocheck
+  // Initialize sidebar functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    // Sidebar toggle
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const adminSidebar = document.querySelector('.admin-sidebar');
+    const adminFrame = document.querySelector('.admin-frame');
+    
+    if (sidebarToggle && adminSidebar && adminFrame) {
+      // Ensure sidebar is expanded by default
+      adminSidebar.classList.remove('collapsed');
+      adminFrame.classList.add('expanded');
+      
+      // Set initial icon state
+      const icon = sidebarToggle.querySelector('i');
+      if (icon) {
+        icon.classList.remove('fa-chevron-right');
+        icon.classList.add('fa-chevron-left');
+      }
+      
+      // Toggle handler
+      sidebarToggle.addEventListener('click', () => {
+        adminSidebar.classList.toggle('collapsed');
+        adminFrame.classList.toggle('expanded');
+        
+        // Change icon based on state
+        const icon = sidebarToggle.querySelector('i');
+        if (icon) {
+          if (adminSidebar.classList.contains('collapsed')) {
+            icon.classList.remove('fa-chevron-left');
+            icon.classList.add('fa-chevron-right');
+          } else {
+            icon.classList.remove('fa-chevron-right');
+            icon.classList.add('fa-chevron-left');
+          }
+        }
+      });
+    }
+    
+    // Section toggles (no animation)
+    const sectionToggles = document.querySelectorAll('.section-toggle');
+
+    // Initialize all sections expanded by default
+    sectionToggles.forEach((btn) => {
+      const targetId = btn.getAttribute('aria-controls');
+      const targetList = targetId ? document.getElementById(targetId) : null;
+      const icon = btn.querySelector('.toggle-icon');
+
+      btn.setAttribute('aria-expanded', 'true');
+      if (targetList) targetList.classList.remove('collapsed');
+      if (icon) {
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+      }
+    });
+
+    // Click to instantly toggle
+    sectionToggles.forEach((toggle) => {
+      if (toggle.getAttribute('data-bound')) return;
+      toggle.setAttribute('data-bound', '1');
+      toggle.addEventListener('click', (e) => {
+        const btn = e.currentTarget;
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+
+        const targetId = btn.getAttribute('aria-controls');
+        const targetList = targetId ? document.getElementById(targetId) : null;
+        if (targetList) targetList.classList.toggle('collapsed', expanded);
+
+        // Update chevron icon (no animation)
+        const icon = btn.querySelector('.toggle-icon');
+        if (icon) {
+          if (expanded) {
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+          } else {
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+          }
+        }
+      });
+    });
+    
+    // Active link highlighting
+    const currentPath = window.location.pathname;
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    
+    sidebarLinks.forEach(link => {
+      if (link.getAttribute('href') === currentPath) {
+        link.classList.add('active');
+        
+        // Expand parent section if collapsed
+        const parentList = link.closest('.nav-list');
+        if (parentList && parentList.classList.contains('collapsed')) {
+          const sectionToggle = parentList.previousElementSibling;
+          if (sectionToggle && sectionToggle.classList.contains('section-toggle')) {
+            sectionToggle.dispatchEvent(new Event('click'));
+          }
+        }
+      } else {
+        link.classList.remove('active');
+      }
+    });
+
+    // Notifications badge sync (shares store with topbar)
+    const STORE_KEY = 'kk_notifications';
+    const COUNT_KEY = 'kk_unread_count';
+    const notifBadge = document.querySelector('[data-notif-badge]') as HTMLElement | null;
+    function getUnread(){
+      try { return parseInt(localStorage.getItem(COUNT_KEY) || '0', 10) || 0; } catch { return 0; }
+    }
+    function updateNotifBadge(){
+      if (!notifBadge) return;
+      const c = getUnread();
+      if (c > 0){ notifBadge.style.display = ''; notifBadge.textContent = String(c); }
+      else { notifBadge.style.display = 'none'; }
+    }
+    updateNotifBadge();
+    window.addEventListener('storage', (e) => {
+      if (e.key === STORE_KEY || e.key === COUNT_KEY) updateNotifBadge();
+    });
+    // Same-document immediate sync when notifications updated from another component
+    window.addEventListener('kk-notifs-updated', () => updateNotifBadge());
+
+  });
+</script>
+
+<style>
+  /*
+   * Admin Sidebar – Light, modern, scoped styling
+   * All rules are scoped under .admin-sidebar to avoid global impact
+   */
+  .admin-sidebar {
+    /* Local design tokens */
+    --sidebar-bg: #ffffff;
+    --sidebar-border: #e5e7eb; /* neutral-200 */
+    --sidebar-muted: #6b7280;  /* gray-500 */
+    --sidebar-text: #111827;   /* gray-900 */
+    --sidebar-hover: #f9fafb;  /* gray-50 */
+    --sidebar-active: #eef2ff; /* indigo-50 */
+    --sidebar-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06);
+    --primary: #4f46e5;        /* indigo-600 */
+    --primary-soft: rgba(79, 70, 229, .08);
+    --success: #10b981;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    border-right: 1px solid var(--sidebar-border);
+    box-shadow: var(--sidebar-shadow);
+    transition: width 240ms ease;
+  }
+
+  .admin-sidebar .sidebar-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-bottom: 72px; /* space so sticky footer never covers content */
+  }
+
+  /* Header */
+  .admin-sidebar .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 14px 12px 14px;
+    border-bottom: 1px solid var(--sidebar-border);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.85), rgba(255,255,255,0.75));
+    backdrop-filter: saturate(140%) blur(10px);
+  }
+  .admin-sidebar .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+  }
+  /* Brand logo (match Header.astro style, scoped) */
+  .admin-sidebar .logo {
+    position: relative;
+    gap: 12px;
+  }
+  .admin-sidebar .logo .brand-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #3B82F6, #1E40AF);
+    color: #ffffff;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 10px rgba(59,130,246,0.3);
+    transition: all 0.3s ease;
+  }
+  .admin-sidebar .logo .brand-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #1F2937, #3B82F6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 15px rgba(59,130,246,0.3);
+    line-height: 1;
+  }
+  .admin-sidebar .logo .brand-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(59,130,246,0.3) 0%, transparent 70%);
+    filter: blur(10px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+  }
+  .admin-sidebar .logo:hover .brand-icon {
+    transform: rotate(-10deg) scale(1.06);
+    background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+    box-shadow: 0 5px 15px rgba(59,130,246,0.5);
+  }
+  .admin-sidebar .logo:hover .brand-text {
+    background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .admin-sidebar .logo:hover .brand-glow { opacity: 1; }
+  .admin-sidebar .sidebar-actions .sidebar-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid var(--sidebar-border);
+    background: #fff;
+    color: var(--sidebar-text);
+    transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+  }
+  .admin-sidebar .sidebar-actions .sidebar-toggle:hover {
+    background: var(--sidebar-hover);
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+  }
+
+  /* Demo strip */
+  .admin-sidebar .demo-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 12px 12px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: #fffbeb;
+    color: #92400e;
+    border: 1px dashed #fbbf24;
+    font-weight: 700;
+  }
+  .admin-sidebar .demo-strip i { opacity: .9; }
+
+  .admin-sidebar .demo-badge {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 8px;
+    margin-top: 6px;
+    border-radius: 999px;
+    background: #fff7ed;
+    color: #b45309;
+    border: 1px solid #fed7aa;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: .2px;
+    justify-self: end;
+  }
+
+  /* Navigation */
+  .admin-sidebar .sidebar-nav { padding: 8px 8px 12px; }
+  .admin-sidebar .nav-section { position: relative; margin-bottom: 4px; }
+  .admin-sidebar .nav-section + .nav-section { margin-top: 8px; }
+  .admin-sidebar .nav-section + .nav-section::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #eef2ff 20%, #e5e7eb 50%, #eef2ff 80%, transparent);
+    opacity: .9;
+  }
+  .admin-sidebar .nav-title {
+    font-size: 12px;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    color: var(--sidebar-muted);
+    font-weight: 800;
+    margin: 0;
+  }
+  .admin-sidebar .section-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: transparent;
+    border: 0;
+    padding: 12px 8px 8px 8px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .admin-sidebar .section-toggle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(79,70,229,0.08) 0%, rgba(79,70,229,0) 70%);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  .admin-sidebar .section-toggle:hover { 
+    background: var(--sidebar-hover); 
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79,70,229,0.08);
+  }
+  
+  .admin-sidebar .section-toggle:hover::after {
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+  .admin-sidebar .section-toggle .toggle-icon { 
+    color: var(--sidebar-muted); 
+    transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), color 220ms ease; 
+  }
+
+  .admin-sidebar .nav-list {
+    list-style: none;
+    padding: 4px;
+    margin: 0 4px 8px;
+    border-radius: 12px;
+    background: transparent;
+  }
+  .admin-sidebar .nav-list.collapsed { 
+    display: none;
+  }
+
+  .admin-sidebar .nav-item { margin: 2px 0; }
+  .admin-sidebar .sidebar-link {
+    position: relative;
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px; /* extra right padding so badge isn't cramped */
+    border-radius: 12px;
+    color: inherit;
+    text-decoration: none;
+    transition: all 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+  }
+  
+  .admin-sidebar .sidebar-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(79,70,229,0) 0%, rgba(79,70,229,0.08) 50%, rgba(79,70,229,0) 100%);
+    transform: translateX(-100%);
+    transition: transform 650ms cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+  .admin-sidebar .sidebar-link:hover {
+    background: var(--sidebar-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(79,70,229,0.12);
+  }
+  
+  .admin-sidebar .sidebar-link:hover::before {
+    transform: translateX(100%);
+  }
+  .admin-sidebar .sidebar-link.active {
+    background: rgba(79,70,229, .08);
+    box-shadow: 0 4px 12px rgba(79,70,229,0.08);
+    border: 1px solid rgba(99,102,241,.25);
+    transform: translateY(-1px);
+  }
+  
+  .admin-sidebar .sidebar-link.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(to bottom, #4f46e5, #818cf8);
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 8px rgba(79,70,229,0.4);
+  }
+  /* Focus-visible accessibility */
+  .admin-sidebar .sidebar-link:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59,130,246,.25), inset 0 0 0 1px rgba(59,130,246,.2);
+    background: var(--sidebar-hover);
+  }
+  .admin-sidebar .link-icon {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(79,70,229,.08), rgba(79,70,229,.12));
+    color: var(--primary);
+    box-shadow: 0 1px 2px rgba(79,70,229,0.06) inset;
+    transition: all 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    z-index: 1;
+  }
+  
+  .admin-sidebar .link-icon::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(79,70,229,.12), rgba(79,70,229,.18));
+    opacity: 0;
+    transition: opacity 240ms ease;
+    z-index: -1;
+  }
+  .admin-sidebar .sidebar-link:hover .link-icon {
+    background: linear-gradient(180deg, rgba(59,130,246,.12), rgba(79,70,229,.18));
+    box-shadow: 0 4px 12px rgba(79,70,229,0.18);
+    transform: translateY(-2px) scale(1.05);
+  }
+  
+  .admin-sidebar .sidebar-link:hover .link-icon::before {
+    opacity: 1;
+  }
+  
+  .admin-sidebar .sidebar-link.active .link-icon {
+    background: linear-gradient(180deg, rgba(79,70,229,.15), rgba(79,70,229,.25));
+    box-shadow: 0 4px 12px rgba(79,70,229,0.15);
+    transform: translateY(-1px);
+  }
+  .admin-sidebar .link-text { font-weight: 600; }
+
+  /* Link right-side adornments */
+  .admin-sidebar .link-badge.status.success {
+    width: 8px; height: 8px; border-radius: 999px; background: var(--success);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, .18);
+    justify-self: end;
+  }
+  .admin-sidebar .link-badge.notif-count {
+    min-width: 22px; height: 20px; padding: 0 8px; border-radius: 999px;
+    background: linear-gradient(180deg, #ef4444, #dc2626);
+    color: #fff; font-weight: 900; font-size: 12px; letter-spacing: .1px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid #fecaca; /* red-200 */
+    box-shadow: 0 4px 12px rgba(239,68,68,.35), inset 0 1px 0 rgba(255,255,255,.35);
+    justify-self: end; margin-left: 6px;
+  }
+  .admin-sidebar .sidebar-link:hover .link-badge.notif-count {
+    box-shadow: 0 6px 16px rgba(239,68,68,.45), inset 0 1px 0 rgba(255,255,255,.45);
+    transform: translateY(-1px);
+  }
+  
+  .admin-sidebar .premium-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: #fff7ed; /* orange-50 */
+    color: #b45309;      /* orange-700 */
+    border: 1px solid #fed7aa; /* orange-200 */
+    font-weight: 700;
+    font-size: 12px;
+    justify-self: end;
+  }
+  .admin-sidebar .premium-indicator i {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Footer */
+  .admin-sidebar .sidebar-footer {
+    margin-top: auto;
+    padding: 12px 16px;
+    border-top: 1px solid var(--sidebar-border);
+    background: linear-gradient(to top, rgba(249,250,251,.92), rgba(255,255,255,.78));
+    position: sticky;
+    bottom: 0;
+    z-index: 4;
+    backdrop-filter: saturate(140%) blur(8px);
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; /* center user-info; actions on the right */
+    align-items: center;
+    gap: 8px;
+  }
+  .admin-sidebar .user-info { display: flex; align-items: center; gap: 10px; margin-left: 0; justify-self: center; }
+  .admin-sidebar .user-avatar { position: relative; width: 42px; height: 42px; overflow: visible; }
+  .admin-sidebar .user-avatar img {
+    width: 42px; height: 42px; border-radius: 12px; object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0,0,0,.06);
+  }
+  /* Gradient ring around avatar */
+  .admin-sidebar .user-avatar::after {
+    content: '';
+    position: absolute; inset: -2px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(79,70,229,.35), rgba(59,130,246,.25));
+    z-index: -1;
+    filter: blur(.5px);
+  }
+  .admin-sidebar .status-indicator {
+    position: absolute; right: 0; bottom: 0; width: 12px; height: 12px;
+    border-radius: 50%; border: 2px solid #fff; background: #d1d5db;
+    box-shadow: 0 0 0 2px rgba(255,255,255,.85), 0 0 0 4px rgba(34,197,94,.15);
+  }
+  .admin-sidebar .status-indicator.online { background: #22c55e; }
+  .admin-sidebar .status-indicator.online::after {
+    content: '';
+    position: absolute; inset: 0; border-radius: 50%;
+    animation: pulseOnline 1.8s ease-out infinite;
+    box-shadow: 0 0 0 0 rgba(34,197,94,.35);
+  }
+  @keyframes pulseOnline {
+    0% { transform: scale(1); opacity: .8; box-shadow: 0 0 0 0 rgba(34,197,94,.35); }
+    50% { transform: scale(1.5); opacity: 0.3; box-shadow: 0 0 0 4px rgba(34,197,94,.2); }
+    70% { transform: scale(1.8); opacity: 0; box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+    100% { transform: scale(1); opacity: 0; }
+  }
+  /* Arrange name on first row, role + demo badge on second row (side-by-side) */
+  .admin-sidebar .user-details {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      "name name"
+      "role demo";
+    column-gap: 8px;
+    row-gap: 2px;
+  }
+  .admin-sidebar .user-details .user-name { grid-area: name; font-weight: 800; line-height: 1.2; font-size: .95rem; }
+  .admin-sidebar .user-details .user-role { grid-area: role; font-size: 12px; color: var(--sidebar-muted); letter-spacing: .2px; align-self: center; }
+  .admin-sidebar .demo-badge { grid-area: demo; align-self: center; }
+
+  .admin-sidebar .footer-actions {
+    display: flex; gap: 8px; align-items: center; justify-self: end;
+  }
+  
+  .admin-sidebar .footer-actions a,
+  .admin-sidebar .footer-actions span {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 10px;
+    background: rgba(255,255,255,.9);
+    border: 1px solid var(--sidebar-border);
+    color: var(--sidebar-text);
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    transition: background 160ms ease, transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  }
+  .admin-sidebar .footer-actions .upgrade-button i {
+    background: linear-gradient(135deg, #8B5CF6, #06B6D4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .admin-sidebar .footer-actions a:hover,
+  .admin-sidebar .footer-actions span:hover {
+    background: var(--sidebar-hover);
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(79,70,229,.12);
+  }
+  .admin-sidebar .footer-actions .upgrade-button:hover i { filter: drop-shadow(0 4px 10px rgba(139,92,246,.35)); }
+  /* Tooltip for upgrade button */
+  .admin-sidebar [data-tooltip] { position: relative; }
+  .admin-sidebar [data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
+    white-space: nowrap; font-size: 12px; font-weight: 700;
+    background: #111827; color: #fff; padding: 6px 8px; border-radius: 8px;
+    opacity: 0; pointer-events: none; transition: opacity .18s ease, transform .18s ease;
+    box-shadow: 0 6px 20px rgba(0,0,0,.18);
+  }
+  .admin-sidebar [data-tooltip]::before {
+    content: '';
+    position: absolute; bottom: calc(120% - 6px); left: 50%; transform: translateX(-50%) rotate(45deg);
+    width: 10px; height: 10px; background: #111827; border-radius: 2px;
+    opacity: 0; transition: opacity .18s ease;
+  }
+  .admin-sidebar [data-tooltip]:hover::after { opacity: 1; transform: translateX(-50%) translateY(-2px); }
+  .admin-sidebar [data-tooltip]:hover::before { opacity: 1; }
+
+  /* Collapsed state (non-breaking improvement) */
+  .admin-sidebar.collapsed { width: 72px; min-width: 72px; }
+  .admin-sidebar.collapsed .logo-text,
+  .admin-sidebar.collapsed .brand-text,
+  .admin-sidebar.collapsed .link-text,
+  .admin-sidebar.collapsed .user-details,
+  .admin-sidebar.collapsed .demo-strip { opacity: 0; width: 0; overflow: hidden; }
+  .admin-sidebar.collapsed .sidebar-actions { justify-content: center; }
+  /* Hide section headings and chevrons in collapsed */
+  .admin-sidebar.collapsed .nav-title,
+  .admin-sidebar.collapsed .section-toggle { display: none; }
+  .admin-sidebar.collapsed .sidebar-nav { padding: 8px; }
+  .admin-sidebar.collapsed .nav-list { margin: 0 6px 8px; padding: 4px; opacity: 1; }
+  /* Center icon pills when collapsed */
+  .admin-sidebar.collapsed .sidebar-link {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    padding: 8px;
+    overflow: visible;
+  }
+  .admin-sidebar.collapsed .nav-item { margin: 6px 0; }
+  .admin-sidebar.collapsed .link-icon {
+    width: 36px; height: 36px; min-width: 36px; border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(79,70,229,0.08), 0 2px 6px rgba(79,70,229,0.06);
+  }
+  .admin-sidebar.collapsed .sidebar-link:hover { transform: translateY(-1px); }
+
+  /* Appear/entrance animations (subtle) */
+  @keyframes sidebarFadeSlideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes sidebarScaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  
+  @keyframes sidebarGlowIn {
+    0% { box-shadow: 0 0 0 0 rgba(79,70,229,0); }
+    50% { box-shadow: 0 0 12px 4px rgba(79,70,229,0.12); }
+    100% { box-shadow: 0 0 0 0 rgba(79,70,229,0); }
+  }
+  
+  .admin-sidebar .nav-section {
+    animation: sidebarFadeSlideIn .45s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  
+  .admin-sidebar .nav-section:nth-child(1) { animation-delay: .05s; }
+  .admin-sidebar .nav-section:nth-child(2) { animation-delay: .1s; }
+  .admin-sidebar .nav-section:nth-child(3) { animation-delay: .15s; }
+  .admin-sidebar .nav-section:nth-child(4) { animation-delay: .2s; }
+  
+  .admin-sidebar .sidebar-link.active {
+    animation: sidebarGlowIn 2s ease-in-out infinite;
+  }
+  
+  .admin-sidebar .sidebar-header {
+    animation: sidebarScaleIn .4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  
+  .admin-sidebar .sidebar-footer {
+    animation: sidebarScaleIn .5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: .25s;
+  }
+
+  /* Accessibility – respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .admin-sidebar * { transition: none !important; animation: none !important; }
+  }
+
+  /* Scoped scrollbar styling (WebKit + Firefox) */
+  .admin-sidebar .sidebar-content {
+    overflow-y: auto;
+    scrollbar-gutter: stable both-edges;
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent; /* thumb, track */
+  }
+  /* WebKit/Chromium */
+  .admin-sidebar .sidebar-content::-webkit-scrollbar { width: 10px; height: 10px; }
+  .admin-sidebar .sidebar-content::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 999px;
+  }
+  .admin-sidebar .sidebar-content::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: linear-gradient(180deg, #d1d5db, #cbd5e1);
+    border: 2px solid transparent; /* keeps thumb slimmer */
+    background-clip: padding-box;
+  }
+  .admin-sidebar .sidebar-content:hover::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #9ca3af, #94a3b8);
+    background-clip: padding-box;
+  }
+  .admin-sidebar .sidebar-content::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(180deg, #818cf8, #4f46e5); /* tie into primary */
+  }
+  .admin-sidebar .sidebar-content::-webkit-scrollbar-corner { background: transparent; }
+  .admin-sidebar .sidebar-content::-webkit-scrollbar-button { display: none; height: 0; width: 0; }
+
+  /* Hide sidebar on small screens; use hamburger menu instead */
+  @media (max-width: 1024px) {
+    .admin-sidebar { display: none; }
+  }
+</style>

@@ -1,0 +1,22 @@
+---
+import Layout from "~/layouts/admin-layout.astro";
+import AdminSidebar from '../components/Admin-site/admin-sidebar.astro';
+import AdminTopbar from '../components/Admin-site/admin-topbar.astro';
+// Complex branding to show in admin UI
+const complexName = 'Komplek Anggrek Asri';
+const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=100&h=100&fit=crop&crop=center';
+---
+
+<Layout>
+  <AdminSidebar slot="sidebar" complexName={complexName} complexImage={complexImage} />
+  <AdminTopbar slot="topbar" complexName={complexName} complexImage={complexImage} />
+  <section class="header-card">
+    <div class="header-left">
+      <div class="icon"><i class="fas fa-layer-group"></i></div>
+      <div>
+        <h1>Program</h1>
+        <p>Halaman ringkas program admin.</p>
+      </div>
+    </div>
+  </section>
+</Layout>

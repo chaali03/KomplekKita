@@ -1,0 +1,2697 @@
+---
+import Layout from "~/layouts/admin-layout.astro";
+import AdminSidebar from '../../components/Admin-site/admin-sidebar.astro';
+import AdminTopbar from '../../components/Admin-site/admin-topbar.astro';
+---
+
+<Layout>
+  <AdminSidebar slot="sidebar" complexName="Komplek Anggrek Asri" complexImage="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=100&h=100&fit=crop&crop=center" />
+  <AdminTopbar slot="topbar" complexName="Komplek Anggrek Asri" complexImage="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=100&h=100&fit=crop&crop=center" />
+  
+  <!-- Responsive CSS -->
+  <link rel="stylesheet" href="/css/payment-responsive.css" slot="head" />
+
+  <div class="upgrade-page">
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+    </div>
+  <section class="upgrade-hero">
+    <a href="/admin" class="back-button">
+      <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+    </a>
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-badge">Upgrade Sekarang</div>
+        <h1>Tingkatkan Akun Anda</h1>
+        <p class="hero-description">Kelola komplek lebih modern dengan fitur-fitur yang fokus pada Transparansi Keuangan, Proses Birokrasi Warga, dan Validasi Data Warga. Desain ramah pengguna, animasi halus, dan alur kerja yang simpel.</p>
+        <div class="hero-actions">
+          <a href="#plans" class="hero-button primary">
+            <i class="fas fa-crown"></i> Lihat Paket Premium
+          </a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <div class="image-container">
+          <div class="glow-effect"></div>
+          <img src="/images/payment-logos/dashboard-hero.png" alt="Komplek App Dashboard" class="hero-img" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="plans" class="plans-section">
+    <div class="section-header">
+      <span class="section-badge">Paket Berlangganan</span>
+      <h2>Pilih Paket yang Sesuai</h2>
+      <p>Bandingkan paket dan pilih yang terbaik untuk kebutuhan kompleks Anda</p>
+    </div>
+    
+    <div class="plans-grid">
+      <div class="plan-card free">
+        <div class="card-shine"></div>
+        <div class="plan-header">
+          <div class="plan-icon">
+            <i class="fas fa-rocket"></i>
+          </div>
+          <h3>Free</h3>
+          <div class="plan-price">
+            <span class="price">Rp 0</span>
+            <span class="period">/bulan</span>
+          </div>
+        </div>
+        <div class="plan-features">
+          <ul>
+            <li class="feature-item"><i class="fas fa-check"></i> Dashboard dasar</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Pencatatan pemasukan & pengeluaran</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Laporan keuangan bulanan</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Informasi kompleks</li>
+            <li class="feature-item disabled"><i class="fas fa-times"></i> Grafik interaktif</li>
+            <li class="feature-item disabled"><i class="fas fa-times"></i> Download PDF/Excel</li>
+            <li class="feature-item disabled"><i class="fas fa-times"></i> Notifikasi & reminder</li>
+          </ul>
+        </div>
+        <div class="plan-footer" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+          <div class="suspension-note">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>Akun Gratis akan otomatis disuspend jika tidak aktif selama 2 bulan.</span>
+          </div>
+          <a href="/register" class="upgrade-button free-btn" style="margin-top: 20px;">ayo regist</a>
+        </div>
+      </div>
+
+      <div class="plan-card premium recommended">
+        <div class="card-shine"></div>
+        <div class="ribbon">Terpopuler</div>
+        <div class="plan-header">
+          <div class="plan-icon">
+            <i class="fas fa-crown"></i>
+          </div>
+          <h3>Premium</h3>
+          <div class="plan-price">
+            <span class="price">Rp 99.000</span>
+            <span class="period">/bulan</span>
+          </div>
+        </div>
+        <div class="plan-features">
+          <ul>
+            <li class="feature-item highlight"><i class="fas fa-check"></i> Semua fitur Free</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Transparansi Keuangan: daftar pemasukan & pengeluaran bulanan</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Laporan keuangan otomatis + grafik interaktif</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Download laporan (PDF/Excel)</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Reminder pembayaran iuran via notifikasi</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Notifikasi real-time transaksi baru</li>
+            <li class="feature-item"><i class="fas fa-check"></i> Proses Birokrasi: request & tracking status surat</li>
+          </ul>
+        </div>
+        <div class="plan-footer">
+          <a href="/payment?plan=premium" class="upgrade-button premium-btn">
+            <i class="fas fa-arrow-up"></i> Upgrade ke Premium
+          </a>
+        </div>
+      </div>
+
+      <div class="plan-card plus">
+        <div class="card-shine"></div>
+        <div class="ribbon">Hemat 20%</div>
+        <div class="plan-header">
+          <div class="plan-icon">
+            <i class="fas fa-gem"></i>
+          </div>
+          <h3>Plus</h3>
+          <div class="plan-price">
+            <span class="old-price">Rp 150.000</span>
+            <span class="price">Rp 119.000</span>
+            <span class="period">/bulan</span>
+          </div>
+        </div>
+        <div class="plan-features">
+          <ul>
+            <li class="feature-item highlight"><i class="fas fa-check"></i> Semua fitur Premium</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Analitik keuangan lanjutan</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Tandatangan digital pengurus</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Arsip surat otomatis & riwayat pengajuan</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Cetak surat langsung dari aplikasi</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Integrasi WhatsApp/Email</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Validasi Data: verifikasi otomatis (KTP/KK)</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Update data rumah & anggota keluarga</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Riwayat perubahan & laporan demografi</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Export data warga ke Excel</li>
+            <li class="feature-item plus"><i class="fas fa-plus"></i> Dashboard pengurus untuk analisa data warga</li>
+          </ul>
+        </div>
+        <div class="plan-footer">
+          <a href="/payment?plan=plus" class="upgrade-button plus-btn">
+            <i class="fas fa-arrow-up"></i> Upgrade ke Plus
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="comparison-section">
+    <div class="section-header">
+      <span class="section-badge">Perbandingan</span>
+      <h2>Perbandingan Fitur</h2>
+      <p>Lihat perbedaan detail antara paket Free, Premium, dan Plus</p>
+    </div>
+    
+    <div class="comparison-table">
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th class="feature-col">Fitur</th>
+              <th class="free-col">Free</th>
+              <th class="premium-col">Premium</th>
+              <th class="plus-col">Plus</th>
+            </tr>
+          </thead>
+        <tbody>
+          <tr class="category-row">
+            <td colspan="4"><span class="category-label">Transparansi Keuangan</span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Daftar pemasukan & pengeluaran bulanan</td>
+            <td><span class="check-icon"><i class="fas fa-check"></i></span></td>
+            <td><span class="check-icon"><i class="fas fa-check"></i></span></td>
+            <td><span class="check-icon"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Laporan keuangan otomatis + grafik interaktif</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Download laporan keuangan (PDF/Excel)</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Reminder pembayaran iuran via notifikasi</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Notifikasi real-time transaksi baru</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Analitik keuangan lanjutan</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+
+          <tr class="category-row">
+            <td colspan="4"><span class="category-label">Proses Birokrasi Warga</span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Request surat pindah/izin melalui sistem</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Tracking status surat</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon premium"><i class="fas fa-check"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Tandatangan digital pengurus</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Arsip surat otomatis & riwayat pengajuan</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Cetak surat langsung dari aplikasi</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Integrasi dengan WhatsApp/email</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+
+          <tr class="category-row">
+            <td colspan="4"><span class="category-label">Validasi Data Warga</span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Update data kepemilikan rumah & anggota keluarga</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Verifikasi otomatis dengan dokumen (KTP/KK)</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Riwayat perubahan data</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Laporan demografi warga</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Export data warga ke Excel</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+          <tr class="feature-row">
+            <td class="feature-name">Dashboard pengurus untuk analisa data warga</td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="times-icon"><i class="fas fa-times"></i></span></td>
+            <td><span class="check-icon plus"><i class="fas fa-check"></i></span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="table-footer">
+        <p>Pilih paket yang sesuai dengan kebutuhan kompleks perumahan Anda</p>
+        <div class="table-actions">
+          <a href="#plans" class="scroll-to-plans">Lihat Paket <i class="fas fa-arrow-up"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="faq-section">
+    <div class="section-header">
+      <span class="section-badge">FAQ</span>
+      <h2>Pertanyaan Umum</h2>
+      <p>Jawaban untuk pertanyaan yang sering diajukan</p>
+    </div>
+    
+    <div class="faq-container">
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3><i class="fas fa-plus-circle question-icon"></i> Bagaimana cara upgrade ke Premium?</h3>
+        </div>
+        <div class="faq-answer">
+          <p>Klik tombol "Upgrade ke Premium" dan isi formulir kontak. Tim kami akan menghubungi Anda untuk proses pembayaran dan aktivasi.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3><i class="fas fa-plus-circle question-icon"></i> Apakah saya bisa downgrade ke Free?</h3>
+        </div>
+        <div class="faq-answer">
+          <p>Ya, Anda dapat downgrade kapan saja. Fitur premium akan tetap aktif sampai akhir periode berlangganan Anda.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3><i class="fas fa-plus-circle question-icon"></i> Apakah ada kontrak jangka panjang?</h3>
+        </div>
+        <div class="faq-answer">
+          <p>Tidak, semua paket berbasis langganan bulanan dan dapat dibatalkan kapan saja.</p>
+        </div>
+      </div>
+      
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3><i class="fas fa-plus-circle question-icon"></i> Metode pembayaran apa yang tersedia?</h3>
+        </div>
+        <div class="faq-answer">
+          <p>Kami menerima transfer bank, kartu kredit, dan e-wallet (GoPay, OVO, DANA).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+  <!-- Scroll to top button sudah ditambahkan di bagian bawah halaman -->
+
+  <style>
+    :root {
+      --color-primary: #2563eb;
+      --color-primary-light: #3b82f6;
+      --color-primary-dark: #1d4ed8;
+      --color-secondary: #8b5cf6;
+      --color-secondary-light: #a78bfa;
+      --color-secondary-dark: #7c3aed;
+      --color-success: #16a34a;
+      --color-success-light: #22c55e;
+      --color-danger: #ef4444;
+      --color-danger-light: #f87171;
+      --color-text-primary: #1e293b;
+      --color-text-secondary: #64748b;
+      --color-background: #f8fafc;
+      --color-card: #ffffff;
+      --color-border: rgba(229, 231, 235, 0.5);
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.3s ease;
+      --transition-slow: 0.5s ease;
+      --border-radius-sm: 0.25rem;
+      --border-radius-md: 0.5rem;
+      --border-radius-lg: 1rem;
+      --border-radius-xl: 1.5rem;
+    }
+    
+    /* Error Notification Styles */
+    .error-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      max-width: 400px;
+      background: white;
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-xl);
+      border-left: 4px solid var(--color-danger);
+      overflow: hidden;
+      z-index: 1000;
+      animation: slideIn 0.3s ease forwards;
+    }
+    
+    .error-content {
+      display: flex;
+      padding: 16px;
+      align-items: flex-start;
+    }
+    
+    .error-icon {
+      font-size: 24px;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    
+    .error-text {
+      flex: 1;
+    }
+    
+    .error-text h3 {
+      margin: 0 0 8px 0;
+      color: var(--color-danger);
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .error-text p {
+      margin: 0;
+      color: var(--color-text-secondary);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .error-close {
+      background: none;
+      border: none;
+      color: var(--color-text-secondary);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      margin-left: 8px;
+      line-height: 1;
+    }
+    
+    .error-close:hover {
+      color: var(--color-danger);
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+
+    /* Upgrade Page Styles */
+    .upgrade-page {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Floating Shapes Animation */
+    .floating-shapes {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+      filter: blur(40px);
+      animation: float 15s infinite ease-in-out;
+    }
+    
+    .shape-1 {
+      width: 300px;
+      height: 300px;
+      background: #2563eb;
+      top: -100px;
+      left: -100px;
+      animation-delay: 0s;
+    }
+    
+    .shape-2 {
+      width: 200px;
+      height: 200px;
+      background: #16a34a;
+      top: 30%;
+      right: -50px;
+      animation-delay: -5s;
+    }
+    
+    .shape-3 {
+      width: 350px;
+      height: 350px;
+      background: #f59e0b;
+      bottom: 10%;
+      left: 10%;
+      animation-delay: -7s;
+    }
+    
+    .shape-4 {
+      width: 250px;
+      height: 250px;
+      background: #8b5cf6;
+      bottom: -100px;
+      right: 20%;
+      animation-delay: -3s;
+    }
+    
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        transform: translateY(-20px) scale(1.05);
+      }
+    }
+    
+    /* Plans Section */
+    .plans-section {
+      margin-bottom: 4rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+    
+    .section-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+      animation: fadeIn 0.8s ease forwards;
+    }
+    
+    .section-header h2 {
+      font-size: 2.25rem;
+      margin-bottom: 0.75rem;
+      font-weight: 800;
+      animation: fadeIn 0.8s 0.1s ease forwards;
+    }
+    
+    .section-header p {
+      color: #64748b;
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      animation: fadeIn 0.8s 0.2s ease forwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    /* Animation classes for scroll animations */
+    .plan-card, .faq-item, .comparison-table, .cta-container {
+      opacity: 0;
+      transition: all 0.8s ease;
+    }
+    
+    .plan-card:nth-child(1).animate {
+      animation: fadeInUp 0.8s 0.1s forwards ease;
+    }
+    
+    .plan-card:nth-child(2).animate {
+      animation: fadeInUp 0.8s 0.3s forwards ease;
+    }
+    
+    .plan-card:nth-child(3).animate {
+      animation: fadeInUp 0.8s 0.5s forwards ease;
+    }
+    
+    /* Enhanced Plan Card Styles */
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .plan-card {
+      background: var(--color-card);
+      border-radius: var(--border-radius-xl);
+      box-shadow: var(--shadow-md);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      transition: all var(--transition-normal);
+      border: 1px solid var(--color-border-light);
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .plan-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: var(--shadow-xl);
+      border-color: var(--color-primary-lighter);
+      z-index: 1;
+    }
+    
+    .plan-card.dimmed {
+      opacity: 0.6;
+      transform: scale(0.98);
+      filter: grayscale(20%);
+      transition: all var(--transition-fast);
+    }
+    
+    .plan-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, var(--color-primary-light), var(--color-primary));
+      opacity: 0.8;
+      transition: height var(--transition-normal);
+    }
+    
+    .plan-card:hover::before {
+      height: 8px;
+    }
+    
+    .plan-header {
+      margin-bottom: 24px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .plan-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--color-text-primary);
+      position: relative;
+      display: inline-block;
+    }
+    
+    .plan-name::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 3px;
+      background: var(--color-primary-light);
+      border-radius: var(--border-radius-full);
+      transition: width var(--transition-normal);
+    }
+    
+    .plan-card:hover .plan-name::after {
+      width: 60px;
+    }
+    
+    .plan-price {
+      font-size: 2.75rem;
+      font-weight: 800;
+      margin: 16px 0 8px;
+      color: var(--color-primary);
+      line-height: 1;
+      transition: color var(--transition-normal), transform var(--transition-normal);
+    }
+    
+    .plan-card:hover .plan-price {
+      color: var(--color-primary-dark);
+      transform: scale(1.05);
+    }
+    
+    .plan-billing {
+      color: var(--color-text-secondary);
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    
+    .feature-list {
+      margin-bottom: 24px;
+      flex-grow: 1;
+      padding: 0 8px;
+    }
+    
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+      padding: 8px 12px;
+      border-radius: var(--border-radius-md);
+      transition: all var(--transition-fast);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .feature-item:hover {
+      background-color: var(--color-background-alt);
+      transform: translateX(5px);
+    }
+    
+    .feature-item i {
+      margin-right: 12px;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      transition: transform var(--transition-fast);
+    }
+    
+    .feature-item:hover i {
+      transform: scale(1.2);
+    }
+    
+    .feature-item .feature-text {
+      color: var(--color-text-secondary);
+      transition: color var(--transition-fast);
+    }
+    
+    .feature-item:hover .feature-text {
+      color: var(--color-text-primary);
+      font-weight: 500;
+    }
+    
+    .feature-item i.check {
+      color: var(--color-success);
+    }
+    
+    .feature-item i.plus {
+      color: var(--color-secondary);
+    }
+    
+    .feature-item i.times {
+      color: var(--color-text-tertiary);
+    }
+    
+    .upgrade-button {
+      display: inline-block;
+      text-align: center;
+      padding: 14px 24px;
+      font-weight: 600;
+      border-radius: var(--border-radius-lg);
+      text-decoration: none;
+      transition: all var(--transition-normal);
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      transform: translateY(0);
+    }
+    
+    .upgrade-button::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: rotate(45deg);
+      z-index: 1;
+      transition: all 0.5s ease;
+      opacity: 0;
+    }
+    
+    .upgrade-button:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .upgrade-button:hover::before {
+      animation: shine 1.5s ease;
+    }
+    
+    .upgrade-button:active {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    @keyframes shine {
+      0% { opacity: 0; transform: translateX(-100%) rotate(45deg); }
+      20% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(100%) rotate(45deg); }
+    }
+    
+    .free-btn {
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25), 0 4px 10px rgba(124, 58, 237, 0.2);
+      position: relative;
+      transform: translateY(0);
+      animation: freeBtnBounce 2.4s ease-in-out infinite;
+      overflow: hidden;
+      border-radius: 12px;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .free-btn:hover {
+      background: linear-gradient(135deg, #1d4ed8, #6d28d9);
+      color: #ffffff;
+      box-shadow: 0 14px 26px rgba(37, 99, 235, 0.35), 0 6px 14px rgba(109, 40, 217, 0.25);
+      transform: translateY(-3px);
+    }
+    .free-btn:focus {
+      outline: 3px solid rgba(59, 130, 246, 0.35);
+      outline-offset: 2px;
+    }
+    .free-btn::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 14px;
+      background: radial-gradient(60% 60% at 50% 0%, rgba(59,130,246,0.35), transparent 60%);
+      z-index: -1;
+      filter: blur(12px);
+      opacity: 1;
+    }
+    
+    @keyframes freeBtnBounce {
+      0%, 100% { transform: translateY(0); }
+      20% { transform: translateY(-4px); }
+      40% { transform: translateY(0); }
+      60% { transform: translateY(-2px); }
+      80% { transform: translateY(0); }
+    }
+
+    /* Suspension note for Free plan */
+    .suspension-note {
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: #FFFBEB; /* amber-50 */
+      color: #92400E; /* amber-800 */
+      border: 1px solid #FDE68A; /* amber-300 */
+      font-size: 0.9rem;
+    }
+    .suspension-note i { color: #D97706; /* amber-600 */ }
+
+    /* legacy override disabled: use the colorful gradient hover above */
+    .free-btn--legacy:hover {
+      background: var(--color-background-dark);
+      color: var(--color-text-primary);
+      border-color: var(--color-border-dark);
+    }
+    
+    .premium-btn {
+      background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-dark));
+      color: white;
+      border: none;
+      box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3);
+    }
+    
+    .premium-btn:hover {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-darker));
+      box-shadow: 0 12px 20px rgba(37, 99, 235, 0.4);
+    }
+    
+    .plus-btn {
+      background: linear-gradient(135deg, var(--color-secondary-light), var(--color-secondary-dark));
+      color: white;
+      border: none;
+      box-shadow: 0 8px 15px rgba(16, 185, 129, 0.3);
+    }
+    
+    .plus-btn:hover {
+      background: linear-gradient(135deg, var(--color-secondary), var(--color-secondary-darker));
+      box-shadow: 0 12px 20px rgba(16, 185, 129, 0.4);
+    }
+    
+    /* Enhanced FAQ Styles */
+    .faq-item {
+      margin-bottom: 20px;
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--border-radius-xl);
+      overflow: hidden;
+      transition: all var(--transition-normal);
+      opacity: 0;
+      background: var(--color-card);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .faq-item:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-3px);
+      border-color: var(--color-primary-lighter);
+    }
+    
+    .faq-question {
+      padding: 18px 24px;
+      background: var(--color-background-alt);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all var(--transition-fast);
+      color: var(--color-text-primary);
+      font-size: 1.05rem;
+    }
+    
+    .faq-question:hover {
+      background: var(--color-primary-lighter);
+      color: var(--color-primary-darker);
+    }
+    
+    .faq-question i {
+      transition: transform var(--transition-fast);
+    }
+    
+    .faq-item.active .faq-question {
+      background: var(--color-primary-light);
+      color: white;
+    }
+    
+    .faq-item.active .faq-question i {
+      transform: rotate(180deg);
+    }
+    
+    .faq-answer {
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: all var(--transition-normal);
+      background: var(--color-card);
+    }
+    
+    .faq-item.active .faq-answer {
+      padding: 20px 24px;
+      max-height: 1000px;
+    }
+    
+    .faq-answer p {
+      margin: 0;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+    
+    /* Enhanced CTA Styles */
+    .cta-section {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-darker));
+      border-radius: var(--border-radius-2xl);
+      padding: 4rem 3rem;
+      margin: 6rem auto;
+      position: relative;
+      overflow: hidden;
+      color: white;
+      box-shadow: var(--shadow-xl);
+      max-width: 1100px;
+    }
+    
+    .cta-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1000px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all var(--transition-normal);
+    }
+    
+    .cta-container.animate {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .cta-content {
+      flex: 1;
+      padding-right: 2rem;
+    }
+    
+    .cta-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    
+    .cta-description {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+    
+    .cta-actions {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .cta-actions .btn {
+      padding: 12px 24px;
+      border-radius: var(--border-radius-lg);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .cta-actions .btn.primary {
+      background: white;
+      color: var(--color-primary-dark);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .cta-actions .btn.primary:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .cta-actions .btn.ghost {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .cta-actions .btn.ghost:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-5px);
+    }
+    
+    .cta-image {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    
+    .cta-illustration {
+      max-width: 100%;
+      height: auto;
+      filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+      transform: translateY(0);
+      transition: transform var(--transition-normal);
+      animation: float 6s ease-in-out infinite;
+      z-index: 1;
+      position: relative;
+    }
+    
+    .cta-glow {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      filter: blur(40px);
+      z-index: 0;
+      animation: pulse 4s infinite ease-in-out;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 1200px) {
+      .plans-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+      
+      .cta-section {
+        padding: 3rem 2rem;
+      }
+      
+      .comparison-table th, .comparison-table td {
+        padding: 12px 16px;
+      }
+    }
+    
+    @media (max-width: 992px) {
+      .hero-inner {
+        flex-direction: column;
+        text-align: center;
+        padding: 3rem 1.5rem;
+      }
+      
+      .hero-content, .hero-image {
+        width: 100%;
+      }
+      
+      .hero-image {
+        margin-top: 2rem;
+      }
+      
+      .plans-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .plan-card.plus {
+        grid-column: span 2;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      
+      .cta-container {
+        flex-direction: column;
+      }
+      
+      .cta-content {
+        padding-right: 0;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+      
+      .cta-actions {
+        justify-content: center;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .plans-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      
+      .plan-card {
+        max-width: 450px;
+        margin: 0 auto;
+      }
+      
+      .plan-card.plus {
+        grid-column: span 1;
+      }
+      
+      .comparison-table {
+        display: block;
+        overflow-x: auto;
+      }
+      
+      .feature-col {
+        min-width: 180px;
+      }
+      
+      .faq-question h3 {
+        font-size: 1rem;
+      }
+      
+      .section-header h2 {
+        font-size: 1.75rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .hero-content h1 {
+        font-size: 2rem;
+      }
+      
+      .hero-description {
+        font-size: 1rem;
+      }
+      
+      .hero-actions {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .hero-button {
+        width: 100%;
+      }
+      
+      .section-header {
+        padding: 0 1rem;
+      }
+      
+      .cta-title {
+        font-size: 1.75rem;
+      }
+      
+      .cta-actions {
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .cta-actions .btn {
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+      
+      .faq-question h3 {
+        font-size: 0.9rem;
+        padding-right: 30px;
+      }
+    }
+    
+    .faq-item.animate {
+      animation: fadeInUp 0.6s forwards ease;
+    }
+    
+    .faq-item:nth-child(1).animate { animation-delay: 0.1s; }
+    .faq-item:nth-child(2).animate { animation-delay: 0.2s; }
+    .faq-item:nth-child(3).animate { animation-delay: 0.3s; }
+    .faq-item:nth-child(4).animate { animation-delay: 0.4s; }
+    .faq-item:nth-child(5).animate { animation-delay: 0.5s; }
+    
+    .comparison-table.animate {
+      animation: fadeInUp 0.8s forwards ease;
+    }
+    
+    /* Enhanced Comparison Table Styles */
+    .comparison-section {
+      margin-bottom: 5rem;
+    }
+    
+    .comparison-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: var(--border-radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      background: var(--color-card);
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all var(--transition-normal);
+    }
+    
+    .comparison-table th, .comparison-table td {
+      padding: 16px 24px;
+      text-align: center;
+      border-bottom: 1px solid var(--color-border-light);
+      transition: all var(--transition-fast);
+    }
+    
+    .comparison-table th {
+      background: var(--color-background-alt);
+      font-weight: 700;
+      color: var(--color-text-primary);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .comparison-table tr:hover td {
+      background-color: var(--color-background-alt);
+    }
+    
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .feature-col {
+      text-align: left;
+      font-weight: 500;
+      color: var(--color-text-primary);
+      min-width: 250px;
+    }
+    
+    .free-col {
+      background-color: rgba(243, 244, 246, 0.3);
+    }
+    
+    .premium-col {
+      background-color: rgba(59, 130, 246, 0.05);
+    }
+    
+    .plus-col {
+      background-color: rgba(16, 185, 129, 0.05);
+    }
+    
+    .category-row td {
+      background: var(--color-background-dark) !important;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+    }
+    
+    .comparison-table i.check {
+      color: var(--color-success);
+      font-size: 1.2rem;
+    }
+    
+    .comparison-table i.times {
+      color: var(--color-text-tertiary);
+      font-size: 1.2rem;
+    }
+    
+    .cta-container.animate {
+      animation: fadeIn 0.8s forwards ease;
+    }
+    
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .plan-card {
+      background-color: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s ease;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      will-change: transform, box-shadow;
+    }
+    
+    .plan-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px; /* thickness */
+      background: linear-gradient(135deg, rgba(59,130,246,.35), rgba(139,92,246,.35));
+      -webkit-mask: 
+        linear-gradient(#000 0 0) content-box, 
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events: none;
+    }
+    
+    .plan-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+    }
+    
+    .card-shine {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 200%;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: translateY(-100%) rotate(25deg);
+      transition: transform 1s ease;
+      pointer-events: none;
+    }
+    
+    .plan-card:hover .card-shine {
+      transform: translateY(100%) rotate(25deg);
+    }
+    
+    .plan-card.recommended {
+      transform: scale(1.05);
+      z-index: 2;
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.15);
+      border: 2px solid #3b82f6;
+    }
+    
+    .plan-card.recommended:hover {
+      transform: scale(1.05) translateY(-10px);
+    }
+    
+    .ribbon {
+      position: absolute;
+      top: 20px;
+      right: -30px;
+      background: #f59e0b;
+      color: white;
+      padding: 5px 30px;
+      transform: rotate(45deg);
+      font-weight: bold;
+      font-size: 0.8rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      z-index: 3;
+    }
+
+    .upgrade-hero {
+      /* Tambah ruang di atas agar tombol back tidak menabrak CTA */
+      padding: 4.5rem 1rem 2rem; 
+      position: relative;
+      z-index: 1;
+      margin-bottom: 3rem;
+    }
+    
+    .hero-inner { 
+      margin: 0 auto; 
+      padding: 3rem clamp(1.5rem, 5vw, 3rem); 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      gap: 2rem; 
+      background: linear-gradient(135deg, var(--color-card) 0%, rgba(255,255,255,0.9) 100%);
+      border-radius: var(--border-radius-xl);
+      box-shadow: var(--shadow-xl);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--color-border);
+      transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero-inner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(37, 99, 235, 0.1) 100%);
+      z-index: -1;
+      border-radius: inherit;
+    }
+    
+    .hero-inner:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .hero-content {
+      flex: 1;
+      max-width: 600px;
+    }
+    
+    .hero-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+      color: white;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border-radius: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+      transform: translateY(0);
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .hero-content h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+    
+    .hero-description {
+      font-size: 1.125rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    
+    .hero-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 2rem;
+      border-radius: var(--border-radius-lg);
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all var(--transition-normal);
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.5px;
+      will-change: transform, box-shadow;
+    }
+    
+    .hero-button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transition: left 0.7s ease;
+    }
+    
+    .hero-button:hover::before {
+      left: 100%;
+    }
+    
+    .hero-button:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .hero-button i {
+      margin-right: 0.75rem;
+      font-size: 1.125rem;
+      transition: transform var(--transition-normal);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .hero-button:hover i {
+      transform: translateY(-3px) scale(1.1);
+    }
+    
+    .hero-button.primary {
+      background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-dark));
+      color: white;
+      box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3);
+    }
+    
+    .hero-button.primary:hover {
+      box-shadow: 0 12px 20px rgba(37, 99, 235, 0.4);
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    }
+    .hero-image {
+      position: relative;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .image-container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      z-index: 1;
+    }
+    
+    .glow-effect {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, rgba(59, 130, 246, 0) 70%);
+      border-radius: 50%;
+      filter: blur(30px);
+      z-index: 0;
+      animation: pulse 4s infinite ease-in-out;
+    }
+    
+    .hero-img {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: auto;
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(0);
+      transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .hero-img:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: var(--shadow-xl);
+    }
+    
+    .back-button {
+      position: absolute;
+      top: 0.75rem;
+      left: 1rem;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      background: white;
+      color: var(--color-text-primary);
+      border-radius: var(--border-radius-md);
+      text-decoration: none;
+      font-weight: 500;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-fast);
+      z-index: 5;
+    }
+    
+    .back-button:hover {
+      background: var(--color-primary-light);
+      color: white;
+      transform: translateX(-3px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .back-button i {
+      margin-right: 0.5rem;
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0.6;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+      }
+    }
+    
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+    .hero-inner:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px -5px rgba(0,0,0,0.15);
+    }
+    
+    .hero-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+      animation: fadeInUp 0.8s ease forwards;
+    }
+    
+    .hero-content h1 {
+      animation: fadeInUp 0.8s 0.1s ease forwards;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    
+    .hero-description {
+      animation: fadeInUp 0.8s 0.2s ease forwards;
+      opacity: 0;
+    }
+    
+    .hero-actions {
+      animation: fadeInUp 0.8s 0.3s ease forwards;
+      opacity: 0;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .ghost-btn { text-decoration: none; color: #2563eb; font-weight: 700; border: 1px solid #bfdbfe; padding: 10px 14px; border-radius: 10px; background: #f0f7ff; }
+
+    .plans { padding: 20px; }
+    .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; max-width: 1100px; margin: 0 auto; }
+    .plan-header {
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+      position: relative;
+    }
+    
+    .plan-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #dbeafe, #3b82f6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      color: white;
+      font-size: 1.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      transform: translateY(0);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .plan-card:hover .plan-icon {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 20px -3px rgba(0, 0, 0, 0.15);
+    }
+    
+    .plan-card.premium .plan-icon {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+    
+    .plan-card.plus .plan-icon {
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    }
+    
+    .plan-badge {
+      display: inline-block;
+      background-color: #3b82f6;
+      color: white;
+      padding: 0.35rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .plan-card.premium .plan-badge {
+      background-color: #3b82f6;
+    }
+    
+    .plan-card.plus .plan-badge {
+      background-color: #8b5cf6;
+    }
+    
+    .plan-header h3 {
+      font-size: 1.75rem;
+      margin-bottom: 0.75rem;
+      color: #1e293b;
+      font-weight: 700;
+    }
+    
+    .plan-price {
+      margin-bottom: 1rem;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .price {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: #1e293b;
+      line-height: 1;
+    }
+    
+    .period {
+      font-size: 1rem;
+      color: #64748b;
+      margin-left: 4px;
+    }
+    
+    .old-price {
+      text-decoration: line-through;
+      color: #64748b;
+      font-size: 1.25rem;
+      margin-right: 0.75rem;
+      position: relative;
+    }
+    
+    .old-price::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: #ef4444;
+      transform: rotate(-5deg);
+    }
+    .plan-features {
+      padding: 1.5rem;
+      flex-grow: 1;
+    }
+    
+    .plan-features ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .feature-item {
+      padding: 0.75rem 0;
+      display: flex;
+      align-items: center;
+      color: #64748b;
+      transition: transform 0.2s ease, color 0.2s ease;
+      position: relative;
+    }
+    
+    .feature-item:hover {
+      transform: translateX(5px);
+      color: #1e293b;
+    }
+    
+    .feature-item::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background-color: rgba(203, 213, 225, 0.5);
+      transition: width 0.3s ease;
+    }
+    
+    .feature-item:hover::after {
+      width: 100%;
+    }
+    
+    .feature-item i {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      margin-right: 0.75rem;
+      font-size: 0.8rem;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    
+    .feature-item:hover i {
+      transform: scale(1.1);
+    }
+    
+    .feature-item i.fa-check {
+      color: #16a34a;
+      background: #f0fdf4;
+    }
+    
+    .feature-item i.fa-plus {
+      color: #2563eb;
+      background: #f0f7ff;
+    }
+    
+    .feature-item i.fa-times {
+      color: #6b7280;
+      background: #f3f4f6;
+    }
+    
+    .feature-item.disabled {
+      color: #94a3b8;
+      text-decoration: line-through;
+    }
+    
+    .feature-item.highlight {
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .feature-item.plus {
+      color: #1e293b;
+    }
+    
+    .plan-footer {
+      padding: 1.5rem;
+      text-align: center;
+      border-top: 1px solid rgba(229, 231, 235, 0.5);
+      background: linear-gradient(0deg, rgba(249, 250, 251, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative; /* sit above shine overlay */
+      z-index: 2;
+    }
+
+    /* Scoped overrides to avoid touching other designs */
+    .plan-footer .upgrade-button {
+      width: auto;
+      max-width: 320px;
+      margin: 0 auto;
+      display: inline-flex;
+      gap: .35rem;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .plan-footer .upgrade-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0,0,0,.12);
+    }
+    .plan-footer .upgrade-button:active {
+      transform: translateY(-1px) scale(.985);
+      box-shadow: 0 6px 14px rgba(0,0,0,.10);
+    }
+
+    /* Disable shine in plan footer to avoid white-out effect */
+    .plan-footer .upgrade-button::before { content: none !important; display: none !important; }
+    .plan-footer .upgrade-button::after { content: none !important; display: none !important; }
+
+    /* Keep gradients — prevent any hover override to white in footer context */
+    .plan-footer .upgrade-button.premium-btn,
+    .plan-footer .upgrade-button.premium-btn:hover,
+    .plan-footer .upgrade-button.premium-btn:active,
+    .plan-footer .upgrade-button.plus-btn,
+    .plan-footer .upgrade-button.plus-btn:hover,
+    .plan-footer .upgrade-button.plus-btn:active {
+      background-color: transparent !important;
+      background-image: none !important;
+      color: #fff !important;
+      border: none !important;
+      mix-blend-mode: normal !important;
+      filter: none !important;
+      -webkit-filter: none !important;
+      background-clip: padding-box !important;
+    }
+    /* Apply explicit gradients separately to avoid being overridden by any shared rules */
+    .plan-footer .upgrade-button.premium-btn,
+    .plan-footer .upgrade-button.premium-btn:hover,
+    .plan-footer .upgrade-button.premium-btn:active { 
+      background-image: linear-gradient(135deg, #3b82f6, #1d4ed8) !important; 
+    }
+    .plan-footer .upgrade-button.plus-btn,
+    .plan-footer .upgrade-button.plus-btn:hover,
+    .plan-footer .upgrade-button.plus-btn:active { 
+      background-image: linear-gradient(135deg, #8b5cf6, #6d28d9) !important; 
+    }
+
+    .upgrade-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.85rem 1.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      will-change: transform, box-shadow;
+    }
+    
+    .upgrade-button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transition: left 0.7s ease;
+    }
+    
+    .upgrade-button:hover::before {
+      left: 100%;
+    }
+    
+    .upgrade-button i {
+      margin-right: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .upgrade-button:hover i {
+      transform: translateY(-3px);
+    }
+    
+    .free-btn {
+      background-color: #f1f5f9;
+      color: #1e293b;
+      border: 1px solid rgba(203, 213, 225, 0.5);
+    }
+    
+    .premium-btn {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+    }
+    
+    .plus-btn {
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+      color: white;
+    }
+    
+    .upgrade-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn { display: inline-block; text-decoration: none; font-weight: 700; border-radius: 10px; padding: 10px 16px; }
+    .btn.primary { color: #fff; background: linear-gradient(135deg, #2563eb, #1d4ed8); box-shadow: 0 10px 20px rgba(37,99,235,.25); }
+    .btn.outline { color: #2563eb; border: 2px solid #2563eb; background: #fff; }
+    .btn.ghost { color: #2563eb; background: #eef6ff; border: 1px solid #bfdbfe; }
+
+    /* Comparison Table */
+    .comparison-section {
+      margin-bottom: 4rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .comparison-table {
+      position: relative;
+      margin-top: 2rem;
+    }
+    
+    .table-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      border: 1px solid rgba(229, 231, 235, 0.5);
+      overflow-x: auto;
+    }
+    
+    .comparison-table table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+    
+    .comparison-table th,
+    .comparison-table td {
+      padding: 1.25rem 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+      transition: background-color 0.2s ease;
+    }
+
+    /* Sticky first column for easier reading */
+    .comparison-table th.feature-col {
+      position: sticky;
+      left: 0;
+      z-index: 11;
+    }
+    .comparison-table td.feature-name {
+      position: sticky;
+      left: 0;
+      z-index: 9;
+      background: #ffffff;
+    }
+    
+    .comparison-table tr:hover td:not(.category-row td) {
+      background-color: rgba(243, 244, 246, 0.5);
+    }
+    
+    .comparison-table th:first-child,
+    .comparison-table td:first-child {
+      text-align: left;
+      padding-left: 2rem;
+    }
+    
+    .comparison-table th {
+      background-color: #f8fafc;
+      font-weight: bold;
+      color: var(--color-text-primary);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 1px 0 rgba(229, 231, 235, 0.5);
+    }
+    
+    .feature-col {
+      min-width: 250px;
+    }
+    
+    .free-col {
+      background-color: rgba(241, 245, 249, 0.3);
+    }
+    
+    .premium-col {
+      background-color: rgba(219, 234, 254, 0.3);
+    }
+    
+    .plus-col {
+      background-color: rgba(237, 233, 254, 0.3);
+    }
+    
+    .comparison-table .category-row td {
+      background-color: #f8fafc;
+      font-weight: bold;
+      color: var(--color-text-primary);
+      padding: 1rem 1.5rem;
+    }
+
+    /* Zebra rows to improve scanability */
+    .comparison-table tbody tr:not(.category-row):nth-child(even) td {
+      background-color: rgba(248, 250, 252, 0.5);
+    }
+    
+    .category-label {
+      display: inline-block;
+      padding: 0.35rem 1rem;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1));
+      color: var(--color-primary);
+      font-size: 0.85rem;
+    }
+    
+    .feature-name {
+      font-weight: 500;
+      color: var(--color-text-primary);
+      transition: color 0.2s ease;
+    }
+    
+    tr:hover .feature-name {
+      color: var(--color-primary);
+    }
+    
+    .check-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background-color: rgba(22, 163, 74, 0.1);
+      border-radius: 50%;
+      color: var(--color-success);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    
+    tr:hover .check-icon {
+      transform: scale(1.1);
+      background-color: rgba(22, 163, 74, 0.2);
+    }
+    
+    .check-icon.premium {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: var(--color-primary);
+    }
+    
+    tr:hover .check-icon.premium {
+      background-color: rgba(59, 130, 246, 0.2);
+    }
+    
+    .check-icon.plus {
+      background-color: rgba(139, 92, 246, 0.1);
+      color: var(--color-secondary);
+    }
+    
+    tr:hover .check-icon.plus {
+      background-color: rgba(139, 92, 246, 0.2);
+    }
+    
+    .times-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background-color: rgba(239, 68, 68, 0.1);
+      border-radius: 50%;
+      color: var(--color-danger);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    
+    tr:hover .times-icon {
+      transform: scale(1.1);
+      background-color: rgba(239, 68, 68, 0.15);
+    }
+    
+    .table-footer {
+      padding: 1.5rem 2rem;
+      background: linear-gradient(0deg, #f8fafc 0%, rgba(248, 250, 252, 0.5) 100%);
+      text-align: center;
+      border-top: 1px solid rgba(229, 231, 235, 0.5);
+    }
+    
+    .table-footer p {
+      color: var(--color-text-secondary);
+      margin-bottom: 1rem;
+    }
+    
+    .table-actions {
+      display: flex;
+      justify-content: center;
+    }
+    
+    .scroll-to-plans {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    }
+    
+    .scroll-to-plans:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+    }
+    
+    .scroll-to-plans i {
+      margin-left: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .scroll-to-plans:hover i {
+      transform: translateY(-3px);
+    }
+    
+    .comparison { margin: 8px 20px; padding: 18px; }
+    .comparison h3 { margin: 0 0 10px 0; }
+    .table { display: grid; gap: 8px; }
+    .row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; padding: 10px; border-radius: 12px; border: 1px solid #e5e7eb; }
+    .row.head { font-weight: 800; background: #f8fafc; }
+    .row i { width: 22px; height: 22px; display: inline-grid; place-items: center; border-radius: 6px; font-size: .85rem; }
+
+    /* FAQ Section */
+    .faq-section {
+      margin-bottom: 4rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .faq-container {
+      margin-top: 2rem;
+    }
+    
+    .faq-item {
+      background: white;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(229, 231, 235, 0.5);
+    }
+    
+    .faq-item:hover {
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+    
+    .faq-question {
+      padding: 1.25rem 1.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      transition: all 0.3s ease;
+    }
+    
+    .faq-question:hover {
+      color: var(--color-primary);
+    }
+    
+    .question-icon {
+      color: var(--color-primary);
+      transition: transform 0.3s ease;
+    }
+    
+    .faq-item.active .question-icon {
+      transform: rotate(45deg);
+    }
+    
+    .faq-answer {
+      padding: 0 1.5rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+    
+    .faq-item.active .faq-answer {
+      padding: 0 1.5rem 1.25rem;
+      max-height: 500px;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+      margin: 4rem 0;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .cta-container {
+      background: white;
+      border-radius: 16px;
+      padding: 3rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(229, 231, 235, 0.5);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+    
+    .cta-content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .cta-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: var(--color-text-primary);
+    }
+    
+    .cta-description {
+      color: var(--color-text-secondary);
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    
+    .cta-actions {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .cta-image {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .cta-illustration {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .cta-glow {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 70%);
+      z-index: 1;
+      animation: pulse 3s infinite ease-in-out;
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.5;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+      }
+    }
+    
+    .scroll-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    .scroll-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .scroll-top:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      background: var(--color-primary);
+      color: white;
+    }
+    
+    .scroll-top i {
+      transition: transform var(--transition-normal);
+    }
+    
+    .scroll-top:hover i {
+      transform: translateY(-3px);
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-10px);
+      }
+      60% {
+        transform: translateY(-5px);
+      }
+    }
+    
+    .scroll-top.visible i {
+      animation: bounce 2s infinite;
+    }
+    
+    .cta { margin: 12px 20px 40px; padding: 18px; display: grid; align-items: center; grid-template-columns: 1fr auto; gap: 12px; }
+    .cta-actions { display: flex; align-items: center; gap: 8px; }
+
+    @media (max-width: 768px) {
+      .hero-inner { flex-direction: column; align-items: flex-start; }
+      .row { grid-template-columns: 1fr 1fr 1fr 1fr; }
+      .cta { grid-template-columns: 1fr; }
+    }
+
+    /* Force all backgrounds on upgrade page to white */
+    .upgrade-page { background: #fff !important; background-color: #fff !important; }
+    .upgrade-page .floating-shapes { display: none !important; }
+    .upgrade-page .hero-inner,
+    .upgrade-page .hero-inner::before,
+    .upgrade-page .plans-section,
+    .upgrade-page .plan-card,
+    .upgrade-page .plan-header,
+    .upgrade-page .plan-footer,
+    .upgrade-page .comparison-section,
+    .upgrade-page .comparison-table,
+    .upgrade-page .comparison-table th,
+    .upgrade-page .comparison-table td,
+    .upgrade-page .comparison-table tr:hover td,
+    .upgrade-page .category-row td,
+    .upgrade-page .table-container,
+    .upgrade-page .table-footer,
+    .upgrade-page .faq-section,
+    .upgrade-page .faq-item,
+    .upgrade-page .faq-question,
+    .upgrade-page .faq-answer,
+    .upgrade-page .cta-section,
+    .upgrade-page .cta-container,
+    .upgrade-page .cta-glow {
+      background: #fff !important;
+      background-color: #fff !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+    }
+    /* Keep buttons/labels readable while backgrounds are forced white */
+    .upgrade-page .hero-badge,
+    .upgrade-page .plan-badge,
+    .upgrade-page .category-label {
+      background: #fff !important;
+      background-color: #fff !important;
+      color: var(--color-text-primary) !important;
+      box-shadow: none !important;
+      border: 1px solid var(--color-border) !important;
+    }
+    /* Preserve pricing/button colors but remove their background fill to keep page white */
+    .upgrade-page .upgrade-button,
+    .upgrade-page .hero-button,
+    .upgrade-page .btn { background: #fff !important; background-color: #fff !important; color: var(--color-text-primary) !important; box-shadow: none !important; border: 1px solid var(--color-border) !important; }
+    .upgrade-page .upgrade-button::before,
+    .upgrade-page .hero-button::before { content: none !important; }
+  </style>
+  <!-- Scroll to Top Button -->
+  <div class="scroll-top">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+
+  <script>
+    // Global error handlers (dipasang sedini mungkin) untuk mencegah spam "Uncaught (in promise) Object"
+    // dari extension browser atau script pihak ketiga sebelum DOMContentLoaded
+    window.addEventListener('unhandledrejection', (event) => {
+      // Cegah error default di console
+      event.preventDefault();
+    });
+
+    window.addEventListener('error', () => {
+      // Biarkan UI halaman menangani notifikasi; hindari spam console dari pihak ketiga
+    });
+
+    // Animasi scroll dan interaksi
+    document.addEventListener('DOMContentLoaded', function() {
+      // Fungsi untuk animasi scroll
+      function animateOnScroll() {
+        const elements = document.querySelectorAll('.plan-card, .faq-item, .comparison-table, .cta-container');
+        
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('animate');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.1,
+          rootMargin: '0px 0px -50px 0px'
+        });
+        
+        elements.forEach(el => {
+          observer.observe(el);
+        });
+      }
+      
+      // Fungsi untuk interaksi FAQ
+      function setupFaqInteraction() {
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+          const question = item.querySelector('.faq-question');
+          
+          if (!question) return;
+          
+          const icon = question.querySelector('.question-icon');
+          
+          question.addEventListener('click', () => {
+            const isOpen = item.classList.contains('active');
+            
+            // Tutup semua FAQ yang terbuka
+            document.querySelectorAll('.faq-item.active').forEach(openItem => {
+              if (openItem !== item) {
+                openItem.classList.remove('active');
+                const questionIcon = openItem.querySelector('.question-icon');
+                if (questionIcon) {
+                  questionIcon.classList.remove('fa-minus-circle');
+                  questionIcon.classList.add('fa-plus-circle');
+                }
+              }
+            });
+            
+            // Toggle FAQ yang diklik
+            item.classList.toggle('active');
+            
+            if (icon) {
+              if (isOpen) {
+                icon.classList.remove('fa-minus-circle');
+                icon.classList.add('fa-plus-circle');
+              } else {
+                icon.classList.remove('fa-plus-circle');
+                icon.classList.add('fa-minus-circle');
+              }
+            }
+          });
+        });
+      }
+      
+      // Fungsi untuk efek hover pada plan cards
+      function setupPlanCardEffects() {
+        const planCards = document.querySelectorAll('.plan-card');
+        
+        planCards.forEach(card => {
+          card.addEventListener('mouseenter', () => {
+            planCards.forEach(c => {
+              if (c !== card) c.classList.add('dimmed');
+            });
+          });
+          
+          card.addEventListener('mouseleave', () => {
+            planCards.forEach(c => {
+              c.classList.remove('dimmed');
+            });
+          });
+        });
+      }
+      
+      // Fungsi untuk smooth scroll
+      function setupSmoothScroll() {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+          anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const self = e.currentTarget;
+            if (!(self instanceof HTMLAnchorElement)) return;
+            const targetId = self.getAttribute('href');
+            if (!targetId) return;
+
+            const targetElement = document.querySelector(targetId);
+
+            if (targetElement instanceof HTMLElement) {
+              window.scrollTo({
+                top: targetElement.offsetTop - 80,
+                behavior: 'smooth'
+              });
+            }
+          });
+        });
+      }
+      
+      // Fungsi untuk scroll to top button
+      function setupScrollToTop() {
+        const scrollTopBtn = document.querySelector('.scroll-top');
+        
+        if (!scrollTopBtn) return;
+        
+        window.addEventListener('scroll', () => {
+          if (window.pageYOffset > 300) {
+            scrollTopBtn.classList.add('visible');
+          } else {
+            scrollTopBtn.classList.remove('visible');
+          }
+        });
+        
+        scrollTopBtn.addEventListener('click', () => {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        });
+      }
+      
+      // Inisialisasi semua fungsi
+      animateOnScroll();
+      setupFaqInteraction();
+      setupPlanCardEffects();
+      setupSmoothScroll();
+      setupScrollToTop();
+      
+      // Tambahkan event listener untuk error 403
+      document.querySelectorAll('.upgrade-button').forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          const self = e.currentTarget;
+          if (!(self instanceof HTMLAnchorElement)) return;
+          const url = self.getAttribute('href');
+          if (!url) return;
+          // Navigasi langsung tanpa fetch untuk menghindari CORS/promise rejection
+          try {
+            window.location.href = url;
+          } catch (err) {
+            showErrorNotification('Gagal membuka halaman. Silakan coba lagi.');
+          }
+        });
+      });
+      
+      // Fungsi untuk menampilkan notifikasi error
+      function showErrorNotification(message: string) {
+        const notification = document.createElement('div');
+        notification.className = 'error-notification';
+        notification.innerHTML = `
+          <div class="error-content">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>${message}</span>
+          </div>
+          <button class="error-close"><i class="fas fa-times"></i></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animasi masuk
+        setTimeout(() => {
+          notification.classList.add('show');
+        }, 10);
+        
+        // Tutup notifikasi setelah 5 detik
+        setTimeout(() => {
+          notification.classList.remove('show');
+          setTimeout(() => {
+            notification.remove();
+          }, 300);
+        }, 5000);
+        
+        // Tombol tutup
+        const closeBtn = notification.querySelector('.error-close');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+              notification.remove();
+            }, 300);
+          });
+        }
+      }
+      // (Opsional) Di tahap ini kita tidak menambah handler global lagi agar tidak duplikasi.
+    });
+    
+    // Fungsi untuk menangani error 403
+    function handleFetchError(error: unknown) {
+      console.error('Error:', error);
+    }
+  </script>
+</Layout>

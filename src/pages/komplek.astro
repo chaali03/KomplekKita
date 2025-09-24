@@ -1,0 +1,1709 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/sections/Header.astro';
+import SimpleFooter from '../components/SimpleFooter.astro';
+
+---
+
+<Layout>
+  <Header />
+
+  <section class="komplek-page">
+    <div class="bg-decor" aria-hidden="true">
+      <div class="gradient-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+      </div>
+      <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+      </div>
+      <div class="grid-pattern"></div>
+    </div>
+
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <h1 class="section-title">
+          <span class="text-gradient">Daftar Komplek</span> 
+          <span class="title-accent">Tersedia</span>
+        </h1>
+        <p class="section-subtitle">
+          Pilih komplek untuk melihat informasi lengkap dan lokasi di peta.
+        </p>
+      </div>
+
+      <!-- Search Section -->
+      <div class="search-section" data-aos="fade-up" data-aos-delay="50">
+        <div class="search-container">
+          <div class="search-box">
+            <div class="search-icon">
+              <i class="fas fa-search"></i>
+            </div>
+            <input 
+              type="text" 
+              id="searchInput" 
+              placeholder="Cari nama komplek..." 
+              class="search-input"
+            >
+            <button class="search-clear" id="clearSearch" style="display: none;">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="search-results-count" id="resultsCount" style="display: none;">
+            <span id="countText">Menampilkan semua komplek</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="komplek-grid" id="komplekGrid">
+        <div class="komplek-card" data-aos="fade-up" data-aos-delay="200" data-name="anggrek asri"
+             data-lat="-6.1701" data-lng="106.6403"
+             data-ketua-rt="Ahmad Rahman"
+             data-ketua-rt-foto="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+             data-bendahara="Dewi Sartika"
+             data-bendahara-foto="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+             data-alamat="Jl. Anggrek Mas Blok A, Tangerang">
+          <div class="card-glow"></div>
+          <div class="card-bg"></div>
+          <div class="card-content">
+            <div class="card-header">
+              <div class="card-icon">
+                <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=100&h=100&fit=crop&crop=center" alt="Komplek Anggrek Asri" class="complex-image">
+                <div class="icon-pulse"></div>
+              </div>
+              <div class="card-info">
+                <h3 class="card-title">Komplek Anggrek Asri</h3>
+                <p class="card-location">Tangerang</p>
+              </div>
+              <span class="demo-tag">Demo</span>
+            </div>
+            
+            <div class="card-body">
+              <p class="card-description">
+                Selamat datang di Komplek Anggrek Asri! Rasakan keindahan lingkungan hijau dengan sistem manajemen komunitas cerdas dan keamanan terjamin sepanjang waktu.
+              </p>
+            </div>
+            
+            <div class="card-footer">
+              <button class="demo-btn">
+                <span class="btn-text">Lihat Demo</span>
+                <div class="btn-icon">
+                  <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="btn-ripple"></div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Results Message -->
+      <div class="no-results" id="noResults" style="display: none;">
+        <div class="no-results-content">
+          <div class="no-results-icon">
+            <i class="fas fa-search"></i>
+          </div>
+          <h3>Tidak ada komplek ditemukan</h3>
+          <p>Coba gunakan kata kunci yang berbeda atau periksa ejaan pencarian Anda.</p>
+          <button class="clear-search-btn" onclick="clearSearch()">
+            <i class="fas fa-refresh"></i>
+            Tampilkan Semua Komplek
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popup Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modalTitle">Informasi Komplek</h3>
+          <button class="modal-close" id="modalClose">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Alamat Komplek -->
+          <div class="komplek-address">
+            <div class="address-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="address-content">
+              <h4>Alamat Komplek</h4>
+              <p id="komplekAlamat">-</p>
+            </div>
+          </div>
+
+          <!-- Pengurus Info -->
+          <div class="komplek-info">
+            <h4 class="info-section-title">
+              <i class="fas fa-users"></i>
+              Pengurus Komplek
+            </h4>
+            <div class="pengurus-grid">
+              <!-- Ketua RT -->
+              <div class="pengurus-card">
+                <div class="pengurus-photo">
+                  <img id="ketuaRTFoto" src="" alt="Ketua RT" class="person-photo">
+                  <div class="photo-overlay">
+                    <i class="fas fa-crown"></i>
+                  </div>
+                </div>
+                <div class="pengurus-info">
+                  <h5>Ketua RT</h5>
+                  <p id="ketuaRTNama">-</p>
+                  <div class="contact-buttons">
+                    <button class="contact-btn whatsapp-btn">
+                      <i class="fab fa-whatsapp"></i>
+                      WhatsApp
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bendahara -->
+              <div class="pengurus-card">
+                <div class="pengurus-photo">
+                  <img id="bendaharaFoto" src="" alt="Bendahara" class="person-photo">
+                  <div class="photo-overlay">
+                    <i class="fas fa-wallet"></i>
+                  </div>
+                </div>
+                <div class="pengurus-info">
+                  <h5>Bendahara</h5>
+                  <p id="bendaharaNama">-</p>
+                  <div class="contact-buttons">
+                    <button class="contact-btn whatsapp-btn">
+                      <i class="fab fa-whatsapp"></i>
+                      WhatsApp
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Maps Section -->
+          <div class="map-container">
+            <div class="map-header">
+              <h4><i class="fas fa-location-dot"></i> Lokasi Komplek</h4>
+              <button class="open-maps-btn" id="openMapsBtn">
+                <i class="fas fa-external-link-alt"></i>
+                Buka di Google Maps
+              </button>
+            </div>
+            <div class="map-wrapper">
+              <iframe 
+                id="mapFrame" 
+                width="100%" 
+                height="350" 
+                style="border:0; border-radius: 12px;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+              </iframe>
+            </div>
+            <div class="map-footer">
+              <div class="map-buttons">
+                <button class="directions-btn" id="directionsBtn">
+                  <i class="fas fa-route"></i>
+                  Dapatkan Petunjuk Arah
+                </button>
+                <button class="demo-view-btn" id="viewDemoBtn">
+                  <i class="fas fa-eye"></i>
+                  Lihat Demo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <SimpleFooter />
+</Layout>
+
+<style>
+  :root {
+    --primary: #2563EB;
+    --primary-light: #60A5FA;
+    --primary-dark: #1D4ED8;
+    --secondary: #06B6D4;
+    --accent: #F59E0B;
+    --success: #10B981;
+    --text-primary: #111827;
+    --text-secondary: #6B7280;
+    --text-light: #9CA3AF;
+    --surface: #FFFFFF;
+    --surface-soft: #F9FAFB;
+    --surface-card: rgba(255, 255, 255, 0.95);
+    --border: #E5E7EB;
+    --border-soft: rgba(229, 231, 235, 0.5);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --shadow-glow: 0 0 0 1px rgba(37, 99, 235, 0.1);
+    --radius: 16px;
+    --radius-lg: 24px;
+  }
+
+  .komplek-page {
+    position: relative;
+    min-height: 100vh;
+    padding: 8rem 0 6rem;
+    background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+    overflow: hidden;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Background Effects */
+  .bg-decor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .gradient-orbs {
+    position: absolute;
+    inset: 0;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.3;
+    animation: float 20s ease-in-out infinite;
+  }
+
+  .orb-1 {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    top: -150px;
+    left: -150px;
+    animation-delay: 0s;
+  }
+
+  .orb-2 {
+    width: 250px;
+    height: 250px;
+    background: linear-gradient(135deg, var(--accent), var(--primary-light));
+    top: 30%;
+    right: -125px;
+    animation-delay: -7s;
+  }
+
+  .orb-3 {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, var(--success), var(--secondary));
+    bottom: -100px;
+    left: 20%;
+    animation-delay: -14s;
+  }
+
+  .floating-shapes {
+    position: absolute;
+    inset: 0;
+  }
+
+  .shape {
+    position: absolute;
+    opacity: 0.1;
+    animation: drift 25s linear infinite;
+  }
+
+  .shape-1 {
+    width: 60px;
+    height: 60px;
+    background: var(--primary);
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+  }
+
+  .shape-2 {
+    width: 40px;
+    height: 40px;
+    background: var(--secondary);
+    border-radius: 50%;
+    top: 60%;
+    right: 20%;
+    animation-delay: -8s;
+  }
+
+  .shape-3 {
+    width: 80px;
+    height: 80px;
+    background: var(--accent);
+    border-radius: 20px;
+    bottom: 30%;
+    left: 80%;
+    transform: rotate(45deg);
+    animation-delay: -16s;
+  }
+
+  .grid-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0);
+    background-size: 40px 40px;
+    opacity: 0.3;
+  }
+
+  /* Header Styles */
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .section-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .title-accent {
+    color: var(--text-secondary);
+  }
+
+  .section-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* Search Section */
+  .search-section {
+    margin-bottom: 3rem;
+  }
+
+  .search-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--surface-card);
+    border: 2px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+  }
+
+  .search-box:focus-within {
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow-lg), 0 0 20px rgba(37, 99, 235, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .search-icon {
+    color: var(--text-light);
+    margin-right: 0.75rem;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+  }
+
+  .search-box:focus-within .search-icon {
+    color: var(--primary);
+  }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 1rem;
+    color: var(--text-primary);
+    padding: 0.5rem 0;
+  }
+
+  .search-input::placeholder {
+    color: var(--text-light);
+  }
+
+  .search-clear {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    margin-left: 0.5rem;
+  }
+
+  .search-clear:hover {
+    background: var(--surface-soft);
+    color: var(--text-secondary);
+  }
+
+  .search-results-count {
+    text-align: center;
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface-card);
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    border: 1px solid var(--border-soft);
+    backdrop-filter: blur(20px);
+  }
+
+  /* Grid */
+  .komplek-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: clamp(1rem, 2.5vw, 1.5rem);
+    margin-bottom: 3rem;
+  }
+
+  /* Card Styles */
+  .komplek-card {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform .18s ease, box-shadow .25s ease, border-color .25s ease, opacity .3s ease;
+    cursor: pointer;
+    group: card;
+    margin-top: 1rem;
+    opacity: 0;
+    transform: translateY(12px);
+    will-change: transform, opacity;
+  }
+
+  .komplek-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .komplek-card.reveal-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .komplek-card { opacity: 1; transform: none; }
+    .komplek-card.reveal-in { opacity: 1; transform: none; }
+  }
+
+  .card-bg {
+    position: absolute;
+    inset: 0;
+    background: var(--surface-card);
+    border: 1px solid var(--border-soft);
+    backdrop-filter: blur(20px);
+    transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
+  }
+
+  .komplek-card:hover .card-bg {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow), 0 6px 22px rgba(37, 99, 235, 0.10);
+  }
+
+  .card-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), 
+      rgba(37, 99, 235, 0.1) 0%, 
+      transparent 40%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .komplek-card:hover .card-glow {
+    opacity: 1;
+  }
+  
+  .komplek-card:hover .demo-tag::after {
+    opacity: 1;
+    animation: shine 1.2s ease forwards;
+  }
+  
+  .demo-tag::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0.0), rgba(255,255,255,0.35), rgba(255,255,255,0.0));
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    opacity: 0;
+  }
+
+  .card-content {
+    position: relative;
+    padding: 1rem 1rem 0.75rem;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-icon {
+    position: relative;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .complex-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .icon-pulse {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-light);
+    opacity: 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .card-info {
+    flex: 1;
+  }
+
+  .card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 2px 0;
+  }
+
+  .card-location {
+    font-size: 0.84rem;
+    color: var(--text-light);
+    margin: 0;
+  }
+
+  .demo-tag {
+    position: absolute;
+    top: 0.65rem;
+    right: -2.4rem;
+    background: var(--primary);
+    color: white;
+    padding: 0.4rem 2.4rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    transform: rotate(45deg);
+    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.25);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  .card-body {
+    flex: 1;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-description {
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 1rem;
+    display: block;
+    overflow: visible;
+  }
+
+  .card-footer {
+    margin-top: auto;
+  }
+
+  .demo-btn {
+    position: relative;
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform .18s ease, box-shadow .25s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    align-self: flex-start;
+    min-width: 140px;
+  }
+
+  .demo-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.3);
+  }
+
+  .btn-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .demo-btn:hover .btn-icon {
+    transform: translateX(4px);
+  }
+
+  .btn-ripple {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+
+  .demo-btn:hover .btn-ripple {
+    transform: translateX(100%);
+  }
+
+  /* Responsive adjustments for card and CTA */
+  @media (min-width: 700px) {
+    .demo-btn { width: auto; min-width: 220px; align-self: flex-start; }
+  }
+
+  /* No Results */
+  .no-results {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--surface-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-soft);
+    backdrop-filter: blur(20px);
+  }
+
+  .no-results-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    font-size: 2rem;
+    color: white;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+  }
+
+  .no-results h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .no-results p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .clear-search-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+
+  .clear-search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+  }
+
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    padding: 1rem;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-container {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-soft);
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s ease;
+  }
+
+  .modal-overlay.active .modal-container {
+    transform: scale(1) translateY(0);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 2rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface-soft) 100%);
+  }
+
+  .modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-close:hover {
+    background: var(--surface-soft);
+    color: var(--text-secondary);
+  }
+
+  .modal-body {
+    padding: 2rem;
+    overflow-y: auto;
+    max-height: calc(90vh - 120px);
+  }
+
+  /* Address Section */
+  .komplek-address {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+    border-radius: var(--radius);
+    margin-bottom: 2rem;
+    color: white;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+  }
+
+  .address-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .address-content h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .address-content p {
+    font-size: 1rem;
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  /* Pengurus Section */
+  .komplek-info {
+    margin-bottom: 2rem;
+  }
+
+  .info-section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .info-section-title i {
+    color: var(--primary);
+  }
+
+  .pengurus-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .pengurus-card {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .pengurus-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-light);
+  }
+
+  .pengurus-photo {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1rem;
+  }
+
+  .person-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--primary-light);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  }
+
+  .photo-overlay {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.875rem;
+    border: 2px solid var(--surface);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  }
+
+  .pengurus-info {
+    text-align: center;
+  }
+
+  .pengurus-info h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+  }
+
+  .pengurus-info p {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0 0 1rem 0;
+  }
+
+  .contact-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  .contact-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .whatsapp-btn {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: white;
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+  }
+
+  .whatsapp-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+  }
+
+  .phone-btn {
+    background: linear-gradient(135deg, var(--accent), #D97706);
+    color: white;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  }
+
+  .phone-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  }
+
+  /* Map Container */
+  .map-container {
+    background: var(--surface-soft);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border-soft);
+  }
+
+  .map-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .map-header h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .map-header h4 i {
+    color: var(--primary);
+  }
+
+  .open-maps-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, var(--success), #059669);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+
+  .open-maps-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  }
+
+  .map-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    background: var(--surface);
+    margin-bottom: 1rem;
+  }
+
+  .map-footer {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .map-buttons {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .directions-btn, .demo-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .directions-btn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+
+  .directions-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+  }
+  
+  .demo-view-btn {
+    background: linear-gradient(135deg, var(--accent), #D97706);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  }
+  
+  .demo-view-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+  }
+
+  /* Animations */
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(20px, -20px) scale(1.1); }
+    66% { transform: translate(-10px, 10px) scale(0.9); }
+  }
+
+  @keyframes drift {
+    0% { transform: translateY(0px) rotate(0deg); }
+    100% { transform: translateY(-100px) rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.1); }
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  
+  @keyframes shine {
+    0% { transform: translateX(0); opacity: 0; }
+    30% { opacity: 1; }
+    100% { transform: translateX(200%); opacity: 0; }
+  }
+  
+  @keyframes highlight-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+  }
+  
+  .highlight-card {
+    animation: highlight-pulse 1.5s ease-in-out;
+    border-color: var(--primary);
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8) translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .komplek-page {
+      padding: 6rem 0 4rem;
+    }
+
+    .container {
+      padding: 0 1rem;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+    }
+
+    .komplek-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .orb-1 {
+      width: 200px;
+      height: 200px;
+    }
+
+    .orb-2 {
+      width: 150px;
+      height: 150px;
+    }
+
+    .orb-3 {
+      width: 100px;
+      height: 100px;
+    }
+
+    .search-container {
+      max-width: 100%;
+    }
+
+    .search-box {
+      padding: 0.5rem 1rem;
+    }
+
+    .modal-container {
+      max-width: 95%;
+      margin: 1rem;
+    }
+
+    .modal-header {
+      padding: 1.5rem 1.5rem 1rem;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .pengurus-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .pengurus-card {
+      padding: 1rem;
+    }
+
+    .map-container {
+      padding: 1rem;
+    }
+
+    .map-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .komplek-address {
+      flex-direction: column;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .contact-buttons {
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .section-title {
+      font-size: 2rem;
+    }
+
+    .komplek-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .card-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .card-info {
+      order: -1;
+    }
+
+    .demo-tag {
+      align-self: flex-start;
+    }
+
+    .modal-header {
+      padding: 1rem 1rem 0.75rem;
+    }
+
+    .modal-body {
+      padding: 1rem;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+    }
+
+    .pengurus-grid {
+      gap: 0.75rem;
+    }
+
+    .pengurus-photo {
+      width: 60px;
+      height: 60px;
+    }
+
+    .photo-overlay {
+      width: 24px;
+      height: 24px;
+      font-size: 0.75rem;
+    }
+  }
+
+  /* Additional responsive refinements */
+  @media (max-width: 1024px) {
+    .container {
+      padding: 0 1.25rem;
+    }
+    .komplek-grid {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .komplek-grid {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+    .card-content {
+      padding: 1.25rem;
+    }
+    .card-title {
+      font-size: 1.125rem;
+    }
+    .card-description {
+      font-size: 0.95rem;
+    }
+    /* Prevent badge from overflowing on narrow screens */
+    .demo-tag {
+      right: 1rem;
+      transform: none;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+    }
+    /* Improve search UI spacing */
+    .search-box {
+      padding: 0.5rem 0.75rem;
+    }
+    .search-results-count {
+      font-size: 0.8rem;
+      padding: 0.5rem 0.75rem;
+    }
+    /* Modal sizing and scrolling */
+    .modal-container {
+      width: calc(100% - 2rem);
+      max-width: 720px;
+    }
+    .modal-body {
+      max-height: calc(90vh - 110px);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .card-header {
+      gap: 0.75rem;
+    }
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      font-size: 1rem;
+    }
+    .btn-icon i { font-size: 0.9rem; }
+    .demo-btn {
+      padding: 0.8rem 1rem;
+      font-size: 0.9rem;
+    }
+    /* Map height tweak for small devices */
+    #mapFrame {
+      height: 240px !important;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .section-title {
+      font-size: 1.75rem;
+    }
+    .search-input { font-size: 0.95rem; }
+    .no-results { padding: 2.5rem 1rem; }
+  }
+
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+    const clearSearch = document.getElementById('clearSearch') as HTMLElement;
+    const komplekGrid = document.getElementById('komplekGrid') as HTMLElement;
+    const noResults = document.getElementById('noResults') as HTMLElement;
+    const resultsCount = document.getElementById('resultsCount') as HTMLElement;
+    const countText = document.getElementById('countText') as HTMLElement;
+    // cards will be rendered dynamically; don't capture a static NodeList here
+    const modalOverlay = document.getElementById('modalOverlay') as HTMLElement;
+    const modalClose = document.getElementById('modalClose') as HTMLElement;
+    const modalTitle = document.getElementById('modalTitle') as HTMLElement;
+    
+    // Reveal observer for entry animation
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let revealObserver: IntersectionObserver | null = null;
+    function observeCard(el: Element, index = 0){
+      if (!(el instanceof HTMLElement)) return;
+      if (prefersReduced){ el.classList.add('reveal-in'); return; }
+      if (!revealObserver){
+        revealObserver = new IntersectionObserver((entries)=>{
+          entries.forEach((entry)=>{
+            const target = entry.target as HTMLElement;
+            if (entry.isIntersecting){
+              const idx = Number(target.getAttribute('data-reveal-idx')||'0');
+              const delay = Math.min(idx * 70, 350); // stagger up to 350ms
+              setTimeout(()=> target.classList.add('reveal-in'), delay);
+              revealObserver && revealObserver.unobserve(target);
+            }
+          });
+        }, { root: null, rootMargin: '0px 0px -10% 0px', threshold: 0.15 });
+      }
+      revealObserver.observe(el);
+    }
+    function initRevealForExisting(){
+      const list = Array.from(document.querySelectorAll('.komplek-card'));
+      list.forEach((el, i)=>{
+        (el as HTMLElement).setAttribute('data-reveal-idx', String(i));
+        observeCard(el, i);
+      });
+    }
+    // Initialize for server-rendered card(s)
+    initRevealForExisting();
+
+    // Modal elements
+    const komplekAlamat = document.getElementById('komplekAlamat') as HTMLElement;
+    const ketuaRTNama = document.getElementById('ketuaRTNama') as HTMLElement;
+    const ketuaRTFoto = document.getElementById('ketuaRTFoto') as HTMLImageElement;
+    const bendaharaNama = document.getElementById('bendaharaNama') as HTMLElement;
+    const bendaharaFoto = document.getElementById('bendaharaFoto') as HTMLImageElement;
+    const mapFrame = document.getElementById('mapFrame') as HTMLIFrameElement;
+    const openMapsBtn = document.getElementById('openMapsBtn') as HTMLElement;
+    const directionsBtn = document.getElementById('directionsBtn') as HTMLElement;
+
+    let currentLat = '';
+    let currentLng = '';
+    let currentKomplekName = '';
+
+    // Search functionality
+    function performSearch() {
+      if (!searchInput) return;
+      const query = searchInput.value.toLowerCase().trim();
+      let visibleCount = 0;
+
+      const cards = Array.from(document.querySelectorAll<HTMLElement>('.komplek-card'));
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name')?.toLowerCase() || '';
+        const title = card.querySelector('.card-title')?.textContent?.toLowerCase() || '';
+        const location = card.querySelector('.card-location')?.textContent?.toLowerCase() || '';
+        
+        const matches = name.includes(query) || title.includes(query) || location.includes(query);
+        
+        if (matches || query === '') {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Show/hide no results message
+      if (visibleCount === 0 && query !== '') {
+        if (noResults) noResults.style.display = 'block';
+        if (komplekGrid) komplekGrid.style.display = 'none';
+        if (resultsCount) resultsCount.style.display = 'none';
+      } else {
+        if (noResults) noResults.style.display = 'none';
+        if (komplekGrid) komplekGrid.style.display = 'grid';
+        if (resultsCount) resultsCount.style.display = 'block';
+      }
+
+      // Update results count
+      if (query === '') {
+        if (countText) countText.textContent = 'Menampilkan semua komplek';
+        if (clearSearch) clearSearch.style.display = 'none';
+      } else {
+        if (countText) countText.textContent = `Ditemukan ${visibleCount} komplek`;
+        if (clearSearch) clearSearch.style.display = 'block';
+      }
+    }
+
+    // Clear search
+    function clearSearchFunc() {
+      searchInput.value = '';
+      performSearch();
+      searchInput.focus();
+    }
+
+    // Make clearSearch function global with proper type declaration
+    (window as any).clearSearch = clearSearchFunc;
+
+    // Modal functions
+    function openModal(data: {
+      komplekName: string;
+      lat: string;
+      lng: string;
+      alamat: string;
+      ketuaRT: string;
+      ketuaRTFoto: string;
+      bendahara: string;
+      bendaharaFoto: string;
+    }): void {
+      if (!modalTitle || !komplekAlamat || !ketuaRTNama || !ketuaRTFoto || 
+          !bendaharaNama || !bendaharaFoto || !mapFrame || !modalOverlay) return;
+      
+      // Set modal content
+      modalTitle.textContent = `${data.komplekName}`;
+      komplekAlamat.textContent = data.alamat;
+      ketuaRTNama.textContent = data.ketuaRT;
+      ketuaRTFoto.src = data.ketuaRTFoto;
+      ketuaRTFoto.alt = `Foto ${data.ketuaRT}`;
+      bendaharaNama.textContent = data.bendahara;
+      bendaharaFoto.src = data.bendaharaFoto;
+      bendaharaFoto.alt = `Foto ${data.bendahara}`;
+      
+      // Set current data
+      currentLat = data.lat;
+      currentLng = data.lng;
+      currentKomplekName = data.komplekName;
+      
+      // Load Google Maps embed dengan marker dan label komplek
+      const encodedName = encodeURIComponent(data.komplekName);
+      const encodedAddress = encodeURIComponent(data.alamat);
+      
+      // Gunakan embed tanpa API key dengan koordinat agar tidak tergantung Maps Embed API key
+      const mapSrc = `https://www.google.com/maps?q=${data.lat},${data.lng}&z=17&hl=id&output=embed`;
+      // Fallback menggunakan alamat (jika koordinat tidak valid)
+      const fallbackMapSrc = `https://www.google.com/maps?q=${encodedAddress}&z=16&hl=id&output=embed`;
+      
+      // Tampilkan peta langsung dari koordinat jika tersedia, jika tidak gunakan alamat
+      if (data.lat && data.lng) {
+        mapFrame.src = mapSrc;
+      } else {
+        mapFrame.src = fallbackMapSrc;
+      }
+      
+      modalOverlay.classList.add('active');
+      if (document.body) document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(): void {
+      if (!modalOverlay || !document.body || !mapFrame) return;
+      modalOverlay.classList.remove('active');
+      document.body.style.overflow = 'auto';
+      // Clear map source to stop loading
+      setTimeout(() => {
+        if (mapFrame) mapFrame.src = '';
+      }, 300);
+    }
+
+    // Event listeners
+    if (searchInput) {
+      searchInput.addEventListener('input', performSearch);
+      searchInput.addEventListener('keydown', function(e: KeyboardEvent) {
+        if (e.key === 'Escape') {
+          clearSearchFunc();
+        }
+      });
+    }
+
+    if (clearSearch) clearSearch.addEventListener('click', clearSearchFunc);
+
+    // Modal event listeners
+    if (modalClose) modalClose.addEventListener('click', closeModal);
+    
+    if (modalOverlay) modalOverlay.addEventListener('click', function(e: MouseEvent) {
+      if (e.target === modalOverlay) {
+        closeModal();
+      }
+    });
+
+    // Escape key to close modal
+    document.addEventListener('keydown', function(e: KeyboardEvent) {
+      if (e.key === 'Escape' && modalOverlay && modalOverlay.classList.contains('active')) {
+        closeModal();
+      }
+    });
+
+    // Open in Google Maps
+    if (openMapsBtn) openMapsBtn.addEventListener('click', function() {
+      if (currentLat && currentLng) {
+        const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(currentKomplekName)}/@${currentLat},${currentLng},16z`;
+        window.open(mapsUrl, '_blank');
+      }
+    });
+
+    // Directions button
+    if (directionsBtn) directionsBtn.addEventListener('click', function() {
+      if (currentLat && currentLng) {
+        const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${currentLat},${currentLng}&destination_place_id=${encodeURIComponent(currentKomplekName)}`;
+        window.open(directionsUrl, '_blank');
+      }
+    });
+    
+    // View Demo button
+    const viewDemoBtn = document.getElementById('viewDemoBtn') as HTMLElement;
+    if (viewDemoBtn) viewDemoBtn.addEventListener('click', function() {
+      // Menutup modal terlebih dahulu
+      closeModal();
+      
+      // Arahkan ke halaman user
+      window.location.href = '/userlaporan';
+    });
+
+    // Demo button handlers
+    document.querySelectorAll('.demo-btn').forEach(btn => {
+      btn.addEventListener('click', function(this: HTMLElement) {
+        const card = this.closest('.komplek-card') as HTMLElement;
+        if (!card) return;
+        
+        const data = {
+          komplekName: card.querySelector('.card-title')?.textContent || 'Komplek',
+          lat: card.getAttribute('data-lat') || '',
+          lng: card.getAttribute('data-lng') || '',
+          alamat: card.getAttribute('data-alamat') || '-',
+          ketuaRT: card.getAttribute('data-ketua-rt') || '-',
+          ketuaRTFoto: card.getAttribute('data-ketua-rt-foto') || '',
+          bendahara: card.getAttribute('data-bendahara') || '-',
+          bendaharaFoto: card.getAttribute('data-bendahara-foto') || ''
+        };
+        
+        openModal(data);
+      });
+    });
+
+    // Contact button handlers
+    document.addEventListener('click', function(e) {
+      const target = e.target as HTMLElement;
+      
+      if (target.closest('.whatsapp-btn')) {
+        e.preventDefault();
+        // Demo WhatsApp number - replace with actual data
+        const phoneNumber = '6281234567890';
+        const message = encodeURIComponent(`Halo, saya ingin bertanya tentang ${currentKomplekName}`);
+        window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+      }
+      
+      if (target.closest('.phone-btn')) {
+        e.preventDefault();
+        // Demo phone number - replace with actual data
+        const phoneNumber = '+6281234567890';
+        window.open(`tel:${phoneNumber}`, '_self');
+      }
+    });
+
+    // Parallax effect for floating shapes
+    let ticking = false;
+    
+    function updateParallax() {
+      const scrolled = window.pageYOffset;
+      const shapes = document.querySelectorAll<HTMLElement>('.shape');
+      
+      shapes.forEach((shape, index) => {
+        const speed = 0.5 + (index * 0.2);
+        const yPos = -(scrolled * speed);
+        shape.style.transform = `translateY(${yPos}px) rotate(${scrolled * 0.1}deg)`;
+      });
+      
+      ticking = false;
+    }
+    
+    function requestTick() {
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    }
+    
+    window.addEventListener('scroll', requestTick);
+    
+    // Initialize search
+    performSearch();
+
+    // Dynamically fetch komplek list from backend and render
+    async function fetchAndRenderKomplek() {
+      // Disabled per request: keep only the existing demo card and do not append others
+      return;
+    }
+    fetchAndRenderKomplek();
+  });
+</script>
