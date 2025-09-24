@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('iuran', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('komplek_id');
-            $table->string('periode', 7); // YYYY-MM
-            $table->unsignedBigInteger('amount');
-            $table->timestamps();
+        if (!Schema::hasTable('iuran')) {
+            Schema::create('iuran', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('komplek_id');
+                $table->string('periode', 7); // YYYY-MM
+                $table->unsignedBigInteger('amount');
+                $table->timestamps();
 
-            $table->index('komplek_id');
-            $table->unique(['komplek_id', 'periode'], 'iuran_komplek_periode_unique');
-        });
+                $table->index('komplek_id');
+                $table->unique(['komplek_id', 'periode'], 'iuran_komplek_periode_unique');
+            });
+        }
     }
 
     /**

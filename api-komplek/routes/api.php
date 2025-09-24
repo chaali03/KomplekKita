@@ -10,6 +10,15 @@ use App\Http\Controllers\LetterTemplateController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\ImportController;
+use App\Services\Utils\AuthService;
+use App\Services\Utils\ValidationService;
+use App\Services\Utils\FinanceService;
+use App\Services\Utils\ApiMockService;
+use App\Services\Utils\CdnFallbackService;
+use App\Services\Utils\ChartRealtimeService;
+use App\Services\Utils\FetchWrapperService;
+use App\Services\Utils\SharedStateService;
+use App\Services\Utils\SupabaseClientService;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +33,47 @@ use App\Http\Controllers\ImportController;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
+
+// Utils API Routes
+Route::prefix('utils')->group(function () {
+    // CdnFallback routes
+    Route::get('/cdn-resources', function (CdnFallbackService $service) {
+        return response()->json($service->getCdnResources());
+    });
+    Route::get('/cdn-resource/{name}', function ($name, CdnFallbackService $service) {
+        return response()->json($service->getCdnResource($name));
+    });
+    
+    // ChartRealtime routes
+    Route::get('/chart-data/{chartType}', function ($chartType, Request $request, ChartRealtimeService $service) {
+        return response()->json($service->generateChartData($chartType, $request->all()));
+    });
+    
+    // SharedState routes
+    Route::get('/financial-sync/{komplekId}', function ($komplekId, SharedStateService $service) {
+        return response()->json($service->getFinancialDataSync($komplekId));
+    });
+    Route::get('/user-state/{userId}', function ($userId, SharedStateService $service) {
+        return response()->json($service->getUserState($userId));
+    });
+    Route::get('/komplek-state/{komplekId}', function ($komplekId, SharedStateService $service) {
+        return response()->json($service->getKomplekState($komplekId));
+    });
+    
+    // Supabase routes
+    Route::get('/supabase/{table}', function ($table, Request $request, SupabaseClientService $service) {
+        return response()->json($service->getData($table, $request->all()));
+    });
+    Route::post('/supabase/{table}', function ($table, Request $request, SupabaseClientService $service) {
+        return response()->json($service->insertData($table, $request->all()));
+    });
+    Route::put('/supabase/{table}/{column}/{value}', function ($table, $column, $value, Request $request, SupabaseClientService $service) {
+        return response()->json($service->updateData($table, $request->all(), $column, $value));
+    });
+    Route::delete('/supabase/{table}/{column}/{value}', function ($table, $column, $value, SupabaseClientService $service) {
+        return response()->json($service->deleteData($table, $column, $value));
+    });
+});
 Route::post('/login', [AuthController::class, 'login']);
 
 // Test endpoints
@@ -719,6 +769,59 @@ Route::get('/templates/warga', [App\Http\Controllers\Komplek\FinanceTemplateCont
 
 
 Route::get('/templates/keuangan', [App\Http\Controllers\Komplek\FinanceTemplateController::class, 'keuangan']);
+
+// Utils API routes
+Route::prefix('utils')->group(function () {
+    // Auth routes
+    Route::post('/auth/register', function (Request $request, AuthService $authService) {
+        return $authService->registerUser($request->all());
+    });
+
+    Route::post('/auth/login', function (Request $request, AuthService $authService) {
+        return $authService->loginUser($request->input('email'), $request->input('password'));
+    });
+
+    Route::post('/auth/register-komplek', function (Request $request, AuthService $authService) {
+        return $authService->completeComplexRegistration($request->all(), auth()->id());
+    })->middleware('auth:sanctum');
+
+    Route::get('/auth/status', function (Request $request, AuthService $authService) {
+        return $authService->getAuthStatus($request->bearerToken());
+    })->middleware('auth:sanctum');
+
+    // Validation routes
+    Route::post('/validation/email', function (Request $request, ValidationService $validationService) {
+        return $validationService->validateEmail($request->input('email'));
+    });
+
+    Route::post('/validation/password', function (Request $request, ValidationService $validationService) {
+        return $validationService->validatePassword($request->input('password'));
+    });
+
+    Route::post('/validation/complex-name', function (Request $request, ValidationService $validationService) {
+        return $validationService->validateComplexName($request->input('name'));
+    });
+
+    // Finance routes
+    Route::get('/finance/transactions', function (Request $request, FinanceService $financeService) {
+        return ['success' => true, 'transactions' => $financeService->loadTransactions($request->all())];
+    })->middleware('auth:sanctum');
+
+    // Mock API routes for demo
+    Route::prefix('demo')->group(function () {
+        Route::get('/finance/transactions', function (Request $request, ApiMockService $mockService) {
+            return ['success' => true, 'transactions' => $mockService->generateMockData('transactions', $request->all())];
+        });
+        
+        Route::get('/users', function (Request $request, ApiMockService $mockService) {
+            return ['success' => true, 'users' => $mockService->generateMockData('users', $request->all())];
+        });
+        
+        Route::get('/reports', function (Request $request, ApiMockService $mockService) {
+            return ['success' => true, 'reports' => $mockService->generateMockData('reports', $request->all())];
+        });
+    });
+});
 
 // Import routes
 Route::post('/import/warga/preview', [App\Http\Controllers\ImportController::class, 'previewWarga']);
