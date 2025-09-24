@@ -1,8 +1,11 @@
 *.log
 .DS_Store
+<<<<<<< HEAD
 .env
 .env.backup
 .env.production
+=======
+>>>>>>> sync/local-update
 .phpactor.json
 .phpunit.result.cache
 /.fleet
