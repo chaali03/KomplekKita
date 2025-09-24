@@ -657,7 +657,9 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       let sortMode = localStorage.getItem('info_sort') || 'newest'; // 'newest' | 'oldest' | 'title' | 'pinned'
 
       // API Functions
-      const API_BASE = 'http://127.0.0.1:8000/api/demo';
+      // Use frontend proxy to backend: Astro/Vite proxies '/api' to the Laravel server in dev (see astro.config.mjs)
+      // This also works in production when deployed behind the same domain with rewrites.
+      const API_BASE = '/api';
       
       async function loadInformations() {
         try {
