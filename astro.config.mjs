@@ -17,13 +17,13 @@ export default defineConfig({
       // Allow access from Cloudflare Tunnel (trycloudflare.com) and fix HMR over HTTPS
       // Vite blocks unknown hosts by default; adding allowedHosts enables tunnel domains.
       allowedHosts: ['.trycloudflare.com', '.loca.lt'],
-      hmr: {
-        // Required when accessing dev server via HTTPS reverse proxy/tunnel
-        // so the client connects HMR over port 443 instead of the dev port.
-        clientPort: 443,
-        // Optional: if you plan to use LocalTunnel with a fixed subdomain, set host for HMR
-        // host: 'komplekkita.loca.lt',
-      },
+      // Configure HMR conditionally: use default locally; allow overriding via env when tunneling
+      hmr: Object.assign(
+        {},
+        process.env.HMR_CLIENT_PORT ? { clientPort: Number(process.env.HMR_CLIENT_PORT) } : {}
+        // You can also set host via HMR_HOST if needed
+        // , process.env.HMR_HOST ? { host: process.env.HMR_HOST } : {}
+      ),
       proxy: {
         // Development proxy - will be ignored in production
         '/api': {
