@@ -1137,81 +1137,121 @@ function initDataTables() {
 }
 
 /**
- * Initialize counters animation
+ * Initialize counters with animation
  */
 function initCounters() {
+  const isFirstVisit = !localStorage.getItem('admin_visited');
+  localStorage.setItem('admin_visited', 'true');
+  
   const counters = document.querySelectorAll('.stat-value[data-target]');
-
-  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
+  
   const formatter = (el, value) => {
+    // Jika nilai adalah 0 atau null/undefined, tampilkan Rp 0
+    if (value === 0 || value === null || value === undefined) {
+      return 'Rp 0';
+    }
+    
     const format = el.getAttribute('data-format') || '';
     const opts = el.getAttribute('data-format-options') ? JSON.parse(el.getAttribute('data-format-options')) : {};
+    
+    // Format untuk mata uang
     if (format === 'currency') {
-      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: opts.currency || 'IDR', maximumFractionDigits: opts.maximumFractionDigits ?? 0 }).format(value);
+      // Pastikan value adalah number
+      const numValue = Number(value);
+      if (isNaN(numValue)) return 'Rp 0';
+      
+      return new Intl.NumberFormat('id-ID', { 
+        style: 'currency', 
+        currency: opts.currency || 'IDR', 
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(numValue);
     }
+    
+    // Format untuk persentase
     if (format === 'percent') {
       const digits = typeof opts.maximumFractionDigits === 'number' ? opts.maximumFractionDigits : 0;
       return `${value.toFixed(digits)}%`;
     }
+    
+    // Format untuk angka dalam bentuk singkat (ribuan/jutaan)
     if (format === 'compact') {
-      return new Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(value);
+      return new Intl.NumberFormat('id-ID', { 
+        notation: 'compact', 
+        maximumFractionDigits: 1 
+      }).format(value);
     }
-    // default number
-    return new Intl.NumberFormat('id-ID', opts || {}).format(value);
+    
+    // Format default untuk angka biasa
+    return new Intl.NumberFormat('id-ID', { 
+      minimumFractionDigits: 0, 
+      ...opts 
+    }).format(value);
   };
 
-  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
-
-  const animateEl = (el) => {
-    const targetRaw = el.getAttribute('data-target');
-    if (targetRaw == null) return;
-    const target = parseFloat(targetRaw);
-    if (isNaN(target)) return;
-
-    const start = parseFloat(el.dataset.value || el.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+  // Fungsi untuk menganimasikan elemen
+  const animateEl = (el, target, start = 0) => {
+    const duration = 1000; // Durasi animasi 1 detik
+    const startTime = performance.now();
     const delta = target - start;
-
-    if (prefersReduced || delta === 0) {
-      el.textContent = formatter(el, target);
-      el.dataset.value = String(target);
-      return;
-    }
-
-    // Dynamic duration based on magnitude (max 1.6s, min 0.6s)
-    const base = 600;
-    const extra = Math.min(1000, Math.abs(delta) / 50);
-    const duration = base + extra;
-
-    const t0 = performance.now();
-    const step = (now) => {
-      const progress = Math.min(1, (now - t0) / duration);
-      const eased = easeOutCubic(progress);
-      const val = start + delta * eased;
-      el.textContent = formatter(el, val);
+    
+    const step = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Gunakan easing function untuk animasi yang lebih smooth
+      const eased = progress < 0.5 
+        ? 2 * progress * progress 
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      
+      const current = start + delta * eased;
+      
+      // Update teks dengan nilai yang sudah diformat
+      el.textContent = formatter(el, Math.round(current));
+      
+      // Lanjutkan animasi jika belum selesai
       if (progress < 1) {
         requestAnimationFrame(step);
       } else {
+        // Pastikan nilai akhir tepat
         el.textContent = formatter(el, target);
         el.dataset.value = String(target);
       }
     };
+    
+    // Mulai animasi
     requestAnimationFrame(step);
   };
 
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          animateEl(entry.target);
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    counters.forEach(el => io.observe(el));
-  } else {
-    counters.forEach(el => animateEl(el));
-  }
+  // Proses setiap counter
+  counters.forEach(el => {
+    const targetRaw = el.getAttribute('data-target');
+    if (targetRaw == null) return;
+    
+    const target = parseFloat(targetRaw);
+    if (isNaN(target)) return;
+    
+    // Jika ini kunjungan pertama, jalankan animasi
+    if (isFirstVisit) {
+      // Untuk elemen dengan class 'tertunda', gunakan animasi khusus
+      if (el.closest('.stat-card.tertunda')) {
+        // Mulai dari 0 untuk animasi yang lebih menarik
+        el.textContent = formatter(el, 0);
+        requestAnimationFrame(() => {
+          animateEl(el, target, 0);
+        });
+        return;
+      }
+      
+      // Untuk elemen lain, tampilkan langsung tanpa animasi
+      el.textContent = formatter(el, target);
+      el.dataset.value = String(target);
+    } else {
+      // Jika bukan kunjungan pertama, langsung tampilkan nilai akhir tanpa animasi
+      el.textContent = formatter(el, target);
+      el.dataset.value = String(target);
+    }
+  });
 }
 
 /**

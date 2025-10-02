@@ -114,7 +114,8 @@ class AnimationManager {
     const { targetValue, formatter = FORMATTERS.number, duration = ANIMATION_CONFIG.duration, easing = 'easeOutCubic', delay = 0, onStart = null, onUpdate = null, onComplete = null, visualEffects = true } = config;
     this.cancelAnimation(element);
     const startTime = performance.now() + delay;
-    const startValue = this.getCurrentValue(element) || 0;
+    // Selalu mulai animasi dari 0
+    const startValue = 0;
     const distance = targetValue - startValue;
     const easingFn = EASING_FUNCTIONS[easing] || EASING_FUNCTIONS.easeOutCubic;
     const animate = (currentTime) => {
@@ -193,17 +194,17 @@ class AnimationManager {
 
 const animationManager = new AnimationManager();
 
-export function animateValue(element, targetValue, formatter = FORMATTERS.number, options = {}) {
+function animateValue(element, targetValue, formatter = FORMATTERS.number, options = {}) {
   if (!element) return;
   const config = { targetValue, formatter, duration: options.duration || ANIMATION_CONFIG.duration, easing: options.easing || 'easeOutSmooth', delay: options.delay || 0, visualEffects: options.visualEffects !== false, onStart: options.onStart, onUpdate: options.onUpdate, onComplete: options.onComplete, ...options };
   if (options.observe !== false && 'IntersectionObserver' in window) animationManager.observeElement(element, config);
   else animationManager.animateElement(element, config);
 }
-export function animateCurrency(element, targetValue, options = {}) { return animateValue(element, targetValue, FORMATTERS.currency, options); }
-export function animateNumber(element, targetValue, options = {}) { return animateValue(element, targetValue, FORMATTERS.number, options); }
-export function animatePercent(element, targetValue, options = {}) { return animateValue(element, targetValue, FORMATTERS.percent, options); }
-export function animateCompact(element, targetValue, options = {}) { return animateValue(element, targetValue, FORMATTERS.compact, options); }
-export function animateKPICards(cards, totals, options = {}) {
+function animateCurrency(element, targetValue, options = {}) { return animateValue(element, targetValue, FORMATTERS.currency, options); }
+function animateNumber(element, targetValue, options = {}) { return animateValue(element, targetValue, FORMATTERS.number, options); }
+function animatePercent(element, targetValue, options = {}) { return animateValue(element, targetValue, FORMATTERS.percent, options); }
+function animateCompact(element, targetValue, options = {}) { return animateValue(element, targetValue, FORMATTERS.compact, options); }
+function animateKPICards(cards, totals, options = {}) {
   const elements = [
     { el: cards.balance, value: totals.balance, formatter: FORMATTERS.currency },
     { el: cards.income, value: totals.income, formatter: FORMATTERS.currency },
@@ -214,7 +215,7 @@ export function animateKPICards(cards, totals, options = {}) {
     setTimeout(() => { animateValue(item.el, item.value, item.formatter, { ...options, delay: index * (options.stagger || ANIMATION_CONFIG.stagger) }); }, index * (options.stagger || ANIMATION_CONFIG.stagger));
   });
 }
-export function animateCounterWithProgress(element, targetValue, formatter = FORMATTERS.number, options = {}) {
+function animateCounterWithProgress(element, targetValue, formatter = FORMATTERS.number, options = {}) {
   if (!element) return;
   let progressBar = element.querySelector('.counter-progress');
   if (!progressBar && options.showProgress) {
@@ -226,7 +227,7 @@ export function animateCounterWithProgress(element, targetValue, formatter = FOR
   }
   return animateValue(element, targetValue, formatter, { ...options, onUpdate: (value, progress) => { if (progressBar) progressBar.style.width = `${progress * 100}%`; if (options.onUpdate) options.onUpdate(value, progress); }, onComplete: (value) => { if (progressBar) { setTimeout(() => { progressBar.style.width = '100%'; }, 100); } if (options.onComplete) options.onComplete(value); } });
 }
-export function animateValueAccessible(element, targetValue, formatter = FORMATTERS.number, options = {}) {
+function animateValueAccessible(element, targetValue, formatter = FORMATTERS.number, options = {}) {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReducedMotion) {
     if (typeof formatter === 'function') element.textContent = formatter(targetValue);
@@ -236,15 +237,14 @@ export function animateValueAccessible(element, targetValue, formatter = FORMATT
   }
   return animateValue(element, targetValue, formatter, options);
 }
-export function cleanupAnimations() { animationManager.destroy(); }
-if (typeof window !== 'undefined') {
-  window.animateValue = animateValue;
-  window.animateCurrency = animateCurrency;
-  window.animateNumber = animateNumber;
-  window.animatePercent = animatePercent;
-  window.animateCompact = animateCompact;
-  window.animateKPICards = animateKPICards;
-  window.animateCounterWithProgress = animateCounterWithProgress;
-  window.animateValueAccessible = animateValueAccessible;
-}
-export default { animateValue, animateCurrency, animateNumber, animatePercent, animateCompact, animateKPICards, animateCounterWithProgress, animateValueAccessible, cleanupAnimations, FORMATTERS, EASING_FUNCTIONS };
+
+// Expose functions to window object
+window.animateValue = animateValue;
+window.animateCurrency = animateCurrency;
+window.animateNumber = animateNumber;
+window.animatePercent = animatePercent;
+window.animateCompact = animateCompact;
+window.animateKPICards = animateKPICards;
+window.animateCounterWithProgress = animateCounterWithProgress;
+window.animateValueAccessible = animateValueAccessible;
+window.cleanupAnimations = cleanupAnimations;

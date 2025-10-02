@@ -38,12 +38,11 @@
       </div>
       <div class="stat-content">
         <h3>Total Kas</h3>
-        <div id="dash-total-kas" class="stat-value" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'></div>
+        <div id="dash-total-kas" class="stat-value" data-animate-number data-duration="1500" data-easing="easeOutCubic">0</div>
         <div class="stat-trend up">
           <i class="fas fa-arrow-up"></i> 12% dari bulan lalu
         </div>
       </div>
-      
     </div>
     
     <div class="stat-card pre-animation">
@@ -52,7 +51,7 @@
       </div>
       <div class="stat-content">
         <h3>Pemasukan</h3>
-        <div id="dash-total-masuk" class="stat-value" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'></div>
+        <div id="dash-total-masuk" class="stat-value" data-animate-number data-duration="1500" data-easing="easeOutCubic" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'></div>
         <div class="stat-trend up">
           <i class="fas fa-arrow-up"></i> 8% dari bulan lalu
         </div>
@@ -66,7 +65,7 @@
       </div>
       <div class="stat-content">
         <h3>Pengeluaran</h3>
-        <div id="dash-total-keluar" class="stat-value" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'></div>
+        <div id="dash-total-keluar" class="stat-value" data-animate-number data-duration="1500" data-easing="easeOutCubic" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'></div>
         <div class="stat-trend down">
           <i class="fas fa-arrow-up"></i> 5% dari bulan lalu
         </div>
@@ -429,9 +428,121 @@
 
 <!-- Load Chart.js only for the dashboard -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+<!-- Load Enhanced Animation System -->
+<script>
+  // Type declarations for enhanced-animations.js
+  interface AnimateOptions {
+    duration?: number;
+    easing?: string;
+    precision?: number;
+  }
+  
+  // Extend Window interface with our custom properties
+  declare global {
+    interface Window {
+      animateCurrency: (element: HTMLElement, value: number, options?: AnimateOptions) => void;
+      animateNumber: (element: HTMLElement, value: number, options?: AnimateOptions) => void;
+      animatePercent: (element: HTMLElement, value: number, options?: AnimateOptions) => void;
+      animateCompact: (element: HTMLElement, value: number, options?: AnimateOptions) => void;
+      animateKPICards: (element: HTMLElement, value: number, options?: AnimateOptions) => void;
+      animateCounterWithProgress: (element: HTMLElement, value: number, options?: AnimateOptions) => void;
+      animateValueAccessible: (element: HTMLElement, value: number, options?: AnimateOptions) => void;
+      cleanupAnimations: () => void;
+    }
+  }
+  // Function to initialize animations
+  function initAnimations() {
+    // Check if enhanced animations are available
+    if (typeof window.animateCurrency !== 'function') {
+      console.warn('Enhanced animations not available');
+      return;
+    }
 
-<!-- Load Enhanced Animation System (served from public) -->
-<script type="module" src="/js/enhanced-animations.js"></script>
+    // Function to animate a counter element
+    function animateCounter(element: HTMLElement | null, value: number): void {
+      if (!element) return;
+      
+      // Special handling for Tertunda counter
+      const isTertunda = element.id === 'dash-iuran-pending';
+      
+      // Don't show 0 for Tertunda counter
+      if (isTertunda && value === 0) {
+        const parentCard = element.closest('.stat-card') as HTMLElement | null;
+        if (parentCard) {
+          parentCard.style.display = 'none';
+        }
+        return;
+      }
+      
+      // Animate the counter if element exists and window.animateCurrency is available
+      if (window.animateCurrency) {
+        window.animateCurrency(element, value, {
+          duration: 1000,
+          easing: 'easeOutCubic',
+          precision: 0
+        });
+      }
+    }
+
+    // Function to initialize all counters
+    function initCounters() {
+      // Animate each counter with its current value
+      const counters = [
+        { id: 'dash-total-kas', value: 5000000 },
+        { id: 'dash-total-masuk', value: 3000000 },
+        { id: 'dash-total-keluar', value: 2000000 },
+        { id: 'dash-iuran-pending', value: 1500000 }
+      ];
+
+      counters.forEach(({ id, value }) => {
+        const element = document.getElementById(id);
+        if (element) {
+          // Set initial value to 0
+          element.textContent = '0';
+          // Store original value as string
+          element.dataset.originalValue = value.toString();
+          // Animate to the target value after a short delay
+          setTimeout(() => {
+            animateCounter(element as HTMLElement, value);
+          }, 100);
+        }
+      });
+    }
+
+    // Initialize counters
+    initCounters();
+  }
+
+  // Initialize animations when the enhanced-animations.js is loaded
+  function loadEnhancedAnimations(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      // Check if already loaded by verifying the function exists and is callable
+      if (typeof window.animateCurrency === 'function') {
+        resolve(undefined);
+        return;
+      }
+      
+      // Load the script
+      const script = document.createElement('script');
+      script.src = '/js/enhanced-animations.js';
+      script.onload = () => resolve(undefined);
+      script.onerror = () => {
+        console.error('Failed to load enhanced-animations.js');
+        resolve(undefined);
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  // Initialize everything when the DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    loadEnhancedAnimations().then(() => {
+      // Wait a short moment for any other scripts to initialize
+      setTimeout(initAnimations, 100);
+    });
+  });
+  
+</script>
 
 <!-- Load Real-time Chart Update System (served from public) -->
 <script type="module" src="/js/chart-realtime.js"></script>
@@ -2278,14 +2389,42 @@
     });
   }
 
+  // Initialize counters with fallback for module loading
   function initCounters() {
-    const counters = Array.from(document.querySelectorAll('.stat-value'))
-      .filter(el => el && el.id !== 'dash-iuran-pending' && el.getAttribute('data-no-animate') !== 'true');
+    // Counters are now handled by enhanced-animations.js
+    // This function is kept for backward compatibility
     
-    counters.forEach(counter => {
-      const target = parseFloat(counter.getAttribute('data-target') || counter.innerText.replace(/[^0-9.-]+/g, ''));
+    // Get all counter elements
+    const counterElements = document.querySelectorAll<HTMLElement>('.stat-value[data-target]');
+    
+    // Fallback implementation if module is not loaded
+    if (counterElements.length === 0) return;
+    
+    // Fallback implementation if module fails to load
+    counterElements.forEach(counter => {
+      if (!counter) return;
+      
+      // Get target value from data-target attribute or element text
+      const targetText = counter.getAttribute('data-target') || counter.innerText.replace(/[^0-9.-]+/g, '') || '0';
+      const target = parseFloat(targetText);
+      
+      if (isNaN(target)) {
+        console.warn('Invalid target value for counter:', counter.id || counter.className);
+        return;
+      }
+      
+      // Get format options
       const format = counter.getAttribute('data-format') || '';
-      const formatOptions = counter.getAttribute('data-format-options') ? JSON.parse(counter.getAttribute('data-format-options')) : {};
+      let formatOptions: Record<string, any> = {};
+      
+      try {
+        const optionsAttr = counter.getAttribute('data-format-options');
+        if (optionsAttr) {
+          formatOptions = JSON.parse(optionsAttr);
+        }
+      } catch (e) {
+        console.warn('Invalid format options for counter:', counter.id || counter.className, e);
+      }
       
       // Create formatter function based on format type
       let formatter;

@@ -227,19 +227,22 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
     // Handle navigation and scroll position
     const currentPath = window.location.pathname;
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
-    const sidebarContent = document.querySelector('.sidebar-content');
     
     // Save scroll position before navigation
-    if (sidebarContent) {
-      sidebarLinks.forEach(link => {
-        link.addEventListener('click', function() {
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        const sidebarContent = document.querySelector('.sidebar-content');
+        if (sidebarContent) {
           sessionStorage.setItem('sidebarScrollPosition', sidebarContent.scrollTop);
-        });
+        }
       });
+    });
 
-      // Save scroll position on manual scroll with debounce
-      let scrollTimer;
-      sidebarContent.addEventListener('scroll', function() {
+    // Save scroll position on manual scroll with debounce
+    let scrollTimer;
+    const contentEl = document.querySelector('.sidebar-content');
+    if (contentEl) {
+      contentEl.addEventListener('scroll', function() {
         clearTimeout(scrollTimer);
         scrollTimer = setTimeout(() => {
           sessionStorage.setItem('sidebarScrollPosition', this.scrollTop);

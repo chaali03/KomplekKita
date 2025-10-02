@@ -953,16 +953,101 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     }
   </style>
 
+  <!-- Enhanced Animations -->
+  <script is:inline src="/js/enhanced-animations.js"></script>
+  
   <script>
     // @ts-nocheck
+    
+    // Initialize number animations
+    function initNumberAnimations() {
+      // Format currency function
+      function formatCurrency(value) {
+        return new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(value);
+      }
+      
+      // Animate KPI values
+      function animateKPIValues() {
+        const kpiElements = [
+          { id: 'total-pemasukan', formatter: formatCurrency },
+          { id: 'total-pengeluaran', formatter: formatCurrency },
+          { id: 'saldo-akhir', formatter: formatCurrency }
+        ];
+        
+        kpiElements.forEach(({ id, formatter }) => {
+          const element = document.getElementById(id);
+          if (!element) return;
+          
+          const value = parseFloat(element.getAttribute('data-value') || '0');
+          
+          if (window.animateCurrency) {
+            window.animateCurrency(element, value, {
+              duration: 1500,
+              easing: 'easeOutCubic',
+              precision: 0
+            });
+          } else {
+            // Fallback animation
+            const startValue = 0;
+            const duration = 1500;
+            const startTime = performance.now();
+            
+            function updateValue(currentTime) {
+              const elapsed = currentTime - startTime;
+              const progress = Math.min(elapsed / duration, 1);
+              const easedProgress = 1 - Math.pow(1 - progress, 3);
+              const currentValue = Math.floor(startValue + (value - startValue) * easedProgress);
+              
+              element.textContent = formatter ? formatter(currentValue) : currentValue;
+              
+              if (progress < 1) {
+                requestAnimationFrame(updateValue);
+              }
+            }
+            
+            requestAnimationFrame(updateValue);
+          }
+        });
+      }
+      
+      // Run animations when data is loaded
+      const observer = new MutationObserver((mutations, obs) => {
+        if (document.querySelector('.kpi-value')) {
+          animateKPIValues();
+          obs.disconnect();
+        }
+      });
+      
+      // Start observing the document with the configured parameters
+      observer.observe(document.body, { childList: true, subtree: true });
+      
+      // Also run on initial load
+      if (document.readyState === 'complete') {
+        animateKPIValues();
+      } else {
+        window.addEventListener('load', animateKPIValues);
+      }
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initNumberAnimations);
+    } else {
+      initNumberAnimations();
+    }
 
     // Load Chart.js
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
     document.head.appendChild(script);
 
-    // Load Enhanced Animation System (served from public)
-    const s0 = document.createElement('script'); s0.type='module'; s0.src='/js/enhanced-animations.js'; document.head.appendChild(s0);
+    // Enhanced Animation System dinonaktifkan untuk menghilangkan animasi yang tidak diinginkan
+    // const s0 = document.createElement('script'); s0.type='module'; s0.src='/js/enhanced-animations.js'; document.head.appendChild(s0);
     
     // Load Real-time Chart Update System from public for preview/deploy
     const s1 = document.createElement('script'); s1.type='module'; s1.src='/js/shared-state.js'; document.head.appendChild(s1);

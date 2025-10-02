@@ -23,19 +23,44 @@ function applyDashboardKPIs() {
   try {
     const snap = JSON.parse(localStorage.getItem('laporan_totals_snapshot') || 'null');
     if (!snap) return;
+    
+    // Format function that handles zero and null/undefined values correctly
     const fmt = (n) => {
-      try { return new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', maximumFractionDigits:0 }).format(Number(n||0)); }
-      catch { return `Rp ${Number(n||0).toLocaleString('id-ID')}`; }
+      const num = Number(n || 0);
+      if (num === 0) return 'Rp 0';
+      
+      try { 
+        return new Intl.NumberFormat('id-ID', { 
+          style: 'currency', 
+          currency: 'IDR', 
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0 
+        }).format(num);
+      } catch { 
+        return `Rp ${num.toLocaleString('id-ID')}`; 
+      }
     };
+    
     const elKas = document.getElementById('dash-total-kas');
     const elMasuk = document.getElementById('dash-total-masuk');
     const elKeluar = document.getElementById('dash-total-keluar');
-    const bal = Number(snap.totals?.balance ?? 0);
-    const inc = Number(snap.totals?.income ?? 0);
-    const exp = Number(snap.totals?.expense ?? 0);
-    if (elKas) { elKas.textContent = fmt(bal); elKas.setAttribute('data-target', String(bal)); elKas.dataset.value = String(bal); }
-    if (elMasuk) { elMasuk.textContent = fmt(inc); elMasuk.setAttribute('data-target', String(inc)); elMasuk.dataset.value = String(inc); }
-    if (elKeluar) { elKeluar.textContent = fmt(exp); elKeluar.setAttribute('data-target', String(exp)); elKeluar.dataset.value = String(exp); }
+    
+    // Ensure we have valid numbers
+    const bal = Math.max(0, Number(snap.totals?.balance ?? 0));
+    const inc = Math.max(0, Number(snap.totals?.income ?? 0));
+    const exp = Math.max(0, Number(snap.totals?.expense ?? 0));
+    
+    // Update elements only if they exist
+    const updateElement = (el, value) => {
+      if (!el) return;
+      el.textContent = fmt(value);
+      el.setAttribute('data-target', String(value));
+      el.dataset.value = String(value);
+    };
+    
+    updateElement(elKas, bal);
+    updateElement(elMasuk, inc);
+    updateElement(elKeluar, exp);
 
     // Calculate 'Tertunda' (pending dues) based on current period config and payments
     const now = new Date();

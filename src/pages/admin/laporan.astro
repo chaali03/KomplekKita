@@ -2647,8 +2647,110 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       }
     }
   </style>
-  <!-- Load Enhanced Animation System (served from public) -->
-  <script type="module" src="/js/enhanced-animations.js"></script>
+  <!-- Enhanced Animations -->
+  <script is:inline src="/js/enhanced-animations.js"></script>
+  
+  <script>
+    // Initialize number animations
+    function initNumberAnimations() {
+      // Format currency function
+      function formatCurrency(value: number | string): string {
+        const numValue = typeof value === 'string' ? parseFloat(value) || 0 : value;
+        return new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(numValue);
+      }
+      
+      // Format number function
+      function formatNumber(value: number | string): string {
+        const numValue = typeof value === 'string' ? parseFloat(value) || 0 : value;
+        return new Intl.NumberFormat('id-ID').format(numValue);
+      }
+      
+      // Type for KPI element
+      interface KpiElement {
+        id: string;
+        formatter: (value: number | string) => string;
+      }
+
+      // Animate KPI values
+      function animateKPIValues() {
+        const kpiElements: KpiElement[] = [
+          { id: 'total-pemasukan', formatter: formatCurrency },
+          { id: 'total-pengeluaran', formatter: formatCurrency },
+          { id: 'saldo-akhir', formatter: formatCurrency },
+          { id: 'total-transaksi', formatter: formatNumber },
+          { id: 'rata-rata-pemasukan', formatter: formatCurrency },
+          { id: 'rata-rata-pengeluaran', formatter: formatCurrency }
+        ];
+        
+        kpiElements.forEach(({ id, formatter }) => {
+          const element = document.getElementById(id);
+          if (!element) return;
+          
+          const value = parseFloat(element.getAttribute('data-value') || '0');
+          
+          if (window.animateCurrency) {
+            window.animateCurrency(element, value, {
+              duration: 1500,
+              easing: 'easeOutCubic',
+              precision: id.includes('rata') ? 0 : 0
+            });
+          } else {
+            // Fallback animation
+            const startValue = 0;
+            const duration = 1500;
+            const startTime = performance.now();
+            
+            function updateValue(currentTime: number) {
+              const elapsed = currentTime - startTime;
+              const progress = Math.min(elapsed / duration, 1);
+              const easedProgress = 1 - Math.pow(1 - progress, 3);
+              const currentValue = Math.floor(startValue + (value - startValue) * easedProgress);
+              
+              if (element) {
+                element.textContent = formatter ? formatter(currentValue) : currentValue.toString();
+              }
+              
+              if (progress < 1) {
+                requestAnimationFrame(updateValue);
+              }
+            }
+            
+            requestAnimationFrame(updateValue);
+          }
+        });
+      }
+      
+      // Run animations when data is loaded
+      const observer = new MutationObserver((mutations, obs) => {
+        if (document.querySelector('.kpi-value') || document.querySelector('.stat-number')) {
+          animateKPIValues();
+          obs.disconnect();
+        }
+      });
+      
+      // Start observing the document with the configured parameters
+      observer.observe(document.body, { childList: true, subtree: true });
+      
+      // Also run on initial load
+      if (document.readyState === 'complete') {
+        animateKPIValues();
+      } else {
+        window.addEventListener('load', animateKPIValues);
+      }
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initNumberAnimations);
+    } else {
+      initNumberAnimations();
+    }
+  </script>
   
   <script type="module" src={laporanClient}></script>
   
