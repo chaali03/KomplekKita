@@ -135,6 +135,15 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
   // @ts-nocheck
   // Initialize sidebar functionality
   document.addEventListener('DOMContentLoaded', function() {
+    // Restore scroll position if available
+    const sidebarContent = document.querySelector('.sidebar-content');
+    const scrollPosition = sessionStorage.getItem('sidebarScrollPosition');
+    if (scrollPosition && sidebarContent) {
+      // Small timeout to ensure the DOM is fully rendered
+      setTimeout(() => {
+        sidebarContent.scrollTop = parseInt(scrollPosition);
+      }, 50);
+    }
     // Sidebar toggle
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const adminSidebar = document.querySelector('.admin-sidebar');
@@ -215,10 +224,30 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
       });
     });
     
-    // Active link highlighting
+    // Handle navigation and scroll position
     const currentPath = window.location.pathname;
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const sidebarContent = document.querySelector('.sidebar-content');
     
+    // Save scroll position before navigation
+    if (sidebarContent) {
+      sidebarLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          sessionStorage.setItem('sidebarScrollPosition', sidebarContent.scrollTop);
+        });
+      });
+
+      // Save scroll position on manual scroll with debounce
+      let scrollTimer;
+      sidebarContent.addEventListener('scroll', function() {
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+          sessionStorage.setItem('sidebarScrollPosition', this.scrollTop);
+        }, 100);
+      });
+    }
+    
+    // Active link highlighting
     sidebarLinks.forEach(link => {
       if (link.getAttribute('href') === currentPath) {
         link.classList.add('active');
@@ -287,11 +316,18 @@ const avatarUrl = complexImage ?? `https://ui-avatars.com/api/?name=${encodeURIC
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    /* Improve scroll performance */
+    -webkit-overflow-scrolling: touch;
+    will-change: transform;
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+    overflow-y: auto;
     padding-bottom: 72px; /* space so sticky footer never covers content */
   }
 
   /* Header */
   .admin-sidebar .sidebar-header {
+{{ ... }}
     display: flex;
     align-items: center;
     justify-content: space-between;

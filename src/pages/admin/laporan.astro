@@ -2,6 +2,7 @@
 import Layout from "~/layouts/admin-layout.astro";
 import AdminSidebar from "../../components/Admin-site/admin-sidebar.astro";
 import AdminTopbar from "../../components/Admin-site/admin-topbar.astro";
+import laporanClient from "../../scripts/laporan.js?url";
 // Complex branding to show in admin UI
 const complexName = 'Komplek Anggrek Asri';
 const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=100&h=100&fit=crop&crop=center';
@@ -2646,11 +2647,12 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       }
     }
   </style>
-  <script type="module">
-    import '/src/scripts/laporan.ts';
-  </script>
+  <!-- Load Enhanced Animation System (served from public) -->
+  <script type="module" src="/js/enhanced-animations.js"></script>
   
-  <!-- Load Real-time Chart Update System -->
-  <script type="module" src="/src/utils/chart-realtime.js"></script>
-  <script type="module" src="/src/utils/shared-state.js"></script>
+  <script type="module" src={laporanClient}></script>
+  
+  <!-- Load Real-time Chart Update System (public for preview/deploy) -->
+  <script type="module" src="/js/shared-state.js"></script>
+  <script type="module" src="/js/chart-realtime.js"></script>
   </Layout>

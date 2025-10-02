@@ -67,7 +67,6 @@
                 <span class="hamburger-box">
                     <span class="hamburger-inner"></span>
                 </span>
-                <span class="hamburger-glow"></span>
             </button>
 
             <!-- Mobile navigation menu -->
@@ -78,9 +77,6 @@
                             <span class="brand-icon"><i class="fas fa-building"></i></span>
                             <span class="brand-text">KomplekKita</span>
                         </a>
-                        <button class="mobile-close" aria-label="Close menu">
-                            <i class="fas fa-times"></i>
-                        </button>
                     </div>
                     
                     <ul class="mobile-menu-list">
@@ -436,7 +432,6 @@
     .hamburger-inner::before {
         top: -8px;
     }
-
     .hamburger-inner::after {
         bottom: -8px;
     }
@@ -446,21 +441,8 @@
         background-color: var(--primary-blue);
     }
 
+
     .hamburger.active .hamburger-inner::before {
-        top: 0;
-        opacity: 0;
-    }
-
-    .hamburger.active .hamburger-inner::after {
-        bottom: 0;
-        transform: rotate(-90deg);
-        background-color: var(--primary-blue);
-    }
-
-    .hamburger-glow {
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
         filter: blur(10px);
         opacity: 0;
         transition: opacity var(--transition-normal);
@@ -1062,23 +1044,23 @@
         });
         
         // Enhanced spotlight effect with brand interaction
-        const spotlight = document.querySelector('.spotlight');
-        const headerInner = document.querySelector('.header-inner');
-        const brandGlow = document.querySelector('.brand-glow');
+        const spotlight = document.querySelector('.spotlight') as HTMLElement | null;
+        const headerInner = document.querySelector('.header-inner') as HTMLElement | null;
+        const brandGlow = document.querySelector('.brand-glow') as HTMLElement | null;
         
         if (spotlight && headerInner) {
-            headerInner.addEventListener('mousemove', (e) => {
+            headerInner.addEventListener('mousemove', (e: MouseEvent) => {
                 const rect = headerInner.getBoundingClientRect();
                 const x = ((e.clientX - rect.left) / rect.width) * 100;
                 const y = ((e.clientY - rect.top) / rect.height) * 100;
                 
-                spotlight.style.setProperty('--x', `${x}%`);
-                spotlight.style.setProperty('--y', `${y}%`);
-                spotlight.style.opacity = '1';
+                (spotlight as HTMLElement).style.setProperty('--x', `${x}%`);
+                (spotlight as HTMLElement).style.setProperty('--y', `${y}%`);
+                (spotlight as HTMLElement).style.opacity = '1';
                 
-                // Brand glow follows cursor with subtle delay
+                // Brand glow follows cursor with subtle responsiveness
                 if (brandGlow && brand) {
-                    const brandRect = brand.getBoundingClientRect();
+                    const brandRect = (brand as HTMLElement).getBoundingClientRect();
                     const brandCenterX = brandRect.left + brandRect.width / 2 - rect.left;
                     const brandCenterY = brandRect.top + brandRect.height / 2 - rect.top;
                     
@@ -1090,49 +1072,49 @@
                     // Adjust glow based on distance
                     const maxDistance = 200;
                     const intensity = Math.max(0, 1 - distance / maxDistance);
-                    (brandGlow as HTMLElement).style.opacity = (0.3 + intensity * 0.7).toString();
-                    (brandGlow as HTMLElement).style.transform = `scale(${1 + intensity * 0.3})`;
+                    brandGlow.style.opacity = (0.3 + intensity * 0.7).toString();
+                    brandGlow.style.transform = `scale(${1 + intensity * 0.3})`;
                 }
             });
-            
             headerInner.addEventListener('mouseleave', () => {
-                spotlight.style.opacity = '0';
+                (spotlight as HTMLElement).style.opacity = '0';
                 if (brandGlow) {
-                    (brandGlow as HTMLElement).style.opacity = '0';
-                    (brandGlow as HTMLElement).style.transform = 'scale(1)';
+                    brandGlow.style.opacity = '0';
+                    brandGlow.style.transform = 'scale(1)';
                 }
             });
         }
         
         // Enhanced ripple effect for buttons and links
-        const buttons = document.querySelectorAll('.btn, .menu-link, .mobile-menu-link');
+        const buttons = document.querySelectorAll('.btn, .menu-link, .mobile-menu-link') as NodeListOf<HTMLButtonElement | HTMLAnchorElement>;
         
         buttons.forEach(button => {
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', (e: Event) => {
+                const target = e.currentTarget as HTMLButtonElement | HTMLAnchorElement;
                 // Jangan menambahkan efek ripple jika link mengarah ke halaman lain (bukan anchor)
-                const href = this.getAttribute('href');
+                const href = target.getAttribute('href');
                 if (href && href.startsWith('/')) {
                     return; // Biarkan navigasi normal terjadi
                 }
                 
-                const rect = this.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
+                const rect = target.getBoundingClientRect();
+                const x = (e as MouseEvent).clientX - rect.left;
+                const y = (e as MouseEvent).clientY - rect.top;
                 
                 // Calculate ripple size based on button size
                 const size = Math.max(rect.width, rect.height) * 2;
-                
+
                 const ripple = document.createElement('span');
                 ripple.classList.add('ripple');
                 ripple.style.width = ripple.style.height = `${size}px`;
                 ripple.style.left = `${x - size/2}px`;
                 ripple.style.top = `${y - size/2}px`;
-                
+
                 // Determine ripple color based on button type
-                const isPrimary = this.classList.contains('btn-primary') || this.classList.contains('mobile-btn-primary');
+                const isPrimary = target.classList.contains('btn-primary') || target.classList.contains('mobile-btn-primary');
                 ripple.style.backgroundColor = isPrimary ? 'rgba(255, 255, 255, 0.3)' : 'rgba(59, 130, 246, 0.2)';
                 
-                (this as HTMLElement).appendChild(ripple);
+                target.appendChild(ripple);
                 
                 setTimeout(() => {
                     ripple.remove();
@@ -1141,55 +1123,51 @@
         });
         
         // Enhanced dynamic floating particles
-        const particles = document.querySelectorAll('.particle');
-        
+        const particles = document.querySelectorAll('.particle') as NodeListOf<HTMLDivElement>;
         particles.forEach((particle, index) => {
-            // Random initial position with wider range
+            // Random initial position within a wider range for variety
             const tx = (Math.random() * 300) - 150;
             const ty = (Math.random() * 300) - 150;
-            
             (particle as HTMLElement).style.setProperty('--tx', `${tx}px`);
             (particle as HTMLElement).style.setProperty('--ty', `${ty}px`);
-            
-            // Random animation duration and delay
+            // Randomize duration and negative delay to desync animations
             const baseDuration = 15;
             const randomDuration = baseDuration + Math.random() * 10;
             (particle as HTMLElement).style.animationDuration = `${randomDuration}s`;
-            
             const randomDelay = Math.random() * 5;
             (particle as HTMLElement).style.animationDelay = `-${randomDelay}s`;
         });
         
         // Enhanced hover effect for navigation links
-        const menuLinks = document.querySelectorAll('.menu-link');
+        const menuLinks = document.querySelectorAll('.menu-link') as NodeListOf<HTMLAnchorElement>;
         
         menuLinks.forEach(link => {
-            link.addEventListener('mouseenter', function() {
-                (this as HTMLElement).style.transform = 'translateY(-3px)';
-                (this as HTMLElement).style.color = 'var(--primary-blue)';
-                (this as HTMLElement).style.textShadow = '0 0 10px rgba(59, 130, 246, 0.3)';
+            link.addEventListener('mouseenter', function(this: HTMLAnchorElement) {
+                this.style.transform = 'translateY(-3px)';
+                this.style.color = 'var(--primary-blue)';
+                this.style.textShadow = '0 0 10px rgba(59, 130, 246, 0.3)';
             });
             
-            link.addEventListener('mouseleave', function() {
-                (this as HTMLElement).style.transform = 'translateY(0)';
-                (this as HTMLElement).style.color = '';
-                (this as HTMLElement).style.textShadow = '';
+            link.addEventListener('mouseleave', function(this: HTMLAnchorElement) {
+                this.style.transform = 'translateY(0)';
+                this.style.color = '';
+                this.style.textShadow = '';
             });
         });
         
         // Add shine effect to primary buttons
-        const primaryButtons = document.querySelectorAll('.btn-primary, .mobile-btn-primary');
+        const primaryButtons = document.querySelectorAll('.btn-primary, .mobile-btn-primary') as NodeListOf<HTMLButtonElement>;
         primaryButtons.forEach(button => {
-            button.addEventListener('mouseenter', function() {
-                const shine = this.querySelector('.btn-shine');
+            button.addEventListener('mouseenter', function(this: HTMLButtonElement) {
+                const shine = this.querySelector('.btn-shine') as HTMLSpanElement | null;
                 if (shine) {
-                    (shine as HTMLElement).style.animation = 'btn-shine 1s forwards';
+                    shine.style.animation = 'btn-shine 1s forwards';
                 }
-                (this as HTMLElement).style.transform = 'translateY(-5px)';
+                this.style.transform = 'translateY(-5px)';
             });
             
-            button.addEventListener('mouseleave', function() {
-                (this as HTMLElement).style.transform = '';
+            button.addEventListener('mouseleave', function(this: HTMLButtonElement) {
+                this.style.transform = '';
             });
         });
     });

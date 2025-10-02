@@ -961,17 +961,12 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
     document.head.appendChild(script);
 
-    // Load Real-time Chart Update System
-    const realtimeScript = document.createElement('script');
-    realtimeScript.type = 'module';
-    realtimeScript.src = '/src/utils/chart-realtime.js';
-    document.head.appendChild(realtimeScript);
-
-    // Load Shared State Management
-    const sharedStateScript = document.createElement('script');
-    sharedStateScript.type = 'module';
-    sharedStateScript.src = '/src/utils/shared-state.js';
-    document.head.appendChild(sharedStateScript);
+    // Load Enhanced Animation System (served from public)
+    const s0 = document.createElement('script'); s0.type='module'; s0.src='/js/enhanced-animations.js'; document.head.appendChild(s0);
+    
+    // Load Real-time Chart Update System from public for preview/deploy
+    const s1 = document.createElement('script'); s1.type='module'; s1.src='/js/shared-state.js'; document.head.appendChild(s1);
+    const s2 = document.createElement('script'); s2.type='module'; s2.src='/js/chart-realtime.js'; document.head.appendChild(s2);
 
     // Global Chart registry to avoid canvas reuse issues
     window.dashboardCharts = window.dashboardCharts || new Map();
@@ -1009,7 +1004,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     localStorage.setItem('komplek_id', String(komplekId));
 
     // Import safe fetch wrapper
-    const { fetchJson } = await import('/src/utils/fetch-wrapper.js');
+    const { fetchJson } = await import('../../utils/fetch-wrapper.js');
     // Inline shared finance utilities to avoid import issues
     function calculateTotalsShared(rows) {
       const income = rows.filter(t => String(t.type) === 'Masuk').reduce((s, t) => s + Number(t.amount || 0), 0);
@@ -1604,19 +1599,68 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
 
     function animateNumber(el, to, format=(n)=>n){
       if(!el) return;
+      
+      // Use enhanced animation system if available
+      if (window.animateValueAccessible) {
+        window.animateValueAccessible(el, to, format, {
+          duration: 500, // Faster animation
+          easing: 'easeOutSmooth',
+          visualEffects: true,
+          onStart: () => {
+            el.style.opacity = '0.8';
+            el.style.transform = 'scale(0.98)';
+          },
+          onComplete: () => {
+            el.style.opacity = '1';
+            el.style.transform = 'scale(1)';
+            el.style.transition = 'all 0.2s ease';
+            el.dataset.val = String(to);
+          }
+        });
+        return;
+      }
+      
+      // Check if this is the first visit to this page
+      function isFirstVisit(pageName) {
+        const visitKey = `visited_${pageName}`;
+        const hasVisited = localStorage.getItem(visitKey) === 'true';
+        if (!hasVisited) {
+          localStorage.setItem(visitKey, 'true');
+          return true;
+        }
+        return false;
+      }
+      
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if(reduceMotion){ el.textContent = format(to); return; }
+      const isFirstTime = isFirstVisit('admin_transaksi');
+      
+      if(reduceMotion || !isFirstTime){ 
+        el.textContent = format(to); 
+        el.dataset.val = String(to);
+        return; 
+      }
 
       const from = Number(String(el.dataset.val||'0')) || 0;
       const start = performance.now();
-      const duration = 550;
+      const duration = 1000;
+      
       function step(t){
         const p = Math.min(1, (t-start)/duration);
-        const eased = 1 - Math.pow(1-p, 3);
+        const eased = 1 - Math.pow(1-p, 3); // easeOutCubic
         const val = Math.round(from + (to - from)*eased);
         el.textContent = format(val);
+        
+        // Add visual effects
+        if (p < 1) {
+          const scale = 1 + (Math.sin(p * Math.PI) * 0.05);
+          el.style.transform = `scale(${scale})`;
+        }
+        
         if(p<1) requestAnimationFrame(step);
-        else el.dataset.val = String(to);
+        else {
+          el.dataset.val = String(to);
+          el.style.transform = 'scale(1)';
+        }
       }
       requestAnimationFrame(step);
     }
@@ -2165,7 +2209,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     });
     document.getElementById('btn-template-keuangan')?.addEventListener('click', async ()=>{
       try{
-        const { safeFetch } = await import('/src/utils/fetch-wrapper.js');
+        const { safeFetch } = await import('../../utils/fetch-wrapper.js');
         const res = await safeFetch('/api/templates/keuangan');
         if(!res.ok){ console.error('Gagal mengunduh template keuangan'); return; }
         const blob = await res.blob();

@@ -1003,50 +1003,72 @@
                 background: var(--primary-blue);
             }
         }
+        
 
-        @media (max-width: 576px) {
-            .tab-btn {
-                padding: 0.75rem 1.5rem;
-                font-size: 0.9rem;
-            }
+    @media (max-width: 576px) {
+        /* Container and section spacing */
+        .container { padding: 0 14px; }
+        .harga-section { padding: 64px 0; }
 
-            .harga-cta {
-                padding: 2rem 1.5rem;
-            }
-            
-            .cta-buttons {
-                flex-direction: column;
-                width: 100%;
-            }
-            
-            .btn-harga {
-                width: 100%;
-                text-align: center;
-            }
-            
-            .comparison-table th, 
-            .comparison-table td {
-                padding: 0.8rem 1rem;
-            }
-            
-            .comparison-table th:first-child,
-            .comparison-table td:first-child {
-                padding-left: 1rem;
-            }
-        }
+        /* Titles */
+        .section-title { font-size: 1.6rem; margin-bottom: 0.6rem; }
+        .section-subtitle { font-size: 0.95rem; margin-bottom: 1.4rem; padding: 0 6px; }
 
-        /* Animations */
-        @keyframes float-element {
-            0% {
-                transform: translateY(0) translateX(0);
-            }
-            50% {
-                transform: translateY(-20px) translateX(10px);
-            }
-            100% {
-                transform: translateY(0) translateX(0);
-            }
-        }
+        /* Tabs as segmented control */
+        .harga-tabs { width: 100%; gap: 0.5rem; padding: 6px; border-radius: 12px; }
+        .tab-btn { flex: 1 1 0; padding: 0.7rem 0.9rem; font-size: 0.9rem; }
+        .tab-slider { display: none; }
+
+        /* Cards */
+        .harga-container { gap: 1rem; grid-template-columns: 1fr; }
+        .harga-card { padding: 1.2rem 1rem; border-radius: 14px; }
+        .harga-card-header h3 { font-size: 1.25rem; margin-bottom: 0.6rem; }
+        .price { font-size: 1.6rem; }
+        .period { font-size: 0.9rem; }
+        .feature-item { margin-bottom: 0.7rem; }
+        .feature-text { font-size: 0.95rem; }
+        .feature-icon { margin-right: 0.7rem; width: 22px; height: 22px; }
+
+        /* Reduce decorative background on mobile */
+        .harga-bg-elements .bg-element { display: none; }
+        .decorative-elements { display: none; }
+
+        /* Comparison table */
+        .comparison-table-wrapper { -webkit-overflow-scrolling: touch; }
+        .comparison-table { min-width: 720px; }
+        .comparison-table th, .comparison-table td { padding: 0.8rem 1rem; }
+        .comparison-table th:first-child, .comparison-table td:first-child { padding-left: 1rem; }
+
+        /* CTA block */
+        .harga-cta { padding: 1.25rem 1rem; border-radius: 14px; text-align: center; }
+        .cta-content h3 { font-size: 1.25rem; line-height: 1.35; }
+        .cta-content p { font-size: 0.95rem; }
+        .cta-buttons { flex-direction: column; width: 100%; gap: 0.75rem; }
+        .btn-harga { width: 100%; text-align: center; padding: 0.8rem 1rem; }
+    }
+
+    /* Very small phones (e.g., iPhone SE width) */
+    @media (max-width: 400px) {
+        .section-title { font-size: 1.35rem; }
+        .section-subtitle { font-size: 0.9rem; }
+        .harga-card { padding: 1rem 0.9rem; }
+        .harga-card-header h3 { font-size: 1.15rem; }
+        .price { font-size: 1.45rem; }
+        .feature-text { font-size: 0.92rem; }
+        .harga-cta { padding: 1rem 0.9rem; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
+        .cta-content h3 { font-size: 1.1rem; line-height: 1.35; }
+        .cta-content p { font-size: 0.9rem; }
+        .cta-buttons { gap: 0.6rem; }
+        .btn-harga { padding: 0.7rem 0.9rem; }
+    }
+
+    /* Ultra small screens (<=360px) */
+    @media (max-width: 360px) {
+        .container { padding: 0 10px; }
+        .tab-btn { padding: 0.55rem 0.6rem; font-size: 0.85rem; }
+        .feature-item { margin-bottom: 0.6rem; }
+        .btn-harga { padding: 0.65rem 0.85rem; }
+    }
 
         @keyframes pulse {
             0% {

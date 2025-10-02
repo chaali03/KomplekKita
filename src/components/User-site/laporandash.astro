@@ -84,28 +84,6 @@
     margin-bottom: 2rem;
   }
 
-  // Apply dashboard-style summary (same fields as Admin) and persist snapshot
-  function applyDashboardData(data){
-    if(!data) return;
-    const totalKas = Number(data?.totalKas || data?.total_kas || 0);
-    const totalMasuk = Number(data?.totalMasuk || data?.total_masuk || 0);
-    const totalKeluar = Number(data?.totalKeluar || data?.total_keluar || 0);
-    const pending = Number(data?.iuranPending || data?.iuran_pending || 0);
-    paintTotalKasAnimated(totalKas);
-    const inEl = document.getElementById('user-in');
-    const outEl = document.getElementById('user-out');
-    const pdEl = document.getElementById('user-pending');
-    if(inEl) inEl.textContent = currency(totalMasuk);
-    if(outEl) outEl.textContent = currency(totalKeluar);
-    if(pdEl) pdEl.textContent = currency(pending);
-    // persist snapshot for cross-tab sync
-    try{
-      const komplekId = String(localStorage.getItem('komplek_id')||'');
-      localStorage.setItem('summary_kpis', JSON.stringify({ komplekId, totalKas, totalMasuk, totalKeluar, iuranPending: pending, ts: Date.now() }));
-      // Emit storage-like event within same tab
-      try{ window.dispatchEvent(new StorageEvent('storage', { key: 'summary_kpis' })); }catch(_){}
-    }catch(_){ }
-  }
 
   .laporan-header {
     display: flex;
@@ -369,16 +347,12 @@
   });
 
   // Load Real-time Chart Update System untuk data updates
-  const realtimeScript = document.createElement('script');
-  realtimeScript.type = 'module';
-  realtimeScript.src = '/src/utils/chart-realtime.js';
-  document.head.appendChild(realtimeScript);
+  // Public fallback for preview/deploy
+  const us1 = document.createElement('script'); us1.type='module'; us1.src='/js/shared-state.js'; document.head.appendChild(us1);
+  const us2 = document.createElement('script'); us2.type='module'; us2.src='/js/chart-realtime.js'; document.head.appendChild(us2);
 
   // Load Shared State Management
-  const sharedStateScript = document.createElement('script');
-  sharedStateScript.type = 'module';
-  sharedStateScript.src = '/src/utils/shared-state.js';
-  document.head.appendChild(sharedStateScript);
+  // shared-state loaded above
 
   const currency = (n) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(n||0));
   const qs = new URLSearchParams(location.search);
@@ -429,8 +403,31 @@
     setTimeout(()=>{ totalEl.textContent = currency(val); totalEl.style.opacity = '1'; }, 300);
   }
 
+  // Apply dashboard-style summary (same fields as Admin) and persist snapshot
+  function applyDashboardData(data){
+    if(!data) return;
+    const totalKas = Number(data?.totalKas || data?.total_kas || 0);
+    const totalMasuk = Number(data?.totalMasuk || data?.total_masuk || 0);
+    const totalKeluar = Number(data?.totalKeluar || data?.total_keluar || 0);
+    const pending = Number(data?.iuranPending || data?.iuran_pending || 0);
+    paintTotalKasAnimated(totalKas);
+    const inEl = document.getElementById('user-in');
+    const outEl = document.getElementById('user-out');
+    const pdEl = document.getElementById('user-pending');
+    if(inEl) inEl.textContent = currency(totalMasuk);
+    if(outEl) outEl.textContent = currency(totalKeluar);
+    if(pdEl) pdEl.textContent = currency(pending);
+    // persist snapshot for cross-tab sync
+    try{
+      const komplekId = String(localStorage.getItem('komplek_id')||'');
+      localStorage.setItem('summary_kpis', JSON.stringify({ komplekId, totalKas, totalMasuk, totalKeluar, iuranPending: pending, ts: Date.now() }));
+      // Emit storage-like event within same tab
+      try{ window.dispatchEvent(new StorageEvent('storage', { key: 'summary_kpis' })); }catch(_){ }
+    }catch(_){ }
+  }
+
   // Import safe fetch wrapper
-  const { fetchJson } = await import('/src/utils/fetch-wrapper.js');
+  const { fetchJson } = await import('../../utils/fetch-wrapper.js');
   
   async function fetchJsonSafe(url){
     try {

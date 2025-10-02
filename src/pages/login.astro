@@ -1193,51 +1193,7 @@ import SimpleFooter from '../components/SimpleFooter.astro';
 
     @media (max-width: 768px) {
         .login-page {
-            padding: 1.5rem 0;
-            min-height: auto;
-            height: auto;
-        }
-        
-        .container {
-            padding: 0 1rem;
-        }
-        
-        .login-content {
-            max-width: 500px;
             padding: 1rem 0;
-            gap: 1.5rem;
-        }
-        
-        .welcome-title {
-            font-size: 2.8rem;
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-        
-        .login-left, .login-right {
-            max-width: 100%;
-        }
-        
-        .login-animation {
-            height: 180px;
-            max-width: 250px;
-            margin: 0 auto;
-        }
-        
-        #lottie-login {
-            height: 180px;
-        }
-        
-        .login-form-container {
-            padding: 1.8rem;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.92);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .form-title {
-            font-size: 1.5rem;
-            margin-bottom: 0.8rem;
         }
         
         .form-options {
@@ -1295,151 +1251,50 @@ import SimpleFooter from '../components/SimpleFooter.astro';
             margin-top: 1rem;
         }
     }
-
-
     
     /* Mobile portrait */
     @media (max-width: 576px) {
-        .login-page {
-            padding: 1rem 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        
-        .container {
-            padding: 0 0.8rem;
-        }
-        
-        .login-content {
-            max-width: 100%;
-            padding: 0;
-            gap: 1rem;
-        }
-        
-        .login-form-container {
-            padding: 1.5rem;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            width: 100%;
-        }
+      .login-page {
+        padding: 1rem 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      
+      .container {
+        padding: 0 0.6rem;
+      }
+      
+      .login-content {
+        max-width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        width: 100%;
+      }
 
-        .welcome-section {
-            padding: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
+      .form-subtitle {
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+      }
 
-        .welcome-title {
-            font-size: 2.2rem;
-            margin-bottom: 0;
-        }
+      .login-animation {
+        height: 80px;
+        max-width: 140px;
+        margin: 0 auto;
+      }
 
-        .form-title {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .form-subtitle {
-            font-size: 0.85rem;
-            margin-bottom: 1.2rem;
-        }
-
-        .login-animation {
-            height: 140px;
-            max-width: 200px;
-            margin: 0 auto;
-        }
-
-        #lottie-login {
-            height: 140px;
-        }
-        
-        .back-home-btn {
-            padding: 0.5rem 1rem;
-            font-size: 0.75rem;
-            border-radius: 18px;
-        }
-        
-        .back-home-container {
-            top: 1rem;
-            left: 1rem;
-            position: fixed;
-        }
-        
-        .form-input {
-            padding: 0.7rem 1rem 0.7rem 2.4rem;
-            font-size: 0.9rem;
-            border-radius: 12px;
-            height: 42px;
-        }
-        
-        .input-icon {
-            font-size: 0.9rem;
-            left: 0.8rem;
-        }
-        
-        .login-button {
-            padding: 0.7rem;
-            font-size: 0.9rem;
-            border-radius: 12px;
-            height: 42px;
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .form-label {
-            font-size: 0.85rem;
-            margin-bottom: 0.3rem;
-        }
-        
-        .form-options {
-            margin-bottom: 1rem;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
-        }
-        
-        .remember-me label {
-            font-size: 0.8rem;
-        }
-        
-        .forgot-password {
-            font-size: 0.8rem;
-            margin-top: 0.2rem;
-        }
-        
-        .login-header {
-            margin-bottom: 1rem;
-        }
-        
-        .logo {
-            height: 30px;
-        }
-        
-        .logo-text {
-            font-size: 1.2rem;
-        }
-        
-        .register-link {
-            font-size: 0.8rem;
-            margin-top: 0.8rem;
-        }
+      #lottie-login {
+        height: 100px;
+      }
     }
     
     @media (max-width: 400px) {
-        .welcome-title {
-            font-size: 1.6rem;
-            line-height: 1.2;
+      .welcome-title {
+        font-size: 1.3rem;
+            line-height: 1.1;
         }
-        
-        .form-title {
-            font-size: 1.2rem;
-        }
-        
         .form-subtitle {
             font-size: 0.8rem;
             margin-bottom: 1rem;
@@ -1745,12 +1600,19 @@ import SimpleFooter from '../components/SimpleFooter.astro';
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
-            toast.innerHTML = `
-                <div class="toast-content">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                    <span>${message}</span>
-                </div>
-            `;
+            
+            const toastContent = document.createElement('div');
+            toastContent.className = 'toast-content';
+            
+            const icon = document.createElement('i');
+            icon.className = `fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}`;
+            
+            const span = document.createElement('span');
+            span.textContent = message;
+            
+            toastContent.appendChild(icon);
+            toastContent.appendChild(span);
+            toast.appendChild(toastContent);
             
             // Add toast styles if not already present
             if (!document.querySelector('#toast-styles')) {

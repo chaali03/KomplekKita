@@ -1,55 +1,24 @@
-<!doctype html>
 <html lang="id">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-		<link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
-		<link rel="shortcut icon" href="/favicon.svg" />
-		<link rel="apple-touch-icon" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<meta name="description" content="KomplekKita - Platform manajemen komplek perumahan modern dengan transparansi keuangan dan efisiensi administrasi" />
-		<meta name="keywords" content="komplek, perumahan, manajemen, transparansi, keuangan, administrasi" />
-		<title>KomplekKita - Manajemen Komplek Perumahan Modern</title>
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https: blob:; connect-src 'self' https:; media-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'self' https://www.google.com https://*.google.com;">
+		<!-- Favicon: Chrome-compatible configuration with cache busting -->
+		<link rel="icon" type="image/x-icon" href="/favicon.ico?v=2" />
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
 		
-		<!-- Google Fonts -->
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 		
 		<!-- Font Awesome -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 		
-		<!-- Leaflet Maps -->
-		<link
-			rel="stylesheet"
-			href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-			integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-			crossorigin=""
-		/>
-		
 		<!-- AOS Animation Library -->
 		<link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet">
 		
 		<!-- Lenis Smooth Scroll -->
-		<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.19/dist/lenis.min.js"></script>
-		
-		<!-- AOS Animation Library -->
-		<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-		
-		<!-- Lottie Web for Animations -->
-		<script src="https://unpkg.com/lottie-web@5.12.2/build/player/lottie.min.js"></script>
-		
-		<!-- GSAP for Advanced Animations -->
-		<script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
-		<script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-
-		<!-- Leaflet JS -->
-		<script
-			src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-			integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-			crossorigin=""
-		></script>
+		<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.19/dist/lenis.min.js" integrity="sha256-wEFfsGpGag9MQnftNZT/lDRvzI3prLep47vgxVTdfL0=" crossorigin="anonymous"></script>
     
     	<!-- Global modern scrollbar (applies site-wide) -->
     	<style>

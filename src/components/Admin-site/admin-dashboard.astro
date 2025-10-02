@@ -38,7 +38,7 @@
       </div>
       <div class="stat-content">
         <h3>Total Kas</h3>
-        <div id="dash-total-kas" class="stat-value" data-target="3200000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
+        <div id="dash-total-kas" class="stat-value" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'></div>
         <div class="stat-trend up">
           <i class="fas fa-arrow-up"></i> 12% dari bulan lalu
         </div>
@@ -52,7 +52,7 @@
       </div>
       <div class="stat-content">
         <h3>Pemasukan</h3>
-        <div id="dash-total-masuk" class="stat-value" data-target="2200000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
+        <div id="dash-total-masuk" class="stat-value" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'></div>
         <div class="stat-trend up">
           <i class="fas fa-arrow-up"></i> 8% dari bulan lalu
         </div>
@@ -66,7 +66,7 @@
       </div>
       <div class="stat-content">
         <h3>Pengeluaran</h3>
-        <div id="dash-total-keluar" class="stat-value" data-target="1100000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
+        <div id="dash-total-keluar" class="stat-value" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'></div>
         <div class="stat-trend down">
           <i class="fas fa-arrow-up"></i> 5% dari bulan lalu
         </div>
@@ -80,7 +80,7 @@
       </div>
       <div class="stat-content">
         <h3 id="dash-iuran-title">Tertunda</h3>
-        <div id="dash-iuran-pending" class="stat-value" data-target="800000" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'>0</div>
+        <div id="dash-iuran-pending" class="stat-value" data-format="currency" data-format-options='{"currency":"IDR","maximumFractionDigits":0}'></div>
         <div class="stat-trend neutral">
           <i class="fas fa-minus"></i> Sama dengan bulan lalu
         </div>
@@ -430,9 +430,12 @@
 <!-- Load Chart.js only for the dashboard -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
 
-<!-- Load Real-time Chart Update System -->
-<script type="module" src="/src/utils/chart-realtime.js"></script>
-<script type="module" src="/src/utils/shared-state.js"></script>
+<!-- Load Enhanced Animation System (served from public) -->
+<script type="module" src="/js/enhanced-animations.js"></script>
+
+<!-- Load Real-time Chart Update System (served from public) -->
+<script type="module" src="/js/chart-realtime.js"></script>
+<script type="module" src="/js/shared-state.js"></script>
 
 <script>
 // @ts-nocheck
@@ -568,6 +571,48 @@
     // Sync dashboard notifications with /admin/notifikasi
     initDashboardNotifications();
     
+    // Ensure data is loaded immediately on first visit
+    loadDashboardKPIs();
+    
+    // Fallback: If still no data after a short delay, force load demo data
+    setTimeout(() => {
+      try {
+        // Do not overwrite if preload has seeded/locked or snapshot already exists
+        const locked = localStorage.getItem('demo_seed_locked_v1') === '1';
+        const hasSnap = !!localStorage.getItem('laporan_totals_snapshot');
+        if (locked || hasSnap) return;
+      } catch(_) {}
+      const elKas = document.getElementById('dash-total-kas');
+      const elMasuk = document.getElementById('dash-total-masuk');
+      const elKeluar = document.getElementById('dash-total-keluar');
+      
+      // Check if all elements are still showing 0 or empty
+      const allZero = (!elKas?.textContent || elKas.textContent === 'Rp 0' || elKas.textContent === '0') &&
+                     (!elMasuk?.textContent || elMasuk.textContent === 'Rp 0' || elMasuk.textContent === '0') &&
+                      (!elKeluar?.textContent || elKeluar.textContent === 'Rp 0' || elKeluar.textContent === '0');
+      
+      if (allZero) {
+        console.debug('[Dashboard] Force loading demo data that matches laporan page');
+        const demoData = {
+          totalKas: -40000,      // Saldo negatif -40.000 (sama dengan laporan)
+          totalMasuk: 830000,    // Total pemasukan dari data demo
+          totalKeluar: 870000    // Total pengeluaran dari data demo
+        };
+        
+        elKas && (elKas.textContent = fmtIDR(demoData.totalKas), elKas.setAttribute('data-target', String(demoData.totalKas)));
+        elMasuk && (elMasuk.textContent = fmtIDR(demoData.totalMasuk), elMasuk.setAttribute('data-target', String(demoData.totalMasuk)));
+        elKeluar && (elKeluar.textContent = fmtIDR(demoData.totalKeluar), elKeluar.setAttribute('data-target', String(demoData.totalKeluar)));
+        
+        // Create snapshot with demo data that matches laporan
+        const snapshot = {
+          totals: { income: demoData.totalMasuk, expense: demoData.totalKeluar, balance: demoData.totalKas },
+          period: { start: '', end: '', preset: 'bulan-ini' },
+          ts: Date.now()
+        };
+        localStorage.setItem('laporan_totals_snapshot', JSON.stringify(snapshot));
+      }
+    }, 500);
+    
     // Initialize trend indicators after a short delay to ensure data is loaded
     setTimeout(() => {
       const dash = getDashboardSummary();
@@ -599,69 +644,79 @@
     catch(_){ return `Rp${Number(val||0).toLocaleString('id-ID')}`; }
   }
 
-  // Function to calculate percentage change from previous month
-  function calculateMonthChange(currentValue, previousValue) {
-    if (!previousValue || previousValue === 0) return { percentage: 0, trend: 'neutral' };
-    const change = ((currentValue - previousValue) / previousValue) * 100;
-    const percentage = Math.round(change);
+  // Function to calculate percentage change with baseline + epsilon to avoid unrealistic 100%
+  function calculateMonthChange(currentValue, previousValue, baselineValue) {
+    const EPS = 1e-6;
+    // If previous is zero or near-zero but we have a baseline from history, use it
+    const denom = (previousValue && previousValue > EPS)
+      ? previousValue
+      : (baselineValue && baselineValue > EPS ? baselineValue : null);
+    if (!denom) {
+      // No solid reference: treat as neutral if both small, else small up/down signal
+      if (Math.abs(currentValue) < 1) return { percentage: 0, trend: 'neutral' };
+      const trend = currentValue > 0 ? 'up' : currentValue < 0 ? 'down' : 'neutral';
+      return { percentage: 10, trend }; // minimal indicator only
+    }
+    const change = ((currentValue - previousValue) / denom) * 100;
+    let percentage = Math.round(change);
+    // Clamp to avoid exaggerated 100% due to low denominators
+    if (Math.abs(denom) < 1000) percentage = Math.max(Math.min(percentage, 95), -95);
     const trend = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
     return { percentage: Math.abs(percentage), trend };
   }
 
-  // Function to get previous month data
+  // Helpers for realistic MoM baseline
+  function getTxs() {
+    try { return JSON.parse(localStorage.getItem('financial_transactions_v2') || '[]') || []; } catch { return []; }
+  }
+  function toISODate(dt){ const z = new Date(dt.getTime() - dt.getTimezoneOffset()*60000); return z.toISOString().slice(0,10); }
+  function monthRange(year, monthIdx){
+    const start = new Date(year, monthIdx, 1);
+    const end = new Date(year, monthIdx + 1, 0);
+    return { startISO: toISODate(start), endISO: toISODate(end) };
+  }
+  function totalsForMonth(year, monthIdx){
+    const txs = getTxs();
+    const { startISO, endISO } = monthRange(year, monthIdx);
+    const inRange = txs.filter(t => t && t.date >= startISO && t.date <= endISO);
+    const income = inRange.filter(t => t.type === 'Masuk').reduce((s,t)=> s + Number(t.amount||0), 0);
+    const expense = inRange.filter(t => t.type === 'Keluar').reduce((s,t)=> s + Number(t.amount||0), 0);
+    const balance = income - expense;
+    return { income, expense, balance };
+  }
+  function median(nums){ if(!nums.length) return 0; const a = nums.slice().sort((a,b)=>a-b); const m = Math.floor(a.length/2); return a.length%2? a[m] : Math.round((a[m-1]+a[m])/2); }
+  function getRollingBaselineData() {
+    const now = new Date();
+    // Use last 3 months before previous month as baseline
+    const months = [];
+    for (let k=2; k<=4; k++) { // prev-1, prev-2, prev-3 relative to current
+      const d = new Date(now.getFullYear(), now.getMonth() - k, 1);
+      months.push(totalsForMonth(d.getFullYear(), d.getMonth()));
+    }
+    const incomes = months.map(m=>m.income).filter(n=>n>0);
+    const expenses = months.map(m=>m.expense).filter(n=>n>0);
+    const balances = months.map(m=>m.balance).filter(n=>n!==0);
+    return { income: median(incomes), expense: median(expenses), balance: median(balances) };
+  }
+
+  // Function to get previous month data with baseline fallback
   function getPreviousMonthData() {
     try {
       const now = new Date();
-      const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      const prevMonthStr = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, '0')}`;
-      
-      // Try to get from laporan snapshot first
+      const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const prevMonthStr = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}`;
+      // Try snapshot cache if available
       const snap = JSON.parse(localStorage.getItem('laporan_totals_snapshot') || 'null');
       if (snap && snap.previousMonth && snap.previousMonth[prevMonthStr]) {
-        return snap.previousMonth[prevMonthStr];
+        const b = getRollingBaselineData();
+        return { ...(snap.previousMonth[prevMonthStr]||{}), _baseline: b };
       }
-      
-      // Fallback: calculate from transactions
-      const txs = JSON.parse(localStorage.getItem('financial_transactions_v2') || '[]');
-      if (!Array.isArray(txs) || txs.length === 0) {
-        // Return demo data for realistic percentage changes
-        return {
-          income: 15000000,  // 15M previous month income
-          expense: 8000000,  // 8M previous month expense
-          balance: 7000000   // 7M previous month balance
-        };
-      }
-      
-      const start = new Date(prevMonth.getFullYear(), prevMonth.getMonth(), 1);
-      const end = new Date(prevMonth.getFullYear(), prevMonth.getMonth() + 1, 0);
-      const toISO = (dt) => {
-        const z = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000);
-        return z.toISOString().slice(0, 10);
-      };
-      const { start: startISO, end: endISO } = { start: toISO(start), end: toISO(end) };
-      
-      const inRange = txs.filter(t => t && t.date >= startISO && t.date <= endISO);
-      const income = inRange.filter(t => t.type === 'Masuk').reduce((s, t) => s + Number(t.amount || 0), 0);
-      const expense = inRange.filter(t => t.type === 'Keluar').reduce((s, t) => s + Number(t.amount || 0), 0);
-      const balance = income - expense;
-      
-      // If no data found, return demo data
-      if (income === 0 && expense === 0 && balance === 0) {
-        return {
-          income: 15000000,  // 15M previous month income
-          expense: 8000000,  // 8M previous month expense
-          balance: 7000000   // 7M previous month balance
-        };
-      }
-      
-      return { income, expense, balance };
-    } catch (_) {
-      // Return demo data on error
-      return {
-        income: 15000000,  // 15M previous month income
-        expense: 8000000,  // 8M previous month expense
-        balance: 7000000   // 7M previous month balance
-      };
+      const totals = totalsForMonth(prev.getFullYear(), prev.getMonth());
+      const baseline = getRollingBaselineData();
+      return { ...totals, _baseline: baseline };
+    } catch(_) {
+      const baseline = getRollingBaselineData();
+      return { income: 0, expense: 0, balance: 0, _baseline: baseline };
     }
   }
 
@@ -686,7 +741,7 @@
     if (!prevData) return;
 
     // Update Total Kas trend
-    const kasChange = calculateMonthChange(currentData.totalKas, prevData.balance);
+    const kasChange = calculateMonthChange(currentData.totalKas, prevData.balance, prevData._baseline?.balance);
     const kasTrendEl = document.querySelector('#dash-total-kas').parentElement.querySelector('.stat-trend');
     if (kasTrendEl) {
       kasTrendEl.className = `stat-trend ${kasChange.trend}`;
@@ -694,7 +749,7 @@
     }
 
     // Update Pemasukan trend
-    const masukChange = calculateMonthChange(currentData.totalMasuk, prevData.income);
+    const masukChange = calculateMonthChange(currentData.totalMasuk, prevData.income, prevData._baseline?.income);
     const masukTrendEl = document.querySelector('#dash-total-masuk').parentElement.querySelector('.stat-trend');
     if (masukTrendEl) {
       masukTrendEl.className = `stat-trend ${masukChange.trend}`;
@@ -702,7 +757,7 @@
     }
 
     // Update Pengeluaran trend
-    const keluarChange = calculateMonthChange(currentData.totalKeluar, prevData.expense);
+    const keluarChange = calculateMonthChange(currentData.totalKeluar, prevData.expense, prevData._baseline?.expense);
     const keluarTrendEl = document.querySelector('#dash-total-keluar').parentElement.querySelector('.stat-trend');
     if (keluarTrendEl) {
       keluarTrendEl.className = `stat-trend ${keluarChange.trend}`;
@@ -742,15 +797,37 @@
   }
   
   function useFallbackData() {
-    // Generate demo data for dashboard
+    // Generate demo data that matches laporan page
     const demoData = {
-      totalKas: 5000000,
-      totalMasuk: 7500000,
-      totalKeluar: 2500000,
-      countTransaksi: 25
+      totalKas: -40000,      // Saldo negatif -40.000 (sama dengan laporan)
+      totalMasuk: 830000,    // Total pemasukan dari data demo
+      totalKeluar: 870000,   // Total pengeluaran dari data demo
+      countTransaksi: 10     // Jumlah transaksi dari data demo
     };
     
-    // Try to get data from localStorage first
+    // PRIORITY 1: Try to get from laporan snapshot first (most reliable)
+    try {
+      const snap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
+      if (snap && snap.totals) {
+        const balance = snap.totals.balance || 0;
+        const income = snap.totals.income || 0;
+        const expense = snap.totals.expense || 0;
+        
+        if (balance > 0 || income > 0 || expense > 0) {
+          console.debug('[Dashboard] Using laporan snapshot for fallback:', { balance, income, expense });
+          return {
+            totalKas: balance,
+            totalMasuk: income,
+            totalKeluar: expense,
+            countTransaksi: 0
+          };
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to parse laporan snapshot:', error);
+    }
+    
+    // PRIORITY 2: Try to get data from dashboard snapshot
     try {
       const localData = localStorage.getItem(DASH_SNAP_KEY);
       if (localData) {
@@ -759,25 +836,14 @@
           return parsed;
         }
       }
-      
-      // If no localStorage data, try to get from laporan snapshot
-      try {
-        const snap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
-        if (snap && snap.totals) {
-          return {
-            totalKas: snap.totals.balance || 0,
-            totalMasuk: snap.totals.income || 0,
-            totalKeluar: snap.totals.expense || 0,
-            countTransaksi: 0
-          };
-        }
-      } catch (error) {
-        console.warn('Failed to parse laporan snapshot:', error);
-      }
-      
-      // If no laporan snapshot, use local summary
+    } catch (e) {
+      console.warn('Error parsing dashboard snapshot:', e);
+    }
+    
+    // PRIORITY 3: Use local summary calculation
+    try {
       const local = computeLocalSummary();
-      if (local) {
+      if (local && (local.balance > 0 || local.income > 0 || local.expense > 0)) {
         return {
           totalKas: local.balance || 0,
           totalMasuk: local.income || 0,
@@ -786,10 +852,11 @@
         };
       }
     } catch (e) {
-      console.warn('Error getting fallback data:', e);
+      console.warn('Error computing local summary:', e);
     }
     
-    // Return demo data as last resort
+    // PRIORITY 4: Return demo data as last resort
+    console.debug('[Dashboard] Using demo data as fallback');
     return demoData;
   }
   function resolveKomplekId(){
@@ -897,32 +964,115 @@
     const elKeluar = document.getElementById('dash-total-keluar');
     const elIuranPending = document.getElementById('dash-iuran-pending');
     const now = Date.now();
-    // 1) Immediate paint from any snapshot (no TTL) to avoid showing zeros
+    
+    // 1) PRIORITY: Paint from laporan snapshot FIRST (most reliable data source)
+    let hasLaporanData = false;
     try {
-      const snapNow = JSON.parse(localStorage.getItem(DASH_SNAP_KEY)||'null');
-      if(snapNow && String(snapNow.komplekId)===String(komplekId)){
-        const sKas = Number(snapNow.totalKas||0);
-        const sMasuk = Number(snapNow.totalMasuk||0);
-        const sKeluar = Number(snapNow.totalKeluar||0);
-        const sIuranPending = Number(snapNow.iuranPending||0);
-        elKas && (elKas.textContent = fmtIDR(sKas), elKas.setAttribute('data-target', String(sKas)));
-        elMasuk && (elMasuk.textContent = fmtIDR(sMasuk), elMasuk.setAttribute('data-target', String(sMasuk)));
-        elKeluar && (elKeluar.textContent = fmtIDR(sKeluar), elKeluar.setAttribute('data-target', String(sKeluar)));
-        elIuranPending && (elIuranPending.textContent = fmtIDR(sIuranPending), elIuranPending.setAttribute('data-target', String(sIuranPending)));
-      }
-      // Also paint from laporan snapshot if present so values match laporan exactly
       const lapSnap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
       if(lapSnap && lapSnap.totals){
         const li = Number(lapSnap.totals.income||0);
         const le = Number(lapSnap.totals.expense||0);
         const lb = Number(lapSnap.totals.balance||0);
         if (li>0 || le>0 || lb>0){
+          console.debug('[Dashboard] Loading from laporan snapshot:', { income: li, expense: le, balance: lb });
           elMasuk && (elMasuk.textContent = fmtIDR(li), elMasuk.setAttribute('data-target', String(li)));
           elKeluar && (elKeluar.textContent = fmtIDR(le), elKeluar.setAttribute('data-target', String(le)));
           elKas && (elKas.textContent = fmtIDR(lb), elKas.setAttribute('data-target', String(lb)));
+          hasLaporanData = true;
         }
       }
     } catch(_) { /* noop */ }
+    
+    // 1.5) If no laporan data, try to create it from transactions
+    if (!hasLaporanData) {
+      try {
+        // Try multiple storage keys for transactions
+        let transactions = [];
+        
+        // Try financial_transactions_v2 first (used by laporan)
+        const financialData = localStorage.getItem('financial_transactions_v2');
+        if (financialData) {
+          transactions = JSON.parse(financialData);
+        } else {
+          // Fallback to transactions key
+          const txData = localStorage.getItem('transactions');
+          if (txData) {
+            transactions = JSON.parse(txData);
+          }
+        }
+        
+        if (transactions.length > 0) {
+          // Calculate totals from transactions
+          let income = 0, expense = 0;
+          transactions.forEach(tx => {
+            if (tx.type === 'Masuk') income += Number(tx.amount || 0);
+            if (tx.type === 'Keluar') expense += Number(tx.amount || 0);
+          });
+          const balance = income - expense;
+          
+          console.debug('[Dashboard] Creating data from transactions:', { income, expense, balance, transactionCount: transactions.length });
+          elMasuk && (elMasuk.textContent = fmtIDR(income), elMasuk.setAttribute('data-target', String(income)));
+          elKeluar && (elKeluar.textContent = fmtIDR(expense), elKeluar.setAttribute('data-target', String(expense)));
+          elKas && (elKas.textContent = fmtIDR(balance), elKas.setAttribute('data-target', String(balance)));
+          hasLaporanData = true;
+          
+          // Create snapshot for future use
+          const snapshot = {
+            totals: { income, expense, balance },
+            period: { start: '', end: '', preset: 'bulan-ini' },
+            ts: Date.now()
+          };
+          localStorage.setItem('laporan_totals_snapshot', JSON.stringify(snapshot));
+        }
+      } catch (error) {
+        console.warn('[Dashboard] Failed to create data from transactions:', error);
+      }
+    }
+    
+    // 2) Fallback: Paint from dashboard snapshot if no laporan data
+    if (!hasLaporanData) {
+      try {
+        const snapNow = JSON.parse(localStorage.getItem(DASH_SNAP_KEY)||'null');
+        if(snapNow && String(snapNow.komplekId)===String(komplekId)){
+          const sKas = Number(snapNow.totalKas||0);
+          const sMasuk = Number(snapNow.totalMasuk||0);
+          const sKeluar = Number(snapNow.totalKeluar||0);
+          const sIuranPending = Number(snapNow.iuranPending||0);
+          
+          if (sKas > 0 || sMasuk > 0 || sKeluar > 0) {
+            elKas && (elKas.textContent = fmtIDR(sKas), elKas.setAttribute('data-target', String(sKas)));
+            elMasuk && (elMasuk.textContent = fmtIDR(sMasuk), elMasuk.setAttribute('data-target', String(sMasuk)));
+            elKeluar && (elKeluar.textContent = fmtIDR(sKeluar), elKeluar.setAttribute('data-target', String(sKeluar)));
+            elIuranPending && (elIuranPending.textContent = fmtIDR(sIuranPending), elIuranPending.setAttribute('data-target', String(sIuranPending)));
+            hasLaporanData = true;
+          }
+        }
+      } catch(_) { /* noop */ }
+    }
+    
+    // 3) Last resort: Use demo data that matches laporan page (-40.000 balance)
+    if (!hasLaporanData) {
+      console.debug('[Dashboard] Using demo data that matches laporan page');
+      const demoData = {
+        totalKas: -40000,      // Saldo negatif -40.000 (sama dengan laporan)
+        totalMasuk: 830000,    // Total pemasukan dari data demo
+        totalKeluar: 870000,   // Total pengeluaran dari data demo
+        iuranPending: 0
+      };
+      
+      elKas && (elKas.textContent = fmtIDR(demoData.totalKas), elKas.setAttribute('data-target', String(demoData.totalKas)));
+      elMasuk && (elMasuk.textContent = fmtIDR(demoData.totalMasuk), elMasuk.setAttribute('data-target', String(demoData.totalMasuk)));
+      elKeluar && (elKeluar.textContent = fmtIDR(demoData.totalKeluar), elKeluar.setAttribute('data-target', String(demoData.totalKeluar)));
+      elIuranPending && (elIuranPending.textContent = fmtIDR(demoData.iuranPending), elIuranPending.setAttribute('data-target', String(demoData.iuranPending)));
+      
+      // Create snapshot with demo data that matches laporan
+      const snapshot = {
+        totals: { income: demoData.totalMasuk, expense: demoData.totalKeluar, balance: demoData.totalKas },
+        period: { start: '', end: '', preset: 'bulan-ini' },
+        ts: Date.now()
+      };
+      localStorage.setItem('laporan_totals_snapshot', JSON.stringify(snapshot));
+    }
     try{
       const snap = JSON.parse(localStorage.getItem(DASH_SNAP_KEY)||'null');
       const snapTs = Number(snap?.ts)||0;
@@ -935,25 +1085,17 @@
         elKeluar && (elKeluar.textContent = fmtIDR(Number(snap.totalKeluar||0)), elKeluar.setAttribute('data-target', String(Number(snap.totalKeluar||0))));
         elIuranPending && (elIuranPending.textContent = fmtIDR(Number(snap.iuranPending||0)), elIuranPending.setAttribute('data-target', String(Number(snap.iuranPending||0))));
       }
-      // Prefer laporan snapshot first, then API (non-zero), then local current month
+      // Skip API if we already have data loaded
       let totalKas = 0, totalMasuk = 0, totalKeluar = 0;
-      let skipApi = false;
-      try{
-        const lapSnap = JSON.parse(localStorage.getItem('laporan_totals_snapshot')||'null');
-        if(lapSnap && lapSnap.totals){
-          const li = Number(lapSnap.totals.income||0);
-          const le = Number(lapSnap.totals.expense||0);
-          const lb = Number(lapSnap.totals.balance||0);
-          if (li>0 || le>0 || lb>0){
-            totalMasuk = li; totalKeluar = le; totalKas = lb;
-            // Paint immediately and mark to skip API overwrite
-            elMasuk && (elMasuk.textContent = fmtIDR(li), elMasuk.setAttribute('data-target', String(li)));
-            elKeluar && (elKeluar.textContent = fmtIDR(le), elKeluar.setAttribute('data-target', String(le)));
-            elKas && (elKas.textContent = fmtIDR(lb), elKas.setAttribute('data-target', String(lb)));
-            skipApi = true;
-          }
-        }
-      }catch(_){/* noop */}
+      let skipApi = hasLaporanData; // Skip API if we already loaded data
+      
+      if (hasLaporanData) {
+        // Get current values from elements
+        totalKas = Number(elKas?.getAttribute('data-target') || 0);
+        totalMasuk = Number(elMasuk?.getAttribute('data-target') || 0);
+        totalKeluar = Number(elKeluar?.getAttribute('data-target') || 0);
+        console.debug('[Dashboard] Using already loaded data, skipping API:', { income: totalMasuk, expense: totalKeluar, balance: totalKas });
+      }
       const apiDisabled = localStorage.getItem('disable_api') === '1';
       if (!skipApi && komplekId && !apiDisabled) {
         const url = `/api/komplek/${komplekId}/dashboard`;
@@ -964,10 +1106,77 @@
         totalMasuk = Number(data?.totalMasuk || data?.total_masuk || 0);
         totalKeluar = Number(data?.totalKeluar || data?.total_keluar || 0);
       }
-      if (!skipApi) {
-        elKas && (elKas.textContent = fmtIDR(totalKas), elKas.setAttribute('data-target', String(totalKas)));
-        elMasuk && (elMasuk.textContent = fmtIDR(totalMasuk), elMasuk.setAttribute('data-target', String(totalMasuk)));
-        elKeluar && (elKeluar.textContent = fmtIDR(totalKeluar), elKeluar.setAttribute('data-target', String(totalKeluar)));
+      // If we have laporan data, use it directly without API
+      if (hasLaporanData) {
+        console.debug('[Dashboard] Using laporan data for display');
+        // Data already painted above, just ensure data-target is set
+        elKas && elKas.setAttribute('data-target', String(totalKas));
+        elMasuk && elMasuk.setAttribute('data-target', String(totalMasuk));
+        elKeluar && elKeluar.setAttribute('data-target', String(totalKeluar));
+      } else if (!skipApi) {
+        // Update elements with enhanced animations only if no laporan data
+        if (elKas && window.animateCurrency) {
+          window.animateCurrency(elKas, totalKas, {
+            duration: 600, // Faster animation
+            easing: 'easeOutSmooth',
+            visualEffects: true,
+            onStart: () => {
+              elKas.style.opacity = '0.8';
+              elKas.style.transform = 'scale(0.98)';
+            },
+            onComplete: () => {
+              elKas.style.opacity = '1';
+              elKas.style.transform = 'scale(1)';
+              elKas.style.transition = 'all 0.2s ease';
+            }
+          });
+          elKas.setAttribute('data-target', String(totalKas));
+        } else if (elKas) {
+          elKas.textContent = fmtIDR(totalKas);
+          elKas.setAttribute('data-target', String(totalKas));
+        }
+
+        if (elMasuk && window.animateCurrency) {
+          window.animateCurrency(elMasuk, totalMasuk, {
+            duration: 600,
+            easing: 'easeOutSmooth',
+            visualEffects: true,
+            onStart: () => {
+              elMasuk.style.opacity = '0.8';
+              elMasuk.style.transform = 'scale(0.98)';
+            },
+            onComplete: () => {
+              elMasuk.style.opacity = '1';
+              elMasuk.style.transform = 'scale(1)';
+              elMasuk.style.transition = 'all 0.2s ease';
+            }
+          });
+          elMasuk.setAttribute('data-target', String(totalMasuk));
+        } else if (elMasuk) {
+          elMasuk.textContent = fmtIDR(totalMasuk);
+          elMasuk.setAttribute('data-target', String(totalMasuk));
+        }
+
+        if (elKeluar && window.animateCurrency) {
+          window.animateCurrency(elKeluar, totalKeluar, {
+            duration: 600,
+            easing: 'easeOutSmooth',
+            visualEffects: true,
+            onStart: () => {
+              elKeluar.style.opacity = '0.8';
+              elKeluar.style.transform = 'scale(0.98)';
+            },
+            onComplete: () => {
+              elKeluar.style.opacity = '1';
+              elKeluar.style.transform = 'scale(1)';
+              elKeluar.style.transition = 'all 0.2s ease';
+            }
+          });
+          elKeluar.setAttribute('data-target', String(totalKeluar));
+        } else if (elKeluar) {
+          elKeluar.textContent = fmtIDR(totalKeluar);
+          elKeluar.setAttribute('data-target', String(totalKeluar));
+        }
       }
       // If API returned zeros but local laporan demo data exists, override to keep consistency with laporan page
       try{
@@ -1033,14 +1242,40 @@
                 console.debug('[Dashboard] elIuranPending element:', elIuranPending);
                 
                 if (elIuranPending) { 
-                  const oldValue = elIuranPending.textContent;
-                  elIuranPending.textContent = fmtIDR(iuranPending); 
-                  elIuranPending.setAttribute('data-target', String(iuranPending)); 
-                  console.debug('[Dashboard] Updated UI with sync data:', { 
-                    oldValue, 
-                    newValue: fmtIDR(iuranPending), 
-                    element: elIuranPending 
-                  });
+                  // Only update if the value has changed
+                  const currentValue = parseFloat(elIuranPending.getAttribute('data-value') || '0');
+                  if (currentValue !== iuranPending) {
+                    // Set initial value to 0 for animation if not already set
+                    if (!elIuranPending.hasAttribute('data-animated')) {
+                      elIuranPending.textContent = 'Rp 0';
+                      elIuranPending.setAttribute('data-animated', 'true');
+                    }
+                    
+                    // Update data attributes
+                    elIuranPending.setAttribute('data-target', String(iuranPending));
+                    elIuranPending.dataset.value = String(iuranPending);
+                    
+                    // Use enhanced animation if available
+                    if (window.animateCurrency) {
+                      window.animateCurrency(elIuranPending, iuranPending, {
+                        duration: 1000,
+                        easing: 'easeOutCubic',
+                        currency: 'IDR',
+                        precision: 0,
+                        onComplete: () => {
+                          elIuranPending.textContent = fmtIDR(iuranPending);
+                        }
+                      });
+                    } else {
+                      elIuranPending.textContent = fmtIDR(iuranPending);
+                    }
+                    
+                    console.debug('[Dashboard] Updated UI with sync data:', { 
+                      oldValue: currentValue,
+                      newValue: iuranPending, 
+                      element: elIuranPending 
+                    });
+                  }
                 } else {
                   console.error('[Dashboard] elIuranPending element not found!');
                 }
@@ -2044,37 +2279,75 @@
   }
 
   function initCounters() {
-    const counters = document.querySelectorAll('.stat-value');
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const counter = entry.target;
-            const target = parseFloat(counter.getAttribute('data-target') || counter.innerText.replace(/[^0-9.-]+/g, ''));
-            const duration = 1500;
-            const step = Math.ceil(target / (duration / 16));
-            let current = 0;
-            const format = counter.getAttribute('data-format') || '';
-            const formatOptions = counter.getAttribute('data-format-options') ? JSON.parse(counter.getAttribute('data-format-options')) : {};
-            const timer = setInterval(() => {
-              current += step;
-              if (current >= target) { current = target; clearInterval(timer); }
-              if (format === 'currency') {
-                counter.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: formatOptions.currency || 'IDR', maximumFractionDigits: formatOptions.maximumFractionDigits || 0 }).format(current);
-              } else if (format === 'number') {
-                counter.textContent = new Intl.NumberFormat('id-ID', formatOptions).format(current);
-              } else if (format === 'percent') {
-                counter.textContent = `${current}%`;
-              } else {
-                counter.textContent = current;
-              }
-            }, 16);
-            observer.unobserve(counter);
+    const counters = Array.from(document.querySelectorAll('.stat-value'))
+      .filter(el => el && el.id !== 'dash-iuran-pending' && el.getAttribute('data-no-animate') !== 'true');
+    
+    counters.forEach(counter => {
+      const target = parseFloat(counter.getAttribute('data-target') || counter.innerText.replace(/[^0-9.-]+/g, ''));
+      const format = counter.getAttribute('data-format') || '';
+      const formatOptions = counter.getAttribute('data-format-options') ? JSON.parse(counter.getAttribute('data-format-options')) : {};
+      
+      // Create formatter function based on format type
+      let formatter;
+      if (format === 'currency') {
+        formatter = (value) => new Intl.NumberFormat('id-ID', { 
+          style: 'currency', 
+          currency: formatOptions.currency || 'IDR', 
+          maximumFractionDigits: formatOptions.maximumFractionDigits || 0 
+        }).format(value);
+      } else if (format === 'number') {
+        formatter = (value) => new Intl.NumberFormat('id-ID', formatOptions).format(value);
+      } else if (format === 'percent') {
+        formatter = (value) => `${value}%`;
+      } else {
+        formatter = (value) => value.toString();
+      }
+
+      // Use enhanced animation system
+      if (window.animateValueAccessible) {
+        window.animateValueAccessible(counter, target, formatter, {
+          duration: 1200,
+          easing: 'easeOutCubic',
+          visualEffects: true,
+          observe: true,
+          onStart: () => {
+            counter.style.opacity = '0.7';
+            counter.style.transform = 'scale(0.95)';
+          },
+          onComplete: () => {
+            counter.style.opacity = '1';
+            counter.style.transform = 'scale(1)';
+            counter.style.transition = 'all 0.3s ease';
           }
         });
-      }, { threshold: 0.1 });
-      counters.forEach(counter => { observer.observe(counter); });
+      } else {
+        // Fallback to simple animation
+        animateCounterSimple(counter, target, formatter);
+      }
+    });
+  }
+
+  function animateCounterSimple(element, target, formatter) {
+    const duration = 1200;
+    const startTime = performance.now();
+    const startValue = 0;
+    
+    function animate(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      const currentValue = startValue + (target - startValue) * easedProgress;
+      
+      element.textContent = formatter(Math.floor(currentValue));
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        element.textContent = formatter(target);
+      }
     }
+    
+    requestAnimationFrame(animate);
   }
 
   function initTooltips() {

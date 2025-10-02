@@ -228,10 +228,37 @@ async function handleMockRequest(url: string, options: RequestInit): Promise<Res
   const method = options.method || 'GET';
   const urlObj = new URL(url, 'http://localhost');
   const path = urlObj.pathname;
+  const search = urlObj.searchParams;
   
   try {
     let data: any;
     
+    // Helpers for iuran endpoints
+    function readJSON<T>(key: string, fallback: T): T {
+      try { return JSON.parse((typeof localStorage !== 'undefined' ? localStorage.getItem(key) : null) || 'null') ?? fallback; } catch { return fallback; }
+    }
+    function getResidents(): any[] {
+      try {
+        const warga = readJSON<any[]>('warga_data_v1', []);
+        if (Array.isArray(warga) && warga.length > 0) return warga.filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+        const demo = readJSON<any[]>('residents_data', []);
+        return Array.isArray(demo) ? demo.filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined')) : [];
+      } catch { return []; }
+    }
+    function calcIuran(periode: string) {
+      const cfgs = readJSON<Record<string, any>>('dues_configs', {});
+      const cfg = cfgs?.[periode] ?? readJSON<any>('dues_config', {});
+      const amount = Number(cfg?.amount || 0) || 0;
+      const pays = readJSON<Record<string, any>>('dues_payments', {});
+      const paidArr = Array.isArray(pays?.[periode]?.paid) ? pays[periode].paid : [];
+      const residents = getResidents();
+      const paidCount = paidArr.length || 0;
+      const residentsCount = residents.length || 0;
+      const unpaidCount = Math.max(0, residentsCount - paidCount);
+      const totalPending = Math.max(0, amount * unpaidCount);
+      return { amount, paidCount, residentsCount, unpaidCount, totalPending, residents, paid: paidArr };
+    }
+
     // Route mock requests
     if (path === '/api/komplek') {
       data = await ApiMock.getKomplek();
@@ -321,6 +348,51 @@ async function handleMockRequest(url: string, options: RequestInit): Promise<Res
       }
       const content = `Surat: ${item.name}\nKategori: ${item.category}\nTanggal: ${item.updated_at}`;
       return new Response(new Blob([content], { type: 'text/plain' }), { status: 200, headers: { 'Content-Type': 'text/plain' } });
+    } else if (
+      // Iuran status endpoints (GET)
+      (path === '/api/iuran/status' || path === '/api/demo/iuran/status' || path === '/api/public/iuran/status' || path === '/api/demo/iuran/realtime')
+      && method === 'GET'
+    ) {
+      const periode = (search.get('periode') || '').trim();
+      const komplekId = Number(search.get('komplek_id') || '0');
+      const { amount, paidCount, residentsCount, unpaidCount, totalPending, residents, paid } = calcIuran(periode);
+      const body = {
+        status: 'success',
+        data: {
+          komplek_id: komplekId,
+          periode,
+          nominal: amount,
+          amount,
+          paidCount,
+          residentsCount,
+          warga_belum_bayar: unpaidCount,
+          unpaidCount,
+          totalPending,
+          residents,
+          paid
+        }
+      };
+      return new Response(JSON.stringify(body), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    } else if (
+      // Real-time sync endpoint (POST)
+      path === '/api/demo/demo/iuran/sync' && method === 'POST'
+    ) {
+      const periode = (search.get('periode') || '').trim();
+      const komplekId = Number(search.get('komplek_id') || '0');
+      // Optionally accept posted body but we recompute from localStorage for consistency
+      const calc = calcIuran(periode);
+      const body = {
+        status: 'success',
+        data: {
+          komplek_id: komplekId,
+          periode,
+          nominal: calc.amount,
+          warga_belum_bayar: calc.unpaidCount,
+          unpaidCount: calc.unpaidCount,
+          totalPending: calc.totalPending
+        }
+      };
+      return new Response(JSON.stringify(body), { status: 200, headers: { 'Content-Type': 'application/json' } });
     } else {
       // Default empty response for unknown endpoints
       data = { message: 'Mock endpoint not implemented', path };

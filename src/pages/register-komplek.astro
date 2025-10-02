@@ -2414,7 +2414,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Validate complex data for profanity and duplicates
-        const { validateComplexData } = await import('/src/utils/validation.ts');
+        const { validateComplexData } = await import('../utils/validation.ts');
         const complexData = {
           nama: byId('namaKomplek')?.value?.trim() || '',
           deskripsi: byId('deskripsiKomplek')?.value?.trim() || '',
@@ -2476,7 +2476,7 @@ document.addEventListener('DOMContentLoaded', function () {
   
   async function initialize() {
     // Setup real-time validation for complex data
-    const { setupRealTimeValidation } = await import('/src/utils/validation.ts');
+    const { setupRealTimeValidation } = await import('../utils/validation.ts');
     
     const namaKomplekInput = document.getElementById('namaKomplek');
     const deskripsiKomplekInput = document.getElementById('deskripsiKomplek');

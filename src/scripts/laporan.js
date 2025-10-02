@@ -1,19 +1,44 @@
 // Financial Report Dashboard Script (extracted from laporan.astro)
-// TypeScript version with minimal typings to eliminate implicit any diagnostics
-
-// Global Chart type (loaded via script tag at runtime)
-declare global {
-  interface Window { 
-    Chart: any;
-    chartUpdateManager: any;
-  }
-}
+// JavaScript version for proper MIME type handling
 
 // Shared finance utilities for consistent KPI calculations across pages
-import { calculateTotals as calcShared, applyFiltersSync as filterShared, type FilterOptions } from '~/utils/finance';
-import { iuranManager } from './iuran-manager';
+// Note: Re-implemented locally to avoid unresolved module imports in the browser environment
+function calcShared(transactions) {
+  const tx = Array.isArray(transactions) ? transactions : [];
+  let income = 0;
+  let expense = 0;
+  for (let i = 0; i < tx.length; i++) {
+    const t = tx[i];
+    if (!t || typeof t.amount !== 'number') continue;
+    if (t.type === 'Masuk') income += t.amount; else if (t.type === 'Keluar') expense += t.amount;
+  }
+  const balance = income - expense;
+  const count = tx.length;
+  return { income, expense, balance, count };
+}
 
-// Quick-save current filtered period as a report snapshot
+function filterShared(transactions, options) {
+  const tx = Array.isArray(transactions) ? transactions : [];
+  const start = options && options.start ? String(options.start) : '';
+  const end = options && options.end ? String(options.end) : '';
+  const q = options && options.search ? String(options.search).toLowerCase() : '';
+  const min = (options && typeof options.minAmount === 'number') ? options.minAmount : undefined;
+  const max = (options && typeof options.maxAmount === 'number') ? options.maxAmount : undefined;
+  return tx.filter(t => {
+    if (!t || !t.date) return false;
+    if (start && t.date < start) return false;
+    if (end && t.date > end) return false;
+    if (typeof min === 'number' && t.amount < min) return false;
+    if (typeof max === 'number' && t.amount > max) return false;
+    if (q) {
+      const hay = `${t.description || ''} ${t.category || ''} ${t.type || ''}`.toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+}
+
+// Quick-save current filtered period report snapshot
 function saveCurrentAsReport(){
   const start = appState.filters.start;
   const end = appState.filters.end;
@@ -23,10 +48,10 @@ function saveCurrentAsReport(){
   const s = appState.filters.start;
   const e = appState.filters.end;
   const rows = getFilteredTransactions();
-  const totals = calculateTotals(rows) as any as ReportTotals & { count: number };
+  const totals = calculateTotals(rows);
   const monthName = new Date((s||'').slice(0,7) + '-01T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
   const title = `Laporan Keuangan ${monthName}`;
-  const report: Report = {
+  const report = {
     id: Date.now(),
     title,
     startDate: s,
@@ -37,7 +62,7 @@ function saveCurrentAsReport(){
     reference: '',
     tags: [],
     includeZero: false,
-    notes: `Snapshot otomatis dari filter aktif (${formatDateID(s)}—${formatDateID(e)}) dengan ${rows.length} transaksi` as any,
+    notes: `Snapshot otomatis dari filter aktif (${formatDateID(s)}—${formatDateID(e)}) dengan ${rows.length} transaksi`,
     adjustments: [],
     totals: { income: totals.income, expense: totals.expense, balance: totals.income - totals.expense },
     createdAt: new Date().toISOString()
@@ -51,7 +76,7 @@ function saveCurrentAsReport(){
 }
 
 // Export a specific report period quickly to XLSX
-async function exportReport(reportId: string){
+async function exportReport(reportId){
   const report = appState.reports.find(r => String(r.id) === String(reportId));
   if (!report) return;
   const rows = appState.transactions.filter(t => t.date >= report.startDate && t.date <= report.endDate);
@@ -65,78 +90,10 @@ async function exportReport(reportId: string){
   }
 }
 
-// Utility types
-export type TxType = 'Masuk' | 'Keluar';
-
-export interface Transaction {
-  date: string;
-  type: TxType;
-  category: string;
-  description?: string;
-  amount: number;
-}
-
-interface ChartsState {
-  balance: any | null;
-  composition: any | null;
-  trends: any | null;
-}
-
-interface Filters {
-  start: string;
-  end: string;
-  search: string;
-  minAmount: number;
-  maxAmount: number;
-  preset: string;
-}
-
-interface Adjustment {
-  description: string;
-  type: TxType;
-  amount: number;
-  category?: string;
-}
-
-interface ReportTotals { income: number; expense: number; balance: number }
-
-// Snapshot of transaction-style inputs used when creating a report
-interface ReportSnapshot {
-  txType?: TxType;
-  formType?: string;
-  txDate?: string; // ISO date
-  txCategory?: string;
-  txAmount?: number;
-  txDesc?: string;
-}
-
-interface Report {
-  id: number;
-  title: string;
-  startDate: string;
-  endDate: string;
-  type?: string;
-  source?: string;
-  author?: string;
-  reference?: string;
-  tags?: string[];
-  includeZero?: boolean;
-  notes?: string;
-  // Optional form snapshot to reflect exact admin inputs at creation time
-  snapshot?: ReportSnapshot;
-  adjustments?: Adjustment[];
-  totals: ReportTotals;
-  createdAt: string;
-}
+// Utility constants and state
 
 // Application state
-const appState: {
-  transactions: Transaction[];
-  filters: Filters;
-  charts: ChartsState;
-  reports: Report[];
-  activeReportId: number | null;
-} = {
+const appState = {
   transactions: [],
   filters: {
     start: '',
@@ -162,77 +119,120 @@ document.head.appendChild(script);
 
 // Utility functions
 
-const formatIDR = (amount: number) => new Intl.NumberFormat('id-ID', {
+const formatIDR = (amount) => new Intl.NumberFormat('id-ID', {
   style: 'currency',
   currency: 'IDR',
   maximumFractionDigits: 0
 }).format(Math.round(amount || 0));
 
-const formatNumber = (num: number) => new Intl.NumberFormat('id-ID').format(Math.round(num || 0));
+const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(Math.round(num || 0));
 
-const formatDateID = (dateStr: string) => new Date(dateStr + 'T00:00:00').toLocaleDateString('id-ID', {
+const formatDateID = (dateStr) => new Date(dateStr + 'T00:00:00').toLocaleDateString('id-ID', {
   day: '2-digit',
   month: 'short',
   year: 'numeric'
 });
 
-const toISODate = (date: Date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+const toISODate = (date) => {
+  const d = new Date(date);
+  return d.toISOString().slice(0, 10);
+};
 
 // Smooth refresh scheduler (coalesce multiple quick changes)
-let refreshTimer: number | null = null;
+let refreshTimer = null;
 function scheduleRefresh(delay = 120) {
-  if (refreshTimer) { clearTimeout(refreshTimer as any); refreshTimer = null; }
-  refreshTimer = window.setTimeout(() => { refreshTimer = null; refreshDashboard(); }, delay);
+  if (refreshTimer) { 
+    clearTimeout(refreshTimer); 
+    refreshTimer = null; 
+  }
+  refreshTimer = window.setTimeout(() => { 
+    refreshTimer = null; 
+    refreshDashboard(); 
+  }, delay);
 }
 
 // ===== API helpers (shared style with other pages) =====
-function resolveKomplekId(){
+function resolveKomplekId() {
   try {
     const url = new URL(window.location.href);
     let id = url.searchParams.get('komplek_id') || localStorage.getItem('komplek_id') || '1';
-    if(id){ localStorage.setItem('komplek_id', String(id)); }
+    if (id) { 
+      localStorage.setItem('komplek_id', String(id)); 
+    }
     return id;
-  } catch { return localStorage.getItem('komplek_id') || '1'; }
-}
-
-async function fetchJson(url: string){
-  const res = await fetch(url, { headers: { 'Accept':'application/json' } });
-  if(!res.ok){ const t = await res.text().catch(()=> ''); throw new Error(`HTTP ${res.status}: ${t}`); }
-  return res.json();
-}
-
-async function postJson(url: string, body: any){
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Accept':'application/json', 'Content-Type':'application/json' },
-    body: JSON.stringify(body)
-  });
-  const ct = res.headers.get('content-type') || '';
-  const payload = ct.includes('application/json') ? await res.json() : await res.text().catch(()=> '');
-  if(!res.ok){
-    const msg = typeof payload === 'string' ? payload : (payload?.message || JSON.stringify(payload));
-    throw new Error(`HTTP ${res.status}: ${msg}`);
+  } catch (e) { 
+    console.error('Error resolving komplek_id:', e);
+    return localStorage.getItem('komplek_id') || '1'; 
   }
-  return payload;
+}
+
+async function fetchJson(url) {
+  try {
+    const res = await fetch(url, { 
+      headers: { 'Accept': 'application/json' } 
+    });
+    if (!res.ok) { 
+      const text = await res.text().catch(() => ''); 
+      throw new Error(`HTTP ${res.status}: ${text}`); 
+    }
+    return await res.json();
+  } catch (error) {
+    console.error('Fetch error:', error);
+    throw error;
+  }
+}
+
+async function postJson(url, body) {
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 
+        'Accept': 'application/json', 
+        'Content-Type': 'application/json' 
+      },
+      body: JSON.stringify(body)
+    });
+    
+    const contentType = res.headers.get('content-type') || '';
+    let payload;
+    
+    if (contentType.includes('application/json')) {
+      payload = await res.json().catch(() => ({}));
+    } else {
+      payload = await res.text().catch(() => '');
+    }
+    
+    if (!res.ok) {
+      const msg = typeof payload === 'string' 
+        ? payload 
+        : (payload?.message || JSON.stringify(payload));
+      throw new Error(`HTTP ${res.status}: ${msg}`);
+    }
+    
+    return payload;
+  } catch (error) {
+    console.error('Post error:', error);
+    throw error;
+  }
 }
 
 // Notification system (centered modal replacement)
-function showToast(message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') {
-  const titleMap: Record<typeof type, string> = {
+function showToast(message, type = 'info') {
+  const titleMap = {
     info: 'Informasi',
     success: 'Berhasil',
     warning: 'Peringatan',
     error: 'Terjadi Kesalahan'
-  } as const;
+  };
   showCenterModal(titleMap[type] || 'Informasi', message, type);
 }
 
 // ===== Print Only Report Table =====
-function printReportOnly(){
-  const table = document.querySelector('.data-table') as HTMLTableElement | null;
-  const thead = table?.querySelector('thead') as HTMLElement | null;
-  const tbody = document.getElementById('report-tbody') as HTMLElement | null;
-  if (!table || !thead || !tbody) { window.print(); return }
+function printReportOnly() {
+  const table = document.querySelector('.data-table') || null;
+  const thead = table?.querySelector('thead') || null;
+  const tbody = document.getElementById('report-tbody') || null;
+  if (!table || !thead || !tbody) { window.print(); return; }
 
   // Build HTML snapshot
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Cetak Laporan</title>
@@ -265,20 +265,27 @@ function printReportOnly(){
   frame.style.border = '0';
   document.body.appendChild(frame);
   const doc = frame.contentWindow?.document;
-  if (!doc) { document.body.removeChild(frame); window.print(); return }
+  if (!doc) { document.body.removeChild(frame); window.print(); return; }
   doc.open();
   doc.write(html);
   doc.close();
-  frame.onload = () => {
-    try { frame.contentWindow?.focus(); frame.contentWindow?.print(); } finally { setTimeout(()=> document.body.removeChild(frame), 300); }
+  frame.onload = function() {
+    try { 
+      if (frame.contentWindow) {
+        frame.contentWindow.focus(); 
+        frame.contentWindow.print(); 
+      }
+    } finally { 
+      setTimeout(function() { document.body.removeChild(frame); }, 300); 
+    }
   };
 }
 
 // ===== Import Modal Handlers (CSV/XLSX) =====
-type ParsedRow = { date: string; description: string; category: string; type: TxType; amount: number };
-type RowIssue = { index: number; errors: string[] };
 
-function bindImportHandlers(){
+
+
+function bindImportHandlers() {
   const modal = document.getElementById('import-modal');
   const errorModal = document.getElementById('import-error-modal');
   const errorMsg = document.getElementById('import-error-message');
@@ -287,115 +294,249 @@ function bindImportHandlers(){
   const btnCancel = document.getElementById('btn-cancel-import');
   const btnCommit = document.getElementById('btn-commit-import');
   const drop = document.getElementById('csv-dropzone');
-  const fileInput = document.getElementById('csv-file') as HTMLInputElement | null;
+  const fileInput = document.getElementById('csv-file');
   const summary = document.getElementById('import-summary');
   const tbody = document.getElementById('import-tbody');
 
   if (!modal || !drop || !fileInput || !tbody || !btnCommit) return;
 
-  const open = ()=> { (modal as HTMLElement).classList.add('show'); (modal as HTMLElement).setAttribute('aria-hidden','false'); };
-  const close = ()=> { (modal as HTMLElement).classList.remove('show'); (modal as HTMLElement).setAttribute('aria-hidden','true'); };
-  const showErr = (msg: string)=>{ if (errorMsg) errorMsg.textContent = msg; (errorModal as HTMLElement)?.classList.add('show'); };
-  document.getElementById('btn-ok-import-error')?.addEventListener('click', ()=> (errorModal as HTMLElement)?.classList.remove('show'));
-  btnOpen?.addEventListener('click', open);
-  btnClose?.addEventListener('click', close);
-  btnCancel?.addEventListener('click', close);
-  (modal.querySelector('.modal-backdrop') as HTMLElement)?.addEventListener('click', close);
-  drop.addEventListener('click', ()=> fileInput.click());
-  drop.addEventListener('keydown', (e)=> { if ((e as KeyboardEvent).key === 'Enter' || (e as KeyboardEvent).key===' ') { e.preventDefault(); fileInput.click(); }});
+  function open() { 
+    if (modal) {
+      modal.classList.add('show'); 
+      modal.setAttribute('aria-hidden', 'false'); 
+    }
+  }
+  
+  function close() { 
+    if (modal) {
+      modal.classList.remove('show'); 
+      modal.setAttribute('aria-hidden', 'true'); 
+    }
+  }
+  
+  function showErr(msg) { 
+    if (errorMsg && errorMsg.textContent !== undefined) errorMsg.textContent = msg; 
+    if (errorModal) errorModal.classList.add('show'); 
+  }
+  
+  const okBtn = document.getElementById('btn-ok-import-error');
+  if (okBtn) {
+    okBtn.addEventListener('click', function() {
+      if (errorModal) errorModal.classList.remove('show');
+    });
+  }
+  
+  if (btnOpen) {
+    btnOpen.addEventListener('click', open);
+  }
+  
+  if (btnClose) {
+    btnClose.addEventListener('click', close);
+  }
+  
+  if (btnCancel) {
+    btnCancel.addEventListener('click', close);
+  }
+  
+  const backdrop = modal.querySelector('.modal-backdrop');
+  if (backdrop) {
+    backdrop.addEventListener('click', close);
+  }
+  
+  drop.addEventListener('click', function() {
+    if (fileInput) fileInput.click();
+  });
+  
+  drop.addEventListener('keydown', function(e) { 
+    if (e.key === 'Enter' || e.key === ' ') { 
+      e.preventDefault(); 
+      if (fileInput) fileInput.click(); 
+    }
+  });
 
-  const state: { rows: ParsedRow[]; issues: RowIssue[] } = { rows: [], issues: [] };
+  const state = { rows: [], issues: [] };
 
-  fileInput.addEventListener('change', async ()=>{
-    const file = fileInput.files?.[0];
+  fileInput.addEventListener('change', async function() {
+    if (!fileInput.files || fileInput.files.length === 0) return;
+    const file = fileInput.files[0];
     if (!file) return;
-    try{
-      const ext = (file.name.split('.').pop()||'').toLowerCase();
-      if (ext==='xlsx' || ext==='xls') {
+    try {
+      const ext = (file.name.split('.').pop() || '').toLowerCase();
+      if (ext === 'xlsx' || ext === 'xls') {
         await ensureSheetJS();
         const data = await file.arrayBuffer();
-        const wb = (window as any).XLSX.read(data, { type:'array' });
+        const wb = window.XLSX.read(data, { type: 'array' });
         const sheet = wb.Sheets[wb.SheetNames[0]];
-        const json = (window as any).XLSX.utils.sheet_to_json(sheet, { header:1 }) as any[];
+        const json = window.XLSX.utils.sheet_to_json(sheet, { header: 1 });
         state.rows = normalizeRows(json);
       } else {
         const text = await file.text();
-        const lines = text.split(/\r?\n/).filter(Boolean).map(l=> l.split(',').map(s=> s.replace(/^\"|\"$/g,'')));
+        const lines = text.split(/\r?\n/).filter(Boolean).map(function(l) { 
+          return l.split(',').map(function(s) { 
+            return s.replace(/^\"|\"$/g, ''); 
+          }); 
+        });
         state.rows = normalizeRows(lines);
       }
       // Validate strictly against page data
       const allowed = getAllowedSets();
       state.issues = validateRowsStrict(state.rows, allowed.types, allowed.categories);
-      renderImportPreview(state.rows.slice(0,50), tbody as HTMLElement, state.issues);
-      const invalidCount = state.issues.reduce((s,i)=> s + (i.errors.length>0 ? 1 : 0), 0);
+      renderImportPreview(state.rows.slice(0,50), tbody , state.issues);
+      const invalidCount = state.issues.reduce(function(s, i) { 
+        return s + (i.errors && i.errors.length > 0 ? 1 : 0); 
+      }, 0);
       if (summary) summary.textContent = invalidCount>0
         ? `Ditemukan ${state.rows.length} baris • ${invalidCount} tidak valid (lihat kolom Status).`
         : `Ditemukan ${state.rows.length} baris siap diimpor.`;
-      (btnCommit as HTMLButtonElement).disabled = state.rows.length === 0 || invalidCount>0;
-    }catch(e:any){ console.error(e); showErr('Format tidak dikenali. Pastikan kolom: Tanggal, Keterangan, Kategori, Tipe, Jumlah.'); }
+      if (btnCommit) btnCommit.disabled = state.rows.length === 0 || invalidCount > 0;
+    } catch(e) { 
+      console.error(e); 
+      showErr('Format tidak dikenali. Pastikan kolom: Tanggal, Keterangan, Kategori, Tipe, Jumlah.'); 
+    }
   });
 
-  btnCommit.addEventListener('click', ()=>{
-    if (!state.rows.length) { showErr('Belum ada data untuk diimpor.'); return }
-    const invalidCount = state.issues.reduce((s,i)=> s + (i.errors.length>0 ? 1 : 0), 0);
-    if (invalidCount>0) { showErr('Masih ada baris tidak valid. Perbaiki dulu sesuai tipe/kategori yang tersedia.'); return }
+  btnCommit.addEventListener('click', function() {
+    if (!state.rows || state.rows.length === 0) { 
+      showErr('Belum ada data untuk diimpor.'); 
+      return; 
+    }
+    
+    const invalidCount = state.issues.reduce(function(sum, issue) { 
+      return sum + (issue.errors && issue.errors.length > 0 ? 1 : 0); 
+    }, 0);
+    
+    if (invalidCount > 0) { 
+      showErr('Masih ada baris tidak valid. Perbaiki dulu sesuai tipe/kategori yang tersedia.'); 
+      return; 
+    }
+    
     // Backup before mutate
-    try { localStorage.setItem('import_last_backup', JSON.stringify(appState.transactions)) } catch {}
-    const before = appState.transactions.length;
-    state.rows.forEach(r=>{
-      if (!r.date || !r.amount || r.amount<=0) return;
-      appState.transactions.push({ date:r.date, type:r.type, category:r.category||'Lainnya', description:r.description||'', amount:r.amount });
+    try { 
+      localStorage.setItem('import_last_backup', JSON.stringify(appState.transactions || [])); 
+    } catch (e) {
+      console.error('Error backing up data:', e);
+    }
+    
+    const before = appState.transactions ? appState.transactions.length : 0;
+    state.rows.forEach(function(r) {
+      if (!r.date || !r.amount || r.amount <= 0) return;
+      appState.transactions.push({ 
+        date: r.date, 
+        type: r.type, 
+        category: r.category || 'Lainnya', 
+        description: r.description || '', 
+        amount: r.amount 
+      });
     });
-    appState.transactions.sort((a,b)=> a.date.localeCompare(b.date));
-    try { localStorage.setItem('financial_transactions_v2', JSON.stringify(appState.transactions)) } catch {}
+    
+    if (appState.transactions) {
+      appState.transactions.sort(function(a, b) { 
+        return a.date.localeCompare(b.date); 
+      });
+      
+      try { 
+        localStorage.setItem('financial_transactions_v2', JSON.stringify(appState.transactions)); 
+      } catch (e) {
+        console.error('Error saving transactions:', e);
+      }
+    }
+    
     close();
     refreshDashboard();
-    showToast(`Impor selesai: ${(appState.transactions.length-before)} transaksi ditambahkan`, 'success');
+    showToast(`Impor selesai: ${(appState.transactions ? appState.transactions.length - before : 0)} transaksi ditambahkan`, 'success');
+    
     // mark for rollback context
-    try { localStorage.setItem('import_last_count', String(appState.transactions.length-before)) } catch {}
+    try { 
+      localStorage.setItem('import_last_count', 
+        String(appState.transactions ? appState.transactions.length - before : 0)); 
+    } catch (e) {
+      console.error('Error saving import count:', e);
+    }
   });
 }
 
-function normalizeRows(rows: any[][]): ParsedRow[]{
-  if (!rows || rows.length===0) return [];
-  const header = rows[0].map((h:any)=> String(h||'').toLowerCase());
+function normalizeRows(rows) {
+  if (!rows || rows.length === 0) return [];
+  
+  // Convert header to lowercase and ensure it's a string
+  const header = rows[0].map(function(h) { 
+    return String(h || '').toLowerCase(); 
+  });
+  
+  // Find column indices
   const idx = {
-    date: header.findIndex((h:string)=> ['tanggal','date'].includes(h)),
-    desc: header.findIndex((h:string)=> ['keterangan','description','desc'].includes(h)),
-    cat: header.findIndex((h:string)=> ['kategori','category'].includes(h)),
-    type: header.findIndex((h:string)=> ['tipe','type'].includes(h)),
-    amount: header.findIndex((h:string)=> ['jumlah','amount'].includes(h))
+    date: header.findIndex(function(h) { 
+      return ['tanggal', 'date'].includes(h); 
+    }),
+    desc: header.findIndex(function(h) { 
+      return ['keterangan', 'description', 'desc'].includes(h); 
+    }),
+    cat: header.findIndex(function(h) { 
+      return ['kategori', 'category'].includes(h); 
+    }),
+    type: header.findIndex(function(h) { 
+      return ['tipe', 'type'].includes(h); 
+    }),
+    amount: header.findIndex(function(h) { 
+      return ['jumlah', 'amount'].includes(h); 
+    })
   };
-  const out: ParsedRow[] = [];
-  for (let i=1;i<rows.length;i++){
-    const r = rows[i]||[];
-    const date = String(r[idx.date]||'').slice(0,10);
-    const description = String(r[idx.desc]||'');
-    const category = String(r[idx.cat]||'');
-    const typeRaw = String(r[idx.type]||'Masuk');
-    const amount = Number((r[idx.amount]||'').toString().replace(/[^0-9.-]/g,''))||0;
-    const type: TxType = /keluar/i.test(typeRaw) ? 'Keluar' : 'Masuk';
-    if (date && amount>0) out.push({ date, description, category, type, amount });
+  
+  const out = [];
+  
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i] || [];
+    const date = String((r[idx.date] || '')).slice(0, 10);
+    const description = String(r[idx.desc] || '');
+    const category = String(r[idx.cat] || '');
+    const typeRaw = String(r[idx.type] || 'Masuk');
+    const amountStr = String(r[idx.amount] || '').replace(/[^0-9.-]/g, '');
+    const amount = Number(amountStr) || 0;
+    const type = /keluar/i.test(typeRaw) ? 'Keluar' : 'Masuk';
+    
+    if (date && amount > 0) {
+      out.push({ 
+        date: date, 
+        description: description, 
+        category: category, 
+        type: type, 
+        amount: amount 
+      });
+    }
   }
   return out;
 }
 
-function getAllowedSets(){
-  const typeSet = new Set<TxType>(['Masuk','Keluar']);
+function getAllowedSets() {
+  const typeSet = new Set(['Masuk', 'Keluar']);
+  
   // Try read categories from the form select to stay in sync with UI
-  const opts = Array.from(document.querySelectorAll('#tx-category option')) as HTMLOptionElement[];
-  const fromDOM = opts.map(o=> (o.value||o.textContent||'').trim()).filter(Boolean);
-  const fallback = ['Iuran','Keamanan','Donasi','Donatur','Lingkungan','Kebersihan','Sosial','Fasilitas','Administrasi'];
-  const categories = new Set<string>((fromDOM.length? fromDOM : fallback).map(x=> String(x)));
-  return { types: typeSet, categories };
+  const opts = Array.from(document.querySelectorAll('#tx-category option'));
+  const fromDOM = opts.map(function(o) { 
+    const value = o.value || o.textContent || '';
+    return typeof value === 'string' ? value.trim() : ''; 
+  }).filter(Boolean);
+  
+  const fallback = [
+    'Iuran', 'Keamanan', 'Donasi', 'Donatur', 'Lingkungan', 
+    'Kebersihan', 'Sosial', 'Fasilitas', 'Administrasi'
+  ];
+  
+  // Use categories from DOM if available, otherwise use fallback
+  const categories = new Set(fromDOM.length > 0 ? fromDOM : fallback);
+  
+  return { 
+    types: typeSet, 
+    categories: categories 
+  };
 }
 
-function validateRowsStrict(rows: ParsedRow[], allowedTypes: Set<TxType>, allowedCategories: Set<string>): RowIssue[]{
-  const out: RowIssue[] = [];
+function validateRowsStrict(rows, allowedTypes, allowedCategories) {
+  const out = [];
   const isoDateRe = /^\d{4}-\d{2}-\d{2}$/;
-  rows.forEach((r, idx)=>{
-    const errs: string[] = [];
-    if (!isoDateRe.test(r.date)) errs.push('Tanggal harus YYYY-MM-DD');
+  rows.forEach((r, idx) => {
+    const errs = [];
+    if (!r.date || !isoDateRe.test(r.date)) errs.push('Tanggal harus YYYY-MM-DD');
     if (!allowedTypes.has(r.type)) errs.push('Tipe harus Masuk/Keluar');
     if (!allowedCategories.has(r.category)) errs.push('Kategori tidak dikenal');
     if (!(r.amount>0)) errs.push('Jumlah harus > 0');
@@ -404,14 +545,14 @@ function validateRowsStrict(rows: ParsedRow[], allowedTypes: Set<TxType>, allowe
   return out;
 }
 
-function renderImportPreview(rows: ParsedRow[], tbody: HTMLElement, issues: RowIssue[]){
+function renderImportPreview(rows, tbody, issues){
   if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">Tidak ada baris</td></tr>'; return }
   tbody.innerHTML = rows.map((r, i)=> {
     const issue = issues[i];
     const ok = issue && issue.errors.length===0;
     const status = ok
       ? `<span class="badge success"><i class="fas fa-check"></i>Valid</span>`
-      : `<span class="badge error" title="${(issue?.errors||[]).join(' • ')}"><i class="fas fa-exclamation-triangle"></i>Tidak valid</span>`;
+      : `<span class="badge error" title="${(issue?.errors || []).join(' • ')}"><i class="fas fa-exclamation-triangle"></i>Tidak valid</span>`;
     return `
       <tr>
         <td>${r.date}</td>
@@ -425,11 +566,14 @@ function renderImportPreview(rows: ParsedRow[], tbody: HTMLElement, issues: RowI
   }).join('');
 }
 
-function rollbackLastImport(){
-  try{
-    const backup = JSON.parse(localStorage.getItem('import_last_backup')||'null');
-    if (!Array.isArray(backup)) { showToast('Tidak ada data impor terakhir untuk dibatalkan.', 'warning'); return }
-    appState.transactions = backup as Transaction[];
+function rollbackLastImport() {
+  try {
+    const backup = JSON.parse(localStorage.getItem('import_last_backup') || 'null');
+    if (!Array.isArray(backup)) { 
+      showToast('Tidak ada data impor terakhir untuk dibatalkan.', 'warning'); 
+      return; 
+    }
+    appState.transactions = backup;
     localStorage.setItem('financial_transactions_v2', JSON.stringify(appState.transactions));
     refreshDashboard();
     showToast('Impor terakhir dibatalkan.', 'success');
@@ -437,7 +581,7 @@ function rollbackLastImport(){
 }
 
 // Category color mapping
-const CATEGORY_COLORS: { name: string; color: string }[] = [
+const CATEGORY_COLORS = [
   { name: 'Iuran', color: '#0ea5e9' },
   { name: 'Keamanan', color: '#f97316' },
   { name: 'Donasi', color: '#84cc16' },
@@ -448,19 +592,19 @@ const CATEGORY_COLORS: { name: string; color: string }[] = [
   { name: 'Administrasi', color: '#64748b' }
 ];
 
-const getCategoryColor = (category: string) => {
-  const found = CATEGORY_COLORS.find(c => c.name === category);
+function getCategoryColor(category) {
+  const found = CATEGORY_COLORS.find(function(c) { return c.name === category; });
   return found ? found.color : '#64748b';
-};
+}
 
 // Data generation
-function randomBetween(min: number, max: number) { return Math.floor(Math.random() * (max - min + 1)) + min }
-function randomChoice<T>(array: T[]): T { return array[Math.floor(Math.random() * array.length)] }
+function randomBetween(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randomChoice(array) { return array[Math.floor(Math.random() * array.length)]; }
 
-function generateMonthData(year: number, month: number): Transaction[] {
+function generateMonthData(year, month) {
   const monthStr = String(month).padStart(2, '0');
   const daysInMonth = new Date(year, month, 0).getDate();
-  const transactions: Transaction[] = [];
+  const transactions = [];
 
   const vendors = [
     'Warung Bu Sari', 'CV Cahaya Abadi', 'Tukang Kebun', 'Panitia RW', 'PT Prisma', 'UD Berkah Jaya'
@@ -513,14 +657,33 @@ function initializeData() {
   const storageKey = 'financial_transactions_v2';
   try {
     const stored = localStorage.getItem(storageKey);
-    if (stored) appState.transactions = (JSON.parse(stored) || []) as Transaction[];
-  } catch { appState.transactions = [] }
+    if (stored) appState.transactions = (JSON.parse(stored) || []);
+  } catch (e) { 
+    console.error('Error initializing data:', e);
+    appState.transactions = []; 
+  }
   // Do NOT auto-generate demo data here to avoid divergence with transaksi.astro
   if (!Array.isArray(appState.transactions)) appState.transactions = [];
 }
 
+// Load server-provided dummy data when there is no local data (works on Vercel/public hosting)
+async function loadServerDummyDataIfEmpty() {
+  try {
+    if (Array.isArray(appState.transactions) && appState.transactions.length > 0) return;
+    const res = await fetch('/data/initial-transactions.json', { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      appState.transactions = data;
+      try { localStorage.setItem('financial_transactions_v2', JSON.stringify(appState.transactions)) } catch {}
+    }
+  } catch (e) {
+    console.warn('No server dummy data available:', e);
+  }
+}
+
 // Create demo residents if none exist (used in demo mode only)
-function ensureDemoResidents(){
+function ensureDemoResidents() {
   try {
     // Check if real warga data exists first
     const wargaData = JSON.parse(localStorage.getItem('warga_data_v1') || '[]');
@@ -550,14 +713,14 @@ function getDefaultPeriod() {
   return { start: toISODate(start), end: toISODate(end) };
 }
 
-function applyFilterPreset(preset: string) {
+function applyFilterPreset(preset) {
   const transactions = appState.transactions;
-  const minDate = transactions.length ? transactions[0].date : toISODate(new Date());
-  const maxDate = transactions.length ? transactions[transactions.length - 1].date : toISODate(new Date());
+  const minDate = transactions.length ? transactions[0].date : toISODate(new Date);
+  const maxDate = transactions.length ? transactions[transactions.length - 1].date : toISODate(new Date);
 
   switch (preset) {
     case 'hari-ini': {
-      const today = new Date();
+      const today = new Date;
       const iso = toISODate(today);
       appState.filters.start = iso;
       appState.filters.end = iso;
@@ -611,9 +774,9 @@ function applyFilterPreset(preset: string) {
 }
 
 // Filter application
-function getFilteredTransactions(): Transaction[] {
+function getFilteredTransactions() {
   const f = appState.filters;
-  const filterOptions: FilterOptions = {
+  const filterOptions = {
     start: f.start,
     end: f.end,
     search: f.search,
@@ -625,14 +788,14 @@ function getFilteredTransactions(): Transaction[] {
 }
 
 // Calculate totals
-function calculateTotals(transactions: Transaction[]) {
+function calculateTotals(transactions) {
   // Delegate to shared utility to ensure parity with transaksi page
-  const { income, expense, balance, count } = calcShared(transactions as any);
-  return { income, expense, balance, count } as ReportTotals & { count: number };
+  const { income, expense, balance, count } = calcShared(transactions || []);
+  return { income, expense, balance, count };
 }
 
 // Generate daily series for charts
-function generateDailySeries(transactions: Transaction[]) {
+function generateDailySeries(transactions) {
   // Prevent future dates from appearing in charts
   const todayISO = toISODate(new Date());
   const safeTx = (transactions || []).filter(t => t && t.date && t.date <= todayISO);
@@ -648,24 +811,24 @@ function generateDailySeries(transactions: Transaction[]) {
   // Enhance search UI: toggle clear button visibility and handle clear
   try {
     const searchBox = document.getElementById('search-box');
-    const searchInput = document.getElementById('filter-q') as HTMLInputElement | null;
-    const clearBtn = document.getElementById('btn-clear-search') as HTMLButtonElement | null;
+    const searchInput = document.getElementById('filter-q') || null;
+    const clearBtn = document.getElementById('btn-clear-search') || null;
     const syncSearchState = () => { if (searchBox && searchInput) searchBox.classList.toggle('has-content', !!searchInput.value.trim()); };
-    if (searchInput && !(searchInput as any).dataset.searchBound) {
-      (searchInput as any).dataset.searchBound = '1';
+    if (searchInput && !searchInput.dataset.searchBound) {
+      searchInput.dataset.searchBound = '1';
       searchInput.addEventListener('input', () => { syncSearchState(); scheduleRefresh(220); });
       // initialize state
       syncSearchState();
       // ESC to clear quickly
-      searchInput.addEventListener('keydown', (ev: KeyboardEvent) => {
+      searchInput.addEventListener('keydown', (ev) => {
         if (ev.key === 'Escape') {
           searchInput.value = '';
           searchInput.dispatchEvent(new Event('input', { bubbles: true }));
         }
       });
     }
-    if (clearBtn && !(clearBtn as any).dataset.bound) {
-      (clearBtn as any).dataset.bound = '1';
+    if (clearBtn && !clearBtn.dataset.bound) {
+      clearBtn.dataset.bound = '1';
       clearBtn.addEventListener('click', () => {
         if (!searchInput) return;
         searchInput.value = '';
@@ -679,32 +842,85 @@ function generateDailySeries(transactions: Transaction[]) {
 }
 
 // Animate numbers
-function animateValue(element: HTMLElement | null, targetValue: number, formatter: (n: number) => string | number = (n) => n) {
+function animateValue(element, targetValue, formatter = (n) => n) {
   if (!element) return;
-  const el = element as HTMLElement;
+  const el = element;
+  
+  // Use enhanced animation system if available
+  if (window.animateValueAccessible) {
+    window.animateValueAccessible(el, targetValue, formatter, {
+      duration: 500, // Faster animation
+      easing: 'easeOutSmooth',
+      visualEffects: true,
+      onStart: () => {
+        el.style.opacity = '0.8';
+        el.style.transform = 'scale(0.98)';
+      },
+      onComplete: () => {
+        el.style.opacity = '1';
+        el.style.transform = 'scale(1)';
+        el.style.transition = 'all 0.2s ease';
+        el.dataset.value = String(targetValue);
+      }
+    });
+    return;
+  }
+  
+  // Check if this is the first visit to this page
+  function isFirstVisit(pageName) {
+    const visitKey = `visited_${pageName}`;
+    const hasVisited = localStorage.getItem(visitKey) === 'true';
+    if (!hasVisited) {
+      localStorage.setItem(visitKey, 'true');
+      return true;
+    }
+    return false;
+  }
+  
+  // Only animate on first visit or if reduced motion is preferred
   const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (isReducedMotion) { el.textContent = String(formatter(targetValue)); return }
-  const startValue = Number((el).dataset.value || '0') || 0;
+  const isFirstTime = isFirstVisit('admin_laporan');
+  
+  if (isReducedMotion || !isFirstTime) { 
+    el.textContent = String(formatter(targetValue)); 
+    el.dataset.value = String(targetValue);
+    return;
+  }
+  
+  const startValue = Number(el.dataset.value || '0') || 0;
   const startTime = performance.now();
-  const duration = 800;
-  function updateValue(currentTime: number) {
+  const duration = 1000;
+  
+  function updateValue(currentTime) {
     const elapsed = currentTime - startTime;
     const progress = Math.min(elapsed / duration, 1);
-    const easedProgress = 1 - Math.pow(1 - progress, 3);
+    const easedProgress = 1 - Math.pow(1 - progress, 3); // easeOutCubic
     const currentValue = Math.round(startValue + (targetValue - startValue) * easedProgress);
     el.textContent = String(formatter(currentValue));
-    if (progress < 1) requestAnimationFrame(updateValue); else el.dataset.value = String(targetValue);
+    
+    // Add visual effects
+    if (progress < 1) {
+      const scale = 1 + (Math.sin(progress * Math.PI) * 0.05);
+      el.style.transform = `scale(${scale})`;
+    }
+    
+    if (progress < 1) {
+      requestAnimationFrame(updateValue);
+    } else {
+      el.dataset.value = String(targetValue);
+      el.style.transform = 'scale(1)';
+    }
   }
   requestAnimationFrame(updateValue);
 }
 
 // Chart management
 function destroyCharts() {
-  (Object.keys(appState.charts) as (keyof ChartsState)[]).forEach(key => {
+  Object.keys(appState.charts).forEach(key => {
     const ch = appState.charts[key];
     if (ch) {
-      try { (ch as any).destroy() } catch {}
-      (appState.charts as any)[key] = null;
+      try { ch.destroy(); } catch {}
+      appState.charts[key] = null;
     }
   });
 }
@@ -724,7 +940,7 @@ function showEmptyCharts() {
     { id: 'lap-inout', text: 'Tidak ada data transaksi' }
   ];
   chartConfigs.forEach(config => {
-    const canvas = document.getElementById(config.id) as HTMLCanvasElement | null;
+    const canvas = document.getElementById(config.id) || null;
     if (canvas) {
       const container = canvas.closest('.chart-container');
       if (container && !container.querySelector('.empty-chart')) {
@@ -737,45 +953,45 @@ function showEmptyCharts() {
   });
 }
 
-function createCharts(transactions: Transaction[]) {
+function createCharts(transactions) {
   if (!window.Chart) return;
   removeSkeletons();
   destroyCharts();
   const series = generateDailySeries(transactions);
   const totals = calculateTotals(transactions);
 
-  const balanceCtx = (document.getElementById('lap-balance') as HTMLCanvasElement | null)?.getContext('2d');
+  const balanceCtx = (document.getElementById('lap-balance') || null)?.getContext('2d');
   if (balanceCtx) {
-    appState.charts.balance = new (window as any).Chart(balanceCtx, {
+    appState.charts.balance = new window.Chart(balanceCtx, {
       type: 'line',
       data: { labels: series.labels, datasets: [{ label: 'Saldo', data: series.cumulativeBalance, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: '#3b82f6', pointBorderColor: '#ffffff', pointBorderWidth: 2 }] },
       options: {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context: any) => formatIDR(context.parsed.y) } } },
-        scales: { y: { ticks: { callback: (value: number) => formatNumber(value) }, grid: { color: 'rgba(148, 163, 184, 0.2)' } }, x: { grid: { display: false } } }
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => formatIDR(context.parsed.y) } } },
+        scales: { y: { ticks: { callback: (value) => formatNumber(value) }, grid: { color: 'rgba(148, 163, 184, 0.2)' } }, x: { grid: { display: false } } }
       }
     });
   }
 
-  const compositionCtx = (document.getElementById('lap-mix') as HTMLCanvasElement | null)?.getContext('2d');
+  const compositionCtx = (document.getElementById('lap-mix') || null)?.getContext('2d');
   if (compositionCtx && (totals.income > 0 || totals.expense > 0)) {
-    appState.charts.composition = new (window as any).Chart(compositionCtx, {
+    appState.charts.composition = new window.Chart(compositionCtx, {
       type: 'doughnut',
       data: { labels: ['Pemasukan', 'Pengeluaran'], datasets: [{ data: [totals.income, totals.expense], backgroundColor: ['#22c55e', '#ef4444'], borderWidth: 0, hoverOffset: 8 }] },
       options: {
         responsive: true, maintainAspectRatio: false,
         plugins: {
           legend: { position: 'bottom', labels: { boxWidth: 16, usePointStyle: true, pointStyle: 'circle', padding: 20 } },
-          tooltip: { callbacks: { label: (context: any) => `${context.label}: ${formatIDR(context.parsed)}` } }
+          tooltip: { callbacks: { label: (context) => `${context.label}: ${formatIDR(context.parsed)}` } }
         },
         cutout: '65%'
       }
     });
   }
 
-  const trendsCtx = (document.getElementById('lap-inout') as HTMLCanvasElement | null)?.getContext('2d');
+  const trendsCtx = (document.getElementById('lap-inout') || null)?.getContext('2d');
   if (trendsCtx) {
-    appState.charts.trends = new (window as any).Chart(trendsCtx, {
+    appState.charts.trends = new window.Chart(trendsCtx, {
       type: 'bar',
       data: { labels: series.labels, datasets: [
         { label: 'Pemasukan', data: series.dailyIncome, backgroundColor: '#22c55e', borderRadius: 8, borderSkipped: false },
@@ -785,9 +1001,9 @@ function createCharts(transactions: Transaction[]) {
         responsive: true, maintainAspectRatio: false,
         plugins: {
           legend: { position: 'bottom', labels: { boxWidth: 16, usePointStyle: true, pointStyle: 'rectRounded', padding: 20 } },
-          tooltip: { callbacks: { label: (context: any) => `${context.dataset.label}: ${formatIDR(context.parsed.y)}` } }
+          tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${formatIDR(context.parsed.y)}` } }
         },
-        scales: { y: { ticks: { callback: (value: number) => formatNumber(value) }, grid: { color: 'rgba(148, 163, 184, 0.2)' } }, x: { grid: { display: false } } }
+        scales: { y: { ticks: { callback: (value) => formatNumber(value) }, grid: { color: 'rgba(148, 163, 184, 0.2)' } }, x: { grid: { display: false } } }
       }
     });
   }
@@ -811,11 +1027,11 @@ function initRealTimeCharts() {
       if (localData) {
         const transactions = JSON.parse(localData);
         if (Array.isArray(transactions) && transactions.length > 0) {
-          const series = generateDailySeries(transactions as Transaction[]);
-          const totals = calculateTotals(transactions as Transaction[]);
+          const series = generateDailySeries(transactions);
+          const totals = calculateTotals(transactions);
           
           return {
-            transactions: transactions as Transaction[],
+            transactions: transactions,
             series,
             totals
           };
@@ -845,7 +1061,7 @@ function initRealTimeCharts() {
   }
 
   // Update function untuk Balance Chart
-  function updateBalanceChart(newData: any) {
+  function updateBalanceChart(newData) {
     const chart = appState.charts.balance;
     if (!chart) return;
 
@@ -855,7 +1071,7 @@ function initRealTimeCharts() {
   }
 
   // Update function untuk Composition Chart
-  function updateCompositionChart(newData: any) {
+  function updateCompositionChart(newData) {
     const chart = appState.charts.composition;
     if (!chart) return;
 
@@ -864,7 +1080,7 @@ function initRealTimeCharts() {
   }
 
   // Update function untuk Trends Chart
-  function updateTrendsChart(newData: any) {
+  function updateTrendsChart(newData) {
     const chart = appState.charts.trends;
     if (!chart) return;
 
@@ -914,7 +1130,7 @@ function initRealTimeCharts() {
 }
 
 // Anomaly detection
-function detectAnomalies(transactions: Transaction[]) {
+function detectAnomalies(transactions) {
   const container = document.getElementById('anom-list');
   if (!container) return;
   container.innerHTML = '';
@@ -925,9 +1141,7 @@ function detectAnomalies(transactions: Transaction[]) {
   const avgIncome = series.dailyIncome.reduce((sum, val) => sum + val, 0) / Math.max(1, series.dailyIncome.length);
   const avgExpense = series.dailyExpense.reduce((sum, val) => sum + val, 0) / Math.max(1, series.dailyExpense.length);
   const stdExpense = stddev(series.dailyExpense);
-
-  type Anomaly = { date: string; type: 'critical' | 'warning'; message: string };
-  const anomalies: Anomaly[] = [];
+  const anomalies = [];
 
   // Rule A: Daily expense z-score > 2.5 (critical)
   for (let i = 0; i < series.dates.length; i++) {
@@ -947,12 +1161,12 @@ function detectAnomalies(transactions: Transaction[]) {
   }
 
   // Rule C: Per-category transaction amount > 3× median of that category (warning)
-  const expenseByCategory: Record<string, number[]> = {};
+  const expenseByCategory = {};
   transactions.filter(t => t.type === 'Keluar').forEach(t => {
     if (!expenseByCategory[t.category]) expenseByCategory[t.category] = [];
-    expenseByCategory[t.category].push(t.amount);
+    (expenseByCategory[t.category]).push(t.amount);
   });
-  const categoryMedian: Record<string, number> = {};
+  const categoryMedian = {};
   Object.keys(expenseByCategory).forEach(cat => { categoryMedian[cat] = median(expenseByCategory[cat]); });
   transactions.forEach(t => {
     if (t.type !== 'Keluar') return;
@@ -993,17 +1207,17 @@ function detectAnomalies(transactions: Transaction[]) {
 }
 
 // Basic stats helpers for anomaly detection
-function mean(values: number[]): number {
+function mean(values) {
   if (!values.length) return 0;
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
-function stddev(values: number[]): number {
+function stddev(values) {
   if (!values.length) return 0;
   const m = mean(values);
   const variance = mean(values.map(v => (v - m) * (v - m)));
   return Math.sqrt(variance);
 }
-function median(values: number[]): number {
+function median(values) {
   if (!values.length) return 0;
   const arr = values.slice().sort((a, b) => a - b);
   const mid = Math.floor(arr.length / 2);
@@ -1011,20 +1225,20 @@ function median(values: number[]): number {
 }
 
 // Generate insights
-function generateInsights(transactions: Transaction[]) {
+function generateInsights(transactions) {
   const container = document.getElementById('insight-list');
   if (!container) return;
   container.innerHTML = '';
   if (transactions.length === 0) { container.innerHTML = '<div class="loading-state">Tidak ada data untuk menghasilkan insight</div>'; return }
 
   const totals = calculateTotals(transactions);
-  const expensesByCategory: Record<string, number> = {};
+  const expensesByCategory = {};
   transactions.filter(t => t.type === 'Keluar').forEach(t => { expensesByCategory[t.category] = (expensesByCategory[t.category] || 0) + t.amount });
   const topCategory = Object.entries(expensesByCategory).sort(([,a], [,b]) => b - a)[0];
-
-  const insights: { icon: string; text: string }[] = [];
+  const insights = [];
   if (topCategory) {
-    const [category, amount] = topCategory as [string, number];
+    const category = topCategory[0];
+    const amount = Number(topCategory[1] || 0);
     const percentage = Math.round((amount / Math.max(1, totals.expense)) * 100);
     insights.push({ icon: 'fa-chart-pie', text: `Kategori pengeluaran terbesar adalah <strong>${category}</strong> dengan total ${formatIDR(amount)} (${percentage}% dari total pengeluaran)` });
   }
@@ -1065,7 +1279,7 @@ function generateInsights(transactions: Transaction[]) {
 
 // Reports management
 function loadReports() {
-  try { appState.reports = JSON.parse(localStorage.getItem('financial_reports') || '[]') as Report[] } catch { appState.reports = [] }
+  try { appState.reports = JSON.parse(localStorage.getItem('financial_reports') || '[]') } catch { appState.reports = [] }
   // Purge auto-generated monthly summaries (author: System) per request
   const before = appState.reports.length;
   appState.reports = appState.reports.filter(r => !(r?.author === 'System' && (r?.type === 'Bulanan' || String(r?.title||'').toLowerCase().includes('ringkasan bulanan'))));
@@ -1078,7 +1292,7 @@ function saveReports() {
 }
 
 // Auto-upsert monthly report is disabled per request (avoid system-generated summaries)
-function upsertAutoMonthlyReport(isoDate: string) {
+function upsertAutoMonthlyReport(isoDate) {
   return; // no-op
 }
 
@@ -1086,7 +1300,7 @@ function renderReportsTable() {
   const tbody = document.getElementById('report-tbody');
   const noteElement = document.getElementById('active-report-note');
   if (!tbody) return;
-  // Compute the latest balance according to current filters (same as KPI 'Saldo Akhir')
+  // Compute the latest balance according to current filters (same 'Saldo Akhir')
   const currentFiltered = getFilteredTransactions();
   const currentTotals = calculateTotals(currentFiltered);
   const currentBalance = currentTotals.balance;
@@ -1106,7 +1320,7 @@ function renderReportsTable() {
   }
 
   // Helper: compute cumulative balance up to and including a specific date
-  const balanceUpTo = (date: string): number => {
+  const balanceUpTo = (date) => {
     const txs = appState.transactions.filter(t => t.date <= date);
     const inc = txs.filter(t => t.type === 'Masuk').reduce((s, t) => s + t.amount, 0);
     const exp = txs.filter(t => t.type === 'Keluar').reduce((s, t) => s + t.amount, 0);
@@ -1121,7 +1335,7 @@ function renderReportsTable() {
           ${snap.formType ? `${snap.formType}` : ''}
           ${snap.txDate ? ` ${formatDateID(snap.txDate)}` : ''}
           ${snap.txCategory ? ` • ${snap.txCategory}` : ''}
-          ${typeof snap.txAmount === 'number' && (snap.txAmount as number) > 0 ? ` • Rp ${formatIDR(snap.txAmount as number)}` : ''}
+          ${typeof snap.txAmount === 'number' && (snap.txAmount) > 0 ? ` • Rp ${formatIDR(snap.txAmount)}` : ''}
           ${snap.txDesc ? `<div class="cell-sub quote">&quot;${(snap.txDesc || '').replace(/</g,'&lt;').replace(/>/g,'&gt;')}&quot;</div>` : ''}
         </div>
       `
@@ -1130,10 +1344,10 @@ function renderReportsTable() {
     // Determine fields for new columns
     const periodeText = snap?.txDate ? formatDateID(snap.txDate) : `${formatDateID(report.startDate)} — ${formatDateID(report.endDate)}`;
     const tipeText = snap?.formType ? snap.formType : (report.type || '-');
-    const ketText = (snap?.txDesc && snap.txDesc.trim().length > 0) ? snap.txDesc : '-';
+    const ketText = (snap?.txDesc && snap.txDesc.trim.length > 0) ? snap.txDesc : '-';
     // Badge styling for type (support: Masuk, Keluar, Transaksi, Bulanan, Iuran)
     const tipeLower = String(tipeText).toLowerCase();
-    const map = (() => {
+    const typeBadge = (() => {
       if (tipeLower.includes('masuk')) return { cls: 'success', icon: 'fa-arrow-down' };
       if (tipeLower.includes('keluar')) return { cls: 'error', icon: 'fa-arrow-up' };
       if (tipeLower.includes('transaksi')) return { cls: 'primary', icon: 'fa-receipt' };
@@ -1142,7 +1356,7 @@ function renderReportsTable() {
       return { cls: 'neutral', icon: 'fa-circle' };
     })();
 
-    const jumlahText = (typeof snap?.txAmount === 'number' && (snap?.txAmount as number) > 0) ? `<span class="amount">${formatIDR(snap!.txAmount as number)}</span>` : '-';
+    const jumlahText = (typeof snap?.txAmount === 'number' && (snap?.txAmount) > 0) ? `<span class="amount">${formatIDR(snap.txAmount)}</span>` : '-';
     // Align with dashboard's latest balance
     const saldoSekarang = currentBalance;
     return `
@@ -1159,7 +1373,7 @@ function renderReportsTable() {
           ` : ''}
         </td>
         <td>${periodeText}</td>
-        <td><span class="badge ${map.cls}"><i class="fas ${map.icon}"></i>${tipeText}</span></td>
+        <td><span class="badge ${typeBadge.cls}"><i class="fas ${typeBadge.icon}"></i>${tipeText}</span></td>
         <td><span class="truncate-text" title="${(ketText || '').replace(/"/g,'&quot;')}">${ketText}</span></td>
         <td class="text-right num-col">${jumlahText}</td>
         <td class="text-right num-col"><span class="amount">${formatIDR(saldoSekarang)}</span></td>
@@ -1172,7 +1386,7 @@ function renderReportsTable() {
 
   // Add event listeners for report actions
   // Load/Export buttons were removed from UI
-  (tbody.querySelectorAll('button[data-action="delete"]') as NodeListOf<HTMLButtonElement>).forEach(btn => {
+  Array.from(tbody.querySelectorAll('button[data-action="delete"]')).forEach(btn => {
     btn.addEventListener('click', () => {
       const reportId = btn.getAttribute('data-id');
       deleteReport(reportId || '');
@@ -1189,7 +1403,7 @@ function renderReportsTable() {
   }
 }
 
-function loadReport(reportId: string) {
+function loadReport(reportId) {
   const report = appState.reports.find(r => String(r.id) === String(reportId));
   if (report) {
     appState.activeReportId = report.id;
@@ -1202,7 +1416,7 @@ function loadReport(reportId: string) {
   }
 }
 
-function deleteReport(reportId: string) {
+function deleteReport(reportId) {
   const reportIndex = appState.reports.findIndex(r => String(r.id) === String(reportId));
   if (reportIndex < 0) return;
   const deletedReport = appState.reports.splice(reportIndex, 1)[0];
@@ -1237,10 +1451,10 @@ function deleteReport(reportId: string) {
 }
 
 // Monthly dues management
-function loadResidents(): Array<{ id: string | number; nama: string; status?: string }> {
+function loadResidents() {
   try { 
     // First try to get real warga data from warga.astro
-    const wargaData = JSON.parse(localStorage.getItem('warga_data_v1') || '[]') as any[];
+    const wargaData = JSON.parse(localStorage.getItem('warga_data_v1') || '[]') ;
     if (Array.isArray(wargaData) && wargaData.length > 0) {
       return wargaData
         .filter(resident => resident.status === 'aktif')
@@ -1252,7 +1466,7 @@ function loadResidents(): Array<{ id: string | number; nama: string; status?: st
     }
     
     // Fallback to old residents_data key
-    const residentsData = JSON.parse(localStorage.getItem('residents_data') || '[]') as any[];
+    const residentsData = JSON.parse(localStorage.getItem('residents_data') || '[]') ;
     if (Array.isArray(residentsData) && residentsData.length > 0) {
       return residentsData.filter(resident => resident.status === 'aktif');
     }
@@ -1284,7 +1498,7 @@ function updateRealTimeMonth() {
     console.log(`[Real-time] Month updated to: ${currentRealTimeMonth}`);
     
     // Update month input if it's set to the old month
-    const monthInput = document.getElementById('iuran-month') as HTMLInputElement | null;
+    const monthInput = document.getElementById('iuran-month') || null;
     if (monthInput && monthInput.value === getCurrentMonth()) {
       monthInput.value = currentRealTimeMonth;
     }
@@ -1298,7 +1512,7 @@ function updateRealTimeMonth() {
 }
 
 // Format month-year for display
-function formatMonthYear(monthStr: string): string {
+function formatMonthYear(monthStr) {
   const [year, month] = monthStr.split('-');
   const date = new Date(parseInt(year), parseInt(month) - 1);
   return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
@@ -1306,7 +1520,7 @@ function formatMonthYear(monthStr: string): string {
 
 // Navigate to previous month
 function navigateToPreviousMonth() {
-  const monthInput = document.getElementById('iuran-month') as HTMLInputElement | null;
+  const monthInput = document.getElementById('iuran-month') || null;
   if (!monthInput) return;
   
   const currentValue = monthInput.value || getCurrentMonth();
@@ -1332,7 +1546,7 @@ function navigateToPreviousMonth() {
 
 // Navigate to next month
 function navigateToNextMonth() {
-  const monthInput = document.getElementById('iuran-month') as HTMLInputElement | null;
+  const monthInput = document.getElementById('iuran-month') || null;
   if (!monthInput) return;
   
   const currentValue = monthInput.value || getCurrentMonth();
@@ -1358,9 +1572,9 @@ function navigateToNextMonth() {
 
 // Update navigation buttons state based on current month
 function updateMonthNavigationButtons() {
-  const monthInput = document.getElementById('iuran-month') as HTMLInputElement | null;
-  const prevBtn = document.querySelector('.prev-month') as HTMLButtonElement | null;
-  const nextBtn = document.querySelector('.next-month') as HTMLButtonElement | null;
+  const monthInput = document.getElementById('iuran-month') || null;
+  const prevBtn = document.querySelector('.prev-month') || null;
+  const nextBtn = document.querySelector('.next-month') || null;
   
   if (!monthInput || !prevBtn || !nextBtn) return;
   
@@ -1382,26 +1596,26 @@ function updateMonthNavigationButtons() {
 }
 
 // Enhanced current month validation with real-time check
-function isCurrentMonthRealTime(ym: string): boolean {
+function isCurrentMonthRealTime(ym) {
   return String(ym).slice(0,7) === currentRealTimeMonth;
 }
 
 // Check if month is current or in the future (real-time)
-function isCurrentOrFutureMonthRealTime(ym: string): boolean {
+function isCurrentOrFutureMonthRealTime(ym) {
   const [cy, cm] = currentRealTimeMonth.split('-').map(Number);
   const [y, m] = String(ym).slice(0,7).split('-').map(Number);
   return (y > cy) || (y === cy && m >= cm);
 }
 
 // Format YYYY-MM to "MMMM YYYY" (id-ID)
-function formatMonthID(ym: string){
+function formatMonthID(ym){
   const [y,m] = String(ym).slice(0,7).split('-').map(Number);
   const d = new Date(y, (m-1), 1);
   return d.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 }
 
-// Mark dues month as closed and notify dashboards
-function closeDuesMonth(ym: string){
+// Mark dues month and notify dashboards
+function closeDuesMonth(ym){
   const map = getDuesConfigs();
   if (!map[ym]) return;
   if (!map[ym].closed){ map[ym].closed = true; setDuesConfigs(map); }
@@ -1409,7 +1623,7 @@ function closeDuesMonth(ym: string){
 }
 
 // Small centered modal utility for nice warnings
-function showCenterModal(title: string, message: string, type: 'info'|'success'|'warning'|'error' = 'warning'){
+function showCenterModal(title, message, type = 'warning'){
   const existing = document.getElementById('center-modal-backdrop');
   if (existing) existing.remove();
   const backdrop = document.createElement('div');
@@ -1479,8 +1693,8 @@ function showCenterModal(title: string, message: string, type: 'info'|'success'|
 
 async function renderDuesSection() {
   // Ensure inputs have defaults
-  const amountInput = document.getElementById('iuran-amount') as HTMLInputElement | null;
-  const monthInput = document.getElementById('iuran-month') as HTMLInputElement | null;
+  const amountInput = document.getElementById('iuran-amount') || null;
+  const monthInput = document.getElementById('iuran-month') || null;
   if (monthInput && !monthInput.value) monthInput.value = getCurrentMonth();
 
   const komplekId = resolveKomplekId();
@@ -1518,8 +1732,8 @@ async function renderDuesSection() {
         wrapper.appendChild(btn);
         const group = amountInput.closest('.input-group');
         if (group) group.insertAdjacentElement('afterend', wrapper); else amountInput.insertAdjacentElement('afterend', wrapper);
-        btn.addEventListener('click', async ()=>{
-          const newAmount = Number((document.getElementById('iuran-amount') as HTMLInputElement | null)?.value || '0');
+        btn.addEventListener('click', async () =>{
+          const newAmount = Number((document.getElementById('iuran-amount') || null)?.value || '0');
           if (isNaN(newAmount) || newAmount <= 0) { showToast('Nominal iuran tidak valid', 'error'); return; }
           try {
             // Use the new updateNominal API method
@@ -1535,7 +1749,7 @@ async function renderDuesSection() {
             } else {
               showToast('Gagal memperbarui nominal iuran', 'error');
             }
-          } catch (e:any) {
+          } catch (e) {
             console.error(e);
             if (String(e?.message || '').includes('HTTP 401')) {
               localStorage.setItem('iuran_demo', '1');
@@ -1556,7 +1770,7 @@ async function renderDuesSection() {
         });
       }
     } else if (existingBtn) {
-      existingBtn.remove();
+      existingBtn.remove;
     }
   }
 
@@ -1585,7 +1799,7 @@ async function renderDuesSection() {
 
     if (paidContainer) {
       if (paidResidents.length > 0) {
-        paidContainer.innerHTML = paidResidents.map((resident: any) => `
+        paidContainer.innerHTML = paidResidents.map((resident) => `
           <div class="status-pill">
             <span class="pill-name">${resident.nama}</span>
             <button class="btn-unpay" data-unpay-resident="${resident.id}" title="Batalkan pembayaran" aria-label="Batalkan pembayaran">
@@ -1594,37 +1808,37 @@ async function renderDuesSection() {
             </button>
           </div>
         `).join('');
-        (paidContainer.querySelectorAll('button[data-unpay-resident]') as NodeListOf<HTMLButtonElement>).forEach(btn => {
-          if ((btn as any).dataset.bound) return; (btn as any).dataset.bound = '1';
+        Array.from(paidContainer.querySelectorAll('button[data-unpay-resident]')).forEach(btn => {
+          if (btn.dataset.bound) return; btn.dataset.bound = '1';
           btn.addEventListener('click', async (ev) => {
             // ripple
             try {
               const r = document.createElement('span');
               r.className = 'ripple';
               const rect = btn.getBoundingClientRect();
-              const x = (ev as MouseEvent).clientX - rect.left; const y = (ev as MouseEvent).clientY - rect.top;
+              const x = ev.clientX - rect.left; const y = ev.clientY - rect.top;
               r.style.left = x + 'px'; r.style.top = y + 'px';
               // for CSS radial ripple using vars
-              (btn as HTMLElement).style.setProperty('--x', x + 'px');
-              (btn as HTMLElement).style.setProperty('--y', y + 'px');
-              btn.appendChild(r); setTimeout(()=> r.remove(), 500);
+              btn.style.setProperty('--x', x + 'px');
+              btn.style.setProperty('--y', y + 'px');
+              btn.appendChild(r); setTimeout(() => r.remove(), 500);
             } catch {}
             // loading state
             if (!btn.disabled){
               btn.disabled = true;
               btn.setAttribute('aria-busy','true');
-              (btn as HTMLElement).blur();
-              (btn as any).dataset.prev = btn.innerHTML;
+              btn.blur();
+              btn.dataset.prev = btn.innerHTML;
               btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Memproses...</span>';
             }
             const wargaId = btn.getAttribute('data-unpay-resident') || '';
             await markIuranPayment(wargaId, false);
-            // UI will rerender on success; restore as fallback if not rerendered
-            setTimeout(()=>{
+            // UI will rerender on success; restore if not rerendered
+            setTimeout(() =>{
               if (document.body.contains(btn)){
                 btn.disabled = false;
                 btn.removeAttribute('aria-busy');
-                if ((btn as any).dataset.prev) btn.innerHTML = (btn as any).dataset.prev;
+                if (btn.dataset.prev) btn.innerHTML = btn.dataset.prev;
               }
             }, 1200);
           });
@@ -1636,7 +1850,7 @@ async function renderDuesSection() {
 
     if (pendingContainer) {
       if (pendingResidents.length > 0) {
-        pendingContainer.innerHTML = pendingResidents.map((resident: any) => `
+        pendingContainer.innerHTML = pendingResidents.map((resident) => `
           <div class="status-pill">
             <span class="pill-name">${resident.nama}</span>
             <button class="btn-pay" data-pay-resident="${resident.id}" title="Tandai sudah bayar" aria-label="Tandai sudah bayar">
@@ -1645,35 +1859,35 @@ async function renderDuesSection() {
             </button>
           </div>
         `).join('');
-        (pendingContainer.querySelectorAll('button[data-pay-resident]') as NodeListOf<HTMLButtonElement>).forEach(btn => {
-          if ((btn as any).dataset.bound) return; (btn as any).dataset.bound = '1';
+        Array.from(pendingContainer.querySelectorAll('button[data-pay-resident]')).forEach(btn => {
+          if (btn.dataset.bound) return; btn.dataset.bound = '1';
           btn.addEventListener('click', async (ev) => {
             // ripple
             try {
               const r = document.createElement('span'); r.className = 'ripple';
               const rect = btn.getBoundingClientRect();
-              const x = (ev as MouseEvent).clientX - rect.left; const y = (ev as MouseEvent).clientY - rect.top;
+              const x = ev.clientX - rect.left; const y = ev.clientY - rect.top;
               r.style.left = x + 'px'; r.style.top = y + 'px';
               // for CSS radial ripple using vars
-              (btn as HTMLElement).style.setProperty('--x', x + 'px');
-              (btn as HTMLElement).style.setProperty('--y', y + 'px');
-              btn.appendChild(r); setTimeout(()=> r.remove(), 500);
+              btn.style.setProperty('--x', x + 'px');
+              btn.style.setProperty('--y', y + 'px');
+              btn.appendChild(r); setTimeout(() => r.remove(), 500);
             } catch {}
             // loading state
             if (!btn.disabled){
               btn.disabled = true;
               btn.setAttribute('aria-busy','true');
-              (btn as HTMLElement).blur();
-              (btn as any).dataset.prev = btn.innerHTML;
+              btn.blur();
+              btn.dataset.prev = btn.innerHTML;
               btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Memproses...</span>';
             }
             const wargaId = btn.getAttribute('data-pay-resident') || '';
             await markIuranPayment(wargaId, true);
-            setTimeout(()=>{
+            setTimeout(() =>{
               if (document.body.contains(btn)){
                 btn.disabled = false;
                 btn.removeAttribute('aria-busy');
-                if ((btn as any).dataset.prev) btn.innerHTML = (btn as any).dataset.prev;
+                if (btn.dataset.prev) btn.innerHTML = btn.dataset.prev;
               }
             }, 1200);
           });
@@ -1692,7 +1906,7 @@ async function renderDuesSection() {
       }
     }
 
-  } catch (error:any) {
+  } catch (error) {
     // Any HTTP error => enter demo/local mode to avoid 404/500 spam
     try { localStorage.setItem('iuran_demo', '1') } catch {}
     console.warn('Iuran API unavailable, switching to local mode.', error?.message || error);
@@ -1701,12 +1915,12 @@ async function renderDuesSection() {
   }
 
   // Bind Save button once
-  const saveBtn = document.getElementById('iuran-save') as HTMLButtonElement | null;
-  if (saveBtn && !(saveBtn as any).dataset.bound) {
-    (saveBtn as any).dataset.bound = '1';
+  const saveBtn = document.getElementById('iuran-save') || null;
+  if (saveBtn && !saveBtn.dataset.bound) {
+    saveBtn.dataset.bound = '1';
     saveBtn.addEventListener('click', async () => {
-      const amountVal = Number((document.getElementById('iuran-amount') as HTMLInputElement | null)?.value || '0');
-      const monthVal = (document.getElementById('iuran-month') as HTMLInputElement | null)?.value || getCurrentMonth();
+      const amountVal = Number((document.getElementById('iuran-amount') || null)?.value || '0');
+      const monthVal = (document.getElementById('iuran-month') || null)?.value || getCurrentMonth();
       const targetMonth = String(monthVal).slice(0,7);
       if (!isCurrentMonthRealTime(targetMonth)){
         showCenterModal('Iuran hanya untuk bulan ini', `Maaf, pembuatan iuran dibatasi <strong>hanya untuk bulan berjalan</strong>.<br/>Bulan yang dipilih: <strong>${targetMonth}</strong><br/>Silakan set kembali ke <strong>${currentRealTimeMonth}</strong>.`, 'warning');
@@ -1714,13 +1928,13 @@ async function renderDuesSection() {
       }
       try{
         await postJson('/api/iuran/generate', {
-          komplek_id: Number(komplekId),
+          komplek_id: komplekId,
           periode: targetMonth,
-          amount: Number(isNaN(amountVal) ? 0 : amountVal)
+          amount: (isNaN(amountVal) ? 0 : amountVal)
         });
         showToast('Iuran periode berhasil disimpan', 'success');
         await renderDuesSection();
-      }catch(e:any){
+      }catch(e){
         console.error(e);
         if (String(e?.message || '').includes('HTTP 401')) {
           // Demo fallback: store locally
@@ -1734,14 +1948,14 @@ async function renderDuesSection() {
             showToast(`Iuran bulan ${targetMonth} sudah ada: ${formatIDR(existing)}. Gunakan fitur edit untuk mengubah nominal.`, 'warning');
             return;
           }
-          saveDuesConfig({ amount: Number(isNaN(amountVal) ? 0 : amountVal), month: targetMonth });
+          saveDuesConfig({ amount: (isNaN(amountVal) ? 0 : amountVal), month: targetMonth });
           localStorage.setItem('iuran_demo', '1');
           showToast('Mode demo: iuran disimpan lokal', 'success');
           await renderDuesSectionFromLocal();
           
           // Dispatch custom event for real-time dashboard update
           window.dispatchEvent(new CustomEvent('iuran-updated', {
-            detail: { month: targetMonth, amount: Number(isNaN(amountVal) ? 0 : amountVal), action: 'save-demo' }
+            detail: { month: targetMonth, amount: (isNaN(amountVal) ? 0 : amountVal), action: 'save-demo' }
           }));
         } else {
           showToast('Gagal menyimpan iuran. Coba lagi.', 'error');
@@ -1751,10 +1965,10 @@ async function renderDuesSection() {
   }
 }
 
-function getDuesConfig(): { amount?: number; month?: string } {
+function getDuesConfig() {
   try { return JSON.parse(localStorage.getItem('dues_config') || '{}') } catch { return {} }
 }
-function saveDuesConfig(config: { amount?: number; month?: string }): boolean {
+function saveDuesConfig(config) {
   // Back-compat: also keep last saved in 'dues_config'
   try { localStorage.setItem('dues_config', JSON.stringify(config)) } catch (error) { console.warn('Could not save dues config:', error) }
   // New: maintain per-month configs in 'dues_configs'
@@ -1767,7 +1981,7 @@ function saveDuesConfig(config: { amount?: number; month?: string }): boolean {
       showToast(`Iuran bulan ${month} sudah ada: Rp ${formatIDR(all[month].amount)}. Gunakan fitur edit untuk mengubah nominal.`, 'warning');
       return false;
     }
-    all[month] = { amount, closed: false, createdAt: Date.now() } as any;
+    all[month] = { amount, closed: false, createdAt: Date.now() } ;
     setDuesConfigs(all);
     // Notify other tabs (dashboard) to recompute pending
     try { localStorage.setItem('iuran_dirty', String(Date.now())) } catch {}
@@ -1780,36 +1994,36 @@ function saveDuesConfig(config: { amount?: number; month?: string }): boolean {
     return true;
   } catch (error) { console.warn('Could not save per-month dues config:', error); return false }
 }
-function getDuesPayments(): Record<string, { paid: string[] }> {
-  try { return JSON.parse(localStorage.getItem('dues_payments') || '{}') } catch { return {} as any }
+function getDuesPayments() {
+  try { return JSON.parse(localStorage.getItem('dues_payments') || '{}') } catch { return {}  }
 }
 
 // New helpers for per-month dues config
-function getDuesConfigs(): Record<string, { amount: number; closed?: boolean; createdAt?: number }>{
+function getDuesConfigs(){
   try { return JSON.parse(localStorage.getItem('dues_configs') || '{}') } catch { return {} }
 }
-function setDuesConfigs(cfg: Record<string, { amount: number; closed?: boolean; createdAt?: number }>){
+function setDuesConfigs(cfg){
   try { localStorage.setItem('dues_configs', JSON.stringify(cfg)) } catch {}
 }
-function getDuesAmountFor(month: string): number{
+function getDuesAmountFor(month){
   const map = getDuesConfigs();
   if (map[month]) return Number(map[month].amount||0);
   try { const legacy = JSON.parse(localStorage.getItem('dues_config')||'{}'); return String(legacy?.month||'').slice(0,7)===month ? Number(legacy?.amount||0) : 0 } catch { return 0 }
 }
-function iuranExistsFor(month: string): boolean{
+function iuranExistsFor(month){
   const map = getDuesConfigs();
   if (map[month]) return true;
   try { const legacy = JSON.parse(localStorage.getItem('dues_config')||'{}'); return String(legacy?.month||'').slice(0,7)===month } catch { return false }
 }
-function isDuesClosed(month: string): boolean{
+function isDuesClosed(month){
   const map = getDuesConfigs();
   return !!map[month]?.closed;
 }
 
 // Update per-month dues amount and keep legacy key in sync when applicable
-function updateDuesConfigAmount(ym: string, amount: number){
+function updateDuesConfigAmount(ym, amount){
   const all = getDuesConfigs();
-  if (!all[ym]) all[ym] = { amount, closed: false, createdAt: Date.now() } as any;
+  if (!all[ym]) all[ym] = { amount, closed: false, createdAt: Date.now() } ;
   else all[ym].amount = amount;
   setDuesConfigs(all);
   try {
@@ -1818,11 +2032,11 @@ function updateDuesConfigAmount(ym: string, amount: number){
       legacy.amount = amount; localStorage.setItem('dues_config', JSON.stringify(legacy));
     }
   } catch {}
-  try { localStorage.setItem('iuran_dirty', String(Date.now())) } catch {}
+  try { localStorage.setItem('iuran_dirty', String(Date.now)) } catch {}
 }
 
 // Adjust amount of existing linked iuran transactions for a given month
-function updateIuranTransactionsAmount(ym: string, newAmount: number){
+function updateIuranTransactionsAmount(ym, newAmount){
   if (newAmount <= 0) return;
   const prefix = makeIuranToken(ym, ''); // yields like [IURAN:YYYY-MM:]
   appState.transactions.forEach(t => {
@@ -1835,17 +2049,17 @@ function updateIuranTransactionsAmount(ym: string, newAmount: number){
 }
 
 // Allow month navigation in the iuran section
-function shiftMonth(ym: string, delta: number): string{
+function shiftMonth(ym, delta){
   const [y,m] = ym.split('-').map(Number);
   const d = new Date(y, (m-1)+delta, 1);
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}`;
 }
-function saveDuesPayments(payments: Record<string, { paid: string[] }>) {
+function saveDuesPayments(payments) {
   try { localStorage.setItem('dues_payments', JSON.stringify(payments)) } catch (error) { console.warn('Could not save dues payments:', error) }
 }
-async function markIuranPayment(residentId: string | number, paid: boolean) {
-  const monthVal = (document.getElementById('iuran-month') as HTMLInputElement | null)?.value || getCurrentMonth();
-  const amountVal = Number((document.getElementById('iuran-amount') as HTMLInputElement | null)?.value || '0');
+async function markIuranPayment(residentId, paid) {
+  const monthVal = (document.getElementById('iuran-month') || null)?.value || getCurrentMonth();
+  const amountVal = Number((document.getElementById('iuran-amount') || null)?.value || '0');
   // Guard: admin must save iuran for this month before confirming payments
   const periode = String(monthVal).slice(0,7);
   if (!getDuesAmountFor(periode)) {
@@ -1859,19 +2073,19 @@ async function markIuranPayment(residentId: string | number, paid: boolean) {
   const komplekId = resolveKomplekId();
   try{
     await postJson('/api/iuran/mark', {
-      komplek_id: Number(komplekId),
+      komplek_id: komplekId,
       periode: String(monthVal).slice(0,7),
-      warga_id: Number(residentId),
+      warga_id: residentId,
       paid: !!paid,
-      amount: Number(isNaN(amountVal) ? 0 : amountVal)
+      amount: (isNaN(amountVal) ? 0 : amountVal)
     });
     showToast(paid ? 'Pembayaran ditandai lunas' : 'Pembayaran dibatalkan', 'success');
     await renderDuesSection();
     // Sync ledger: add/remove the linked Iuran transaction
     try {
-      syncIuranLedgerTransaction({ periode, residentId: String(residentId), amount: amountVal, paid });
+      syncIuranLedgerTransaction({ periode, residentId, amount: amountVal, paid });
     } catch (err) { console.warn('Failed syncing ledger after API success:', err); }
-  }catch(e:any){
+  }catch(e){
     console.error(e);
     if (String(e?.message || '').includes('HTTP 401')) {
       // Demo fallback: mutate local payments
@@ -1882,7 +2096,7 @@ async function markIuranPayment(residentId: string | number, paid: boolean) {
       renderDuesSectionFromLocal();
       // Also update local ledger so KPIs reflect immediately
       try {
-        syncIuranLedgerTransaction({ periode, residentId: String(residentId), amount: amountVal, paid });
+        syncIuranLedgerTransaction({ periode, residentId, amount: amountVal, paid });
       } catch (err) { console.warn('Failed syncing ledger in demo:', err); }
     } else {
       showToast('Gagal mengubah status pembayaran. Coba lagi.', 'error');
@@ -1891,37 +2105,37 @@ async function markIuranPayment(residentId: string | number, paid: boolean) {
 }
 
 // ===== Helpers to link Iuran payments with ledger transactions =====
-function getResidentNameById(id: string): string {
+function getResidentNameById(id) {
   try {
     // First try to get real warga data from warga.astro
-    const wargaData = JSON.parse(localStorage.getItem('warga_data_v1') || '[]') as Array<{id:any; nama?:string; name?:string}>;
+    const wargaData = JSON.parse(localStorage.getItem('warga_data_v1') || '[]');
     if (Array.isArray(wargaData) && wargaData.length > 0) {
       const found = wargaData.find(r => String(r.id) === String(id));
       if (found) return (found.nama || found.name || `Warga ${id}`);
     }
     
     // Fallback to old residents_data key
-    const residentsData = JSON.parse(localStorage.getItem('residents_data') || '[]') as Array<{id:any; nama?:string; name?:string}>;
+    const residentsData = JSON.parse(localStorage.getItem('residents_data') || '[]');
     const found = Array.isArray(residentsData) ? residentsData.find(r => String(r.id) === String(id)) : null;
-    return (found?.nama || (found as any)?.name || `Warga ${id}`);
+    return (found?.nama || found?.name || `Warga ${id}`);
   } catch { return `Warga ${id}` }
 }
 
-function makeIuranToken(periode: string, residentId: string): string {
+function makeIuranToken(periode, residentId) {
   return `[IURAN:${periode}:${residentId}]`;
 }
 
-function buildIuranDescription(periode: string, residentId: string): string {
+function buildIuranDescription(periode, residentId) {
   const name = getResidentNameById(residentId);
   return `Iuran Bulanan ${periode} - ${name} ${makeIuranToken(periode, residentId)}`;
 }
 
-function findIuranTxIndex(periode: string, residentId: string): number {
+function findIuranTxIndex(periode, residentId) {
   const token = makeIuranToken(periode, residentId);
   return appState.transactions.findIndex(t => t.type === 'Masuk' && t.category === 'Iuran' && t.description?.includes(token));
 }
 
-function addIuranTransaction(periode: string, residentId: string, amount: number){
+function addIuranTransaction(periode, residentId, amount){
   if (amount <= 0) return;
   const exists = findIuranTxIndex(periode, residentId);
   if (exists >= 0) return; // avoid duplicate
@@ -1930,12 +2144,12 @@ function addIuranTransaction(periode: string, residentId: string, amount: number
   appState.transactions.push({ date, type: 'Masuk', category: 'Iuran', description, amount });
 }
 
-function removeIuranTransaction(periode: string, residentId: string){
+function removeIuranTransaction(periode, residentId){
   const idx = findIuranTxIndex(periode, residentId);
   if (idx >= 0) appState.transactions.splice(idx, 1);
 }
 
-function persistTransactionsAndRefresh(dateInvolved?: string, opts?: { suppressAutoMonthly?: boolean }){
+function persistTransactionsAndRefresh(dateInvolved, opts){
   try { localStorage.setItem('financial_transactions_v2', JSON.stringify(appState.transactions)) } catch {}
   // Expand filter range if needed so the change is visible
   if (dateInvolved) {
@@ -1949,7 +2163,7 @@ function persistTransactionsAndRefresh(dateInvolved?: string, opts?: { suppressA
   try { localStorage.setItem('iuran_dirty', String(Date.now())) } catch {}
 }
 
-function syncIuranLedgerTransaction(opts: { periode: string; residentId: string; amount: number; paid: boolean }){
+function syncIuranLedgerTransaction(opts){
   const { periode, residentId, amount, paid } = opts;
   const date = `${periode}-01`;
   if (paid) addIuranTransaction(periode, residentId, amount); else removeIuranTransaction(periode, residentId);
@@ -1959,18 +2173,18 @@ function syncIuranLedgerTransaction(opts: { periode: string; residentId: string;
 }
 
 // ===== Demo-mode helpers (localStorage) =====
-function getPeriodKey(monthVal?: string){
-  const m = monthVal || (document.getElementById('iuran-month') as HTMLInputElement | null)?.value || getCurrentMonth();
+function getPeriodKey(monthVal){
+  const m = monthVal || (document.getElementById('iuran-month') || null)?.value || getCurrentMonth();
   return String(m).slice(0,7);
 }
 
-function getLocalPayments(): Record<string, { paid: string[] }>{
+function getLocalPayments(){
   try { return JSON.parse(localStorage.getItem('dues_payments') || '{}') } catch { return {} }
 }
-function setLocalPayments(p: Record<string, { paid: string[] }>){
+function setLocalPayments(p){
   try { localStorage.setItem('dues_payments', JSON.stringify(p)) } catch {}
 }
-function toggleLocalPayment(periode: string, residentId: string, paid: boolean){
+function toggleLocalPayment(periode, residentId, paid){
   const payments = getLocalPayments();
   if(!payments[periode]) payments[periode] = { paid: [] };
   const set = new Set(payments[periode].paid || []);
@@ -1980,8 +2194,8 @@ function toggleLocalPayment(periode: string, residentId: string, paid: boolean){
 }
 
 function renderDuesSectionFromLocal(){
-  const amountInput = document.getElementById('iuran-amount') as HTMLInputElement | null;
-  const monthInput = document.getElementById('iuran-month') as HTMLInputElement | null;
+  const amountInput = document.getElementById('iuran-amount') || null;
+  const monthInput = document.getElementById('iuran-month') || null;
   if (monthInput && !monthInput.value) monthInput.value = getCurrentMonth();
   const periode = getPeriodKey();
   const cfg = getDuesConfig();
@@ -1991,7 +2205,7 @@ function renderDuesSectionFromLocal(){
     amountInput.value = String(perMonth || cfg.amount || 0);
   }
 
-  // Inject "edit iuran" button if config exists in local mode as well
+  // Inject "edit iuran" button if config exists in local mode
   const editBtnId = 'iuran-edit-btn';
   if (amountInput) {
     const existingBtn = document.getElementById(editBtnId);
@@ -2015,8 +2229,8 @@ function renderDuesSectionFromLocal(){
         btn.innerHTML = '<i class="fas fa-pen"></i> <span>Simpan Perubahan Iuran</span>';
         const group = amountInput.closest('.input-group');
         if (group) group.appendChild(btn); else amountInput.insertAdjacentElement('afterend', btn);
-        btn.addEventListener('click', ()=>{
-          const newAmount = Number((document.getElementById('iuran-amount') as HTMLInputElement | null)?.value || '0');
+        btn.addEventListener('click', () =>{
+          const newAmount = Number((document.getElementById('iuran-amount') || null)?.value || '0');
           if (isNaN(newAmount) || newAmount <= 0) { showToast('Nominal iuran tidak valid', 'error'); return; }
           updateDuesConfigAmount(periode, newAmount);
           updateIuranTransactionsAmount(periode, newAmount);
@@ -2026,7 +2240,7 @@ function renderDuesSectionFromLocal(){
         });
       }
     } else if (existingBtn) {
-      existingBtn.remove();
+      existingBtn.remove;
     }
   }
 
@@ -2061,28 +2275,28 @@ function renderDuesSectionFromLocal(){
         </button>
       </div>
     `).join('') : '<div class="loading-state">Belum ada pembayaran bulan ini</div>';
-    (paidContainer.querySelectorAll('button[data-unpay-resident]') as NodeListOf<HTMLButtonElement>).forEach(btn => {
-      if ((btn as any).dataset.bound) return; (btn as any).dataset.bound = '1';
+    Array.from(paidContainer.querySelectorAll('button[data-unpay-resident]')).forEach(btn => {
+      if (btn.dataset.bound) return; btn.dataset.bound = '1';
       btn.addEventListener('click', (ev) => {
         try {
           const r = document.createElement('span'); r.className = 'ripple';
           const rect = btn.getBoundingClientRect();
-          const x = (ev as MouseEvent).clientX - rect.left; const y = (ev as MouseEvent).clientY - rect.top;
+          const x = ev.clientX - rect.left; const y = ev.clientY - rect.top;
           r.style.left = x + 'px'; r.style.top = y + 'px';
-          btn.appendChild(r); setTimeout(()=> r.remove(), 500);
+          btn.appendChild(r); setTimeout(() => r.remove(), 500);
         } catch {}
         if (!btn.disabled){
           btn.disabled = true;
-          (btn as any).dataset.prev = btn.innerHTML;
+          btn.dataset.prev = btn.innerHTML;
           btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Memproses...</span>';
         }
         const wargaId = btn.getAttribute('data-unpay-resident') || '';
         toggleLocalPayment(periode, wargaId, false);
         renderDuesSectionFromLocal();
-        setTimeout(()=>{
+        setTimeout(() =>{
           if (document.body.contains(btn)){
             btn.disabled = false;
-            if ((btn as any).dataset.prev) btn.innerHTML = (btn as any).dataset.prev;
+            if (btn.dataset.prev) btn.innerHTML = btn.dataset.prev;
           }
         }, 800);
       });
@@ -2100,28 +2314,28 @@ function renderDuesSectionFromLocal(){
         </button>
       </div>
     `).join('');
-    (pendingContainer.querySelectorAll('button[data-pay-resident]') as NodeListOf<HTMLButtonElement>).forEach(btn => {
-      if ((btn as any).dataset.bound) return; (btn as any).dataset.bound = '1';
+    Array.from(pendingContainer.querySelectorAll('button[data-pay-resident]')).forEach(btn => {
+      if (btn.dataset.bound) return; btn.dataset.bound = '1';
       btn.addEventListener('click', (ev) => {
         try {
           const r = document.createElement('span'); r.className = 'ripple';
           const rect = btn.getBoundingClientRect();
-          const x = (ev as MouseEvent).clientX - rect.left; const y = (ev as MouseEvent).clientY - rect.top;
+          const x = ev.clientX - rect.left; const y = ev.clientY - rect.top;
           r.style.left = x + 'px'; r.style.top = y + 'px';
-          btn.appendChild(r); setTimeout(()=> r.remove(), 500);
+          btn.appendChild(r); setTimeout(() => r.remove(), 500);
         } catch {}
         if (!btn.disabled){
           btn.disabled = true;
-          (btn as any).dataset.prev = btn.innerHTML;
+          btn.dataset.prev = btn.innerHTML;
           btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Memproses...</span>';
         }
         const wargaId = btn.getAttribute('data-pay-resident') || '';
         toggleLocalPayment(periode, wargaId, true);
         renderDuesSectionFromLocal();
-        setTimeout(()=>{
+        setTimeout(() =>{
           if (document.body.contains(btn)){
             btn.disabled = false;
-            if ((btn as any).dataset.prev) btn.innerHTML = (btn as any).dataset.prev;
+            if (btn.dataset.prev) btn.innerHTML = btn.dataset.prev;
           }
         }, 800);
       });
@@ -2148,9 +2362,9 @@ function renderDuesSectionFromLocal(){
         </div>
       `;
       // Bind handlers
-      const btnResetAll = document.getElementById('iuran-reset-all') as HTMLButtonElement | null;
-      const btnRepayAll = document.getElementById('iuran-repay-all') as HTMLButtonElement | null;
-      btnResetAll?.addEventListener('click', async ()=>{
+      const btnResetAll = document.getElementById('iuran-reset-all') || null;
+      const btnRepayAll = document.getElementById('iuran-repay-all') || null;
+      btnResetAll?.addEventListener('click', async () =>{
         try{
           const payments = getLocalPayments();
           const currentPaid = Array.from(new Set((payments[periode]?.paid || []).map(String)));
@@ -2165,7 +2379,7 @@ function renderDuesSectionFromLocal(){
           showToast('Semua ditandai belum bayar.', 'warning');
         }catch(e){ console.warn(e); showToast('Gagal mereset. Coba lagi.', 'error'); }
       });
-      btnRepayAll?.addEventListener('click', async ()=>{
+      btnRepayAll?.addEventListener('click', async () =>{
         try{
           const residents = loadResidents();
           const payments = getLocalPayments();
@@ -2184,7 +2398,7 @@ function renderDuesSectionFromLocal(){
 }
 
 // CSV Export
-function exportToCSV(transactions: Transaction[]) {
+function exportToCSV(transactions) {
   const headers = ['Tanggal', 'Tipe', 'Kategori', 'Keterangan', 'Jumlah'];
   const rows = transactions.map(t => [ formatDateID(t.date), t.type, t.category, (t.description || '').replace(/"/g, '""'), t.amount ]);
   const csvContent = [headers, ...rows].map(row => row.map(field => typeof field === 'number' ? field : `"${String(field)}"`).join(',')).join('\n');
@@ -2201,20 +2415,57 @@ function exportToCSV(transactions: Transaction[]) {
 
 // UI Update functions
 function updateFiltersUI() {
-  const startInput = document.getElementById('filter-start') as HTMLInputElement | null;
-  const endInput = document.getElementById('filter-end') as HTMLInputElement | null;
-  const searchInput = document.getElementById('filter-q') as HTMLInputElement | null;
-  const minInput = document.getElementById('filter-min') as HTMLInputElement | null;
-  const maxInput = document.getElementById('filter-max') as HTMLInputElement | null;
+  const startInput = document.getElementById('filter-start') || null;
+  const endInput = document.getElementById('filter-end') || null;
+  const searchInput = document.getElementById('filter-q') || null;
+  const minInput = document.getElementById('filter-min') || null;
+  const maxInput = document.getElementById('filter-max') || null;
   if (startInput) startInput.value = appState.filters.start || '';
   if (endInput) endInput.value = appState.filters.end || '';
   if (searchInput) searchInput.value = appState.filters.search || '';
   if (minInput) minInput.value = appState.filters.minAmount ? String(appState.filters.minAmount) : '';
   if (maxInput) maxInput.value = appState.filters.maxAmount ? String(appState.filters.maxAmount) : '';
-  document.querySelectorAll<HTMLElement>('.filter-chip').forEach(chip => {
-    const isActive = chip.dataset.preset === appState.filters.preset;
-    chip.classList.toggle('active', !!isActive);
+  Array.from(document.querySelectorAll('.filter-chip')).forEach(chip => {
+    const el = chip;
+    const isActive = el.dataset.preset === appState.filters.preset;
+    el.classList.toggle('active', !!isActive);
   });
+}
+
+// Ensure dashboard snapshot is created for first visit
+function ensureDashboardSnapshot() {
+  try {
+    // Check if snapshot already exists
+    const existingSnapshot = localStorage.getItem('laporan_totals_snapshot');
+    if (existingSnapshot) {
+      const parsed = JSON.parse(existingSnapshot);
+      if (parsed && parsed.totals && (parsed.totals.income > 0 || parsed.totals.expense > 0 || parsed.totals.balance > 0)) {
+        console.debug('[Laporan] Dashboard snapshot already exists');
+        return;
+      }
+    }
+    
+    // Create snapshot from current data
+    let transactions = getFilteredTransactions();
+    if (transactions.length === 0 && appState.transactions.length > 0) {
+      initializeData();
+      transactions = getFilteredTransactions();
+    }
+    const totals = calculateTotals(transactions);
+    
+    // Only create snapshot if we have meaningful data
+    if (totals.income > 0 || totals.expense > 0 || totals.balance > 0) {
+      const snapshot = {
+        totals: { income: totals.income, expense: totals.expense, balance: totals.balance },
+        period: { start: appState.filters.start, end: appState.filters.end, preset: appState.filters.preset },
+        ts: Date.now()
+      };
+      localStorage.setItem('laporan_totals_snapshot', JSON.stringify(snapshot));
+      console.debug('[Laporan] Created dashboard snapshot for first visit:', snapshot);
+    }
+  } catch (error) {
+    console.warn('[Laporan] Failed to create dashboard snapshot:', error);
+  }
 }
 
 // Main dashboard refresh
@@ -2237,7 +2488,7 @@ function refreshDashboard() {
     // Persist compact chart series so Admin Dashboard charts can mirror laporan charts exactly
     const series = generateDailySeries(transactions);
     // Build expense composition map
-    const composition: Record<string, number> = {};
+    const composition = {};
     transactions.filter(t => t.type === 'Keluar').forEach(t => {
       composition[t.category] = (composition[t.category] || 0) + t.amount;
     });
@@ -2252,11 +2503,11 @@ function refreshDashboard() {
     };
     localStorage.setItem('laporan_chart_series', JSON.stringify(chartSnapshot));
   } catch {}
-  animateValue(document.getElementById('sum-in'), (totals as any).income, formatIDR);
-  animateValue(document.getElementById('sum-out'), (totals as any).expense, formatIDR);
-  animateValue(document.getElementById('sum-bal'), (totals as any).balance, formatIDR);
-  animateValue(document.getElementById('sum-count'), (totals as any).count, formatNumber as any);
-  if (transactions.length > 0 && (window as any).Chart) createCharts(transactions); else showEmptyCharts();
+  animateValue(document.getElementById('sum-in'), totals.income, formatIDR);
+  animateValue(document.getElementById('sum-out'), totals.expense, formatIDR);
+  animateValue(document.getElementById('sum-bal'), totals.balance, formatIDR);
+  animateValue(document.getElementById('sum-count'), totals.count, formatNumber);
+  if (transactions.length > 0 && window.Chart) createCharts(transactions); else showEmptyCharts();
   detectAnomalies(transactions);
   generateInsights(transactions);
   renderReportsTable();
@@ -2271,9 +2522,9 @@ function openDrawer() {
   if (drawer && backdrop) {
     drawer.classList.add('open');
     backdrop.classList.add('open');
-    const startInput = document.getElementById('rep-start') as HTMLInputElement | null;
-    const endInput = document.getElementById('rep-end') as HTMLInputElement | null;
-    const titleInput = document.getElementById('rep-title') as HTMLInputElement | null;
+    const startInput = document.getElementById('rep-start') || null;
+    const endInput = document.getElementById('rep-end') || null;
+    const titleInput = document.getElementById('rep-title') || null;
     if (startInput) startInput.value = appState.filters.start || '';
     if (endInput) endInput.value = appState.filters.end || '';
     if (titleInput) {
@@ -2284,24 +2535,28 @@ function openDrawer() {
     updateReportPreview();
   }
 }
-function closeDrawer() { if (drawer && backdrop) { drawer.classList.remove('open'); backdrop.classList.remove('open') } }
+function closeDrawer() { if (drawer && backdrop) { drawer.classList.remove('open'); backdrop.classList.remove('open'); } }
 
 // Report form management
-function collectAdjustments(): Adjustment[] {
-  const adjustments: Adjustment[] = [];
+function collectAdjustments() {
+  const adjustments = [];
   const adjustmentRows = document.querySelectorAll('.adjustment-row');
   adjustmentRows.forEach(row => {
-    const r = row as HTMLElement;
-    const description = (r.querySelector('[data-field="description"]') as HTMLInputElement | null)?.value.trim();
-    const type = (r.querySelector('[data-field="type"]') as HTMLSelectElement | null)?.value as TxType || 'Masuk';
-    const category = (r.querySelector('[data-field="category"]') as HTMLInputElement | null)?.value.trim();
-    const amount = Number((r.querySelector('[data-field="amount"]') as HTMLInputElement | null)?.value) || 0;
+    const r = row;
+    const descInput = r.querySelector('[data-field="description"]');
+    const typeInput = r.querySelector('[data-field="type"]');
+    const catInput = r.querySelector('[data-field="category"]');
+    const amtInput = r.querySelector('[data-field="amount"]');
+    const description = (descInput && 'value' in descInput) ? String(descInput.value).trim() : '';
+    const type = (typeInput && 'value' in typeInput) ? String(typeInput.value) : 'Masuk';
+    const category = (catInput && 'value' in catInput) ? String(catInput.value).trim() : '';
+    const amount = (amtInput && 'value' in amtInput) ? Number(amtInput.value) || 0 : 0;
     if (description && amount > 0) adjustments.push({ description, type, amount, category });
   });
   return adjustments;
 }
 
-function addAdjustmentRow(data: Partial<Adjustment> = {}) {
+function addAdjustmentRow(data = {}) {
   const container = document.getElementById('adj-list');
   if (!container) return;
   const row = document.createElement('div');
@@ -2330,8 +2585,9 @@ function addAdjustmentRow(data: Partial<Adjustment> = {}) {
       <i class="fas fa-trash"></i>
     </button>
   `;
-  (row.querySelector('.delete-btn') as HTMLButtonElement).addEventListener('click', () => { row.remove(); updateReportPreview() });
-  row.querySelectorAll('input, select').forEach(input => { input.addEventListener('input', updateReportPreview) });
+  const del = row.querySelector('.delete-btn');
+  if (del) del.addEventListener('click', () => { row.remove(); updateReportPreview(); });
+  row.querySelectorAll('input, select').forEach(input => { input.addEventListener('input', updateReportPreview); });
   container.appendChild(row);
   updateReportPreview();
 }
@@ -2341,15 +2597,15 @@ function updateReportPreview() {
   const previewExpense = document.getElementById('pv-out');
   const previewBalance = document.getElementById('pv-bal');
   if (!previewIncome || !previewExpense || !previewBalance) return;
-  const startDate = (document.getElementById('rep-start') as HTMLInputElement | null)?.value;
-  const endDate = (document.getElementById('rep-end') as HTMLInputElement | null)?.value;
+  const startDate = (document.getElementById('rep-start') || null)?.value;
+  const endDate = (document.getElementById('rep-end') || null)?.value;
   if (!startDate || !endDate) { previewIncome.textContent = previewExpense.textContent = previewBalance.textContent = '—'; return }
   const periodTransactions = appState.transactions.filter(t => t.date >= startDate && t.date <= endDate);
-  const baseTotals = calculateTotals(periodTransactions) as any as ReportTotals & { count: number };
+  const baseTotals = calculateTotals(periodTransactions);
   const adjustments = collectAdjustments();
   const adjustmentIncome = adjustments.filter(adj => adj.type === 'Masuk').reduce((sum, adj) => sum + adj.amount, 0);
   const adjustmentExpense = adjustments.filter(adj => adj.type === 'Keluar').reduce((sum, adj) => sum + adj.amount, 0);
-  const finalTotals: ReportTotals = { income: baseTotals.income + adjustmentIncome, expense: baseTotals.expense + adjustmentExpense, balance: 0 };
+  const finalTotals = { income: baseTotals.income + adjustmentIncome, expense: baseTotals.expense + adjustmentExpense, balance: 0 };
   finalTotals.balance = finalTotals.income - finalTotals.expense;
   previewIncome.textContent = formatIDR(finalTotals.income);
   previewExpense.textContent = formatIDR(finalTotals.expense);
@@ -2358,13 +2614,15 @@ function updateReportPreview() {
 
 // Initialize application (guard to avoid double-init)
 let appInitialized = false;
-function initializeApp() {
+async function initializeApp() {
   if (appInitialized) return;
   appInitialized = true;
   initializeData();
+  // If there is no local data, try load server dummy data
+  await loadServerDummyDataIfEmpty();
   loadReports();
   try {
-    const savedFilters = JSON.parse(localStorage.getItem('dashboard_filters') || '{}') as Partial<Filters>;
+    const savedFilters = JSON.parse(localStorage.getItem('dashboard_filters') || '{}');
     Object.assign(appState.filters, savedFilters);
     appState.filters.minAmount = 0;
     appState.filters.maxAmount = 0;
@@ -2372,18 +2630,22 @@ function initializeApp() {
   } catch { applyFilterPreset('bulan-ini') }
   setupEventListeners();
   refreshDashboard();
+  
+  // Ensure snapshot is created for dashboard even on first visit
+  ensureDashboardSnapshot();
+  
   // One-time demo mode info modal on first visit to laporan page
   try {
     const demoKey = 'laporan_demo_notif_shown';
     if (!localStorage.getItem(demoKey)) {
-      localStorage.setItem(demoKey, String(Date.now()));
+      localStorage.setItem(demoKey, String(Date.now()))
       showCenterModal('Informasi', 'Mode demo: menampilkan data lokal.', 'info');
     }
   } catch {}
 }
 
 function setupEventListeners() {
-  document.querySelectorAll<HTMLElement>('.filter-chip').forEach(chip => {
+  Array.from(document.querySelectorAll('.filter-chip')).forEach(chip => {
     chip.addEventListener('click', () => {
       const preset = chip.dataset.preset || '';
       applyFilterPreset(preset);
@@ -2391,19 +2653,20 @@ function setupEventListeners() {
     });
   });
 
-  const filterInputs: Array<{ id: string; key: keyof Filters; transform?: (v: string) => any }> = [
+  const toNum = (v) => Number(v);
+  const filterInputs = [
     { id: 'filter-start', key: 'start' },
     { id: 'filter-end', key: 'end' },
     { id: 'filter-q', key: 'search' },
-    { id: 'filter-min', key: 'minAmount', transform: Number },
-    { id: 'filter-max', key: 'maxAmount', transform: Number }
+    { id: 'filter-min', key: 'minAmount', transform: toNum },
+    { id: 'filter-max', key: 'maxAmount', transform: toNum }
   ];
   filterInputs.forEach(({ id, key, transform }) => {
-    const input = document.getElementById(id) as HTMLInputElement | null;
+    const input = document.getElementById(id) || null;
     if (input) {
-      input.addEventListener('input', (e: Event) => {
-        const target = e.target as HTMLInputElement;
-        (appState.filters as any)[key] = transform ? (transform(target.value) || 0) : target.value;
+      input.addEventListener('input', (e) => {
+        const target = e.target;
+        appState.filters[key] = transform ? (transform(target.value) || 0) : target.value;
         appState.filters.preset = 'custom';
         // Use a slightly longer delay for text inputs to allow continuous typing
         const isText = (id === 'filter-q');
@@ -2415,8 +2678,8 @@ function setupEventListeners() {
   });
 
   const btnReset = document.getElementById('btn-reset');
-  if (btnReset && !(btnReset as any).dataset.bound) {
-    (btnReset as any).dataset.bound = '1';
+  if (btnReset && !btnReset.dataset.bound) {
+    btnReset.dataset.bound = '1';
     btnReset.addEventListener('click', () => {
       applyFilterPreset('bulan-ini');
       appState.filters.search = '';
@@ -2428,8 +2691,8 @@ function setupEventListeners() {
   }
 
   const btnPrint = document.getElementById('btn-print');
-  if (btnPrint && !(btnPrint as any).dataset.bound) {
-    (btnPrint as any).dataset.bound = '1';
+  if (btnPrint && !btnPrint.dataset.bound) {
+    btnPrint.dataset.bound = '1';
     btnPrint.addEventListener('click', () => { printReportOnly(); });
   }
 
@@ -2437,8 +2700,8 @@ function setupEventListeners() {
   const tplIds = ['btn-template-excel','btn-open-template','btn-template-keuangan'];
   tplIds.forEach(id => {
     const el = document.getElementById(id);
-    if (el && !(el as any).dataset.boundTpl){
-      (el as any).dataset.boundTpl = '1';
+    if (el && !el.dataset.boundTpl){
+      el.dataset.boundTpl = '1';
       el.addEventListener('click', downloadExcelTemplate);
     }
   });
@@ -2455,21 +2718,21 @@ function setupEventListeners() {
   document.getElementById('btn-close-drawer')?.addEventListener('click', closeDrawer);
   document.getElementById('drawer-backdrop')?.addEventListener('click', closeDrawer);
 
-  const reportForm = document.getElementById('form-report') as HTMLFormElement | null;
-  // Bind as Report creation form unconditionally
+  const reportForm = document.getElementById('form-report') || null;
+  // Bind creation form unconditionally
   if (reportForm) {
     reportForm.addEventListener('submit', handleReportSubmit);
   }
 
   // Transaction form submit
-  const txForm = document.getElementById('form-transaction') as HTMLFormElement | null;
+  const txForm = document.getElementById('form-transaction') || null;
   if (txForm) txForm.addEventListener('submit', handleTransactionSubmit);
 
-  document.getElementById('btn-add-adj')?.addEventListener('click', () => { addAdjustmentRow() });
+  document.getElementById('btn-add-adj')?.addEventListener('click', () => { addAdjustmentRow(); });
 
   // Initialize transaction date default and weekday label (if transaction form is active)
-  const txDate = document.getElementById('tx-date') as HTMLInputElement | null;
-  const txWeekday = document.getElementById('tx-date-weekday') as HTMLElement | null;
+  const txDate = document.getElementById('tx-date') || null;
+  const txWeekday = document.getElementById('tx-date-weekday') || null;
   if (txDate) {
     if (!txDate.value) txDate.value = new Date().toISOString().slice(0,10);
     const updateWeekday = () => {
@@ -2485,14 +2748,14 @@ function setupEventListeners() {
   }
 
   ['rep-start', 'rep-end'].forEach(id => {
-    const input = document.getElementById(id) as HTMLInputElement | null;
+    const input = document.getElementById(id) || null;
     if (input) input.addEventListener('change', updateReportPreview);
   });
 
   const saveBtn = document.getElementById('iuran-save');
   saveBtn?.addEventListener('click', () => {
-    const amountInput = document.getElementById('iuran-amount') as HTMLInputElement | null;
-    const monthInput = document.getElementById('iuran-month') as HTMLInputElement | null;
+    const amountInput = document.getElementById('iuran-amount') || null;
+    const monthInput = document.getElementById('iuran-month') || null;
     const amount = Number(amountInput?.value || 0);
     const month = monthInput?.value || '';
     const ym = month.slice(0,7);
@@ -2506,13 +2769,13 @@ function setupEventListeners() {
     }
   });
 
-  const calBtn = document.querySelector('.calendar-btn') as HTMLButtonElement | null;
-  const monthField = document.getElementById('iuran-month') as HTMLInputElement | null;
+  const calBtn = document.querySelector('.calendar-btn') || null;
+  const monthField = document.getElementById('iuran-month') || null;
   calBtn?.addEventListener('click', (e) => {
     e.preventDefault();
     if (!monthField) return;
     // Prefer showPicker when supported
-    const anyInput = monthField as any;
+    const anyInput = monthField;
     if (typeof anyInput.showPicker === 'function') {
       anyInput.showPicker();
       return;
@@ -2522,7 +2785,7 @@ function setupEventListeners() {
     monthField.click();
   });
 
-  document.addEventListener('keydown', (e: KeyboardEvent) => { if (e.key === 'Escape') closeDrawer() });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
 
   // Bind Import Modal controls (similar UX to warga.astro)
   bindImportHandlers();
@@ -2537,10 +2800,10 @@ const btnExport = document.getElementById('btn-export');
 const btnCloseExport = document.getElementById('btn-close-export');
 const btnCancelExport = document.getElementById('btn-cancel-export');
 const btnDoExport = document.getElementById('btn-do-export');
-const splitSelect = document.getElementById('export-split') as HTMLSelectElement | null;
+const splitSelect = document.getElementById('export-split') || null;
 const exportSummary = document.getElementById('export-summary');
-let exportFormat: 'xlsx' | 'pdf' | 'doc' = 'xlsx';
-let exportOriginalParent: Node | null = null; let exportOriginalNext: ChildNode | null = null;
+let exportFormat = 'xlsx';
+let exportOriginalParent = null; let exportOriginalNext = null;
 
 function openExport(){
   if(!exportModal) return;
@@ -2566,8 +2829,8 @@ function closeExport(){
   setTimeout(()=>{
     exportModal.classList.remove('show','hiding');
     if(exportOriginalParent){
-      if(exportOriginalNext){ (exportOriginalParent as Node).insertBefore(exportModal, exportOriginalNext); }
-      else { (exportOriginalParent as Node).appendChild(exportModal); }
+      if(exportOriginalNext){ exportOriginalParent.insertBefore(exportModal, exportOriginalNext); }
+      else { exportOriginalParent.appendChild(exportModal); }
     }
   }, D);
 }
@@ -2575,19 +2838,19 @@ function closeExport(){
 btnExport?.addEventListener('click', openExport);
 btnCloseExport?.addEventListener('click', closeExport);
 btnCancelExport?.addEventListener('click', closeExport);
-exportModal?.querySelector('[data-close]')?.addEventListener('click', closeExport as any);
+exportModal?.querySelector('[data-close]')?.addEventListener('click', closeExport );
 
 // Format chips
 exportModal?.querySelectorAll('.chip-group .chip')?.forEach(ch=>{
   ch.addEventListener('click', ()=>{
     exportModal.querySelectorAll('.chip-group .chip').forEach(b=>{ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
     ch.classList.add('active'); ch.setAttribute('aria-selected','true');
-    exportFormat = (ch as HTMLElement).dataset.format as any || 'xlsx';
+    exportFormat = ch.dataset.format || 'xlsx';
   });
 });
 
 // Helpers for export
-function groupRowsLaporan(rows: Transaction[], mode: string){
+function groupRowsLaporan(rows, mode){
   if(mode==='type'){
     return [
       { name:'Masuk', rows: rows.filter(r=>r.type==='Masuk') },
@@ -2595,31 +2858,31 @@ function groupRowsLaporan(rows: Transaction[], mode: string){
     ].filter(g=>g.rows.length);
   }
   if(mode==='category'){
-    const byCat: Record<string, Transaction[]> = {};
+    const byCat = {};
     rows.forEach(r=>{ (byCat[r.category]||(byCat[r.category]=[])).push(r) });
     return Object.keys(byCat).sort().map(k=> ({name:k, rows:byCat[k]}));
   }
   return [{ name:'Semua Transaksi', rows }];
 }
 
-function rowsToAoALaporan(rows: Transaction[]){
+function rowsToAoALaporan(rows){
   const header = ['Tanggal','Keterangan','Kategori','Tipe','Jumlah'];
   const body = rows.map(r=> [r.date, (r.description||''), r.category, r.type, r.amount]);
   return [header, ...body];
 }
 
-function downloadBlob(blob: Blob, filename: string){
+function downloadBlob(blob, filename){
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click(); URL.revokeObjectURL(a.href);
 }
 
 async function ensureSheetJS(){
-  if ((window as any).XLSX) return;
+  if (window.XLSX) return;
   const cdns = [
     'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
     'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
   ];
-  let lastErr: any = null;
+  let lastErr = null;
   for (const url of cdns){
     try{
       await new Promise((res, rej)=>{
@@ -2630,22 +2893,22 @@ async function ensureSheetJS(){
         s.onerror = (e)=>{ clearTimeout(to); rej(e) };
         document.head.appendChild(s);
       });
-      if ((window as any).XLSX) return;
+      if (window.XLSX) return;
     }catch(e){ lastErr = e; }
   }
   throw lastErr || new Error('Failed to load SheetJS');
 }
 
 async function ensureJsPDF(){
-  const w = window as any;
+  const w = window ;
   if(w.jspdf && w.jspdf.jsPDF && w.jspdf.autoTable) return;
   await new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
   await new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js'; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
 }
 
-async function exportXLSX(groups: Array<{name:string; rows: Transaction[]}>){
+async function exportXLSX(groups){
   await ensureSheetJS();
-  const XLSX = (window as any).XLSX;
+  const XLSX = window.XLSX;
   const wb = XLSX.utils.book_new();
   groups.forEach(g=>{
     const ws = XLSX.utils.aoa_to_sheet(rowsToAoALaporan(g.rows));
@@ -2656,9 +2919,9 @@ async function exportXLSX(groups: Array<{name:string; rows: Transaction[]}>){
   downloadBlob(new Blob([wbout], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), fname);
 }
 
-async function exportPDF(groups: Array<{name:string; rows: Transaction[]}>){
+async function exportPDF(groups){
   await ensureJsPDF();
-  const w = window as any; const { jsPDF } = w.jspdf;
+  const w = window; const { jsPDF } = w.jspdf;
   const doc = new jsPDF({orientation:'p', unit:'pt', format:'a4'});
   let first=true;
   groups.forEach(g=>{
@@ -2667,12 +2930,12 @@ async function exportPDF(groups: Array<{name:string; rows: Transaction[]}>){
     doc.setFontSize(14); doc.text(`Laporan - ${g.name}`, 40, 40);
     const head = [['Tanggal','Keterangan','Kategori','Tipe','Jumlah']];
     const body = g.rows.map(r=> [r.date, (r.description||''), r.category, r.type, new Intl.NumberFormat('id-ID').format(r.amount)]);
-    (doc as any).autoTable({ startY: 60, head, body, styles:{fontSize:9}, headStyles:{fillColor:[37,99,235]} });
+    doc.autoTable({ startY: 60, head, body, styles:{fontSize:9}, headStyles:{fillColor:[37,99,235]} });
   });
   downloadBlob(doc.output('blob'), 'laporan.pdf');
 }
 
-function exportDOC(groups: Array<{name:string; rows: Transaction[]}>){
+function exportDOC(groups){
   const parts = groups.map(g=>{
     const rowsHtml = g.rows.map(r=> `<tr><td>${r.date}</td><td>${(r.description||'')}</td><td>${r.category}</td><td>${r.type}</td><td style="text-align:right">${new Intl.NumberFormat('id-ID').format(r.amount)}</td></tr>`).join('');
     return `<h3>${g.name}</h3><table><thead><tr><th>Tanggal</th><th>Keterangan</th><th>Kategori</th><th>Tipe</th><th>Jumlah</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
@@ -2688,7 +2951,7 @@ async function downloadFinanceTemplateFromServer(){
     'http://localhost:8000/api/templates/keuangan',
     'http://127.0.0.1:8000/api/templates/keuangan'
   ];
-  let lastErr: any = null;
+  let lastErr = null;
   for (const urlTry of endpoints){
     try{
       const res = await fetch(urlTry, { credentials: 'include' });
@@ -2720,7 +2983,7 @@ async function downloadFinanceTemplateFromServer(){
   catch(err){ console.error(err); downloadCSVTemplate(); }
 }
 
-async function downloadStaticFinanceTemplate(): Promise<boolean> {
+async function downloadStaticFinanceTemplate() {
   try{
     const res = await fetch('/templates/template-keuangan.xls', { cache: 'no-store' });
     if (!res.ok) return false;
@@ -2749,7 +3012,7 @@ async function downloadExcelTemplate(){
     showToast('Gagal memuat library Excel. Mengunduh template keuangan CSV sebagai gantinya.', 'warning');
     return downloadCSVTemplate();
   }
-  const XLSX = (window as any).XLSX;
+  const XLSX = window.XLSX;
   const wb = XLSX.utils.book_new();
 
   // Main sheet with headers and sample rows
@@ -2761,9 +3024,9 @@ async function downloadExcelTemplate(){
   ];
   const ws = XLSX.utils.aoa_to_sheet(sample);
   // Column widths
-  (ws as any)['!cols'] = [ {wch:12},{wch:32},{wch:18},{wch:10},{wch:12} ];
+  ws['!cols'] = [ {wch:12},{wch:32},{wch:18},{wch:10},{wch:12} ];
   // Freeze header row
-  (ws as any)['!freeze'] = { xSplit:0, ySplit:1, topLeftCell:'A2' };
+  ws['!freeze'] = { xSplit:0, ySplit:1, topLeftCell:'A2' };
   XLSX.utils.book_append_sheet(wb, ws, 'Template');
 
   // README sheet with instructions
@@ -2777,16 +3040,16 @@ async function downloadExcelTemplate(){
     ['5. Kategori bisa disesuaikan: Iuran, Keamanan, Donasi, Administrasi, dll.'],
   ];
   const wsInfo = XLSX.utils.aoa_to_sheet(readme);
-  (wsInfo as any)['!cols'] = [ {wch:90} ];
+  wsInfo['!cols'] = [ {wch:90} ];
   XLSX.utils.book_append_sheet(wb, wsInfo, 'README');
 
   // Reference sheet (optional lists)
   const ref = [ ['TIPE YANG DIDUKUNG'], ['Masuk'], ['Keluar'] ];
   const wsRef = XLSX.utils.aoa_to_sheet(ref);
-  (wsRef as any)['!cols'] = [ {wch:22} ];
+  wsRef['!cols'] = [ {wch:22} ];
   XLSX.utils.book_append_sheet(wb, wsRef, 'Referensi');
 
-  let wbout: ArrayBuffer;
+  let wbout;
   try {
     wbout = XLSX.write(wb, {bookType:'xlsx', type:'array'});
   } catch(e) {
@@ -2796,7 +3059,7 @@ async function downloadExcelTemplate(){
   }
   const blob = new Blob([wbout], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
   // Force download (Edge/IE fallback)
-  const navAny = navigator as any;
+  const navAny = navigator;
   if (navAny && typeof navAny.msSaveOrOpenBlob === 'function') {
     navAny.msSaveOrOpenBlob(blob, 'template-keuangan.xlsx');
     return;
@@ -2809,7 +3072,7 @@ async function downloadExcelTemplate(){
   a.style.display = 'none';
   document.body.appendChild(a);
   a.click();
-  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 500);
+  setTimeout( () => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 500);
 }
 
 function downloadCSVTemplate(){
@@ -2819,9 +3082,7 @@ function downloadCSVTemplate(){
     ['2025-09-01','Iuran Bulanan','Iuran','Masuk','200000'],
     ['2025-09-02','Pembelian ATK','Administrasi','Keluar','50000']
   ];
-  const csv = rows.map(r=> r.map(v=>
-    /[,"]/.test(String(v)) ? '"'+String(v).replace(/"/g,'""')+'"' : String(v)
-  ).join(',')).join('\n');
+  const csv = rows.map(r=> r.map(v=> /[,"]/.test(String(v)) ? '"'+String(v).replace(/"/g,'""')+'"' : String(v)).join(',')).join('\n');
   const blob = new Blob([csv+'\n'], {type:'text/csv;charset=utf-8;'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -2844,7 +3105,7 @@ document.getElementById('btn-template-word')?.addEventListener('click', ()=>{
 });
 
 // Execute export
-btnDoExport?.addEventListener('click', async ()=>{
+btnDoExport?.addEventListener('click', async () => {
   const rows = getFilteredTransactions();
   const groups = groupRowsLaporan(rows, splitSelect?.value || 'none');
   try{
@@ -2856,22 +3117,22 @@ btnDoExport?.addEventListener('click', async ()=>{
   closeExport();
 });
 
-function addAdminNotif(type: 'info'|'success'|'warning'|'error', title: string, message: string){
+function addAdminNotif(type, title, message){
   try {
-    const api = (window as any)?.KKNotif;
+    const api = window?.KKNotif;
     if (api && typeof api.add === 'function') {
       api.add(type, title, message);
     }
   } catch {}
 }
 
-function handleReportSubmit(event: Event) {
+function handleReportSubmit(event) {
   event.preventDefault();
-  const inputTitle = (document.getElementById('rep-title') as HTMLInputElement | null)?.value?.trim() || '';
-  let startDate = (document.getElementById('rep-start') as HTMLInputElement | null)?.value || '';
-  let endDate = (document.getElementById('rep-end') as HTMLInputElement | null)?.value || '';
-  const type = (document.getElementById('rep-type') as HTMLSelectElement | null)?.value || 'Bulanan';
-  const source = (document.getElementById('rep-source') as HTMLSelectElement | null)?.value || 'Gabungan';
+  const inputTitle = (document.getElementById('rep-title') || null)?.value?.trim() || '';
+  let startDate = (document.getElementById('rep-start') || null)?.value || '';
+  let endDate = (document.getElementById('rep-end') || null)?.value || '';
+  const type = (document.getElementById('rep-type') || null)?.value || 'Bulanan';
+  const source = (document.getElementById('rep-source') || null)?.value || 'Gabungan';
 
   // Defaults: use current filters, else current month
   if (!startDate || !endDate) {
@@ -2897,14 +3158,14 @@ function handleReportSubmit(event: Event) {
     }
   }
 
-  // Support transaction-like fields as an alternative input style
-  const txDate = (document.getElementById('tx-date') as HTMLInputElement | null)?.value || '';
-  const txDesc = (document.getElementById('tx-desc') as HTMLInputElement | null)?.value?.trim() || '';
-  const txTypeRaw = (document.getElementById('tx-type') as HTMLSelectElement | null)?.value || '';
-  const txCategory = (document.getElementById('tx-category') as HTMLSelectElement | null)?.value || '';
-  const txAmount = Number((document.getElementById('tx-amount') as HTMLInputElement | null)?.value || '0') || 0;
+  // Support transaction-like fields alternative input style
+  const txDate = (document.getElementById('tx-date') || null)?.value || '';
+  const txDesc = (document.getElementById('tx-desc') || null)?.value?.trim() || '';
+  const txTypeRaw = (document.getElementById('tx-type') | null)?.value || '';
+  const txCategory = (document.getElementById('tx-category') | null)?.value || '';
+  const txAmount = Number((document.getElementById('tx-amount') || null)?.value || '0') || 0;
   // Pemetaan tipe: jika user memilih 'Transaksi' perlakukan sebagai 'Keluar' (uang kas berkurang)
-  const txType: TxType | undefined = txTypeRaw
+  const txType = txTypeRaw
     ? (txTypeRaw === 'Keluar' || txTypeRaw === 'Transaksi' ? 'Keluar' : 'Masuk')
     : undefined;
   if (txDate) {
@@ -2913,15 +3174,15 @@ function handleReportSubmit(event: Event) {
     if (!inputTitle && !title) title = `Laporan ${formatDateID(txDate)}`;
   }
 
-  const formData = { title, startDate, endDate, type, source } as Partial<Report> & { type: string; source: string };
-  const author = (document.getElementById('rep-owner') as HTMLInputElement | null)?.value.trim() || '';
-  const reference = (document.getElementById('rep-ref') as HTMLInputElement | null)?.value.trim() || '';
-  const tags = ((document.getElementById('rep-tags') as HTMLInputElement | null)?.value || '').split(',').map(t => t.trim()).filter(Boolean);
-  const includeZero = (document.getElementById('rep-include-zero') as HTMLInputElement | null)?.checked || false;
-  let notes = (document.getElementById('rep-note') as HTMLTextAreaElement | null)?.value.trim() || '';
+  const formData = { title, startDate, endDate, type, source };
+  const author = (document.getElementById('rep-owner') || null)?.value?.trim() || '';
+  const reference = (document.getElementById('rep-ref') || null)?.value?.trim() || '';
+  const tags = ((document.getElementById('rep-tags') || null)?.value || '').split(',').map(t => t.trim()).filter(Boolean);
+  const includeZero = (document.getElementById('rep-include-zero') || null)?.checked || false;
+  let notes = (document.getElementById('rep-note') || null)?.value?.trim() || '';
   if (!notes && txDesc) notes = txDesc;
 
-  const errors: Record<string, string> = {};
+  const errors = {};
   if (!formData.title) errors.title = 'Judul laporan wajib diisi';
   if (!formData.startDate) errors.start = 'Tanggal mulai wajib diisi';
   if (!formData.endDate) errors.end = 'Tanggal akhir wajib diisi';
@@ -2934,21 +3195,21 @@ function handleReportSubmit(event: Event) {
   if (Object.keys(errors).length > 0) return;
 
   const periodTransactions = appState.transactions.filter(t => t.date >= (formData.startDate || '') && t.date <= (formData.endDate || ''));
-  const baseTotals = calculateTotals(periodTransactions) as any as ReportTotals & { count: number };
+  const baseTotals = calculateTotals(periodTransactions);
   const adjustments = collectAdjustments();
   const adjustmentIncome = adjustments.filter(adj => adj.type === 'Masuk').reduce((sum, adj) => sum + adj.amount, 0);
   const adjustmentExpense = adjustments.filter(adj => adj.type === 'Keluar').reduce((sum, adj) => sum + adj.amount, 0);
-  const finalTotals: ReportTotals = { income: baseTotals.income + adjustmentIncome, expense: baseTotals.expense + adjustmentExpense, balance: 0 };
+  const finalTotals = { income: baseTotals.income + adjustmentIncome, expense: baseTotals.expense + adjustmentExpense, balance: 0 };
   finalTotals.balance = finalTotals.income - finalTotals.expense;
 
   // Build snapshot from transaction-style inputs
-  const snapshot: ReportSnapshot | undefined = (txDate || txDesc || txType || txCategory || txAmount > 0)
+  const snapshot = (txDate || txDesc || txType || txCategory || txAmount > 0)
     ? { txType, formType: txTypeRaw || undefined, txDate, txCategory, txAmount, txDesc }
     : undefined;
 
   // If snapshot represents a valid transaction, also add it to the ledger
   if (snapshot && snapshot.txType && typeof snapshot.txAmount === 'number' && snapshot.txAmount > 0) {
-    const newTx: Transaction = {
+    const newTx = {
       date: snapshot.txDate || new Date().toISOString().slice(0,10),
       type: snapshot.txType,
       category: snapshot.txCategory || 'Lainnya',
@@ -2962,7 +3223,7 @@ function handleReportSubmit(event: Event) {
     persistTransactionsAndRefresh(newTx.date, { suppressAutoMonthly: true });
   }
 
-  const report: Report = { id: Date.now(), ...(formData as any), snapshot, adjustments, totals: finalTotals, createdAt: new Date().toISOString() };
+  const report = { id: Date.now(), ...(formData), author, reference, tags, includeZero, snapshot, adjustments, totals: finalTotals, createdAt: new Date().toISOString() };
   appState.reports.unshift(report);
   appState.activeReportId = report.id;
   saveReports();
@@ -2973,9 +3234,9 @@ function handleReportSubmit(event: Event) {
 
   refreshDashboard();
   // Reset the actual form element and adjustments list
-  const reportForm = ((event.target as HTMLElement)?.closest && (event.target as HTMLElement).closest('form')) as HTMLFormElement | null
-    || (document.getElementById('form-report') as HTMLFormElement | null);
-  if (reportForm && typeof reportForm.reset === 'function') reportForm.reset();
+  const reportFormEl = (event.target?.closest && event.target.closest('form'))
+    || (document.getElementById('form-report'));
+  if (reportFormEl && typeof reportFormEl.reset === 'function') reportFormEl.reset();
   const adjList = document.getElementById('adj-list');
   if (adjList) adjList.innerHTML = '';
   closeDrawer();
@@ -2991,19 +3252,19 @@ function handleReportSubmit(event: Event) {
 }
 
 // New: Handle transaction creation from the drawer form
-function handleTransactionSubmit(event: Event) {
-  event.preventDefault();
-  const rawType = (document.getElementById('tx-type') as HTMLSelectElement | null)?.value || 'Masuk';
-  const type: TxType = rawType === 'Keluar' ? 'Keluar' : 'Masuk';
-  const date = (document.getElementById('tx-date') as HTMLInputElement | null)?.value || new Date().toISOString().slice(0,10);
-  const category = (document.getElementById('tx-category') as HTMLSelectElement | null)?.value || 'Iuran';
-  const amount = Number((document.getElementById('tx-amount') as HTMLInputElement | null)?.value || '0');
-  const description = (document.getElementById('tx-desc') as HTMLInputElement | null)?.value || '';
+function handleTransactionSubmit(event) {
+  event.preventDefault;
+  const rawType = (document.getElementById('tx-type') || null)?.value || 'Masuk';
+  const type = rawType === 'Keluar' ? 'Keluar' : 'Masuk';
+  const date = (document.getElementById('tx-date') || null)?.value || new Date().toISOString().slice(0,10);
+  const category = (document.getElementById('tx-category') || null)?.value || 'Iuran';
+  const amount = Number((document.getElementById('tx-amount') || null)?.value || '0');
+  const description = (document.getElementById('tx-desc') || null)?.value || '';
 
   if (!date) { showToast('Tanggal wajib diisi', 'warning'); return }
   if (!amount || amount <= 0) { showToast('Jumlah harus lebih dari 0', 'warning'); return }
 
-  const tx: Transaction = { date, type, category, description, amount };
+  const tx = { date, type, category, description, amount };
   // Save into app state and localStorage
   appState.transactions.push(tx);
   appState.transactions.sort((a,b)=> a.date.localeCompare(b.date));
@@ -3013,15 +3274,15 @@ function handleTransactionSubmit(event: Event) {
   if (!appState.filters.start || date < appState.filters.start) appState.filters.start = date;
   if (!appState.filters.end || date > appState.filters.end) appState.filters.end = date;
   appState.filters.preset = 'custom';
-
+  
   refreshDashboard();
   // Reset the actual form element (event target may be a button)
-  const formEl = ((event.target as HTMLElement)?.closest && (event.target as HTMLElement).closest('form')) as HTMLFormElement | null
-    || (document.getElementById('form-transaction') as HTMLFormElement | null)
-    || (document.getElementById('form-report') as HTMLFormElement | null);
+  const formEl = (event.target?.closest && event.target.closest('form'))
+    || (document.getElementById('form-transaction'))
+    || (document.getElementById('form-report'));
   if (formEl && typeof formEl.reset === 'function') formEl.reset();
-  // Keep today as default after reset
-  const dateInput = document.getElementById('tx-date') as HTMLInputElement | null;
+  // Keep today after reset
+  const dateInput = document.getElementById('tx-date') || null;
   if (dateInput) dateInput.value = new Date().toISOString().slice(0,10);
   closeDrawer();
   showToast('Transaksi berhasil disimpan', 'success');
@@ -3029,8 +3290,8 @@ function handleTransactionSubmit(event: Event) {
 
 // Chart.js configuration
 function configureChartDefaults() {
-  if ((window as any).Chart) {
-    const Chart = (window as any).Chart;
+  if (window.Chart) {
+    const Chart = window.Chart;
     Chart.defaults.font.family = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
     Chart.defaults.color = '#6b7280';
     Chart.defaults.plugins.legend.labels.usePointStyle = true;
@@ -3044,9 +3305,9 @@ function configureChartDefaults() {
 
 // Initialize month navigation event listeners
 function initializeMonthNavigation() {
-  const prevBtn = document.querySelector('.prev-month') as HTMLButtonElement | null;
-  const nextBtn = document.querySelector('.next-month') as HTMLButtonElement | null;
-  const monthInput = document.getElementById('iuran-month') as HTMLInputElement | null;
+  const prevBtn = document.querySelector('.prev-month') || null;
+  const nextBtn = document.querySelector('.next-month') || null;
+  const monthInput = document.getElementById('iuran-month') || null;
   
   if (prevBtn) {
     prevBtn.addEventListener('click', (e) => {
@@ -3067,7 +3328,7 @@ function initializeMonthNavigation() {
     monthInput.value = currentRealTimeMonth;
     
     // Update navigation buttons when month input changes
-    monthInput.addEventListener('change', () => {
+    monthInput.addEventListener('change',  () => {
       updateMonthNavigationButtons();
       renderDuesSection();
     });
@@ -3083,7 +3344,7 @@ function initializeRealTimeTracking() {
   setInterval(updateRealTimeMonth, 60000); // 60 seconds
   
   // Also check on page visibility change (when user comes back to tab)
-  document.addEventListener('visibilitychange', () => {
+  document.addEventListener('visibilitychange',  () => {
     if (!document.hidden) {
       updateRealTimeMonth();
     }
@@ -3093,21 +3354,57 @@ function initializeRealTimeTracking() {
 }
 
 // Script loading and initialization
-script.onload = () => { 
+script.onload =  () => { 
   configureChartDefaults(); 
   initializeApp();
   
   // Initialize month navigation
-  setTimeout(() => {
+  setTimeout( () => {
     initializeMonthNavigation();
     initializeRealTimeTracking();
   }, 500);
   
   // Initialize real-time chart updates setelah chart dibuat
-  setTimeout(() => {
+  setTimeout( () => {
     initRealTimeCharts();
   }, 2000);
 };
-script.onerror = () => { console.error('Failed to load Chart.js'); removeSkeletons(); showEmptyCharts(); initializeApp() };
-setTimeout(() => { if (!(window as any).Chart) { console.warn('Chart.js loading timeout'); removeSkeletons(); showEmptyCharts() } }, 3000);
+script.onerror =  () => { console.error('Failed to load Chart.js'); removeSkeletons(); showEmptyCharts(); initializeApp(); };
+setTimeout( () => { if (!window.Chart) { console.warn('Chart.js loading timeout'); removeSkeletons(); showEmptyCharts(); } }, 3000);
 setTimeout(initializeApp, 100);
+
+// Also ensure snapshot is created when script loads (for dashboard first visit)
+if (typeof window !== 'undefined') {
+  // Run immediately to create snapshot for dashboard
+  try {
+    // Only run if we're not on the laporan page (to avoid double initialization)
+    if (!window.location.pathname.includes('/laporan')) {
+      // Quick snapshot creation for dashboard
+      setTimeout(() => {
+        try {
+          const existingSnapshot = localStorage.getItem('laporan_totals_snapshot');
+          if (!existingSnapshot) {
+            // Try to create a basic snapshot from any existing data
+            const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            if (transactions.length > 0) {
+              const totals = calculateTotals(transactions);
+              if (totals.income > 0 || totals.expense > 0 || totals.balance > 0) {
+                const snapshot = {
+                  totals: { income: totals.income, expense: totals.expense, balance: totals.balance },
+                  period: { start: '', end: '', preset: 'bulan-ini' },
+                  ts: Date.now()
+                };
+                localStorage.setItem('laporan_totals_snapshot', JSON.stringify(snapshot));
+                console.debug('[Laporan] Created initial snapshot for dashboard:', snapshot);
+              }
+            }
+          }
+        } catch (error) {
+          console.warn('[Laporan] Failed to create initial snapshot:', error);
+        }
+      }, 100);
+    }
+  } catch (error) {
+    console.warn('[Laporan] Failed to initialize snapshot creation:', error);
+  }
+}

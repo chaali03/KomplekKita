@@ -90,6 +90,22 @@
       left: 1rem;
       z-index: 9999;
     }
+    /* Transform burger into an X when active and position top-right */
+    .burgir {
+      right: 1rem;
+      left: auto;
+    }
+    .burgir.is-active .line:nth-child(1) {
+      transform: rotate(45deg) translate(4px, 5px);
+      background: #1e40af;
+    }
+    .burgir.is-active .line:nth-child(2) {
+      opacity: 0;
+    }
+    .burgir.is-active .line:nth-child(3) {
+      transform: rotate(-45deg) translate(3px, -5px);
+      background: #1e40af;
+    }
     .links {
       display: none;
       flex-direction: column;
@@ -108,6 +124,17 @@
       align-items: center;
       gap: 2rem;
     }
+
+    /* Remove any extra close/cancel buttons inside the menu (keep only burger-transformed X) */
+    .links button,
+    .links .exit,
+    .links .close,
+    .links .btn-close,
+    .links .fa-times,
+    .links [aria-label="Close"],
+    .links .icon-close {
+      display: none !important;
+    }
   }
 
   .main-header {
@@ -121,15 +148,7 @@
 
   .header-content { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; max-width: 1200px; margin: 0 auto; }
 
-  .exit {
-    cursor: pointer;
-    border: none;
-    background-color: transparent;
-  }
-
-  .exit :hover .icon {
-    fill: #085895;
-  }
+  /* Remove old unused exit styles to avoid confusion */
 
   .ul-nav {
     list-style: none;
@@ -159,10 +178,11 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const burgerMenu = document.querySelector(".burgir");
-    const navLinks = document.querySelector(".links");
-    const body = document.body;
-    const header = document.querySelector('.main-header');
+    const burgerMenu = document.querySelector(".burgir") as HTMLElement | null;
+    const navLinks = document.querySelector(".links") as HTMLElement | null;
+    const closeBtn = document.querySelector('.close-nav') as HTMLButtonElement | null;
+    const body = document.body as HTMLBodyElement;
+    const header = document.querySelector('.main-header') as HTMLElement | null;
 
     if (burgerMenu && navLinks) {
       burgerMenu.addEventListener("click", () => {
@@ -172,14 +192,19 @@
       });
     }
 
+    // Close button behavior: hide menu and reveal burger
+    if (closeBtn && burgerMenu && navLinks) {
+      closeBtn.addEventListener('click', () => {
+        navLinks.classList.remove('is-active');
+        burgerMenu.classList.remove('is-active');
+        body.classList.remove('no-scroll');
+      });
+    }
+
     // Shadow on scroll
     window.addEventListener('scroll', () => {
       if (!header) return;
-      if (window.scrollY > 4) {
-        header.style.boxShadow = '0 6px 18px rgba(2,6,23,.06)';
-      } else {
-        header.style.boxShadow = 'none';
-      }
+      header.style.boxShadow = window.scrollY > 4 ? '0 6px 18px rgba(2,6,23,.06)' : 'none';
     });
   });
 </script>

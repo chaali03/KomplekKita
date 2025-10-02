@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https: blob:; connect-src 'self' https:; media-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self';">
     <title>KomplekKita - Admin</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="/css/admin-dashboard.css">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
-    <link rel="shortcut icon" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="/css/admin-dashboard.css">
+  <!-- Global Dashboard Preloader: ensures non-zero KPIs on first visit across all admin pages (mobile/tab) -->
+  <script src="/js/dashboard-preload.js" is:inline></script>
+    <!-- Favicon: Chrome-compatible configuration with cache busting -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+    <meta name="theme-color" content="#4f46e5" />
 </head>
 <body class="plan-plus">
   <div class="bg-animated">
@@ -35,6 +42,65 @@
   <div class="noise-overlay"></div>
   <div class="demo-watermark" aria-hidden="true">DEMO</div>
 
+  <!-- Mock API bridge to intercept /api iuran endpoints and prevent 404 in dev -->
+  <script>
+    // @ts-nocheck
+    // Lightweight client-side mock for iuran endpoints used by the dashboard
+    (function(){
+      if (typeof window === 'undefined' || typeof window.fetch !== 'function') return;
+      const originalFetch = window.fetch.bind(window);
+      function readJSON(/** @type {string} */ key, /** @type {any} */ fallback){
+        try { return JSON.parse(localStorage.getItem(key) || 'null') ?? fallback; } catch(_) { return fallback; }
+      }
+      function getResidents(){
+        try {
+          const warga = readJSON('warga_data_v1', []);
+          if (Array.isArray(warga) && warga.length > 0) return warga.filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined'));
+          const demo = readJSON('residents_data', []);
+          return Array.isArray(demo) ? demo.filter(r => r && (r.status === 'aktif' || typeof r.status === 'undefined')) : [];
+        } catch(_) { return []; }
+      }
+      function calcIuran(/** @type {string} */ periode){
+        const cfgs = readJSON('dues_configs', {});
+        const cfg = (cfgs && cfgs[periode]) || readJSON('dues_config', {});
+        const amount = Number((cfg && cfg.amount) || 0) || 0;
+        const pays = readJSON('dues_payments', {});
+        const paidArr = Array.isArray(pays?.[periode]?.paid) ? pays[periode].paid : [];
+        const residents = getResidents();
+        const paidCount = paidArr.length || 0;
+        const residentsCount = residents.length || 0;
+        const unpaidCount = Math.max(0, residentsCount - paidCount);
+        const totalPending = Math.max(0, amount * unpaidCount);
+        return { amount, paidCount, residentsCount, unpaidCount, totalPending, residents, paid: paidArr };
+      }
+      function jsonResponse(/** @type {any} */ obj, /** @type {number} */ status = 200){
+        return new Response(JSON.stringify(obj), { status, headers: { 'Content-Type': 'application/json' } });
+      }
+      window.fetch = async function(input, init){
+        try {
+          const url = (typeof input === 'string') ? input : ((input && (/** @type {any} */(input)).url) ? (/** @type {any} */(input)).url : '');
+          if (typeof url === 'string' && url.indexOf('/api/') === 0) {
+            const u = new URL(String(url), window.location.origin);
+            const path = u.pathname;
+            const method = (init && init.method) || 'GET';
+            const periode = (u.searchParams.get('periode') || '').trim();
+            const komplekId = Number(u.searchParams.get('komplek_id') || '0');
+            const STATUS_PATHS = ['/api/iuran/status','/api/demo/iuran/status','/api/public/iuran/status','/api/demo/iuran/realtime'];
+            if (STATUS_PATHS.includes(path) && method === 'GET'){
+              const c = calcIuran(periode);
+              return jsonResponse({ status:'success', data: { komplek_id: komplekId, periode, nominal: c.amount, amount: c.amount, warga_belum_bayar: c.unpaidCount, unpaidCount: c.unpaidCount, residentsCount: c.residentsCount, totalPending: c.totalPending, residents: c.residents, paid: c.paid } }, 200);
+            }
+            if (path === '/api/demo/demo/iuran/sync' && method === 'POST'){
+              const c = calcIuran(periode);
+              return jsonResponse({ status:'success', data: { komplek_id: komplekId, periode, nominal: c.amount, warga_belum_bayar: c.unpaidCount, unpaidCount: c.unpaidCount, totalPending: c.totalPending } }, 200);
+            }
+          }
+        } catch(_) { /* pass-through */ }
+        return originalFetch(input, init);
+      };
+    })();
+  </script>
+
   <!-- Charts and Admin dashboard scripts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="/js/realtime-charts.js" defer></script>
@@ -45,7 +111,7 @@
     (function waitForChart(retry) {
       retry = retry || 0;
       try {
-        if (typeof window !== 'undefined' && typeof window.Chart !== 'undefined') {
+        if (typeof window !== 'undefined' && typeof (window as any).Chart !== 'undefined') {
           window.dispatchEvent(new Event('charts-ready'));
           return;
         }
@@ -96,17 +162,31 @@
     /* Ensure admin layout fills viewport height */
     .admin-layout { display: flex; min-height: 100dvh; }
     /* Ensure main column itself spans full viewport height */
-    .admin-main { display: flex; flex-direction: column; flex: 1; min-width: 0; min-height: 100dvh; }
-    /* Let content area fill remaining column; using 100% ensures scroll beyond the sticky topbar */
-    .admin-content { flex: 1; display: flex; flex-direction: column; min-height: 100%; padding: 16px 16px 140px; }
+    .admin-main { display: flex; flex-direction: column; flex: 1; min-width: 0; min-height: 100%; }
+    /* Let content area fill remaining column with compact spacing */
+    .admin-content { flex: 1; display: flex; flex-direction: column; min-height: 100%; padding: 8px 10px 10px; }
 
     .admin-frame {
       position: relative;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 24px clamp(16px, 4vw, 32px) 64px;
-      min-height: 100dvh;
+      padding: 8px clamp(10px, 2vw, 18px) 12px;
+      min-height: auto;
     }
+
+    /* Compact sections/cards spacing inside admin pages */
+    .card-container, .table-section, .quick-actions-section, .charts-grid, .notifications-widget, .dashboard-hero, .stats-grid {
+      margin-top: 6px;
+      margin-bottom: 8px;
+    }
+    .stats-grid { margin-bottom: 8px; }
+
+    /* Reduce default gaps inside chart-card and sections */
+    .chart-card .card-body { padding: 6px; }
+    .chart-card .card-header { padding: 6px 8px; }
+
+    /* Compact section headers */
+    .section-header { padding: 8px 10px; margin-bottom: 6px; }
 
     /* Animated background orbs */
     .bg-animated { position: fixed; inset: 0; pointer-events: none; z-index: -2; }

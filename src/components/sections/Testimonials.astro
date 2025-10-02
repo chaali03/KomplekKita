@@ -755,6 +755,32 @@
 		.testimonial-metrics .metric-label {
 			font-size: 0.75rem;
 		}
+
+		/* CTA: make compact and mobile friendly */
+		.testimonial-cta { padding: 1.25rem 1rem; border-radius: 16px; box-shadow: 0 10px 24px rgba(0,0,0,0.1); }
+		.cta-content h3 { font-size: 1.35rem; line-height: 1.35; margin-bottom: 0.9rem; }
+		.cta-content p { font-size: 0.95rem; margin-bottom: 1.25rem; max-width: 100%; }
+		.cta-buttons { flex-direction: column; gap: 0.75rem; }
+		.cta-buttons .btn { width: 100%; padding: 0.9rem 1rem; font-size: 1rem; }
+
+		/* Reduce heavy decorations for mobile */
+		.testimonial-background-shapes { display: none; }
+		.testimonial-particles { opacity: 0.05; }
+	}
+
+	/* Very small phones (<=400px) */
+	@media (max-width: 400px) {
+		.section .container { padding: 0 12px; }
+		.cta-content h3 { font-size: 1.2rem; }
+		.cta-content p { font-size: 0.9rem; }
+		.cta-buttons .btn { padding: 0.8rem 0.9rem; font-size: 0.95rem; }
+	}
+
+	/* Ultra small (<=360px) */
+	@media (max-width: 360px) {
+		.section .container { padding: 0 10px; }
+		.cta-content h3 { font-size: 1.1rem; }
+		.cta-content p { font-size: 0.88rem; }
 	}
 
 	/* Additional animations */

@@ -249,7 +249,7 @@
     renderLoadingState();
     
     try {
-      const { safeFetch } = await import('/src/utils/fetch-wrapper.ts');
+      const { safeFetch } = await import('../../utils/fetch-wrapper.ts');
       const response = await safeFetch('/api/letter-templates');
       const result = await response.json();
       
@@ -338,7 +338,7 @@
   // Download template function
   window.downloadTemplate = async function(id) {
     try {
-      const { safeFetch } = await import('/src/utils/fetch-wrapper.ts');
+      const { safeFetch } = await import('../../utils/fetch-wrapper.ts');
       const response = await safeFetch(`/api/letter-templates/${id}/download`);
       
       if (response.ok) {

@@ -7,7 +7,7 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
 
 <header class="main-header" data-aos="fade-down" data-aos-duration="800">
   <div class="header-content container">
-    <a href="/user" class="logo" aria-label="KomplekKita">
+    <a href="/user" class="brand" aria-label="KomplekKita">
       <span class="brand-icon"><i class="fas fa-building" aria-hidden="true"></i></span>
       <span class="brand-text">KomplekKita</span>
       <span class="brand-glow" aria-hidden="true"></span>
@@ -159,16 +159,19 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     gap: 10px; /* keep items close on desktop */
   }
 
-  /* Brand logo (match admin-sidebar style, scoped to header) */
-  .main-header .logo {
+  /* Brand logo (match Header.astro) */
+  .brand {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 0.75rem;
     position: relative;
     text-decoration: none;
     color: inherit;
+    z-index: 2;
+    transition: transform 0.3s ease;
   }
-  .main-header .logo .brand-icon {
+  .brand:hover { transform: scale(1.05); }
+  .brand .brand-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -177,20 +180,21 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     border-radius: 10px;
     background: linear-gradient(135deg, #3B82F6, #1E40AF);
     color: #ffffff;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     box-shadow: 0 2px 10px rgba(59,130,246,0.3);
     transition: all 0.3s ease;
   }
-  .main-header .logo .brand-text {
-    font-size: 1.4rem;
+  .brand .brand-text {
+    font-size: 1.5rem;
     font-weight: 800;
     background: linear-gradient(135deg, #1F2937, #3B82F6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 0 0 15px rgba(59,130,246,0.3);
     line-height: 1;
+    transition: all 0.3s ease;
   }
-  .main-header .logo .brand-glow {
+  .brand .brand-glow {
     position: absolute;
     inset: 0;
     background: radial-gradient(circle at center, rgba(59,130,246,0.3) 0%, transparent 70%);
@@ -199,17 +203,17 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     transition: opacity 0.3s ease;
     z-index: -1;
   }
-  .main-header .logo:hover .brand-icon {
-    transform: rotate(-10deg) scale(1.06);
+  .brand:hover .brand-icon {
+    transform: rotate(-10deg) scale(1.1);
     background: linear-gradient(135deg, #3B82F6, #8B5CF6);
     box-shadow: 0 5px 15px rgba(59,130,246,0.5);
   }
-  .main-header .logo:hover .brand-text {
+  .brand:hover .brand-text {
     background: linear-gradient(135deg, #3B82F6, #8B5CF6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
-  .main-header .logo:hover .brand-glow { opacity: 1; }
+  .brand:hover .brand-glow { opacity: 1; }
 
   /* Admin login button */
   .admin-login {
@@ -594,6 +598,7 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
 </style>
 
 <script>
+  // @ts-nocheck
   document.addEventListener('DOMContentLoaded', () => {
     /** @type {HTMLElement|null} */
     const burgerMenu = document.querySelector('.burgir');
@@ -610,8 +615,8 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     });
 
     // Enhanced ripple effect for nav links
-    /** @param {MouseEvent} event */
-    function createRipple(event) {
+    /** @type {(event: MouseEvent) => void} */
+    const createRipple = (event) => {
       const button = /** @type {HTMLElement} */(event.currentTarget);
       const ripple = document.createElement('span');
       const rect = button.getBoundingClientRect();
@@ -624,7 +629,7 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
       ripple.style.top = `${event.clientY - rect.top - radius}px`;
       ripple.classList.add('ripple');
       
-      const rippleContainer = button.querySelector('.ripple-container');
+      const rippleContainer = /** @type {HTMLElement|null} */(button.querySelector('.ripple-container'));
       if (!rippleContainer) {
         const container = document.createElement('div');
         container.classList.add('ripple-container');
@@ -632,11 +637,10 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
         container.appendChild(ripple);
       } else {
         // Remove existing ripples before adding new one for cleaner effect
-        /** @type {NodeListOf<HTMLElement>} */
-        const existingRipples = rippleContainer.querySelectorAll('.ripple');
-        if (existingRipples.length > 0) {
-          existingRipples.forEach((r)=> r.remove());
-        }
+        const existingRipples = /** @type {NodeListOf<HTMLElement>} */(rippleContainer.querySelectorAll('.ripple'));
+        /** @type {(el: HTMLElement) => void} */
+        const removeEl = (el) => { el.remove(); };
+        if (existingRipples.length > 0) { existingRipples.forEach(removeEl); }
         rippleContainer.appendChild(ripple);
       }
       
@@ -662,13 +666,13 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
         navLinks.setAttribute('aria-hidden', active ? 'false' : 'true');
         // Safety: force visibility via inline styles in case authored CSS is overridden
         if (active) {
-          (navLinks).style.opacity = '1';
-          (navLinks).style.visibility = 'visible';
-          (navLinks).style.transform = 'translateY(0)';
+          (/** @type {HTMLElement} */(navLinks)).style.opacity = '1';
+          (/** @type {HTMLElement} */(navLinks)).style.visibility = 'visible';
+          (/** @type {HTMLElement} */(navLinks)).style.transform = 'translateY(0)';
         } else {
-          (navLinks).style.opacity = '';
-          (navLinks).style.visibility = '';
-          (navLinks).style.transform = '';
+          (/** @type {HTMLElement} */(navLinks)).style.opacity = '';
+          (/** @type {HTMLElement} */(navLinks)).style.visibility = '';
+          (/** @type {HTMLElement} */(navLinks)).style.transform = '';
         }
         // Reset and re-trigger animations when menu opens
         if (active) {
@@ -690,13 +694,14 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     }
     
     // Close mobile menu when clicking on a link and navigate reliably
-    navItems.forEach(item => {
+    navItems.forEach((item) => {
       item.addEventListener('click', (ev) => {
         try {
-          const href = (/** @type {HTMLAnchorElement} */(ev.currentTarget)).getAttribute('href') || '';
+          const tgt = ev.currentTarget;
+          const anchor = (tgt && tgt instanceof HTMLAnchorElement) ? tgt : null;
+          const href = anchor?.getAttribute('href') || '';
           if (href) {
             ev.preventDefault();
-            // Navigate programmatically to ensure overlay doesn't block routing
             window.location.href = href;
           }
         } catch(_) {}
@@ -716,8 +721,7 @@ const avatarUrl = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?
     // Add scroll effect to header with smooth transition and debounce
     const header = document.querySelector('.main-header');
     let lastScrollTop = 0;
-    /** @type {number|undefined} */
-    let scrollTimer;
+    /** @type {number|undefined} */ let scrollTimer = undefined;
     const scrollThreshold = 30; // Lower threshold for faster response
     
     window.addEventListener('scroll', () => {

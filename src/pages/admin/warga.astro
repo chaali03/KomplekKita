@@ -2269,17 +2269,9 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       s.onload=()=>{ calibrate(); then(); };
       document.head.appendChild(s);
       
-      // Load Real-time Chart Update System
-      const realtimeScript = document.createElement('script');
-      realtimeScript.type = 'module';
-      realtimeScript.src = '/src/utils/chart-realtime.js';
-      document.head.appendChild(realtimeScript);
-      
-      // Load Shared State Management
-      const sharedStateScript = document.createElement('script');
-      sharedStateScript.type = 'module';
-      sharedStateScript.src = '/src/utils/shared-state.js';
-      document.head.appendChild(sharedStateScript);
+      // Load Real-time Chart Update System from public for preview/deploy
+      const ps1 = document.createElement('script'); ps1.type='module'; ps1.src='/js/shared-state.js'; document.head.appendChild(ps1);
+      const ps2 = document.createElement('script'); ps2.type='module'; ps2.src='/js/chart-realtime.js'; document.head.appendChild(ps2);
     }
 
     function renderCharts(){
@@ -2839,7 +2831,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
     // -----------------------------
     async function loadTemplates() {
       try {
-        const { safeFetch } = await import('/src/utils/fetch-wrapper.ts');
+        const { safeFetch } = await import('../../utils/fetch-wrapper.ts');
         const response = await safeFetch('/api/letter-templates?admin=true');
         const result = await response.json();
         
@@ -3070,7 +3062,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       if (!ok) return;
 
       try {
-        const { safeFetch } = await import('/src/utils/fetch-wrapper.ts');
+        const { safeFetch } = await import('../../utils/fetch-wrapper.ts');
         const response = await safeFetch(`/api/letter-templates/${id}`, { method: 'DELETE' });
         
         const result = await response.json();
@@ -3138,7 +3130,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       const formData = new FormData(form);
       
       try {
-        const { safeFetch } = await import('/src/utils/fetch-wrapper.ts');
+        const { safeFetch } = await import('../../utils/fetch-wrapper.ts');
         const url = state.editingTemplateId 
           ? `/api/letter-templates/${state.editingTemplateId}`
           : '/api/letter-templates';
@@ -3228,7 +3220,7 @@ const complexImage = 'https://images.unsplash.com/photo-1570129477492-45c003edd2
       formData.append('replace_existing', 'true');
       
       try {
-        const { safeFetch } = await import('/src/utils/fetch-wrapper.ts');
+        const { safeFetch } = await import('../../utils/fetch-wrapper.ts');
         const response = await safeFetch('/api/letter-templates/replace', { method: 'POST', body: formData });
         
         const result = await response.json();

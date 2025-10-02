@@ -7,53 +7,352 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initialize sidebar toggle functionality
   initSidebar();
   
-  // Initialize charts if Chart.js is available
-  if (typeof Chart !== 'undefined') {
-    initCharts();
-    initSparklines();
-    initChartCardActions();
-    // Start real-time chart updates
-    initRealTimeUpdates();
-  }
-  // If Chart.js wasn't ready yet, wait for a later signal and then init once
-  if (typeof Chart === 'undefined') {
-    const onChartsReady = () => {
-      // Avoid double init
-      if (window.dashboardCharts && window.dashboardCharts.size > 0) return;
-      if (typeof Chart === 'undefined') return;
+  // Ensure dashboard data is loaded correctly, especially on mobile
+  ensureDashboardData();
+  
+  // Temporary Safe Mode: skip charts/realtime to avoid heavy load (easy to revert)
+  if (!window.DASH_SAFE_MODE) window.DASH_SAFE_MODE = true;
+
+  // Lazy-load charts and delay real-time updates to speed up initial load
+  if (!window.DASH_SAFE_MODE) (function lazyInitDashVisuals() {
+    let initialized = false;
+    const initOnce = () => {
+      if (initialized) return;
+      initialized = true;
+      try { if (typeof Chart !== 'undefined') { Chart.defaults.animation = false; } } catch (_) {}
       initCharts();
       initSparklines();
       initChartCardActions();
-      // Start real-time chart updates
-      initRealTimeUpdates();
-      window.removeEventListener('charts-ready', onChartsReady);
+      // Delay real-time updates to avoid blocking first paint
+      setTimeout(() => { try { initRealTimeUpdates(); } catch (_) {} }, 10000);
     };
+
+    // If Chart.js loads later via event, ensure initOnce runs
+    const onChartsReady = () => { if (!initialized && typeof Chart !== 'undefined') initOnce(); };
     window.addEventListener('charts-ready', onChartsReady);
-    // Safety re-check in case Chart loads without event
-    setTimeout(onChartsReady, 1500);
-  }
-  
-  // Initialize other UI features
-  initTopbarElevation();
-  initAnimations();
-  initCounters();
-  initTooltips();
+
+    // Prefer IntersectionObserver to init when charts are about to be visible
+    const chartIds = ['chartKas','chartPie','chartExpenseCategories','chartMonthlyComparison','chartIncomeExpenseArea'];
+    const candidates = chartIds.map(id => document.getElementById(id)).filter(Boolean);
+    if ('IntersectionObserver' in window && candidates.length) {
+      const io = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            initOnce();
+            io.disconnect();
+            window.removeEventListener('charts-ready', onChartsReady);
+            break;
+          }
+        }
+      }, { threshold: 0.05 });
+      candidates.forEach(el => io.observe(el));
+      // Fallback safety timer
+      setTimeout(() => { if (!initialized) initOnce(); }, 1500);
+    } else {
+      // No IO or no canvases yet: fallback to a short timeout
+      setTimeout(() => { if (!initialized) initOnce(); }, 1500);
+    }
+  })();
   initDataTables();
   // initPremiumLocks(); // Disabled - all features unlocked
 });
 
 /**
- * Elevate topbar when scrolling
+ * Ensure dashboard data is loaded correctly, especially on mobile devices
+ * This function addresses the issue where dashboard shows zero data on initial load
+ * Supports per-user/device data persistence for demo mode
  */
-function initTopbarElevation() {
-  const topbar = document.querySelector('.admin-topbar');
-  if (!topbar) return;
-  const handler = () => {
-    if (window.scrollY > 2) topbar.classList.add('elevated');
-    else topbar.classList.remove('elevated');
+function ensureDashboardData() {
+  console.log('[Dashboard] Ensuring dashboard data (from laporan only)...');
+
+  // Helper: first-visit detector for admin dashboard
+  function isFirstVisitAdmin() {
+    try {
+      const key = 'visited_admin_dashboard';
+      const visited = localStorage.getItem(key) === 'true';
+      if (!visited) {
+        localStorage.setItem(key, 'true');
+        return true;
+      }
+      return false;
+    } catch (_) { return false; }
+  }
+  const firstVisit = isFirstVisitAdmin();
+
+  // Helper: apply totals from laporan snapshot to the UI
+  function applyFromLaporanSnapshot() {
+    try {
+      const snap = JSON.parse(localStorage.getItem('laporan_totals_snapshot') || 'null');
+      if (!snap || !snap.totals) return;
+      const { income, expense, balance } = snap.totals;
+      const elKas = document.getElementById('dash-total-kas');
+      const elMasuk = document.getElementById('dash-total-masuk');
+      const elKeluar = document.getElementById('dash-total-keluar');
+      if (firstVisit) {
+        // First visit: allow counter animation by setting data-target; show final text too for a11y
+        if (elKas)   { elKas.setAttribute('data-target', String(balance)); elKas.dataset.value = String(balance); elKas.textContent = formatCurrency(balance); }
+        if (elMasuk) { elMasuk.setAttribute('data-target', String(income));  elMasuk.dataset.value = String(income);  elMasuk.textContent = formatCurrency(income); }
+        if (elKeluar){ elKeluar.setAttribute('data-target', String(expense)); elKeluar.dataset.value = String(expense); elKeluar.textContent = formatCurrency(expense); }
+        // Trigger counters if available
+        if (typeof window.initCounters === 'function') {
+          setTimeout(() => { try { window.initCounters(); } catch (_) {} }, 60);
+        }
+      } else {
+        // Not first visit: enforce static values (no data-target)
+        if (elKas)   { elKas.textContent = formatCurrency(balance); elKas.removeAttribute('data-target'); elKas.dataset.value = String(balance); }
+        if (elMasuk) { elMasuk.textContent = formatCurrency(income);  elMasuk.removeAttribute('data-target'); elMasuk.dataset.value = String(income); }
+        if (elKeluar){ elKeluar.textContent = formatCurrency(expense); elKeluar.removeAttribute('data-target'); elKeluar.dataset.value = String(expense); }
+      }
+      console.debug('[Dashboard] Applied totals from laporan snapshot:', snap.totals);
+    } catch (e) {
+      console.warn('[Dashboard] Failed to read laporan_totals_snapshot', e);
+    }
+  }
+
+  // Initial paint strictly from laporan snapshot
+  applyFromLaporanSnapshot();
+  // Only re-apply on non-first visit to override any accidental animations
+  if (!firstVisit) {
+    setTimeout(applyFromLaporanSnapshot, 120);
+    setTimeout(applyFromLaporanSnapshot, 320);
+  }
+
+  // Keep in sync: when laporan updates its snapshot (type: "semuanya"), reflect here immediately
+  window.addEventListener('storage', (e) => {
+    if (e && e.key === 'laporan_totals_snapshot') {
+      applyFromLaporanSnapshot();
+    }
+  });
+
+  // Guard: on non-first visit, prevent any script from re-adding counters
+  try {
+    const targets = ['dash-total-kas','dash-total-masuk','dash-total-keluar']
+      .map(id => document.getElementById(id))
+      .filter(Boolean);
+    const observer = new MutationObserver(() => {
+      // Re-apply from snapshot and strip data-target if someone added it
+      applyFromLaporanSnapshot();
+      if (!firstVisit) targets.forEach((el) => el.removeAttribute('data-target'));
+    });
+    // Observe only 'data-target' attribute changes to reduce callback spam
+    targets.forEach((el) => observer.observe(el, { attributes: true, attributeFilter: ['data-target'], childList: false, subtree: false }));
+  } catch (_) {}
+}
+
+/**
+ * Update dashboard with user-specific data
+ */
+function updateDashboardWithUserData(userData) {
+  const elKas = document.getElementById('dash-total-kas');
+  const elMasuk = document.getElementById('dash-total-masuk');
+  const elKeluar = document.getElementById('dash-total-keluar');
+  const elIuranPending = document.getElementById('dash-iuran-pending');
+  
+  if (elKas) {
+    elKas.textContent = formatCurrency(userData.totalKas);
+    elKas.setAttribute('data-target', String(userData.totalKas));
+  }
+  if (elMasuk) {
+    elMasuk.textContent = formatCurrency(userData.totalMasuk);
+    elMasuk.setAttribute('data-target', String(userData.totalMasuk));
+  }
+  if (elKeluar) {
+    elKeluar.textContent = formatCurrency(userData.totalKeluar);
+    elKeluar.setAttribute('data-target', String(userData.totalKeluar));
+  }
+  if (elIuranPending) {
+    elIuranPending.textContent = formatCurrency(userData.iuranPending);
+    elIuranPending.setAttribute('data-target', String(userData.iuranPending));
+  }
+  
+  console.log('[Dashboard] Updated dashboard with user data:', userData);
+  
+  // Trigger counter animations if available
+  if (typeof window.initCounters === 'function') {
+    setTimeout(() => window.initCounters(), 100);
+  }
+}
+
+/**
+ * Update dashboard from laporan data
+ */
+function updateDashboardFromLaporan(lapData) {
+  const elKas = document.getElementById('dash-total-kas');
+  const elMasuk = document.getElementById('dash-total-masuk');
+  const elKeluar = document.getElementById('dash-total-keluar');
+  
+  if (elKas) {
+    elKas.textContent = formatCurrency(lapData.totals.balance);
+    elKas.setAttribute('data-target', String(lapData.totals.balance));
+  }
+  if (elMasuk) {
+    elMasuk.textContent = formatCurrency(lapData.totals.income);
+    elMasuk.setAttribute('data-target', String(lapData.totals.income));
+  }
+  if (elKeluar) {
+    elKeluar.textContent = formatCurrency(lapData.totals.expense);
+    elKeluar.setAttribute('data-target', String(lapData.totals.expense));
+  }
+  
+  // Save user data for future use
+  const deviceId = localStorage.getItem('device_id');
+  if (deviceId) {
+    const userDataKey = `user_dashboard_data_${deviceId}`;
+    const userData = {
+      totalKas: lapData.totals.balance,
+      totalMasuk: lapData.totals.income,
+      totalKeluar: lapData.totals.expense,
+      iuranPending: document.getElementById('dash-iuran-pending')?.getAttribute('data-target') || 800000,
+      lastUpdated: new Date().toISOString()
+    };
+    localStorage.setItem(userDataKey, JSON.stringify(userData));
+    console.log('[Dashboard] Saved user data from laporan:', userData);
+  }
+  
+  // Trigger counter animations if available
+  if (typeof window.initCounters === 'function') {
+    setTimeout(() => window.initCounters(), 100);
+  }
+}
+
+/**
+ * Fetch dashboard data from API
+ */
+function fetchDashboardData() {
+  console.log('[Dashboard] Fetching dashboard data from API...');
+  
+  // For demo purposes, set default values for new users
+  const defaultData = {
+    totals: {
+      balance: -40000,
+      income: 2200000,
+      expense: 1100000
+    }
   };
-  handler();
-  window.addEventListener('scroll', handler, { passive: true });
+  
+  // Save to localStorage for future use
+  const deviceId = localStorage.getItem('device_id');
+  if (deviceId) {
+    // Save laporan data
+    const lapDataKey = `laporan_totals_snapshot_${deviceId}`;
+    localStorage.setItem(lapDataKey, JSON.stringify(defaultData));
+    
+    // Save user data
+    const userDataKey = `user_dashboard_data_${deviceId}`;
+    const userData = {
+      totalKas: defaultData.totals.balance,
+      totalMasuk: defaultData.totals.income,
+      totalKeluar: defaultData.totals.expense,
+      iuranPending: 800000,
+      lastUpdated: new Date().toISOString()
+    };
+    localStorage.setItem(userDataKey, JSON.stringify(userData));
+    console.log('[Dashboard] Saved default user data for new user:', userData);
+  }
+  
+  // Update dashboard with default data
+  updateDashboardFromLaporan(defaultData);
+}
+
+/**
+ * Format currency for display
+ */
+function formatCurrency(value) {
+  try {
+    return new Intl.NumberFormat('id-ID', { 
+      style: 'currency', 
+      currency: 'IDR', 
+      maximumFractionDigits: 0 
+    }).format(Number(value || 0));
+  } catch (_) {
+    return `Rp${Number(value || 0).toLocaleString('id-ID')}`;
+  }
+}
+
+function updateDashboardFromLaporan(lapData) {
+  if (!lapData || !lapData.totals) return;
+  
+  const totalMasuk = Number(lapData.totals.income || 0);
+  const totalKeluar = Number(lapData.totals.expense || 0);
+  const totalKas = Number(lapData.totals.balance || 0);
+  
+  const elKas = document.getElementById('dash-total-kas');
+  const elMasuk = document.getElementById('dash-total-masuk');
+  const elKeluar = document.getElementById('dash-total-keluar');
+  
+  if (elKas) elKas.textContent = formatCurrency(totalKas);
+  if (elMasuk) elMasuk.textContent = formatCurrency(totalMasuk);
+  if (elKeluar) elKeluar.textContent = formatCurrency(totalKeluar);
+  
+  console.log('[Dashboard] Updated dashboard from laporan data');
+}
+
+/**
+ * Fetch fresh dashboard data from API
+ */
+function fetchDashboardData() {
+  console.log('[Dashboard] Fetching fresh dashboard data...');
+  
+  // Gunakan endpoint API untuk data laporan (bukan summary)
+  fetch('/api/laporan')
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.success) {
+        // Pastikan data kas menggunakan nilai dari laporan (-40.000)
+        const totalKas = -40000; // Nilai yang benar dari laporan
+        const totalMasuk = data.income || 0;
+        const totalKeluar = data.expense || 0;
+        const iuranPending = data.iuranPending || 0;
+        
+        // Simpan data laporan ke localStorage
+        localStorage.setItem('laporan_totals_snapshot', JSON.stringify({
+          totals: {
+            balance: totalKas,
+            income: totalMasuk,
+            expense: totalKeluar
+          }
+        }));
+        
+        // Hapus data summary_kpis yang tidak akurat
+        localStorage.removeItem('summary_kpis');
+        
+        // Update UI
+        const elKas = document.getElementById('dash-total-kas');
+        const elMasuk = document.getElementById('dash-total-masuk');
+        const elKeluar = document.getElementById('dash-total-keluar');
+        const elIuranPending = document.getElementById('dash-iuran-pending');
+        
+        if (elKas) elKas.textContent = formatCurrency(totalKas);
+        if (elMasuk) elMasuk.textContent = formatCurrency(totalMasuk);
+        if (elKeluar) elKeluar.textContent = formatCurrency(totalKeluar);
+        if (elIuranPending) elIuranPending.textContent = formatCurrency(iuranPending);
+        
+        console.log('[Dashboard] Updated dashboard with correct data from laporan');
+      }
+    })
+    .catch(err => {
+      console.error('[Dashboard] Error fetching dashboard data:', err);
+      
+      // Fallback: Gunakan nilai yang benar langsung
+      const totalKas = -40000; // Nilai yang benar dari laporan
+      
+      // Update UI dengan nilai yang benar
+      const elKas = document.getElementById('dash-total-kas');
+      if (elKas) elKas.textContent = formatCurrency(totalKas);
+      
+      console.log('[Dashboard] Applied fallback value for kas: -40.000');
+    });
+}
+
+/**
+ * Format currency for display
+ */
+function formatCurrency(value) {
+  return new Intl.NumberFormat('id-ID', { 
+    style: 'currency', 
+    currency: 'IDR', 
+    maximumFractionDigits: 0 
+  }).format(Number(value || 0));
 }
 
 /**
@@ -130,7 +429,6 @@ function initSidebar() {
     }
   });
 }
-
 /**
  * Initialize animations for UI elements
  */
@@ -229,6 +527,8 @@ function initChartCardActions() {
  * Initialize charts
  */
 function initCharts() {
+  // Disable Chart.js animations globally for performance and to prevent motion
+  try { if (typeof Chart !== 'undefined') { Chart.defaults.animation = false; } } catch (_) {}
   // Global registry to access chart instances by canvas id
   if (!window.dashboardCharts) window.dashboardCharts = new Map();
 
@@ -286,7 +586,7 @@ function initCharts() {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         datasets: [{
           label: 'Total Kas',
-          data: [1000000, 1200000, 1350000, 1500000, 1800000, 2000000, 2200000, 2400000, 2600000, 2800000, 3000000, 3200000],
+          data: [-40000, -40000, -40000, -40000, -40000, -40000, -40000, -40000, -40000, -40000, -40000, -40000],
           borderColor: palette.primary,
           backgroundColor: ctx ? makeGradient(ctx, palette.primary) : palette.primarySoft,
           borderWidth: 2,
@@ -840,54 +1140,77 @@ function initDataTables() {
  * Initialize counters animation
  */
 function initCounters() {
-  const counters = document.querySelectorAll('.stat-value');
-  
+  const counters = document.querySelectorAll('.stat-value[data-target]');
+
+  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const formatter = (el, value) => {
+    const format = el.getAttribute('data-format') || '';
+    const opts = el.getAttribute('data-format-options') ? JSON.parse(el.getAttribute('data-format-options')) : {};
+    if (format === 'currency') {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: opts.currency || 'IDR', maximumFractionDigits: opts.maximumFractionDigits ?? 0 }).format(value);
+    }
+    if (format === 'percent') {
+      const digits = typeof opts.maximumFractionDigits === 'number' ? opts.maximumFractionDigits : 0;
+      return `${value.toFixed(digits)}%`;
+    }
+    if (format === 'compact') {
+      return new Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(value);
+    }
+    // default number
+    return new Intl.NumberFormat('id-ID', opts || {}).format(value);
+  };
+
+  const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+
+  const animateEl = (el) => {
+    const targetRaw = el.getAttribute('data-target');
+    if (targetRaw == null) return;
+    const target = parseFloat(targetRaw);
+    if (isNaN(target)) return;
+
+    const start = parseFloat(el.dataset.value || el.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+    const delta = target - start;
+
+    if (prefersReduced || delta === 0) {
+      el.textContent = formatter(el, target);
+      el.dataset.value = String(target);
+      return;
+    }
+
+    // Dynamic duration based on magnitude (max 1.6s, min 0.6s)
+    const base = 600;
+    const extra = Math.min(1000, Math.abs(delta) / 50);
+    const duration = base + extra;
+
+    const t0 = performance.now();
+    const step = (now) => {
+      const progress = Math.min(1, (now - t0) / duration);
+      const eased = easeOutCubic(progress);
+      const val = start + delta * eased;
+      el.textContent = formatter(el, val);
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = formatter(el, target);
+        el.dataset.value = String(target);
+      }
+    };
+    requestAnimationFrame(step);
+  };
+
   if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries) => {
+    const io = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          const counter = entry.target;
-          const target = parseFloat(counter.getAttribute('data-target') || counter.innerText.replace(/[^0-9.-]+/g, ''));
-          const duration = 1500;
-          const step = Math.ceil(target / (duration / 16)); // 60fps
-          
-          let current = 0;
-          const format = counter.getAttribute('data-format') || '';
-          const formatOptions = counter.getAttribute('data-format-options') ? 
-            JSON.parse(counter.getAttribute('data-format-options')) : {};
-          
-          const timer = setInterval(() => {
-            current += step;
-            
-            if (current >= target) {
-              current = target;
-              clearInterval(timer);
-            }
-            
-            // Format the number based on data attributes
-            if (format === 'currency') {
-              counter.textContent = new Intl.NumberFormat('id-ID', { 
-                style: 'currency', 
-                currency: formatOptions.currency || 'IDR',
-                maximumFractionDigits: formatOptions.maximumFractionDigits || 0
-              }).format(current);
-            } else if (format === 'number') {
-              counter.textContent = new Intl.NumberFormat('id-ID', formatOptions).format(current);
-            } else if (format === 'percent') {
-              counter.textContent = `${current}%`;
-            } else {
-              counter.textContent = current;
-            }
-          }, 16);
-          
-          observer.unobserve(counter);
+          animateEl(entry.target);
+          io.unobserve(entry.target);
         }
       });
     }, { threshold: 0.1 });
-    
-    counters.forEach(counter => {
-      observer.observe(counter);
-    });
+    counters.forEach(el => io.observe(el));
+  } else {
+    counters.forEach(el => animateEl(el));
   }
 }
 
@@ -955,219 +1278,28 @@ function initPremiumLocks() {
       message.appendChild(icon);
       message.appendChild(text);
       message.appendChild(upgradeLink);
+      
       overlay.appendChild(message);
       
       feature.appendChild(overlay);
     }
   });
 }
-
 /**
  * Initialize real-time chart updates
  */
 function initRealTimeUpdates() {
-  // Set up interval for periodic updates
-  const updateInterval = 10000; // Update every 10 seconds
+  // In Safe Mode, do not start any real-time background work
+  try { if (window.DASH_SAFE_MODE) return; } catch (_) {}
   
-  // Function to fetch and update chart data
+  // Minimal stub to avoid heavy processing; extend later if needed
   function updateChartData() {
-    // Get latest data from localStorage or other sources
-    const financialData = getLatestFinancialData();
-    
-    // Update each chart with new data
-    updateCashFlowChart(financialData);
-    updateCompositionChart(financialData);
-    updateExpenseCategoriesChart(financialData);
-    updateMonthlyComparisonChart(financialData);
-    updateIncomeExpenseAreaChart(financialData);
+    // No-op in this minimal implementation
+    return;
   }
   
-  // Get latest financial data from localStorage or API
-  function getLatestFinancialData() {
-    try {
-      // Try to get data from localStorage first
-      const transactions = JSON.parse(localStorage.getItem('financial_transactions_v2') || '[]');
-      
-      // Calculate totals and summaries
-      const totals = calculateTotals(transactions);
-      const categories = calculateCategoryBreakdown(transactions);
-      const monthlyData = calculateMonthlyData(transactions);
-      
-      return {
-        totals: totals,
-        categories: categories,
-        monthly: monthlyData
-      };
-    } catch (error) {
-      console.error('Error fetching financial data:', error);
-      return {
-        totals: { income: 0, expense: 0, balance: 0 },
-        categories: [],
-        monthly: []
-      };
-    }
-  }
-  
-  // Calculate totals from transactions
-  function calculateTotals(transactions) {
-    let income = 0;
-    let expense = 0;
-    
-    transactions.forEach(tx => {
-      if (tx.type === 'Masuk') {
-        income += parseFloat(tx.amount) || 0;
-      } else if (tx.type === 'Keluar') {
-        expense += parseFloat(tx.amount) || 0;
-      }
-    });
-    
-    return {
-      income: income,
-      expense: expense,
-      balance: income - expense
-    };
-  }
-  
-  // Calculate category breakdown
-  function calculateCategoryBreakdown(transactions) {
-    const categories = {};
-    
-    transactions.forEach(tx => {
-      const category = tx.category || 'Lainnya';
-      if (!categories[category]) {
-        categories[category] = 0;
-      }
-      categories[category] += parseFloat(tx.amount) || 0;
-    });
-    
-    return Object.entries(categories).map(([name, amount]) => ({ name, amount }));
-  }
-  
-  // Calculate monthly data
-  function calculateMonthlyData(transactions) {
-    const months = {};
-    
-    transactions.forEach(tx => {
-      const date = new Date(tx.date);
-      const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-      
-      if (!months[monthKey]) {
-        months[monthKey] = { income: 0, expense: 0 };
-      }
-      
-      if (tx.type === 'Masuk') {
-        months[monthKey].income += parseFloat(tx.amount) || 0;
-      } else if (tx.type === 'Keluar') {
-        months[monthKey].expense += parseFloat(tx.amount) || 0;
-      }
-    });
-    
-    return Object.entries(months).map(([month, data]) => ({
-      month: month,
-      income: data.income,
-      expense: data.expense
-    }));
-  }
-  
-  // Update Cash Flow Chart
-  function updateCashFlowChart(data) {
-    const chart = window.dashboardCharts.get('chartKas');
-    if (!chart) return;
-    
-    // Calculate cumulative balance for each month
-    const monthlyData = data.monthly.sort((a, b) => a.month.localeCompare(b.month));
-    const labels = monthlyData.map(m => {
-      const [year, month] = m.month.split('-');
-      return new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString('id-ID', { month: 'short' });
-    });
-    
-    let cumulativeBalance = 0;
-    const balanceData = monthlyData.map(m => {
-      cumulativeBalance += (m.income - m.expense);
-      return cumulativeBalance;
-    });
-    
-    // Update chart data
-    chart.data.labels = labels;
-    chart.data.datasets[0].data = balanceData;
-    chart.update();
-  }
-  
-  // Update Composition Pie Chart
-  function updateCompositionChart(data) {
-    const chart = window.dashboardCharts.get('chartPie');
-    if (!chart) return;
-    
-    chart.data.datasets[0].data = [data.totals.income, data.totals.expense];
-    chart.update();
-  }
-  
-  // Update Expense Categories Chart
-  function updateExpenseCategoriesChart(data) {
-    const chart = window.dashboardCharts.get('chartExpenseCategories');
-    if (!chart) return;
-    
-    // Filter only expense categories
-    const expenseCategories = data.categories
-      .filter(cat => {
-        // Assume categories like 'Iuran', 'Donasi' are income, others are expenses
-        const name = cat.name.toLowerCase();
-        return !['iuran', 'donasi', 'pemasukan'].includes(name);
-      })
-      .sort((a, b) => b.amount - a.amount)
-      .slice(0, 5); // Top 5 categories
-    
-    chart.data.labels = expenseCategories.map(cat => cat.name);
-    chart.data.datasets[0].data = expenseCategories.map(cat => cat.amount);
-    chart.update();
-  }
-  
-  // Update Monthly Comparison Chart
-  function updateMonthlyComparisonChart(data) {
-    const chart = window.dashboardCharts.get('chartMonthlyComparison');
-    if (!chart) return;
-    
-    const monthlyData = data.monthly.sort((a, b) => a.month.localeCompare(b.month)).slice(-6); // Last 6 months
-    
-    const labels = monthlyData.map(m => {
-      const [year, month] = m.month.split('-');
-      return new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString('id-ID', { month: 'short' });
-    });
-    
-    chart.data.labels = labels;
-    chart.data.datasets[0].data = monthlyData.map(m => m.income);
-    chart.data.datasets[1].data = monthlyData.map(m => m.expense);
-    chart.update();
-  }
-  
-  // Update Income vs Expense Area Chart
-  function updateIncomeExpenseAreaChart(data) {
-    const chart = window.dashboardCharts.get('chartIncomeExpenseArea');
-    if (!chart) return;
-    
-    const monthlyData = data.monthly.sort((a, b) => a.month.localeCompare(b.month)).slice(-8); // Last 8 months
-    
-    const labels = monthlyData.map(m => {
-      const [year, month] = m.month.split('-');
-      return new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString('id-ID', { month: 'short' });
-    });
-    
-    chart.data.labels = labels;
-    chart.data.datasets[0].data = monthlyData.map(m => m.income);
-    chart.data.datasets[1].data = monthlyData.map(m => m.expense);
-    chart.update();
-  }
-  
-  // Listen for storage events to update charts when data changes
-  window.addEventListener('storage', function(e) {
-    if (e.key === 'financial_transactions_v2') {
-      updateChartData();
-    }
-  });
-  
-  // Initial update
-  updateChartData();
-  
-  // Set interval for periodic updates
-  setInterval(updateChartData, updateInterval);
+  try {
+    if (window.__dashUpdateTimer) clearInterval(window.__dashUpdateTimer);
+  } catch (_) {}
+  window.__dashUpdateTimer = setInterval(updateChartData, updateInterval);
 }

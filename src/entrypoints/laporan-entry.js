@@ -1,0 +1,1 @@
+import '../scripts/laporan.js';
